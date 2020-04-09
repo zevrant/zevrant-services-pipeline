@@ -1,0 +1,11 @@
+version: '3.5'
+services:
+  zevrant-sonarqube-service:
+    ports:
+      - "9000:9000"
+    image: sonarqube:latest
+    volumes:
+      - /opt/sonarqube/conf:/opt/sonarqube/conf
+      - /opt/sonarqube/data:/opt/sonarqube/data
+      - /opt/sonarqube/logs:/opt/sonarqube/logs
+      - /opt/sonarqube/extensions:/opt/sonarqube/extensions
