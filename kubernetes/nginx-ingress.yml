@@ -1,4 +1,4 @@
-apiVersion: k8s.nginx.org/v1
+apiVersion: extensions/v1beta
 kind: ingress
 metadata:
   name: ingress-point
