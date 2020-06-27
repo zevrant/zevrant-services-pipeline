@@ -1,4 +1,4 @@
-apiVersion: extensions/v1beta
+apiVersion: extensions/v1beta1
 kind: ingress
 metadata:
   name: ingress-point
