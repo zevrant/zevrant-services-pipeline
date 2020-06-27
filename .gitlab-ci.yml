@@ -1,0 +1,7 @@
+stages:
+  - deployIngress
+
+Deploy Ingress:
+  stage: deployIngress
+  script:
+    - kubectl apply -f kubernetes/nginx-ingress.yml --namespace=zevrant-home-services-dev

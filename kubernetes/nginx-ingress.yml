@@ -1,0 +1,10 @@
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServer
+metadata:
+  name: cafe
+spec:
+  host: gitlab.example.com
+  upstreams:
+    - name: gitlab
+      service: gitlab
+      port: 8443
