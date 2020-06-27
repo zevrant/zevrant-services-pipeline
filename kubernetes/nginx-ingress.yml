@@ -1,5 +1,5 @@
 apiVersion: extensions/v1beta1
-kind: ingress
+kind: Ingress
 metadata:
   name: ingress-point
   annotations:
