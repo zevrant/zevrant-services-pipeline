@@ -1,10 +1,15 @@
 apiVersion: k8s.nginx.org/v1
-kind: VirtualServer
+kind: ingress
 metadata:
-  name: cafe
+  name: ingress-point
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
 spec:
-  host: gitlab.example.com
-  upstreams:
-    - name: gitlab
-      service: gitlab
-      port: 8443
+  rules:
+    host: gitlab.zevrant-services.com
+    http:
+      paths:
+        - path: /
+          name: gitlab
+          service: gitlab
+          port: 443
