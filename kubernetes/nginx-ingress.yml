@@ -10,6 +10,6 @@ spec:
       http:
         paths:
           - path: /
-            name: gitlab
-            service: gitlab
-            port: 443
+            backend:
+              serviceName: gitlab
+              servicePort: 443
