@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Endpoint
+metadata:
+  name: gitlab-service
+subsets:
+  - addresses:
+      - ip: 192.168.0.73
+      ports:
+        - port: 7443
