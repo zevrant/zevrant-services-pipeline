@@ -3,7 +3,6 @@ import groovy.json.JsonSlurper
 def angularProjects = ["zevrant-home-ui"];
 def environments = ["develop", "prod"];
 node {
-    sh "printenv"
     if(BASE_BRANCH == "develop") {
 
         stage("SCM Checkout") {
@@ -12,7 +11,7 @@ node {
         }
 
         stage ("Test"){
-            if ($angularProjects.indexOf(REPOSITORY) > 2) {
+            if (angularProjects.indexOf(REPOSITORY) > 2) {
                 sh "npm run test"
             } else {
                 "bash gradlew clean build"
