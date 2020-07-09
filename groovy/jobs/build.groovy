@@ -30,6 +30,7 @@ node {
         }
 
         stage ("Build Artifact") {
+            sh "bash gradlew clean assemble"
             sh "docker build -t $REPOSITORY:$version ."
             sh "docker push zevrant/$REPOSITORY:$version"
         }
