@@ -3,7 +3,7 @@ import groovy.json.JsonSlurper
 def angularProjects = ["zevrant-home-ui"];
 def environments = ["develop", "prod"];
 node {
-
+    sh "printenv"
     if($BASE_BRANCH == "develop") {
 
         stage("SCM Checkout") {
