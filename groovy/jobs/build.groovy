@@ -37,10 +37,18 @@ node {
 
         stage ("Deploy") {
             build job: 'Deploy', parameters: [
-                    [$class: 'StringParameterValue', name: 'REPOSITORY', value: $REPOSITORY],
+                    [$class: 'StringParameterValue', name: 'REPOSITORY', value: REPOSITORY],
                     [$class: 'StringParameterValue', name: 'VERSION', value: version],
                     [$class: 'StringParameterValue', name: 'ENVIRONMENT', value: "develop"]
             ]
+        }
+
+        stage ("Version Update") {
+            def splitVersion = version.split(".");
+            def minorVersion = splitVersion[2]
+            minorVersion = new String(Integer.valueOf(minorVersion) + 1);
+
+            sh "aws ssm put-parameter --name ${REPOSITORY}-VERSION --value ${splitVersion[0]}.${splitVersion[1]}.${minorVersion} --type String --overwrite"
         }
 
     }
