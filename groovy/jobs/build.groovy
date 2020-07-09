@@ -1,6 +1,5 @@
 import groovy.json.JsonSlurper
-def envVars = Jenkins.instance.getGlobalNodeProperties().getEnvVars()
-def BASE_BRANCH = envVars['BASE_BRANCH']
+def BASE_BRANCH = env.BASE_BRANCH
 def REPOSITORY = envVars['REPOSITORY']
 def ACTION = envVars['ACTION']
 
