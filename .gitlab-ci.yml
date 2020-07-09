@@ -1,13 +1,13 @@
 stages:
   - deployGitlab
-  - deployIngress
+  - deployIngressShared
 
 Deploy Gitlab:
   stage: deployGitlab
   script:
-    - kubectl apply -f kubernetes/gitlab-service.yml --namespace=zevrant-home-services-dev
+    - kubectl apply -f kubernetes/gitlab-service.yml --namespace=shared
 
 Deploy Ingress:
-  stage: deployIngress
+  stage: deployIngressShared
   script:
-    - kubectl apply -f kubernetes/nginx-ingress.yml --namespace=zevrant-home-services-dev
+    - kubectl apply -f kubernetes/nginx-ingress-shared.yml --namespace=shared
