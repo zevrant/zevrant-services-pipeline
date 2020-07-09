@@ -1,5 +1,9 @@
 import groovy.json.JsonSlurper
 
+def BASE_BRANCH = envVars['BASE_BRANCH']
+def REPOSITORY = envVars['REPOSITORY']
+def ACTION = envVars['ACTION']
+
 def angularProjects = ["zevrant-home-ui"];
 def environments = ["develop", "prod"];
 node {
