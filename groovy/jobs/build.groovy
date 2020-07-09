@@ -1,13 +1,10 @@
 import groovy.json.JsonSlurper
-def BASE_BRANCH = env.BASE_BRANCH
-def REPOSITORY = env.REPOSITORY
-def ACTION = env.ACTION
 
 def angularProjects = ["zevrant-home-ui"];
 def environments = ["develop", "prod"];
 node {
     sh "printenv"
-    if($BASE_BRANCH == "develop") {
+    if(BASE_BRANCH == "develop") {
 
         stage("SCM Checkout") {
             git credentialsId: 'jenkins-git',
@@ -15,7 +12,7 @@ node {
         }
 
         stage ("Test"){
-            if ($angularProjects.indexOf($REPOSITORY) > 2) {
+            if ($angularProjects.indexOf(REPOSITORY) > 2) {
                 sh "npm run test"
             } else {
                 "bash gradlew clean build"
