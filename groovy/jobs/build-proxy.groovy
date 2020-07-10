@@ -29,9 +29,9 @@ node {
     }
 
     stage ("Deploy") {
-        sh "scp ./docker-compose.yml zevrant@192.168.0.150:/home/zevrant/docker-compose.yml"
-        sh "ssh zevrant@192.168.0.150 'sudo rm /root/docker-compose.yml; sudo mv docker-compose.yml /root/docker-compose.yml"
-        sh "ssh zevrant@192.168.0.150 'sudo docker-compose -f /root/docker-compose.yml up -d"
+        sh "scp ./docker-compose.yml zevrant@192.168.0.150:/home/zevrant/docker-compose.yml'"
+        sh "ssh zevrant@192.168.0.150 'sudo rm /root/docker-compose.yml; sudo mv docker-compose.yml /root/docker-compose.yml'"
+        sh "ssh zevrant@192.168.0.150 'sudo docker-compose -f /root/docker-compose.yml up -d'"
     }
 
 }
