@@ -44,7 +44,8 @@ node {
         }
 
         stage ("Version Update") {
-            def splitVersion = version.split(".");
+            def splitVersion = version.tokenize(".");
+            print splitVersion;
             def minorVersion = splitVersion[2]
             minorVersion = new String(Integer.valueOf(minorVersion) + 1);
 
