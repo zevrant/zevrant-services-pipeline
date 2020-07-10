@@ -1,8 +1,4 @@
 node {
-    if(ACTION != "closed") {
-        currentBuild.result = 'ABORTED'
-        error('PR not closed')
-    }
 
     stage("SCM Checkout") {
         git credentialsId: 'jenkins-git',
