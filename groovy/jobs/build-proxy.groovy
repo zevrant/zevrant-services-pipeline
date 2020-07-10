@@ -24,8 +24,8 @@ node {
 
     stage ("Build Artifact") {
         sh "ssh zevrant@192.168.0.82 'cd zevrant-proxy-service; git pull origin master; bash gradlew clean assemble'"
-        sh "ssh zevrant@192.168.0.82 'cd zevrant-proxy-service; docker build -t zevrant/zevrant-proxy-service:$version .'"
-        sh "ssh zevrant@192.168.0.82 'cd zevrant-proxy-service; docker push zevrant/zevrant-proxy-service:$version'"
+        sh "ssh zevrant@192.168.0.82 'cd zevrant-proxy-service; docker build -t zevrant/zevrant-proxy-service:latest .'"
+        sh "ssh zevrant@192.168.0.82 'cd zevrant-proxy-service; docker push zevrant/zevrant-proxy-service:latest'"
     }
 
     stage ("Deploy") {
@@ -34,12 +34,5 @@ node {
         sh "ssh zevrant@192.168.0.150 'sudo docker-compose -f /root/docker-compose.yml up -d"
 
     }
-
-    stage ("Version Update") {
-        def splitVersion = version.tokenize(".");
-        def minorVersion = splitVersion[2]
-        minorVersion = minorVersion.toInteger() + 1
-
-        sh "aws ssm put-parameter --name zevrant-proxy-service-VERSION --value ${splitVersion[0]}.${splitVersion[1]}.${minorVersion} --type String --overwrite"
-    }
+ }
 }
