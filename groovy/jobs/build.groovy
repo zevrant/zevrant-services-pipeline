@@ -47,7 +47,7 @@ node {
             def splitVersion = version.tokenize(".");
             print splitVersion;
             def minorVersion = splitVersion[2]
-            minorVersion = minorVersion + 1
+            minorVersion = minorVersion.toInteger() + 1
 
             sh "aws ssm put-parameter --name ${REPOSITORY}-VERSION --value ${splitVersion[0]}.${splitVersion[1]}.${minorVersion} --type String --overwrite"
         }
