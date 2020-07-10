@@ -7,6 +7,6 @@ node {
     }
 
     stage("Deploy") {
-        sh "VERSION=$VERSION envsubst < deployment.yml | kubectl apply -n zevrant-home-services-$ENVIRONMENT -f -"
+        sh "VERSION=$VERSION envsubst < deployment.yml | kubectl --insecure-skip-tls-verify apply -n zevrant-home-services-$ENVIRONMENT -f -"
     }
 }
