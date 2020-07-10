@@ -23,9 +23,9 @@ node {
     }
 
     stage ("Build Artifact") {
-        sh "ssh zevrant@192.168.0.82 'cd zevrant-proxy-service; git pull origin master; bash gradlew clean assemble'"
-        sh "ssh zevrant@192.168.0.82 'cd zevrant-proxy-service; docker build -t zevrant/zevrant-proxy-service:latest .'"
-        sh "ssh zevrant@192.168.0.82 'cd zevrant-proxy-service; docker push zevrant/zevrant-proxy-service:latest'"
+        sh "ssh zevrant@192.168.0.42 'cd zevrant-proxy-service; git pull origin master; bash gradlew clean assemble'"
+        sh "ssh zevrant@192.168.0.42 'cd zevrant-proxy-service; docker build -t zevrant/zevrant-proxy-service:latest .'"
+        sh "ssh zevrant@192.168.0.42 'cd zevrant-proxy-service; docker push zevrant/zevrant-proxy-service:latest'"
     }
 
     stage ("Deploy") {
