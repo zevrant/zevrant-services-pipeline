@@ -33,7 +33,7 @@ node {
 
             sh "scp ./docker-compose.yml zevrant@192.168.0.150:/home/zevrant/docker-compose.yml"
             sh "ssh zevrant@192.168.0.150 'sudo rm /root/docker-compose.yml; sudo mv docker-compose.yml /root/docker-compose.yml'"
-            sh "ssh zevrant@192.168.0.150 'AWS_ACCESS_KEY_ID=$user AWS_SECRET_ACCESS_KEY=$pass sudo docker-compose -f /root/docker-compose.yml up -d'"
+            sh "ssh zevrant@192.168.0.150 'sudo /root/restart-proxy'"
         }
     }
 
