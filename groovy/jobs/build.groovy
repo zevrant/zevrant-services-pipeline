@@ -45,13 +45,37 @@ node {
 
         stage ("Version Update") {
             def splitVersion = version.tokenize(".");
-            print splitVersion;
             def minorVersion = splitVersion[2]
             minorVersion = minorVersion.toInteger() + 1
 
             sh "aws ssm put-parameter --name ${REPOSITORY}-VERSION --value ${splitVersion[0]}.${splitVersion[1]}.${minorVersion} --type String --overwrite"
         }
 
+    }
+    if(BASE_BRANCH == "master") {
+        def version;
+        stage("Get Version") {
+            def jsonString = sh returnStdout: true, script: "aws ssm get-parameter --name ${REPOSITORY}-VERSION";
+            JsonSlurper slurper = new JsonSlurper();
+            Map parsedJson = slurper.parseText(jsonString);
+            Map parameter = parsedJson.get("Parameter");
+            version = parameter.get("Value");
+            print version
+
+        }
+
+        def splitVersion = version.tokenize(".");
+        def mainVersion = splitVersion[0]
+        mainVersion = mainVersion.toInteger() + 1
+
+        stage("Stage Release") {
+            sh "aws ssm put-parameter --name ${REPOSITORY}-VERSION --value ${mainVersion}.0.0 --type String --overwrite"
+            build job: 'Deploy', parameters: [
+                    [$class: 'StringParameterValue', name: 'REPOSITORY', value: REPOSITORY],
+                    [$class: 'StringParameterValue', name: 'VERSION', value: version],
+                    [$class: 'StringParameterValue', name: 'ENVIRONMENT', value: "prod"]
+            ]
+        }
     }
 
 }
