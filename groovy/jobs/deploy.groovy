@@ -7,6 +7,6 @@ node {
     }
 
     stage("Deploy") {
-        sh "VERSION=$VERSION envsubst < deployment.yml | kubectl apply -n zevrant-home-services-prod -f -"
+        sh "VERSION=$VERSION envsubst < deployment.yml | kubectl apply -n zevrant-home-services-$ENVIRONMENT -f -"
     }
 }
