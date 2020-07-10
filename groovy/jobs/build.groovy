@@ -3,6 +3,10 @@ import groovy.json.JsonSlurper
 def angularProjects = ["zevrant-home-ui"];
 def environments = ["develop", "prod"];
 node {
+    if(ACTION != "closed") {
+        currentBuild.result = 'ABORTED'
+        error('PR not closed')
+    }
     if(BASE_BRANCH == "develop") {
 
         stage("SCM Checkout") {
