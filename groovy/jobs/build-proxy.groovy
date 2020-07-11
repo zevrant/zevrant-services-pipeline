@@ -3,7 +3,7 @@ import groovy.json.JsonSlurper
 node {
 
     stage("SCM Checkout") {
-        git credentialsId: 'jenkins-git',
+        git credentialsId: 'jenkins-git', branch: BASE_BRANCH,
                 url: "git@github.com:zevrant/zevrant-proxy-service.git"
     }
 
