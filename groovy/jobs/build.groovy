@@ -10,7 +10,7 @@ node {
     if(BASE_BRANCH == "develop") {
 
         stage("SCM Checkout") {
-            git credentialsId: 'jenkins-git',
+            git credentialsId: 'jenkins-git', branch: BASE_BRANCH,
                     url: "git@github.com:zevrant/${REPOSITORY}.git"
         }
 
