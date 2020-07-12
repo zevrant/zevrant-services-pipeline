@@ -6,7 +6,15 @@ node {
                 url: "git@github.com:zevrant/${REPOSITORY}.git"
     }
 
+    stage("Deploy Database") {
+        if( fileExists 'database.yml') {
+            sh "kubectl apply -n zevrant-home-services-$ENVIRONMENT -f ./database.yml"
+            sh "kubectl rollout status deployment.v1.apps/$REPOSITORY-db-deployment"
+        }
+    }
+
     stage("Deploy") {
-        sh "VERSION=$VERSION envsubst < deployment.yml | kubectl apply -n zevrant-home-services-$ENVIRONMENT -f -"
+        sh "VERSION=$VERSION envsubst < deployment.yml | ENVIRONMENT=$ENVIRONMENT ensubst | kubectl apply -n zevrant-home-services-$ENVIRONMENT -f -"
+        sh "kubectl rollout status deployment.v1.apps/$REPOSITORY-deployment"
     }
 }
