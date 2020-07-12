@@ -7,14 +7,11 @@ node {
     }
 
     stage("Deploy Database") {
-        if( fileExists('database.yml')) {
-            sh "kubectl apply -n zevrant-home-services-$ENVIRONMENT -f ./database.yml"
-            sh "kubectl rollout status deployment.v1.apps/$REPOSITORY-db-deployment"
-        }
+        sh "set +e; kubectl apply -n zevrant-home-services-$ENVIRONMENT -f ./database.yml; set -e; kubectl rollout status deployment.v1.apps/$REPOSITORY-db-deployment"
     }
 
     stage("Deploy") {
-        sh "VERSION=$VERSION envsubst < deployment.yml | ENVIRONMENT=$ENVIRONMENT ensubst | kubectl apply -n zevrant-home-services-$ENVIRONMENT -f -"
+        sh "VERSION=$VERSION envsubst < deployment.yml | ENVIRONMENT=$ENVIRONMENT envsubst | kubectl apply -n zevrant-home-services-$ENVIRONMENT -f -"
         sh "kubectl rollout status deployment.v1.apps/$REPOSITORY-deployment"
     }
 }
