@@ -1,0 +1,37 @@
+ZapiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: zevrant-oauth2-service-deployment
+    labels:
+      app: jenkins-node
+  namespace: zevrant-home-services-develop
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: jenkins-node
+    template:
+      metadata:
+        labels:
+          app: jenkins-node
+      spec:
+        imagePullSecrets:
+          - name: regcred
+        containers:
+          - name: jenkins-node
+            image: zevrant/jenkins-node:$VERSION
+            env:
+              - name: AWS_ACCESS_KEY_ID
+                valueFrom:
+                  secretKeyRef:
+                    name: aws-access-key
+                    key: aws-access-key-id
+              - name: AWS_SECRET_ACCESS_KEY
+                valueFrom:
+                  secretKeyRef:
+                    name: aws-secret-key
+                    key: aws-secret-key
+              - name: ENVIRONMENT
+                value: $ENVIRONMENT
+            ports:
+              - containerPort: 22
