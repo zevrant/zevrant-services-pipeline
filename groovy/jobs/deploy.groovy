@@ -2,7 +2,7 @@
 node {
 
     stage("SCM Checkout") {
-        git credentialsId: 'jenkins-git',
+        git credentialsId: 'jenkins-git', branch: ENVIRONMENT,
                 url: "git@github.com:zevrant/${REPOSITORY}.git"
     }
 
@@ -15,6 +15,6 @@ node {
 
     stage("Deploy") {
         sh "VERSION=$VERSION envsubst < deployment.yml | ENVIRONMENT=$ENVIRONMENT envsubst | kubectl apply -n zevrant-home-services-$ENVIRONMENT -f -"
-        sh "kubectl rollout status deployment.v1.apps/$REPOSITORY-deployment"
+        sh "kubectl rollout status deployments $REPOSITORY-deployment"
     }
 }
