@@ -16,7 +16,7 @@ node {
             def POSTGRESS_PASSWORD = sh returnStdout: true, script: "aws secretsmanager get-secret-value --secret-id /$ENVIRONMENT/rds/$serviceName/password | jq .SecretString"
             POSTGRESS_PASSWORD = POSTGRESS_PASSWORD.replaceAll(Pattern.compile("\""), "");
             print POSTGRESS_PASSWORD;
-            sh "POSTGRES_PASSWORD='$POSTGRESS_PASSWORD' ./gradlew liquibase update"
+            sh "POSTGRES_PASSWORD='$POSTGRESS_PASSWORD' ./gradlew update"
         }
     }
 
