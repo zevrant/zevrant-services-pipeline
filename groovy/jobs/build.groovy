@@ -29,8 +29,14 @@ node {
             Map parsedJson = slurper.parseText(jsonString);
             Map parameter = parsedJson.get("Parameter");
             version = parameter.get("Value");
-            print version
+        }
 
+        stage ("Version Update") {
+            def splitVersion = version.tokenize(".");
+            def minorVersion = splitVersion[2]
+            minorVersion = minorVersion.toInteger() + 1
+            version = "${splitVersion[0]}.${splitVersion[1]}.${minorVersion}"
+            sh "aws ssm put-parameter --name ${REPOSITORY}-VERSION --value $version --type String --overwrite"
         }
 
         stage ("Build Artifact") {
@@ -45,14 +51,6 @@ node {
                     [$class: 'StringParameterValue', name: 'VERSION', value: version],
                     [$class: 'StringParameterValue', name: 'ENVIRONMENT', value: "develop"]
             ]
-        }
-
-        stage ("Version Update") {
-            def splitVersion = version.tokenize(".");
-            def minorVersion = splitVersion[2]
-            minorVersion = minorVersion.toInteger() + 1
-
-            sh "aws ssm put-parameter --name ${REPOSITORY}-VERSION --value ${splitVersion[0]}.${splitVersion[1]}.${minorVersion} --type String --overwrite"
         }
 
     }
