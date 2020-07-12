@@ -8,7 +8,7 @@ node {
 
     stage("Deploy Database") {
         if( fileExists('database.yml')) {
-            sh "kubectl apply -n zevrant-home-services-$ENVIRONMENT -f ./database.yml"
+            sh "kubectl apply -n zevrant-home-services-db-$ENVIRONMENT -f ./database.yml"
             sh "kubectl rollout status deployments $REPOSITORY-db-deployment -n zevrant-home-services-$ENVIRONMENT"
         }
     }
