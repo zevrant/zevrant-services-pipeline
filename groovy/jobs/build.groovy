@@ -18,7 +18,7 @@ node {
             if (angularProjects.indexOf(REPOSITORY) > 2) {
                 sh "npm run test"
             } else {
-                "bash gradlew clean build"
+                "bash gradlew clean build --no-daemon"
             }
         }
 
@@ -40,7 +40,7 @@ node {
         }
 
         stage ("Build Artifact") {
-            sh "bash gradlew clean assemble"
+            sh "bash gradlew clean assemble --no-daemon"
             sh "docker build -t zevrant/$REPOSITORY:$version ."
             sh "docker push zevrant/$REPOSITORY:$version"
         }
