@@ -19,7 +19,7 @@ node {
     stage("Deploy") {
         sh "sed -i 's/\$ENVIRONMENT/$ENVIRONMENT/g' ./deployment.yml"
         sh "sed -i 's/\$VERSION/$VERSION/g' ./deployment.yml"
-        sh "kubectl apply -n zevrant-home-services-$ENVIRONMENT -f -"
+        sh "kubectl apply -n zevrant-home-services-$ENVIRONMENT -f ./deployment.yml"
         sh "kubectl rollout status deployments $REPOSITORY-deployment -n zevrant-home-services-$ENVIRONMENT"
     }
 }
