@@ -63,7 +63,7 @@ node {
             Map parameter = parsedJson.get("Parameter");
             version = parameter.get("Value");
             print version
-
+            sleep 300
         }
 
         def splitVersion = version.tokenize(".");
