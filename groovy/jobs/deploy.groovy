@@ -2,8 +2,15 @@ import java.util.regex.Pattern;
 
 node {
 
+    def branch;
+    if(ENVIRONMENT == 'prod') {
+        branch = "master";
+    } else{
+        branch = ENVIRONMENT
+    }
+
     stage("SCM Checkout") {
-        git credentialsId: 'jenkins-git', branch: ENVIRONMENT,
+        git credentialsId: 'jenkins-git', branch,
                 url: "git@github.com:zevrant/${REPOSITORY}.git"
     }
 
