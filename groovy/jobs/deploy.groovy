@@ -10,7 +10,7 @@ node {
     }
 
     stage("SCM Checkout") {
-        git credentialsId: 'jenkins-git', branch,
+        git credentialsId: 'jenkins-git', branch: branch,
                 url: "git@github.com:zevrant/${REPOSITORY}.git"
     }
 
