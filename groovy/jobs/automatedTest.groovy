@@ -6,6 +6,6 @@ node {
     }
 
     stage("test") {
-        sh "./gradlew clean test aggregate -Denvironment=develop"
+        sh "./gradlew clean test aggregate -Denvironment=develop --continue"
     }
 }
