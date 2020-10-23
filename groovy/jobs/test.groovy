@@ -7,6 +7,6 @@ node {
     }
 
     stage("Test") {
-        sh "./gradlew clean test aggregate -Denvironment=develop"
+        sh "./gradlew clean test aggregate -Denvironment=develop -Dspring.profiles.active=develop --no-daemon"
     }
 }
