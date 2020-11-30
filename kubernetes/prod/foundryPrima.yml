@@ -39,6 +39,7 @@ spec:
       containers:
         - name: zevrant-foundry-service-prima
           image: zevrant/zevrant-foundry-service:latest
+          imagePullPolicy: "Always"
           ports:
             - containerPort: 30000
           volumeMounts:
