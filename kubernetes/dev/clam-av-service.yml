@@ -27,6 +27,8 @@ spec:
       labels:
         app: zevrant-clamav-service
     spec:
+      imagePullSecrets:
+        - name: regcred
       containers:
         - name: zevrant-clamav-service
           image: mkodockx/docker-clamav

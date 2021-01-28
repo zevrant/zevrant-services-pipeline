@@ -31,6 +31,6 @@ spec:
       containers:
         - name: zevrant-foundry-service-${OWNER_NAME}
           image: zevrant/zevrant-foundry-service:latest
-          imagePullPolicy: "Always"
+          imagePullPolicy: "Always"e
           ports:
             - containerPort: 30000
