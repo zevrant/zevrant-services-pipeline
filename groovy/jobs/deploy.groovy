@@ -9,6 +9,9 @@ node {
         branch = ENVIRONMENT
     }
 
+    currentBuild.displayName = "Deployinh $REPOSITORY version $VERSION"
+
+
     stage("SCM Checkout") {
         git credentialsId: 'jenkins-git', branch: branch,
                 url: "git@github.com:zevrant/${REPOSITORY}.git"
