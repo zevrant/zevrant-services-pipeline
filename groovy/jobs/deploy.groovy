@@ -9,7 +9,7 @@ node {
         branch = ENVIRONMENT
     }
 
-    currentBuild.displayName = "Deployinh $REPOSITORY version $VERSION"
+    currentBuild.displayName = "Deploying $REPOSITORY version $VERSION"
 
 
     stage("SCM Checkout") {
