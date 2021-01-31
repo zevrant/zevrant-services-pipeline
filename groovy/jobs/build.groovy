@@ -59,9 +59,12 @@ node {
         def splitVersion = version.tokenize(".");
         def mainVersion = splitVersion[0]
         mainVersion = mainVersion.toInteger() + 1
-
+        def newVersion = "${mainVersion}.0.0";
         stage("Stage Release") {
-            sh "aws ssm put-parameter --name ${REPOSITORY}-VERSION --value ${mainVersion}.0.0 --type String --overwrite"
+            sh "aws ssm put-parameter --name ${REPOSITORY}-VERSION --value ${newVersion} --type String --overwrite"
+            sh "docker tag zevrant/${REPOSITORY}:${version} zevrant/${REPOSITORY}:${newVersion}"
+            sh "docker push zevrant/${REPOSITORY}:${newVersion}"
+
             build job: 'Deploy', parameters: [
                     [$class: 'StringParameterValue', name: 'REPOSITORY', value: REPOSITORY],
                     [$class: 'StringParameterValue', name: 'VERSION', value: version],
