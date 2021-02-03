@@ -36,7 +36,7 @@ node {
 
         stage ("Build Artifact") {
             sh "bash gradlew clean assemble -PprojVersion=$version"
-            sh "aws s3 cp ./build/libs/zevrant-sensor-service-${version}.jar aws s3 cp s3://zevrant-artifact-store/com/zevrant/services/${REPOSITORY}/${version}/${REPOSITORY}-${version}.jar"
+            ah "aws s3 cp ./build/libs/${REPOSITORY}-${version}.jar s3://zevrant-artifact-store/com/zevrant/services/${REPOSITORY}/${version}/${REPOSITORY}-${version}.jar"
         }
 
         stage ("Deploy Sensor") {
