@@ -16,7 +16,7 @@ node {
             }
 
             stage("Start Service") {
-                sh "${baseSSHCommand}${sensorLocation} 'sudo systemctl restart zevrant-sensor-service'"
+                sh "${baseSSHCommand}${sensorLocation} 'sudo /bin/systemctl restart zevrant-sensor-service.service'"
                 for (def int i = 0; i < 10; i++) {
                     try {
                         def response = sh returnStdout: true, script: "curl https://${sensorLocation}:9006/zevrant-sensor-service/actuator/health"
