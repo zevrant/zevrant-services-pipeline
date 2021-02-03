@@ -11,9 +11,10 @@ node {
         String baseSSHCommand = "ssh -i $key zevrant-sensor-service@" as String;
         for (String sensorLocation : sensorLocations) {
             stage("Download Artifact") {
+                sh "${baseSSHCommand}${sensorLocation} 'rm ${REPOSITORY}-*.jar'"
                 sh "${baseSSHCommand}${sensorLocation} 'aws s3 cp s3://zevrant-artifact-store/com/zevrant/services/${REPOSITORY}/${VERSION}/${REPOSITORY}-${VERSION}.jar .'"
                 sh "${baseSSHCommand}${sensorLocation} 'ln -sf ${REPOSITORY}-${VERSION}.jar ${REPOSITORY}.jar'"
-                sh "${baseSSHCommand}${sensorLocation} 'rm ${REPOSITORY}-*.jar'"
+
             }
 
             stage("Start Service") {
