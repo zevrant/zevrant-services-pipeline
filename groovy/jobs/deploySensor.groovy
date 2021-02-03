@@ -12,11 +12,11 @@ node {
         for (String sensorLocation : sensorLocations) {
             stage("Download Artifact") {
                 sh "${baseSSHCommand}${sensorLocation} 'aws s3 cp s3://zevrant-artifact-store/com/zevrant/services/${REPOSITORY}/${VERSION}/${REPOSITORY}-${VERSION}.jar .'"
-                sh "${baseSSHCommand}${sensorLocation} 'ln -sf ${REPOSITORY}-${VERSION}.jar ${REPOSITORY}.jar"
+                sh "${baseSSHCommand}${sensorLocation} 'ln -sf ${REPOSITORY}-${VERSION}.jar ${REPOSITORY}.jar'"
             }
 
             stage("Start Service") {
-                sh "${baseSSHCommand}${sensorLocation} 'sudo systemctl restart zevrant-sensor-service"
+                sh "${baseSSHCommand}${sensorLocation} 'sudo systemctl restart zevrant-sensor-service'"
                 for (def int i = 0; i < 10; i++) {
                     try {
                         def response = sh returnStdout: true, script: "curl https://${sensorLocation}:9006/zevrant-sensor-service/actuator/health"
