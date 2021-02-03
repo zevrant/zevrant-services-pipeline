@@ -40,7 +40,7 @@ node {
         }
 
         stage ("Deploy Sensor") {
-            build job: 'DeploySensor', parameters: [
+            build job: 'Deploy-Sensor', parameters: [
                     [$class: 'StringParameterValue', name: 'REPOSITORY', value: REPOSITORY],
                     [$class: 'StringParameterValue', name: 'VERSION', value: version]
             ]
