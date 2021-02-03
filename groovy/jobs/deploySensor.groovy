@@ -1,3 +1,6 @@
+import groovy.json.JsonSlurper
+
+
 node {
     currentBuild.displayName = "Deploying $REPOSITORY version $VERSION"
 

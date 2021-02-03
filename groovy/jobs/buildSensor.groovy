@@ -1,3 +1,4 @@
+import groovy.json.JsonSlurper
 
 node {
     BASE_BRANCH = BASE_BRANCH.tokenize("/")
