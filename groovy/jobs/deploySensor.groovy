@@ -19,7 +19,7 @@ node {
 
             stage("Start Service") {
                 sh "${baseSSHCommand}${sensorLocation} 'sudo /bin/systemctl restart zevrant-sensor-service.service'"
-                sleep(300)
+                sleep(180)
                 for (def Integer i = 0; i < 10; i++) {
                     try {
                         def response = sh returnStdout: true, script: "curl -- insecure https://${sensorLocation}:9006/zevrant-sensor-service/actuator/health"
