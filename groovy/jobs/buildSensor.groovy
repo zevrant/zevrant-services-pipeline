@@ -23,11 +23,7 @@ node {
         }
 
         stage ("Test"){
-            if (angularProjects.indexOf(REPOSITORY) > 2) {
-                sh "npm run test"
-            } else {
                 "bash gradlew clean test"
-            }
         }
 
         stage ("Version Update") {
