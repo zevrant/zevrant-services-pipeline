@@ -60,8 +60,23 @@ node {
         def mainVersion = splitVersion[0]
         mainVersion = mainVersion.toInteger() + 1
         def newVersion = "${mainVersion}.0.0";
-        stage("Stage Release") {
+
+        stage ("Test"){
+            if (angularProjects.indexOf(REPOSITORY) > 2) {
+                sh "npm run test"
+            } else {
+                "bash gradlew clean build --no-daemon"
+            }
+        }
+
+        stage ("Version Update") {
             sh "aws ssm put-parameter --name ${REPOSITORY}-VERSION --value ${newVersion} --type String --overwrite"
+        }
+
+        stage ("Build Artifact") {
+        }
+
+        stage("Deploy") {
             sh "docker tag zevrant/${REPOSITORY}:${version} zevrant/${REPOSITORY}:${newVersion}"
             sh "docker push zevrant/${REPOSITORY}:${newVersion}"
 
