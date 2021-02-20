@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ingress-prometheus-nodeport-prod
+  namespace: zevrant-home-services-prod
+spec:
+  type: NodePort
+  ports:
+    - port: 9090
+      targetPort: 9090
+      nodePort: 30125
+  selector:
+    app: zevrant-prometheus-service
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zevrant-prometheus-service-deployment
+  labels:
+    app: zevrant-prometheus-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zevrant-prometheus-service
+  template:
+    metadata:
+      labels:
+        app: zevrant-prometheus-service
+    spec:
+      nodeSelector:
+        architecture: amd64
+      imagePullSecrets:
+        - name: regcred
+      containers:
+        - name: zevrant-prometheus-service
+          image: zevrant/prometheus:latest
+          ports:
+            - containerPort: 3310

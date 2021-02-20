@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ingress-nodeport-develop
+  namespace: zevrant-home-services-develop
+spec:
+  type: NodePort
+  ports:
+    - port: 8080
+      targetPort: 8080
+      nodePort: 30124
+  selector:
+    app: zevrant-home-ui
