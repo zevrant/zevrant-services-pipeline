@@ -25,9 +25,6 @@ certificateRequest=`cat ~/public.csr`
 certificateRequest=`printf "%q" "$certificateRequest"`
 certificateRequest=`echo $certificateRequest | cut -c 3-$((${#certificateRequest}-1))`
 certificateRequest="{\"certificateRequest\":\"$certificateRequest\",\"ip\":\"$POD_IP\"}"
-echo $certificateRequest
 curl --insecure https://192.168.1.17:9009/zevrant-certificate-service/certs --data "$certificateRequest" --user $username:$password -H "Content-Type: application/json" -X POST > ~/public.crt
-cat ~/public.crt
-cat ~/private.pem
 password=`date +%s | sha256sum | base64 | head -c 32`
 openssl pkcs12 -export -inkey ~/private.pem -in ~/public.crt -passout "pass:$password" -out ~/zevrant-services.p12

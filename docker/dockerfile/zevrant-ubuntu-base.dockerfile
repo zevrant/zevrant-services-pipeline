@@ -3,7 +3,7 @@ FROM ubuntu:latest
 RUN apt-get update\
   && apt-get upgrade -y
 
-RUN DEBIAN_FRONTEND="noninteractive" apt-get -y install openjdk-11-jdk python3 python3-pip wget iproute2 net-tools jq\
+RUN DEBIAN_FRONTEND="noninteractive" apt-get -y install openjdk-11-jdk python3 python3-pip wget iproute2 net-tools jq curl\
   && ln -sf /usr/lib/jvm/java-1.11.0-openjdk-amd64/ /usr/bin/java
 
 ENV NODEJS_HOME = /opt/nodejs
