@@ -16,5 +16,5 @@ aws_credentials=`curl --proxy $PROXY_CREDENTIALS@3.210.165.61:3128 http://169.25
 setAwsCredentials "$aws_credentials"
 credentials=`aws sts assume-role --role-arn arn:aws:iam::725235728275:role/OauthServiceRole --role-session-name startup | jq .Credentials`
 setAwsCredentials "$credentials"
-openssl req -newkey rsa:4096 -nodes -keyout ~/private.pem -days 365 -out ~/public.csr -subj "/C=US/ST=New York/L=Brooklyn/O=Example Brooklyn Company/CN=$POD_IP"
+openssl req -newkey rsa:4096 -nodes -keyout ~/private.pem -days 365 -out ~/public.csr -addext "subjectAltName = IP:$POD_IP" -subj "/C=US/ST=New York/L=Brooklyn/O=Example Brooklyn Company/CN=$POD_IP"
 
