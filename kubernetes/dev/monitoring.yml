@@ -61,7 +61,7 @@ spec:
             path: /grafana-dev-certs
       containers:
         - name: grafana
-          image: zevrant/grafana
+          image: zevrant/grafana:lastest
           ports:
             - containerPort: 3000
           volumeMounts:

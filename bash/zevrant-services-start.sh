@@ -17,6 +17,7 @@ setAwsCredentials "$aws_credentials"
 credentials=`aws sts assume-role --role-arn arn:aws:iam::725235728275:role/OauthServiceRole --role-session-name startup | jq .Credentials`
 setAwsCredentials "$credentials"
 sed -i "s/\${POD_IP}/$POD_IP/g" ~/openssl.conf
+cat ~/openssl.conf
 openssl req -newkey rsa:4096 -nodes -keyout ~/private.pem -days 365 -out ~/public.csr -config ~/openssl.conf
 username=`aws secretsmanager get-secret-value --region us-east-1 --secret-id certificateUsername | jq .SecretString`
 password=`aws secretsmanager get-secret-value --region us-east-1 --secret-id certificatePassword | jq .SecretString`
