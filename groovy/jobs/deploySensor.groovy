@@ -22,7 +22,7 @@ node {
                 sleep(180)
                 for (def Integer i = 0; i < 10; i++) {
                     try {
-                        def response = sh returnStdout: true, script: "http_proxy= && curl -- insecure https://${sensorLocation}:9006/zevrant-sensor-service/actuator/health"
+                        def response = sh returnStdout: true, script: "http_proxy= && curl --insecure https://${sensorLocation}:9006/zevrant-sensor-service/actuator/health"
 
                         def jsonString = sh returnStdout: true, script: "aws ssm get-parameter --name ${REPOSITORY}-VERSION";
                         JsonSlurper slurper = new JsonSlurper();
