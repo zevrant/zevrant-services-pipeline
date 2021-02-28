@@ -61,6 +61,10 @@ node {
         mainVersion = mainVersion.toInteger() + 1
         def newVersion = "${mainVersion}.0.0";
 
+        stage("SCM Checkout") {
+
+        }
+
         stage ("Test"){
             if (angularProjects.indexOf(REPOSITORY) > 2) {
                 sh "npm run test"
