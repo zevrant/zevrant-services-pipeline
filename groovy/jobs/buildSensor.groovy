@@ -43,7 +43,7 @@ node {
             build job: 'Deploy-Sensor', parameters: [
                     [$class: 'StringParameterValue', name: 'REPOSITORY', value: REPOSITORY],
                     [$class: 'StringParameterValue', name: 'VERSION', value: version],
-                    [$class: 'StringParameterValue', name: 'BRANCH', value: BASE_BRANCH]
+                    [$class: 'StringParameterValue', name: 'ENVIRONMENT', value: (BASE_BRANCH)? 'develop' : 'production']
             ]
         }
 

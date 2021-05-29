@@ -11,7 +11,7 @@ node {
         String[] devSensorLocations = ["192.168.1.20"];
         String[] productionSensorLocations = [];
 
-        if(BRANCH == "master") {
+        if(ENVIRONMENT == "production") {
             sensorLocations = productionSensorLocations
         } else {
             sensorLocations = devSensorLocations
