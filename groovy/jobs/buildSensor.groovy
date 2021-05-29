@@ -42,7 +42,8 @@ node {
         stage ("Deploy Sensor") {
             build job: 'Deploy-Sensor', parameters: [
                     [$class: 'StringParameterValue', name: 'REPOSITORY', value: REPOSITORY],
-                    [$class: 'StringParameterValue', name: 'VERSION', value: version]
+                    [$class: 'StringParameterValue', name: 'VERSION', value: version],
+                    [$class: 'StringParameterValue', name: 'BRANCH', value: BASE_BRANCH]
             ]
         }
 
