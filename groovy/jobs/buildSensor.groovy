@@ -15,7 +15,7 @@ node {
 
     currentBuild.displayName = "$REPOSITORY merging to $BASE_BRANCH"
 
-    if(BASE_BRANCH == "master") {
+    if(BASE_BRANCH == "develop") {
 
         stage("SCM Checkout") {
             git credentialsId: 'jenkins-git', branch: BASE_BRANCH,
