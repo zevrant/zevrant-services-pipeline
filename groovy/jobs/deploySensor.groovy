@@ -7,7 +7,16 @@ node {
     withCredentials([sshUserPrivateKey(credentialsId: 'jenkins-git', keyFileVariable: 'key', passphraseVariable: 'password', usernameVariable: 'username')]) {
         // some block
 
-        String[] sensorLocations = ["192.168.1.20"];
+        String[] sensorLocations = null;
+        String[] devSensorLocations = ["192.168.1.20"];
+        String[] productionSensorLocations = [];
+
+        if(BRANCH == "master") {
+            sensorLocations = productionSensorLocations
+        } else {
+            sensorLocations = devSensorLocations
+        }
+
         String baseSSHCommand = "ssh -i $key zevrant-sensor-service@" as String;
         for (String sensorLocation : sensorLocations) {
             stage("Download Artifact") {
