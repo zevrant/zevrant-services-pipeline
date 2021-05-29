@@ -43,4 +43,4 @@ scrape_configs:
     tls_config:
       insecure_skip_verify: true
     static_configs:
-      - targets: [ '192.168.1.17:30124' ]
+      - targets: [ 'zevrant-home-ui' ]

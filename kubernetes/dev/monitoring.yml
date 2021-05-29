@@ -61,7 +61,7 @@ spec:
             path: /grafana-dev-certs
       containers:
         - name: grafana
-          image: zevrant/grafana:lastest
+          image: zevrant/grafana:latest
           ports:
             - containerPort: 3000
           volumeMounts:
@@ -70,6 +70,6 @@ spec:
             - name: certs
               mountPath: /etc/ssl/certs/
         - name: zevrant-prometheus-service
-          image: zevrant/prometheus:latest
+          image: zevrant/prometheus:2.27.1
           ports:
             - containerPort: 3310
