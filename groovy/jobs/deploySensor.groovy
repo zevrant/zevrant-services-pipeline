@@ -23,9 +23,9 @@ node {
         for (String sensorLocation : sensorLocations) {
             stage("Download Artifact") {
 
-                sh "${baseSSHCommand}${sensorLocation} " + 'set +e echo `whoami`; count=`ls -ltr ~/*-*.*.jar | wc -l`;count=`expr $count-2`;files=`ls -ltr ~/*-*.*.jar | head -n $count | tr " " "\\n" | grep .jar`; rm $files'
-                sh "${baseSSHCommand}${sensorLocation} " + 'aws s3 cp s3://zevrant-artifact-store/com/zevrant/services/${REPOSITORY}/${VERSION}/${REPOSITORY}-${VERSION}.jar .'
-                sh "${baseSSHCommand}${sensorLocation} " + 'ln -sf ${REPOSITORY}-${VERSION}.jar ${REPOSITORY}.jar'
+                sh "${baseSSHCommand}${sensorLocation} 'set +e rm *-*.*.jar'"
+                sh "${baseSSHCommand}${sensorLocation} 'aws s3 cp s3://zevrant-artifact-store/com/zevrant/services/${REPOSITORY}/${VERSION}/${REPOSITORY}-${VERSION}.jar .'"
+                sh "${baseSSHCommand}${sensorLocation} 'ln -sf ${REPOSITORY}-${VERSION}.jar ${REPOSITORY}.jar'"
 
             }
 
