@@ -17,10 +17,13 @@ node {
             sensorLocations = devSensorLocations
         }
 
+        def stepsForParallel = [:];
+
         String baseSSHCommand = "ssh -i $key zevrant-sensor-service@" as String;
         for (String sensorLocation : sensorLocations) {
             stage("Download Artifact") {
-                sh "${baseSSHCommand}${sensorLocation} 'set +e rm ${REPOSITORY}-*.jar'"
+
+                sh "${baseSSHCommand}${sensorLocation} 'set +e rm *-*.jar'"
                 sh "${baseSSHCommand}${sensorLocation} 'aws s3 cp s3://zevrant-artifact-store/com/zevrant/services/${REPOSITORY}/${VERSION}/${REPOSITORY}-${VERSION}.jar .'"
                 sh "${baseSSHCommand}${sensorLocation} 'ln -sf ${REPOSITORY}-${VERSION}.jar ${REPOSITORY}.jar'"
 
@@ -33,9 +36,8 @@ node {
                     try {
                         def response = sh returnStdout: true, script: "http_proxy= && curl --insecure https://${sensorLocation}:9006/zevrant-sensor-service/actuator/health"
 
-                        def jsonString = sh returnStdout: true, script: "aws ssm get-parameter --name ${REPOSITORY}-VERSION";
                         JsonSlurper slurper = new JsonSlurper();
-                        Map parsedJson = slurper.parseText(jsonString);
+                        Map parsedJson = slurper.parseText(response);
                         def status = parsedJson.get("status");
                         if(status.equals("UP")) {
                             break;

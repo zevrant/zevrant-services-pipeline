@@ -16,7 +16,7 @@ metadata:
 spec:
   type: NodePort
   ports:
-    - port: 443
+    - port: 9092
       targetPort: 9092
       nodePort: 30129
   selector:
@@ -102,7 +102,11 @@ spec:
               value: "zevrant-kafka-zookeeper-service:443"
             - name: KAFKA_BROKER_ID
               value: "1"
+            - name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
+              value: "INTERNAL_PLAINTEXT:PLAINTEXT,EXTERNAL_PLAINTEXT:PLAINTEXT"
             - name: KAFKA_CFG_LISTENERS
-              value: "PLAINTEXT://:9092"
+              value: "INTERNAL_PLAINTEXT://localhost:9093,EXTERNAL_PLAINTEXT://0.0.0.0:9092"
             - name: KAFKA_CFG_ADVERTISED_LISTENERS
-              value: "PLAINTEXT://zevrant-kafka-service:9092"
+              value: "EXTERNAL_PLAINTEXT://192.168.1.17:30129,INTERNAL_PLAINTEXT://localhost:9093"
+            - name: KAFKA_INTER_BROKER_LISTENER_NAME
+              value: "INTERNAL_PLAINTEXT"
