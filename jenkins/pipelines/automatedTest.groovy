@@ -1,4 +1,3 @@
-
 node {
     stage("SCM Checkout") {
         git credentialsId: 'jenkins-git', branch: "master",
