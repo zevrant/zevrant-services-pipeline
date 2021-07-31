@@ -19,13 +19,13 @@ PipelineCollection.pipelines.each { pipeline ->
             parameters() {
                 pipeline.parameters.each { parameter ->
                     switch (parameter.type) {
-                        case Class<String>: {
+                        case String.class: {
                             stringPrameter(parameter.name, parameter.defaultValue, parameter.description)
                             break;
-                        } case Class<Boolean>: {
+                        } case Boolean.class: {
 
                             break;
-                        } case Class<List<? extends Object>> : {
+                        } case List.class : {
                             break;''
                         }
                     }
