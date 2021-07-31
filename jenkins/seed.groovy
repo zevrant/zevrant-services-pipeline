@@ -4,7 +4,7 @@ PipelineCollection.pipelines.each { pipeline ->
         description pipeline.description
         String jobDisplayName = ""
         pipeline.name.split("-").each {piece ->
-            displayName += piece.capitalize() + " "
+            jobDisplayName += piece.capitalize() + " "
         }
 
         displayName(jobDisplayName.trim())
