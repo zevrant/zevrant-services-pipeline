@@ -32,5 +32,5 @@ node("master") {
 }
 
 static String processLibraryCode(String libraryCode) {
-    return libraryCode.split('\n').stream().filter({line -> line.contains("package com.zevrant.services") }).collect(Collectors.toList()).join("\n");
+    return Arrays.asList(libraryCode.split('\n')).stream().filter({line -> line.contains("package com.zevrant.services") }).collect(Collectors.toList()).join("\n");
 }
