@@ -1,60 +1,36 @@
+@Library('CommonUtils')
+
 import com.zevrant.services.PipelineCollection
 
-PipelineCollection.pipelines.each { pipeline ->
+import java.util.stream.Collectors
 
-    pipelineJob(pipeline.name) {
-        description pipeline.description
-        String jobDisplayName = ""
-        pipeline.name.split("-").each {piece ->
-            displayName += piece.capitalize() + " "
-        }
+node("master") {
 
-        displayName jobDisplayName.trim()
-
-        logRotator {
-            numToKeep 20
-        }
-
-        if(pipeline.parameters != null && pipeline.parameters.length > 0) {
-            parameters() {
-                pipeline.parameters.each { parameter ->
-                    switch (parameter.type) {
-                        case String.class:
-                            stringPrameter(parameter.name, parameter.defaultValue, parameter.description)
-                            break;
-                        case Boolean.class:
-
-                        case List.class :
-
-                        default:
-                            throw RuntimeException("Parameter not supported")
-                    }
-                }
-            }
-        }
-
-        definition {
-            cpsScmFlowDefinition {
-                scm {
-                    gitScm {
-                        userRemoteConfigs {
-                            name('origin')
-                            url(pipeline.gitRepo)
-                            credentialsId(pipeline.credentialId)
-                            refspec('+refs/heads/master:refs/remotes/origin/master')
-                        }
-                    }
-
-                    branches {
-                        branchSpec {
-                            name('master')
-                        }
-                    }
-
-                    scriptPath(pipeline.jenkisfileLocation)
-                    lightweight(true)
-                }
-            }
-        }
+    stage("Git Checkout") {
+        git(url: 'git@github.com:zevrant/zevrant-services-pipeline.git', credentialsId: 'jenkins-git', branch: 'master')
     }
+
+    String script = "";
+
+    stage("Assemble Seec File") {
+        script += processLibraryCode(readFile("jenkins/src/main/groovy/com/zevrant/services/Pipeline.groovy"))
+        println script
+        script += "\n" + readFile("jenkins/seed.groocy")
+    }
+
+    stage("Process Seed File") {
+        jobDsl(
+                scriptText: script,
+                removeActions: 'DELETE',
+                removedJobAction: 'DELETE',
+                removedViewAction: 'DELETE',
+                removedConfigFilesAction: 'DELETE',
+                lookupStrategy: 'SEED_JOB',
+                additionalClassPath: 'src'
+        )
+    }
+}
+
+static String processLibraryCode(String libraryCode) {
+    return Arrays.asList(libraryCode.split('\n')).stream().filter(line -> line.contains("package com.zevrant.services")).collect(Collectors.toList()).join("\n");
 }
