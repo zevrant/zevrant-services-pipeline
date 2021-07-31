@@ -9,7 +9,7 @@ class Pipeline {
     String jenkisfileLocation;
     String credentialId;
 
-    Pipeline(String name, String description, PipelineParameter[] parameters, String gitRepo, String jenkisfileLocation,
+    Pipeline(String name, String description, ArrayList<PipelineParameter> parameters, String gitRepo, String jenkisfileLocation,
     credentialId) {
         this.name = name
         this.description = description
