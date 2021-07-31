@@ -19,17 +19,15 @@ PipelineCollection.pipelines.each { pipeline ->
             parameters() {
                 pipeline.parameters.each { parameter ->
                     switch (parameter.type) {
-                        case String.class: {
+                        case String.class:
                             stringPrameter(parameter.name, parameter.defaultValue, parameter.description)
                             break;
-                        } case Boolean.class: {
+                        case Boolean.class:
 
-                        } case List.class : {
+                        case List.class :
 
-
-                        } default: {
+                        default:
                             throw RuntimeException("Parameter not supported")
-                        }
                     }
                 }
             }
