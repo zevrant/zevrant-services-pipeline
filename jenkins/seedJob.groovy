@@ -24,13 +24,11 @@ PipelineCollection.pipelines.each { pipeline ->
                             break;
                         } case Boolean.class: {
 
-                            break;
                         } case List.class : {
 
-                            break;
 
                         } default: {
-
+                            throw RuntimeException("Parameter not supported")
                         }
                     }
                 }
