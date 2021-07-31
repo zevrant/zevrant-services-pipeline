@@ -26,7 +26,11 @@ PipelineCollection.pipelines.each { pipeline ->
 
                             break;
                         } case List.class : {
-                            break;''
+
+                            break;
+
+                        } default: {
+
                         }
                     }
                 }
