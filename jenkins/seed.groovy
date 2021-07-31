@@ -3,7 +3,7 @@ PipelineCollection.pipelines.each { pipeline ->
     pipelineJob(pipeline.name) {
         description pipeline.description
         String jobDisplayName = ""
-        pipeline.name.split("-").each {piece ->
+        pipeline.name.split("-").each { piece ->
             jobDisplayName += piece.capitalize() + " "
         }
 
@@ -13,7 +13,7 @@ PipelineCollection.pipelines.each { pipeline ->
             numToKeep 20
         }
 
-        if(pipeline.parameters != null && pipeline.parameters.length > 0) {
+        if (pipeline.parameters != null && pipeline.parameters.length > 0) {
             parameters() {
                 pipeline.parameters.each { parameter ->
                     switch (parameter.type) {
@@ -22,7 +22,7 @@ PipelineCollection.pipelines.each { pipeline ->
                             break;
                         case Boolean.class:
 
-                        case List.class :
+                        case List.class:
 
                         default:
                             throw RuntimeException("Parameter not supported")
@@ -34,23 +34,25 @@ PipelineCollection.pipelines.each { pipeline ->
         definition {
             cpsScmFlowDefinition {
                 scm {
-                    gitScm {
+                    gitSCM {
                         userRemoteConfigs {
-                            name('origin')
-                            url(pipeline.gitRepo)
-                            credentialsId(pipeline.credentialId)
-                            refspec('+refs/heads/master:refs/remotes/origin/master')
+                            userRemoteConfig {
+                                name('origin')
+                                url(pipeline.gitRepo)
+                                credentialsId(pipeline.credentialId)
+                                refspec('+refs/heads/master:refs/remotes/origin/master')
+                            }
                         }
-                    }
 
-                    branches {
-                        branchSpec {
-                            name('master')
+                        branches {
+                            branchSpec {
+                                name('master')
+                            }
                         }
-                    }
 
-                    scriptPath(pipeline.jenkisfileLocation)
-                    lightweight(true)
+                        scriptPath(pipeline.jenkisfileLocation)
+                        lightweight(true)
+                    }
                 }
             }
         }
