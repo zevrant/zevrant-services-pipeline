@@ -50,6 +50,13 @@ PipelineCollection.pipelines.each { pipeline ->
                             }
                         }
 
+                        browser {
+                            gitWeb {
+                                repoUrl("https://github.com:zevrant/zevrant-services-pipeline")
+                            }
+                        }
+                        gitTool('')
+
                         scriptPath(pipeline.jenkisfileLocation)
                         lightweight(true)
                     }
