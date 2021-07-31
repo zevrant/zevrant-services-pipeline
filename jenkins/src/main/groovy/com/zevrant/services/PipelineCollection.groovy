@@ -2,7 +2,7 @@ package com.zevrant.services
 
 class PipelineCollection {
 
-    static Pipeline[] pipelines = new Pipeline[]{
+    static ArrayList<Pipeline> pipelines = new ArrayList<Pipeline>([
             new Pipeline(
                     "spring-kubernetes-build-job",
                     "Pipeline in charge of building microservices intended for deployment onto the kubernetes cluster",
@@ -29,5 +29,5 @@ class PipelineCollection {
                     "jenkins/pipelines/build.groovy",
                     "jenkins-git"
             )
-    }
+    ])
 }
