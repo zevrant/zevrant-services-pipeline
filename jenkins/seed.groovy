@@ -7,7 +7,7 @@ PipelineCollection.pipelines.each { pipeline ->
             displayName += piece.capitalize() + " "
         }
 
-        displayName jobDisplayName.trim()
+        displayName(jobDisplayName.trim())
 
         logRotator {
             numToKeep 20
