@@ -32,6 +32,6 @@ node("master") {
 }
 
 static String processLibraryCode(String libraryCode) {
-    println libraryCode
-    return libraryCode.substring(libraryCode.indexOf("import"));
+
+    return libraryCode.substring(libraryCode.indexOf("class"));
 }
