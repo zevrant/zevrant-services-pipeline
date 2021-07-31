@@ -15,6 +15,8 @@ node("master") {
     stage("Assemble Seed File") {
         script += processLibraryCode(readFile("jenkins/src/main/groovy/com/zevrant/services/PipelineCollection.groovy"))
         script += processLibraryCode(readFile("jenkins/src/main/groovy/com/zevrant/services/Pipeline.groovy"))
+        script += processLibraryCode(readFile("jenkins/src/main/groovy/com/zevrant/services/PipelineParameter.groovy"))
+        script += processLibraryCode(readFile("jenkins/src/main/groovy/com/zevrant/services/DefaultPipelineParameters.groovy"))
         println script
         script += "\n" + readFile("jenkins/seed.groovy")
     }
