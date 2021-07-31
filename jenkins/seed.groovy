@@ -18,7 +18,7 @@ PipelineCollection.pipelines.each { pipeline ->
                 pipeline.parameters.each { parameter ->
                     switch (parameter.type) {
                         case String.class:
-                            stringPrameter(parameter.name, parameter.defaultValue, parameter.description)
+                            stringParameter(parameter.name, parameter.defaultValue, parameter.description)
                             break;
                         case Boolean.class:
 
