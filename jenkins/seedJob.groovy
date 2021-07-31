@@ -1,7 +1,5 @@
 import com.zevrant.services.PipelineCollection
 
-@Library("CommonUtils")
-
 PipelineCollection.pipelines.each { pipeline ->
 
     pipelineJob(pipeline.name) {
