@@ -1,6 +1,6 @@
 package com.zevrant.services
 
-class PipelineParameter<T extends Object> {
+class PipelineParameter<T> {
 
     private Class<T> type;
     private String name;

@@ -19,4 +19,3 @@ class Pipeline {
         this.credentialId = credentialId
     }
 }
-
