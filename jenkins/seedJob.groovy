@@ -13,9 +13,10 @@ node("master") {
     String script = "";
 
     stage("Assemble Seed File") {
+        script += processLibraryCode(readFile("jenkins/src/main/groovy/com/zevrant/services/PipelineCollection.groovy"))
         script += processLibraryCode(readFile("jenkins/src/main/groovy/com/zevrant/services/Pipeline.groovy"))
         println script
-        script += "\n" + readFile("jenkins/seed.groocy")
+        script += "\n" + readFile("jenkins/seed.groovy")
     }
 
     stage("Process Seed File") {
@@ -32,6 +33,7 @@ node("master") {
 }
 
 static String processLibraryCode(String libraryCode) {
-
-    return libraryCode.substring(libraryCode.indexOf("class"));
+    int index = libraryCode.indexOf("class");
+    index = (libraryCode.indexOf("enum") > 0 )? libraryCode.indexOf("enum") : index
+    return libraryCode.substring(index);
 }
