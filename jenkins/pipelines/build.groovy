@@ -5,7 +5,7 @@ def environments = ["develop", "prod"];
 node {
     BASE_BRANCH = BASE_BRANCH.tokenize("/")
     BASE_BRANCH = BASE_BRANCH[BASE_BRANCH.size() - 1];
-
+    currentBuild.displayName = "$REPOSITORY merging to $BASE_BRANCH"
     def version;
     stage("Get Version") {
         def jsonString = sh returnStdout: true, script: "aws ssm get-parameter --name ${REPOSITORY}-VERSION";
@@ -14,8 +14,6 @@ node {
         Map parameter = parsedJson.get("Parameter");
         version = parameter.get("Value");
     }
-
-    currentBuild.displayName = "$REPOSITORY merging to $BASE_BRANCH"
 
     if(BASE_BRANCH == "develop") {
 
