@@ -14,7 +14,7 @@ PipelineCollection.pipelines.each { pipeline ->
         }
 
         if (pipeline.parameters != null && pipeline.parameters.size() > 0) {
-            parameters() {
+            parameters {
                 nonStoredPipelineParam("APPROVAL_PASSWORD", "test")
                 pipeline.parameters.each { parameter ->
                     switch (parameter.type) {
