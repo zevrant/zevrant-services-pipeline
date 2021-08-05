@@ -13,7 +13,7 @@ PipelineCollection.pipelines.each { pipeline ->
             numToKeep 20
         }
 
-        if (pipeline.parameters != null && pipeline.parameters.length > 0) {
+        if (pipeline.parameters != null && pipeline.parameters.size() > 0) {
             parameters() {
                 nonStoredPipelineParam("APPROVAL_PASSWORD", "test")
                 pipeline.parameters.each { parameter ->
