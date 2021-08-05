@@ -58,7 +58,7 @@ PipelineCollection.pipelines.each { pipeline ->
                         }
                         gitTool('')
 
-                        scriptPath(pipeline.jenkisfileLocation)
+                        scriptPath(pipeline.jenkinsfileLocation)
                         lightweight(true)
                     }
                 }
