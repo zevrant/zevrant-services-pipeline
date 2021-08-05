@@ -1,0 +1,34 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: jenkins-build-all-resources-service
+spec:
+  ports:
+    - port: 2222
+      targetPort: 2222
+  selector:
+    app: jenkins-build-all-resources
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jenkins-build-all-resources-deployment
+  labels:
+    app: jenkins-build-all-resources
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jenkins-build-all-resources
+  template:
+    metadata:
+      labels:
+        app: jenkins-build-all-resources
+    spec:
+      serviceAccountName: ford-fsgroup
+      imagePullSecrets:
+        - name: fcs-fcs-robot-pull-secret
+      containers:
+        - name: build-all-resources
+          image: zevrant/test:1

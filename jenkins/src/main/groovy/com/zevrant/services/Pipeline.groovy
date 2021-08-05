@@ -9,13 +9,12 @@ class Pipeline {
     String jenkisfileLocation;
     String credentialId;
 
-    Pipeline(String name, String description, ArrayList<PipelineParameter> parameters, String gitRepo, String jenkisfileLocation,
-    credentialId) {
-        this.name = name
-        this.description = description
-        this.parameters = parameters
-        this.gitRepo = gitRepo
-        this.jenkisfileLocation = jenkisfileLocation
-        this.credentialId = credentialId
+    Pipeline(Map<String, Object> params) {
+        this.name = params.name
+        this.description = params.description
+        this.parameters = params.parameters as PipelineParameter[] ?: new ArrayList<>();
+        this.gitRepo = params.gitRepo ?: "git@github.com:Zevrant/zevrant-services-pipeline.git"
+        this.jenkisfileLocation = params.jenkisfileLocation
+        this.credentialId = params.credentialId
     }
 }

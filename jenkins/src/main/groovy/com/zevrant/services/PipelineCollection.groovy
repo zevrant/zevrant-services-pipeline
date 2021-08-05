@@ -4,30 +4,34 @@ class PipelineCollection {
 
     static ArrayList<Pipeline> pipelines = new ArrayList<Pipeline>([
             new Pipeline(
-                    "spring-kubernetes-build-job",
-                    "Pipeline in charge of building microservices intended for deployment onto the kubernetes cluster",
-                    new ArrayList<PipelineParameter>(
+                    name: "spring-kubernetes-build-job",
+                    description: "Pipeline in charge of building microservices intended for deployment onto the kubernetes cluster",
+                    parameters: new ArrayList<PipelineParameter>(
                             [
                                     DefaultPipelineParameters.BRANCH_PARAMETER.parameter,
                                     DefaultPipelineParameters.REPOSITORY_PARAMETER.parameter
                             ]
                     ),
-                    "git@github.com:Zevrant/zevrant-services-pipeline.git",
-                    "jenkins/pipelines/build.groovy",
-                    "jenkins-git"
+                    jenkinsfileLocation: "jenkins/pipelines/build.groovy",
+                    credentialsId: "jenkins-git"
             ),
             new Pipeline(
-                    "android-build-job",
-                    "Pipeline to build android apps",
-                    new ArrayList<PipelineParameter>(
+                    name: "android-build-job",
+                    description: "Pipeline to build android apps",
+                    parameters: new ArrayList<PipelineParameter>(
                             [
                                     DefaultPipelineParameters.BRANCH_PARAMETER.parameter,
                                     DefaultPipelineParameters.REPOSITORY_PARAMETER.parameter
                             ]
                     ),
-                    "git@github.com:Zevrant/zevrant-services-pipeline.git",
-                    "jenkins/pipelines/build.groovy",
-                    "jenkins-git"
+                    jenkinsfileLocation: "jenkins/pipelines/build.groovy",
+                    credentialsId: "jenkins-git"
+            ),
+            new Pipeline(
+                    name: "base-image-build-job",
+                    description: "Pipeline to build base docker images",
+                    jenkinsfileLocation: "jenkins/pipelines/buildBaseImages.groovy",
+                    credentialsId: "jenkins-git"
             )
     ])
 }
