@@ -17,7 +17,7 @@ node("master") {
 //        }
     }
 
-    List<String> affectedRepos = [];
+//    List<String> affectedRepos = [];
     stage("Get Potential Repos") {
         def response = httpRequest authentication: 'jenkis-git-access-token', url: "https://api.github.com/orgs/zevrant/repos?type=all"
         List jsonResponse = readJSON text: response.content
@@ -32,7 +32,7 @@ node("master") {
                         if(dockerfileResponse.status < 400) {
                             for (image in imagesToBuild) {
                                 if(dockerfileResponse.content.contains(image)) {
-                                    affectedRepos.add(repo['name'] as String);
+//                                    affectedRepos.add(repo['name'] as String);
                                     break;
                                 }
                             }
