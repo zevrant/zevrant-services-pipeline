@@ -1,4 +1,5 @@
 import com.zevrant.services.PipelineCollection
+import com.zevrant.services.PipelineTriggerType
 
 PipelineCollection.pipelines.each { pipeline ->
 
@@ -38,7 +39,7 @@ PipelineCollection.pipelines.each { pipeline ->
             triggers {
                 pipeline.triggers.each { trigger ->
                     switch (trigger.type) {
-                        case CRON:
+                        case PipelineTriggerType.CRON:
                             cron(trigger.value);
                             break;
                         default:
