@@ -8,16 +8,20 @@ node("master") {
     }
 
     stage("Build & Push Dockerfiles") {
-        dir("docker/dockerfile") {
-            imagesToBuild.each { image ->
-                sh "docker build . -t zevrant/${image}:latest -f ${image}.dockerfile --no-cache --pull"
-                sh "docker push zevrant/${image}:latest"
-            }
-        }
+//        dir("docker/dockerfile") {
+//            imagesToBuild.each { image ->
+//                sh "docker build . -t zevrant/${image}:latest -f ${image}.dockerfile --no-cache --pull"
+//                sh "docker push zevrant/${image}:latest"
+//            }
+//        }
     }
 
     stage("Update Downstream Repos") {
         def response = httpRequest "https://api.github.com/orgs/zevrant/repos?type=all"
-        println response
+        println response.content as String
+        List jsonResponse = readJson text: response.content
+        jsonResponse.each { repo ->
+            println repo['name']
+        }
     }
 }
