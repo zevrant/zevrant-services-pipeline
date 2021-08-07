@@ -22,9 +22,10 @@ node("master") {
         def response = httpRequest authentication: 'jenkis-git-access-token', url: "https://api.github.com/orgs/zevrant/repos?type=all"
         List jsonResponse = readJSON text: response.content
         jsonResponse.stream()
-        .filter({ repo -> (repo['name'] as String).contains('zevrant') && repo['name'] as String != 'zevrant-services-pipeline'})
         .each { repo ->
-            println repo['name']
+            if((repo['name'] as String).contains('zevrant') && repo['name'] as String != 'zevrant-services-pipeline') {
+                println repo['name']
+            }
         }
     }
 }
