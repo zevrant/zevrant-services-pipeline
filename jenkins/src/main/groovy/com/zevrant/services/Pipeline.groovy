@@ -19,7 +19,7 @@ class Pipeline {
         this.gitRepo = params.gitRepo ?: "git@github.com:Zevrant/zevrant-services-pipeline.git"
         this.jenkinsfileLocation = params.jenkinsfileLocation
         this.credentialId = params.credentialId
-        this.triggers = params.triggers as List<PipelineTrigger> ?: []
+        this.triggers = (params.triggers ?: new ArrayList<>()) as List<PipelineTrigger>
         this.buildsToKeep = (params.buildsToKeep ?: 10) as int
         this.disabled = (params.disabled ?: false) as boolean
     }
