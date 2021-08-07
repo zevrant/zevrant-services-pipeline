@@ -15,4 +15,9 @@ node("master") {
             }
         }
     }
+
+    stage("Update Downstream Repos") {
+        def response = httpRequest "https://api.github.com/orgs/zevrant/repos?type=all"
+        println response
+    }
 }
