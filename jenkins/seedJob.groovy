@@ -1,8 +1,4 @@
-@Library('CommonUtils')
-
-import com.zevrant.services.PipelineCollection
-
-import java.util.stream.Collectors
+@Library('CommonUtils')_
 
 node("master") {
 

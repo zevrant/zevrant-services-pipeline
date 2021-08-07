@@ -13,7 +13,7 @@ class PipelineCollection {
                             ]
                     ),
                     jenkinsfileLocation: "jenkins/pipelines/build.groovy",
-                    credentialsId: "jenkins-git"
+                    credentialId: "jenkins-git"
             ),
             new Pipeline(
                     name: "android-build-job",
@@ -25,13 +25,13 @@ class PipelineCollection {
                             ]
                     ),
                     jenkinsfileLocation: "jenkins/pipelines/build.groovy",
-                    credentialsId: "jenkins-git"
+                    credentialId: "jenkins-git"
             ),
             new Pipeline(
                     name: "base-image-build-job",
                     description: "Pipeline to build base docker images",
                     jenkinsfileLocation: "jenkins/pipelines/buildBaseImages.groovy",
-                    credentialsId: "jenkins-git"
+                    credentialId: "jenkins-git"
             )
     ])
 }
