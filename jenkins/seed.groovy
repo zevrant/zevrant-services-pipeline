@@ -1,5 +1,5 @@
 import com.zevrant.services.PipelineCollection
-
+import com.zevrant.services.PipelineTrigger
 PipelineCollection.pipelines.each { pipeline ->
 
     pipelineJob(pipeline.name) {
