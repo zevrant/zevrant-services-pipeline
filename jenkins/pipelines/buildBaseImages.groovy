@@ -17,7 +17,7 @@ node("master") {
 //        }
     }
 
-    List<String> affectedRepos = new ArrayList<>();
+    List<String> affectedRepos = [];
     stage("Get Potential Repos") {
         def response = httpRequest authentication: 'jenkis-git-access-token', url: "https://api.github.com/orgs/zevrant/repos?type=all"
         List jsonResponse = readJSON text: response.content
