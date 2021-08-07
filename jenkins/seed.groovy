@@ -36,6 +36,7 @@ PipelineCollection.pipelines.each { pipeline ->
         }
         if(pipeline.triggers.size() > 0) {
             triggers {
+                echo "HERE"
                 pipeline.triggers.each { trigger ->
                     switch (trigger.type) {
                         case CRON:
