@@ -34,7 +34,7 @@ PipelineCollection.pipelines.each { pipeline ->
                 }
             }
         }
-        if(pipeline.triggers.size() > 0) {
+        if(pipeline.triggers.length > 0) {
             triggers {
                 echo "HERE"
                 pipeline.triggers.each { trigger ->
