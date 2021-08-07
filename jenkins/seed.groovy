@@ -47,9 +47,9 @@ PipelineCollection.pipelines.each { pipeline ->
 //                }
 //            }
 //        }
-        logRotator {
-            numToKeep pipeline.buildsToKeep
-        }
+//        logRotator {
+//            numToKeep pipeline.buildsToKeep
+//        }
         definition {
             cpsScm {
                 lightweight(true)
