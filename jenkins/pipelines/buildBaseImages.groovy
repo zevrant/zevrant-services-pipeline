@@ -17,8 +17,7 @@ node("master") {
     }
 
     stage("Update Downstream Repos") {
-        def response = httpRequest "https://api.github.com/orgs/zevrant/repos?type=all"
-        println response.content as String
+        def response = httpRequest authentication: 'jenkis-git-access-token', url: "https://api.github.com/orgs/zevrant/repos?type=all"
         List jsonResponse = readJSON text: response.content
         jsonResponse.each { repo ->
             println repo['name']
