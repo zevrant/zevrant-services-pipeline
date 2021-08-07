@@ -57,7 +57,7 @@ PipelineCollection.pipelines.each { pipeline ->
                         }
                     }
                 }
-                scriptPath(pipeline.jenkisfileLocation)
+                scriptPath(pipeline.jenkinsfileLocation)
             }
         }
     }
