@@ -10,9 +10,9 @@ PipelineCollection.pipelines.each { pipeline ->
         }
 
         displayName(jobDisplayName.trim())
-//        disabled pipeline.disabled
+        disabled pipeline.disabled
         logRotator {
-            numToKeep 20
+            numToKeep pipeline.buildsToKeep
         }
 
         if (pipeline.parameters != null && pipeline.parameters.size() > 0) {
@@ -34,22 +34,20 @@ PipelineCollection.pipelines.each { pipeline ->
                 }
             }
         }
-//        if(pipeline.triggers.size() > 0) {
-//            triggers {
-//                pipeline.triggers.each { trigger ->
-//                    switch (trigger.type) {
-//                        case CRON:
-//                            cron(trigger.value);
-//                            break;
-//                        default:
-//                            throw new RuntimeException("Pipeline Trigger Type Not Implemented ${trigger.Type} for pipeline ${pipeline.name}")
-//                    }
-//                }
-//            }
-//        }
-//        logRotator {
-//            numToKeep pipeline.buildsToKeep
-//        }
+        if(pipeline.triggers.size() > 0) {
+            triggers {
+                pipeline.triggers.each { trigger ->
+                    switch (trigger.type) {
+                        case CRON:
+                            cron(trigger.value);
+                            break;
+                        default:
+                            throw new RuntimeException("Pipeline Trigger Type Not Implemented ${trigger.Type} for pipeline ${pipeline.name}")
+                    }
+                }
+            }
+        }
+
         definition {
             cpsScm {
                 lightweight(true)
