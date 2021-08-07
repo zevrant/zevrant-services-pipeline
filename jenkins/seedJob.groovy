@@ -6,16 +6,25 @@ node("master") {
         git(url: 'git@github.com:zevrant/zevrant-services-pipeline.git', credentialsId: 'jenkins-git', branch: 'master')
     }
 
+    String script = "";
+
+    stage("Assemble Seed File") {
+//        script += processLibraryCode(readFile("jenkins/src/main/groovy/com/zevrant/services/PipelineCollection.groovy"))
+//        script += processLibraryCode(readFile("jenkins/src/main/groovy/com/zevrant/services/Pipeline.groovy"))
+//        script += processLibraryCode(readFile("jenkins/src/main/groovy/com/zevrant/services/PipelineParameter.groovy"))
+//        script += processLibraryCode(readFile("jenkins/src/main/groovy/com/zevrant/services/DefaultPipelineParameters.groovy"))
+        script += "\n" + readFile("jenkins/seed.groovy")
+    }
+
     stage("Process Seed File") {
         jobDsl(
-                script: 'jenkins/seed.groovy',
+                scriptText: script,
                 removeActions: 'DELETE',
                 removedJobAction: 'DELETE',
                 removedViewAction: 'DELETE',
                 removedConfigFilesAction: 'DELETE',
                 lookupStrategy: 'SEED_JOB',
-                additionalClasspath: 'jenkins/src/main/groovy/',
-                sandbox: true
+                additionalClasspath: 'jenkins/src/main/groovy/'
         )
     }
 }
