@@ -24,7 +24,7 @@ node("master") {
                 removedViewAction: 'DELETE',
                 removedConfigFilesAction: 'DELETE',
                 lookupStrategy: 'SEED_JOB',
-                additionalClassPath: 'jenkins/src/main/groovy/'
+                additionalClasspath: 'jenkins/src/main/groovy/'
         )
     }
 }
