@@ -15,13 +15,13 @@ class Pipeline {
     Pipeline(Map<String, Object> params) {
         this.name = params.name
         this.description = params.description
-        this.parameters = params.parameters as ArrayList<PipelineParameter> ?: new ArrayList<>();
+        this.parameters = (params.parameters ?: new ArrayList<>()) as ArrayList<PipelineParameter>
         this.gitRepo = params.gitRepo ?: "git@github.com:Zevrant/zevrant-services-pipeline.git"
         this.jenkinsfileLocation = params.jenkinsfileLocation
         this.credentialId = params.credentialId
         this.triggers = params.triggers as List<PipelineTrigger> ?: []
-        this.buildsToKeep = params.buildsToKeep as int ?: 10
-        this.disabled - params.disabled as boolean ?: false
+        this.buildsToKeep = (params.buildsToKeep ?: 10) as int
+        this.disabled = (params.disabled ?: false) as boolean
     }
 
     String getName() {
