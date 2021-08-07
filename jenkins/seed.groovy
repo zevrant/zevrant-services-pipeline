@@ -39,7 +39,7 @@ PipelineCollection.pipelines.each { pipeline ->
                 scm {
                     git {
                         remote {
-                            credentials('jenkins-git')
+                            credentials(pipeline.credentialId)
                             name('origin')
                             url(pipeline.gitRepo)
 //                            refspec('+refs/heads/master:refs/remotes/origin/master')
