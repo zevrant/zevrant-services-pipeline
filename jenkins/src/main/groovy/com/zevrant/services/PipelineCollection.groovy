@@ -31,7 +31,8 @@ class PipelineCollection {
                     name: "base-image-build-job",
                     description: "Pipeline to build base docker images",
                     jenkinsfileLocation: "jenkins/pipelines/buildBaseImages.groovy",
-                    credentialId: "jenkins-git"
+                    credentialId: "jenkins-git",
+                    triggers: new PipelineTrigger(PipelineTriggerType.CRON, "0 3 * * 6")
             )
     ])
 }

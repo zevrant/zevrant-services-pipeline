@@ -10,7 +10,7 @@ PipelineCollection.pipelines.each { pipeline ->
         }
 
         displayName(jobDisplayName.trim())
-
+        disabled pipeline.disabled
         logRotator {
             numToKeep 20
         }
@@ -34,7 +34,22 @@ PipelineCollection.pipelines.each { pipeline ->
                 }
             }
         }
-
+        if(pipeline.triggers.size() > 0) {
+            triggers {
+                pipeline.triggers.each { trigger ->
+                    switch (trigger.type) {
+                        case CRON:
+                            cron(trigger.value);
+                            break;
+                        default:
+                            throw new RuntimeException("Pipeline Trigger Type Not Implemented ${trigger.Type} for pipeline ${pipeline.name}")
+                    }
+                }
+            }
+        }
+        logRotator {
+            numToKeep pipeline.buildsToKeep
+        }
         definition {
             cpsScm {
                 lightweight(true)
