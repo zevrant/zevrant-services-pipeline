@@ -18,7 +18,7 @@ node("master") {
 
     stage("Process Seed File") {
         jobDsl(
-                script: 'jenkins/seed.groovy',
+                targets: 'jenkins/seed.groovy',
                 removeActions: 'DELETE',
                 removedJobAction: 'DELETE',
                 removedViewAction: 'DELETE',
