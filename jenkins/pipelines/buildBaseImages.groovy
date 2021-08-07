@@ -1,4 +1,3 @@
-
 import java.util.List
 
 def imagesToBuild = ["zevrant-ubuntu-base"];
@@ -22,10 +21,12 @@ node("master") {
         def response = httpRequest authentication: 'jenkis-git-access-token', url: "https://api.github.com/orgs/zevrant/repos?type=all"
         List jsonResponse = readJSON text: response.content
         jsonResponse.stream()
-        .each { repo ->
-            if((repo['name'] as String).contains('zevrant') && repo['name'] as String != 'zevrant-services-pipeline') {
-                println repo['name']
-            }
-        }
+                .each { repo ->
+                    if ((repo['name'] as String).contains('zevrant')
+                            && repo['name'] as String != 'zevrant-services-pipeline'
+                            && !(repo['archived'] as Boolean)) {
+                        println repo['name']
+                    }
+                }
     }
 }
