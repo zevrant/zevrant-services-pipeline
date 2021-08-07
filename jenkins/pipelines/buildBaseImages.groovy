@@ -27,6 +27,7 @@ node("master") {
                             && !(repo['archived'] as Boolean)) {
                         def dockerfileResponse = httpRequest(authentication: 'jenkins-git-access-token',
                                 contentType: "TEXT_PLAIN",
+                                validResponseCodes: "200:404",
                                 url: "https://raw.githubusercontent.com/zevrant/${repo['name'] as String}/master/Dockerfile")
                         if(dockerfileResponse.status < 400) {
                             for (image in imagesToBuild) {
