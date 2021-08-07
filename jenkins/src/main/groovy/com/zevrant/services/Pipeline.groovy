@@ -51,4 +51,12 @@ class Pipeline {
     List<PipelineTrigger> getTriggers() {
         return triggers
     }
+
+    int getBuildsToKeep() {
+        return buildsToKeep
+    }
+
+    def getDisabled() {
+        return disabled
+    }
 }
