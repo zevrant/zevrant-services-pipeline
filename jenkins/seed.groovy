@@ -34,7 +34,8 @@ PipelineCollection.pipelines.each { pipeline ->
                 }
             }
         }
-        if(pipeline.triggers.length > 0) {
+        List<PipelineTrigger> pipelineTriggers = pipeline.triggers;
+        if(pipelineTriggers.size() > 0) {
             triggers {
                 echo "HERE"
                 pipeline.triggers.each { trigger ->
