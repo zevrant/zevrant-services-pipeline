@@ -23,9 +23,9 @@ node("master") {
         List jsonResponse = readJSON text: response.content
         jsonResponse.stream()
                 .each { repo ->
-//                    if ((repo['name'] as String).contains('zevrant')
-//                            && repo['name'] as String != 'zevrant-services-pipeline'
-//                            && !(repo['archived'] as Boolean)) {
+                    if ((repo['name'] as String).contains('zevrant')
+                            && repo['name'] as String != 'zevrant-services-pipeline'
+                            && !(repo['archived'] as Boolean)) {
 //                        def dockerfileResponse = httpRequest authentication: 'jenkins-git-access-token',
 //                                contentType: "TEXT_PLAIN"
 //                                url: "https://raw.githubusercontent.com/zevrant/${repo['name'] as String}/master/Dockerfile"
@@ -38,7 +38,7 @@ node("master") {
 //                            }
 //                        }
 
-//                    }
+                    }
                 }
     }
 
