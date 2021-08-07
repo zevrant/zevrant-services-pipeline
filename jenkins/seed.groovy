@@ -13,18 +13,19 @@ PipelineCollection.pipelines.each { pipeline ->
             numToKeep 20
         }
 
-        if (pipeline.parameters != null && pipeline.parameters.size() > 0) {
-            parameters {
-                nonStoredPasswordParam("APPROVAL_PASSWORD", "test")
+        if (pipeline.parameters != null && pipeline.parameters.length > 0) {
+            parameters() {
                 pipeline.parameters.each { parameter ->
                     switch (parameter.type) {
                         case String.class:
                             stringParam(parameter.name, parameter.defaultValue, parameter.description)
                             break;
                         case Boolean.class:
-
+                            booleanParam(parameter.name, parameter.defaultValue, parameter.description)
+                            break;
                         case List.class:
-
+                            choiceParam(parameter.name, parameter.defaultValue, parameter.description)
+                            break;
                         default:
                             throw RuntimeException("Parameter not supported")
                     }
@@ -33,35 +34,29 @@ PipelineCollection.pipelines.each { pipeline ->
         }
 
         definition {
-            cpsScmFlowDefinition {
+            cpsScm {
                 scm {
-                    gitSCM {
-                        userRemoteConfigs {
-                            userRemoteConfig {
-                                name('origin')
-                                url(pipeline.gitRepo)
-                                credentialsId(pipeline.credentialId)
-                                refspec('+refs/heads/master:refs/remotes/origin/master')
-                            }
+                    git {
+                        remote {
+                            credentials(pipeline.credentialId)
+                            name('origin')
+                            url(pipeline.gitRepo)
+                            refspec('+refs/heads/master:refs/remotes/origin/master')
                         }
 
-                        branches {
-                            branchSpec {
-                                name('master')
-                            }
-                        }
+                        branch('master')
 
                         browser {
-                            gitWeb {
-                                repoUrl("https://github.com:zevrant/zevrant-services-pipeline")
+                            gitWeb("https://github.com:zevrant/zevrant-services-pipeline")
+                        }
+                        extensions {
+                            cloneOptions {
+                                shallow(true)
                             }
                         }
-                        gitTool('')
-
-                        scriptPath(pipeline.jenkinsfileLocation)
-                        lightweight(true)
                     }
                 }
+                scriptPath(pipeline.jenkisfileLocation)
             }
         }
     }

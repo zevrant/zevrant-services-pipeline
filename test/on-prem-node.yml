@@ -26,9 +26,8 @@ spec:
       labels:
         app: jenkins-build-all-resources
     spec:
-      serviceAccountName: ford-fsgroup
       imagePullSecrets:
-        - name: fcs-fcs-robot-pull-secret
+        - name: regcreds
       containers:
         - name: build-all-resources
-          image: zevrant/test:1
+          image: zevrant/test:3

@@ -1,0 +1,22 @@
+apply plugin: 'groovy'
+
+sourceSets {
+    jobs {
+        groovy {
+            srcDirs 'jenkins/src/main/groovy'
+            compileClasspath += main.compileClasspath
+        }
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        url 'https://repo.jenkins-ci.org/public/'
+    }
+}
+
+dependencies {
+    implementation 'org.codehaus.groovy:groovy-all:3.0.8'
+    implementation 'org.jenkins-ci.plugins:job-dsl-core:1.77'
+}
