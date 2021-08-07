@@ -34,19 +34,19 @@ PipelineCollection.pipelines.each { pipeline ->
                 }
             }
         }
-        if(pipeline.triggers.size() > 0) {
-            triggers {
-                pipeline.triggers.each { trigger ->
-                    switch (trigger.type) {
-                        case CRON:
-                            cron(trigger.value);
-                            break;
-                        default:
-                            throw new RuntimeException("Pipeline Trigger Type Not Implemented ${trigger.Type} for pipeline ${pipeline.name}")
-                    }
-                }
-            }
-        }
+//        if(pipeline.triggers.size() > 0) {
+//            triggers {
+//                pipeline.triggers.each { trigger ->
+//                    switch (trigger.type) {
+//                        case CRON:
+//                            cron(trigger.value);
+//                            break;
+//                        default:
+//                            throw new RuntimeException("Pipeline Trigger Type Not Implemented ${trigger.Type} for pipeline ${pipeline.name}")
+//                    }
+//                }
+//            }
+//        }
         logRotator {
             numToKeep pipeline.buildsToKeep
         }
@@ -59,7 +59,6 @@ PipelineCollection.pipelines.each { pipeline ->
                             credentials(pipeline.credentialId)
                             name('origin')
                             url(pipeline.gitRepo)
-//                            refspec('+refs/heads/master:refs/remotes/origin/master')
                         }
 
                         branch('master')
