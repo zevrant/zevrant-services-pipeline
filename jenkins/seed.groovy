@@ -10,7 +10,7 @@ PipelineCollection.pipelines.each { pipeline ->
         }
 
         displayName(jobDisplayName.trim())
-        disabled pipeline.disabled
+//        disabled pipeline.disabled
         logRotator {
             numToKeep 20
         }
