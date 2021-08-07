@@ -59,14 +59,12 @@ node("master") {
             println("Build $branch branch for these repositories")
             affectedRepos.get(branch).each { repo ->
                 buildJobs["Build $branch for $repo"] = {
-                    stage("Build $branch for $repo") {
                         build job: 'Build', parameters: [
                                 [$class: 'StringParameterValue', name: 'REPOSITORY', value: affectedRepos.get(branch).],
                                 [$class: 'StringParameterValue', name: 'BASE_BRANCH', value: "refs/heads/$branch"]
                         ]
                     }
                 }
-            }
         }
         parallel buildJobs
     }
