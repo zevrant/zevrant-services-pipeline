@@ -13,7 +13,7 @@ PipelineCollection.pipelines.each { pipeline ->
             numToKeep 20
         }
 
-        if (pipeline.parameters != null && pipeline.parameters.length > 0) {
+        if (pipeline.parameters != null && pipeline.parameters.size() > 0) {
             parameters() {
                 pipeline.parameters.each { parameter ->
                     switch (parameter.type) {
@@ -35,13 +35,14 @@ PipelineCollection.pipelines.each { pipeline ->
 
         definition {
             cpsScm {
+                lightweight(true)
                 scm {
                     git {
                         remote {
-                            credentials(pipeline.credentialId)
+                            credentials('jenkins-git')
                             name('origin')
                             url(pipeline.gitRepo)
-                            refspec('+refs/heads/master:refs/remotes/origin/master')
+//                            refspec('+refs/heads/master:refs/remotes/origin/master')
                         }
 
                         branch('master')
