@@ -1,5 +1,5 @@
 import com.zevrant.services.PipelineCollection
-import com.zevrant.services.PipelineTrigger
+
 PipelineCollection.pipelines.each { pipeline ->
 
     pipelineJob(pipeline.name) {
@@ -34,8 +34,7 @@ PipelineCollection.pipelines.each { pipeline ->
                 }
             }
         }
-        List<PipelineTrigger> pipelineTriggers = pipeline.triggers;
-        if(pipelineTriggers.size() > 0) {
+        if(pipeline.triggers.size() > 0) {
             triggers {
                 echo "HERE"
                 pipeline.triggers.each { trigger ->
