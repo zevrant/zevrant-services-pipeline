@@ -1,4 +1,6 @@
 
+import java.util.List
+
 def imagesToBuild = ["zevrant-ubuntu-base"];
 
 node("master") {
