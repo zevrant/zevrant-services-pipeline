@@ -1,4 +1,3 @@
-import com.zevrant.services.PipelineCollection
 
 PipelineCollection.pipelines.each { pipeline ->
 
