@@ -21,7 +21,6 @@ import com.zevrant.services.PipelineTriggerType
                 id(libraryRepository) // IMPORTANT: use a constant and unique identifier
                 repository(libraryRepository)
                 repoOwner('zevrant')
-                credentialsId('jenkins-git')
                 includes('master')
                 scanCredentialsId 'jenkins-git'
                 checkoutCredentialsId 'jenkins-git'
