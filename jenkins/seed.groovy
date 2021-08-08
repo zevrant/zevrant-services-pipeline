@@ -1,10 +1,51 @@
+import com.zevrant.services.DefaultPipelineParameters
+import com.zevrant.services.Pipeline
 import com.zevrant.services.PipelineCollection
 import com.zevrant.services.PipelineTriggerType
 
-def size = libraryRepositories.size()
+(libraryRepositories as List<String>).each { libraryRepository ->
 
-PipelineCollection.pipelines.each { pipeline ->
+    String jobName = ""
 
+    libraryRepository.split("-").each { it -> jobName += it.capitalize() + " " }
+    jobName = jobName.trim()
+    multibranchPipelineJob(libraryRepository + "-multibranch") {
+        displayName jobName
+        factory {
+            workflowBranchProjectFactory {
+                scriptPath('JenkinsFile.groovy')
+            }
+        }
+        branchSources {
+            gitHub {
+                id(libraryRepository) // IMPORTANT: use a constant and unique identifier
+                repository(libraryRepository)
+                repoOwner('zevrant')
+                credentialsId('jenkins-git')
+                includes('master')
+                scanCredentialsId 'jenkins-git'
+                checkoutCredentialsId 'jenkins-git'
+            }
+
+        }
+    }
+    Pipeline pipeline = new Pipeline(
+            name: libraryRepository,
+            parameters: new ArrayList<>([
+                    DefaultPipelineParameters.BRANCH_PARAMETER.getParameter()
+            ]),
+            gitRepo: "git@github.com:zevrant/${libraryRepository}.git",
+            jenkinsfileLocation: 'jenkins/pipelines/libraryBuild.groovy',
+            credentilId: 'jenkins-git'
+    );
+    createPipeline(pipeline)
+}
+
+(PipelineCollection.pipelines as List<Pipeline>).each { pipeline ->
+    createPipeline(pipeline)
+}
+
+void createPipeline(Pipeline pipeline) {
     pipelineJob(pipeline.name) {
         description pipeline.description
         String jobDisplayName = ""
@@ -37,7 +78,7 @@ PipelineCollection.pipelines.each { pipeline ->
                 }
             }
         }
-        if(pipeline.triggers.size() > 0) {
+        if (pipeline.triggers.size() > 0) {
             triggers {
                 pipeline.triggers.each { trigger ->
                     switch (trigger.type) {

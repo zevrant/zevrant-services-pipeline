@@ -14,7 +14,7 @@ class Pipeline {
 
     Pipeline(Map<String, Object> params) {
         this.name = params.name
-        this.description = params.description
+        this.description = params.description ?: ""
         this.parameters = (params.parameters ?: new ArrayList<>()) as ArrayList<PipelineParameter>
         this.gitRepo = params.gitRepo ?: "git@github.com:Zevrant/zevrant-services-pipeline.git"
         this.jenkinsfileLocation = params.jenkinsfileLocation
