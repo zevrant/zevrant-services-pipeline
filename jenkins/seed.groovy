@@ -10,7 +10,7 @@ import com.zevrant.services.PipelineTriggerType
     libraryRepository.split("-").each { it -> jobName += it.capitalize() + " " }
     jobName = jobName.trim()
     multibranchPipelineJob(libraryRepository + "-multibranch") {
-        displayName jobName
+        displayName jobName += " Multibranch"
         factory {
             workflowBranchProjectFactory {
                 scriptPath('JenkinsFile.groovy')
