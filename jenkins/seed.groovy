@@ -1,6 +1,8 @@
 import com.zevrant.services.PipelineCollection
 import com.zevrant.services.PipelineTriggerType
 
+def size = libraryRepositories.size()
+
 PipelineCollection.pipelines.each { pipeline ->
 
     pipelineJob(pipeline.name) {

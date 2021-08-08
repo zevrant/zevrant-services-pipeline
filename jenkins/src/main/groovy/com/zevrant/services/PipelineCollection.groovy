@@ -4,7 +4,7 @@ class PipelineCollection {
 
     static ArrayList<Pipeline> pipelines = new ArrayList<Pipeline>([
             new Pipeline(
-                    name: "spring-kubernetes-build-job",
+                    name: "spring-kubernetes-build",
                     description: "Pipeline in charge of building microservices intended for deployment onto the kubernetes cluster",
                     parameters: new ArrayList<PipelineParameter>(
                             [
@@ -16,7 +16,7 @@ class PipelineCollection {
                     credentialId: "jenkins-git"
             ),
             new Pipeline(
-                    name: "android-build-job",
+                    name: "android-build",
                     description: "Pipeline to build android apps",
                     parameters: new ArrayList<PipelineParameter>(
                             [
@@ -28,7 +28,7 @@ class PipelineCollection {
                     credentialId: "jenkins-git"
             ),
             new Pipeline(
-                    name: "base-image-build-job",
+                    name: "base-image-build",
                     description: "Pipeline to build base docker images",
                     jenkinsfileLocation: "jenkins/pipelines/buildBaseImages.groovy",
                     credentialId: "jenkins-git",
