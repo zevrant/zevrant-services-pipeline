@@ -33,7 +33,7 @@ import com.zevrant.services.PipelineTriggerType
             parameters: new ArrayList<>([
                     DefaultPipelineParameters.BRANCH_PARAMETER.getParameter()
             ]),
-            gitRepo: "git@github.com:zevrant/${libraryRepository}.git",
+            gitRepo: "git@github.com:zevrant/zevrant-services-pipeline.git",
             jenkinsfileLocation: 'jenkins/pipelines/libraryBuild.groovy',
             credentialId: 'jenkins-git'
     );
