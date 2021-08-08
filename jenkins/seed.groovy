@@ -13,7 +13,7 @@ import com.zevrant.services.PipelineTriggerType
         displayName jobName += " Multibranch"
         factory {
             workflowBranchProjectFactory {
-                scriptPath('JenkinsFile.groovy')
+                scriptPath('Jenkinsfile.groovy')
             }
         }
         branchSources {
