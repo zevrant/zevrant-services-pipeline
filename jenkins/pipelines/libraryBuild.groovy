@@ -2,14 +2,12 @@ import groovy.json.JsonSlurper
 
 node("master") {
 
-    String repository = env.JOB_BASE_NAME;
+    String repository = env.JOB_BASE_NAME
+    String version = ""
 
     stage("Get Version") {
-        def jsonString = sh returnStdout: true, script: "aws ssm get-parameter --name ${repository}-VERSION";
-        JsonSlurper slurper = new JsonSlurper();
-        Map parsedJson = slurper.parseText(jsonString) as Map;
-        Map parameter = parsedJson.get("Parameter") as Map;
-        version = parameter.get("Value");
+        def json = readJSON text: (sh(returnStdout: true, script: "aws ssm get-parameter --name ${repository}-VERSION"))
+        version = json['Parameter']['Value']
     }
 
     stage("SCM Checkout") {

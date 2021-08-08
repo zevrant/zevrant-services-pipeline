@@ -1,3 +1,5 @@
+import groovy.json.JsonSlurper
+
 @Library('CommonUtils') _
 
 node("master") {
@@ -47,4 +49,9 @@ List<String> getNonArchivedReposMatching(String searchTerm) {
         }
     }
     return matchingRepos;
+}
+
+String getParameterValue(String parameter) {
+    def json = readJSON text: (sh(returnStdout: true, script: "aws ssm get-parameter --name parameter"))
+    return json['Parameter']['Value']
 }

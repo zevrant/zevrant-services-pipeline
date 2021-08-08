@@ -6,13 +6,10 @@ node {
     BASE_BRANCH = BASE_BRANCH.tokenize("/")
     BASE_BRANCH = BASE_BRANCH[BASE_BRANCH.size() - 1];
     currentBuild.displayName = "$REPOSITORY merging to $BASE_BRANCH"
-    def version;
+    String version = "";
     stage("Get Version") {
-        def jsonString = sh returnStdout: true, script: "aws ssm get-parameter --name ${REPOSITORY}-VERSION";
-        JsonSlurper slurper = new JsonSlurper();
-        Map parsedJson = slurper.parseText(jsonString);
-        Map parameter = parsedJson.get("Parameter");
-        version = parameter.get("Value");
+        def json = readJSON text: (sh(returnStdout: true, script: "aws ssm get-parameter --name ${repository}-VERSION"))
+        version = json['Parameter']['Value']
     }
 
     if(BASE_BRANCH == "develop") {
