@@ -17,7 +17,7 @@ import com.zevrant.services.PipelineTriggerType
             }
         }
         branchSources {
-            gitHub {
+            github {
                 id(libraryRepository) // IMPORTANT: use a constant and unique identifier
                 repository(libraryRepository)
                 repoOwner('zevrant')
