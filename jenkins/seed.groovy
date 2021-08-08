@@ -22,7 +22,7 @@ import com.zevrant.services.PipelineTriggerType
                 repository(libraryRepository)
                 repoOwner('zevrant')
                 includes('master')
-                scanCredentialsId 'jenkins-git'
+                scanCredentialsId 'jenkins-git-access-token'
                 checkoutCredentialsId 'jenkins-git'
             }
 
