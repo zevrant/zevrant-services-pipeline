@@ -35,7 +35,7 @@ import com.zevrant.services.PipelineTriggerType
             ]),
             gitRepo: "git@github.com:zevrant/${libraryRepository}.git",
             jenkinsfileLocation: 'jenkins/pipelines/libraryBuild.groovy',
-            credentilId: 'jenkins-git'
+            credentialId: 'jenkins-git'
     );
     createPipeline(pipeline)
 }
