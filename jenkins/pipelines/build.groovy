@@ -3,88 +3,92 @@ import groovy.json.JsonSlurper
 def angularProjects = ["zevrant-home-ui"];
 def environments = ["develop", "prod"];
 node {
-    BASE_BRANCH = BASE_BRANCH.tokenize("/")
-    BASE_BRANCH = BASE_BRANCH[BASE_BRANCH.size() - 1];
-    currentBuild.displayName = "$REPOSITORY merging to $BASE_BRANCH"
-    String version = "";
-    stage("Get Version") {
-        def json = readJSON text: (sh(returnStdout: true, script: "aws ssm get-parameter --name ${repository}-VERSION"))
-        version = json['Parameter']['Value']
-    }
-
-    if(BASE_BRANCH == "develop") {
-
-        stage("SCM Checkout") {
-            git credentialsId: 'jenkins-git', branch: BASE_BRANCH,
-                    url: "git@github.com:zevrant/${REPOSITORY}.git"
+    try {
+        BASE_BRANCH = BASE_BRANCH.tokenize("/")
+        BASE_BRANCH = BASE_BRANCH[BASE_BRANCH.size() - 1];
+        currentBuild.displayName = "$REPOSITORY merging to $BASE_BRANCH"
+        String version = "";
+        stage("Get Version") {
+            def json = readJSON text: (sh(returnStdout: true, script: "aws ssm get-parameter --name ${repository}-VERSION"))
+            version = json['Parameter']['Value']
         }
 
-        stage ("Test"){
-            if (angularProjects.indexOf(REPOSITORY) > 2) {
-                sh "npm run test"
-            } else {
-                "bash gradlew clean build --no-daemon"
+        if (BASE_BRANCH == "develop") {
+
+            stage("SCM Checkout") {
+                git credentialsId: 'jenkins-git', branch: BASE_BRANCH,
+                        url: "git@github.com:zevrant/${REPOSITORY}.git"
             }
-        }
 
-        stage ("Version Update") {
+            stage("Test") {
+                if (angularProjects.indexOf(REPOSITORY) > 2) {
+                    sh "npm run test"
+                } else {
+                    "bash gradlew clean build --no-daemon"
+                }
+            }
+
+            stage("Version Update") {
+                def splitVersion = version.tokenize(".");
+                def minorVersion = splitVersion[2]
+                minorVersion = minorVersion.toInteger() + 1
+                version = "${splitVersion[0]}.${splitVersion[1]}.${minorVersion}"
+                sh "aws ssm put-parameter --name ${REPOSITORY}-VERSION --value $version --type String --overwrite"
+            }
+
+            stage("Build Artifact") {
+                sh "bash gradlew clean assemble --no-daemon"
+                sh "docker build -t zevrant/$REPOSITORY:$version ."
+                sh "docker push zevrant/$REPOSITORY:$version"
+            }
+
+            stage("Deploy") {
+                build job: 'Deploy', parameters: [
+                        [$class: 'StringParameterValue', name: 'REPOSITORY', value: REPOSITORY],
+                        [$class: 'StringParameterValue', name: 'VERSION', value: version],
+                        [$class: 'StringParameterValue', name: 'ENVIRONMENT', value: "develop"]
+                ]
+            }
+
+        }
+        if (BASE_BRANCH == "master") {
             def splitVersion = version.tokenize(".");
-            def minorVersion = splitVersion[2]
-            minorVersion = minorVersion.toInteger() + 1
-            version = "${splitVersion[0]}.${splitVersion[1]}.${minorVersion}"
-            sh "aws ssm put-parameter --name ${REPOSITORY}-VERSION --value $version --type String --overwrite"
-        }
+            def mainVersion = splitVersion[0]
+            mainVersion = mainVersion.toInteger() + 1
+            def newVersion = "${mainVersion}.0.0";
 
-        stage ("Build Artifact") {
-            sh "bash gradlew clean assemble --no-daemon"
-            sh "docker build -t zevrant/$REPOSITORY:$version ."
-            sh "docker push zevrant/$REPOSITORY:$version"
-        }
+            stage("SCM Checkout") {
 
-        stage ("Deploy") {
-            build job: 'Deploy', parameters: [
-                    [$class: 'StringParameterValue', name: 'REPOSITORY', value: REPOSITORY],
-                    [$class: 'StringParameterValue', name: 'VERSION', value: version],
-                    [$class: 'StringParameterValue', name: 'ENVIRONMENT', value: "develop"]
-            ]
-        }
+            }
 
-    }
-    if(BASE_BRANCH == "master") {
-        def splitVersion = version.tokenize(".");
-        def mainVersion = splitVersion[0]
-        mainVersion = mainVersion.toInteger() + 1
-        def newVersion = "${mainVersion}.0.0";
+            stage("Test") {
+                if (angularProjects.indexOf(REPOSITORY) > 2) {
+                    sh "npm run test"
+                } else {
+                    "bash gradlew clean build --no-daemon"
+                }
+            }
 
-        stage("SCM Checkout") {
+            stage("Version Update") {
+                sh "aws ssm put-parameter --name ${REPOSITORY}-VERSION --value ${newVersion} --type String --overwrite"
+            }
 
-        }
+            stage("Build Artifact") {
+            }
 
-        stage ("Test"){
-            if (angularProjects.indexOf(REPOSITORY) > 2) {
-                sh "npm run test"
-            } else {
-                "bash gradlew clean build --no-daemon"
+            stage("Deploy") {
+                sh "docker tag zevrant/${REPOSITORY}:${version} zevrant/${REPOSITORY}:${newVersion}"
+                sh "docker push zevrant/${REPOSITORY}:${newVersion}"
+
+                build job: 'Deploy', parameters: [
+                        [$class: 'StringParameterValue', name: 'REPOSITORY', value: REPOSITORY],
+                        [$class: 'StringParameterValue', name: 'VERSION', value: version],
+                        [$class: 'StringParameterValue', name: 'ENVIRONMENT', value: "prod"]
+                ]
             }
         }
-
-        stage ("Version Update") {
-            sh "aws ssm put-parameter --name ${REPOSITORY}-VERSION --value ${newVersion} --type String --overwrite"
-        }
-
-        stage ("Build Artifact") {
-        }
-
-        stage("Deploy") {
-            sh "docker tag zevrant/${REPOSITORY}:${version} zevrant/${REPOSITORY}:${newVersion}"
-            sh "docker push zevrant/${REPOSITORY}:${newVersion}"
-
-            build job: 'Deploy', parameters: [
-                    [$class: 'StringParameterValue', name: 'REPOSITORY', value: REPOSITORY],
-                    [$class: 'StringParameterValue', name: 'VERSION', value: version],
-                    [$class: 'StringParameterValue', name: 'ENVIRONMENT', value: "prod"]
-            ]
-        }
     }
-
+    finally {
+        sh "rm -rf * \\.*"
+    }
 }
