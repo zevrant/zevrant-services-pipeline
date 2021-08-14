@@ -13,7 +13,7 @@ import com.zevrant.services.PipelineTriggerType
     libraryRepository.split("-").each { repositoryName -> jobName += repositoryName.capitalize() + " " }
     jobName = jobName.trim()
     folderName += jobName + "/"
-    folder(folderName) {
+    folder(folderName.substring(0, folderName.length() -1)) {
 
     }
     multibranchPipelineJob(folderName + libraryRepository + "-multibranch") {
