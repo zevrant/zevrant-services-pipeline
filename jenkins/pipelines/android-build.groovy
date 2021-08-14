@@ -4,10 +4,10 @@ node("master") {
     BASE_BRANCH = BASE_BRANCH[BASE_BRANCH.size() - 1];
     currentBuild.displayName = "$REPOSITORY merging to $BASE_BRANCH"
     String version = "";
-    stage("Get Version") {
-        def json = readJSON text: (sh(returnStdout: true, script: "aws ssm get-parameter --name ${repository}-VERSION"))
-        version = json['Parameter']['Value']
-    }
+//    stage("Get Version") {
+//        def json = readJSON text: (sh(returnStdout: true, script: "aws ssm get-parameter --name ${repository}-VERSION"))
+//        version = json['Parameter']['Value']
+//    }
 
 
     stage("SCM Checkout") {
