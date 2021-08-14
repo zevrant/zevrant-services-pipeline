@@ -31,7 +31,7 @@ node("master") {
         String variant = (((BASE_BRANCH == "master")? "release" : BASE_BRANCH) as String).capitalize()
         String json = readJSON text: (sh(returnStdout: true, script: "aws secretsmanager get-secret-value --secret-id /android/signing/keystore"))
         println json
-        keystore = json['SecretString']
+        keystore = json.SecretString
         writeFile('./zevrant-services.txt', keystore)
         sh "base64 -d ./zevrant-services.txt > ./zevrant-services.p12"
         json = readJSON text: (sh(returnStdout: true, script: "aws secretsmanager get-secret-value --secret-id /android/signing/keystore"))
