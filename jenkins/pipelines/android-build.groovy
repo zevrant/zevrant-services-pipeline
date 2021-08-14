@@ -30,11 +30,10 @@ node("master") {
     stage("Build Artifact") {
         String variant = (((BASE_BRANCH == "master")? "release" : BASE_BRANCH) as String).capitalize()
         def json = readJSON text: (sh(returnStdout: true, script: "aws secretsmanager get-secret-value --secret-id /android/signing/keystore"))
-        String keystore = json['SecretString']
-        writeFile file: './zevrant-services.txt', text: keystore
+        String keystore = json['SecretString']; writeFile file: './zevrant-services.txt', text: keystore
         sh "base64 -d ./zevrant-services.txt > ./zevrant-services.p12"
-        def json2 = readJSON text: (sh(returnStdout: true, script: "aws secretsmanager get-secret-value --secret-id /android/signing/keystore"))
-        String password = json2['SecretString']
+        json = readJSON text: (sh(returnStdout: true, script: "aws secretsmanager get-secret-value --secret-id /android/signing/password"))
+        String password = json['SecretString']
         sh " SIGNING_KEYSTORE='${env.WORKSPACE}/zevrant-services.p12' KEYSOTRE_PASSWORD='$password' bash gradlew clean assemble$variant --no-daemon --info"
     }
 
