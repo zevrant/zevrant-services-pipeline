@@ -19,13 +19,13 @@ node("master") {
         "bash gradlew clean build --no-daemon"
     }
 
-    stage("Version Update") {
-        def splitVersion = version.tokenize(".");
-        def minorVersion = splitVersion[2]
-        minorVersion = minorVersion.toInteger() + 1
-        version = "${splitVersion[0]}.${splitVersion[1]}.${minorVersion}"
-        sh "aws ssm put-parameter --name ${REPOSITORY}-VERSION --value $version --type String --overwrite"
-    }
+//    stage("Version Update") {
+//        def splitVersion = version.tokenize(".");
+//        def minorVersion = splitVersion[2]
+//        minorVersion = minorVersion.toInteger() + 1
+//        version = "${splitVersion[0]}.${splitVersion[1]}.${minorVersion}"
+//        sh "aws ssm put-parameter --name ${REPOSITORY}-VERSION --value $version --type String --overwrite"
+//    }
 
     stage("Build Artifact") {
         String variant = (((BASE_BRANCH == "master")? "release" : BASE_BRANCH) as String).capitalize()
