@@ -30,8 +30,8 @@ node("master") {
     stage("Build Artifact") {
         String variant = (((BASE_BRANCH == "master")? "release" : BASE_BRANCH) as String).capitalize()
         def json = readJSON text: (sh(returnStdout: true, script: "aws secretsmanager get-secret-value --secret-id /android/signing/keystore"))
-        keystore = json.SecretString
-        writeFile('./zevrant-services.txt', keystore)
+        keystore = json['SecretString']
+        writeFile file: './zevrant-services.txt', text: keystore
         sh "base64 -d ./zevrant-services.txt > ./zevrant-services.p12"
         json = readJSON text: (sh(returnStdout: true, script: "aws secretsmanager get-secret-value --secret-id /android/signing/keystore"))
         password = json['SecretString']
