@@ -8,6 +8,7 @@ node("master") {
     BASE_BRANCH = BASE_BRANCH[BASE_BRANCH.size() - 1];
     currentBuild.displayName = "$REPOSITORY merging to $BASE_BRANCH"
     String version = "";
+    String variant = ((BASE_BRANCH == "master") ? "release" : BASE_BRANCH) as String
     stage("Get Version") {
         def json = readJSON text: (sh(returnStdout: true, script: "aws ssm get-parameter --name ${repository}-VERSION"))
         version = json['Parameter']['Value']
@@ -32,13 +33,16 @@ node("master") {
     }
 
     stage("Build Artifact") {
-        String variant = (((BASE_BRANCH == "master") ? "release" : BASE_BRANCH) as String).capitalize()
         def json = readJSON text: (sh(returnStdout: true, script: "aws secretsmanager get-secret-value --secret-id /android/signing/keystore"))
         String keystore = json['SecretString']; writeFile file: './zevrant-services.txt', text: keystore
         sh "base64 -d ./zevrant-services.txt > ./zevrant-services.p12"
         json = readJSON text: (sh(returnStdout: true, script: "aws secretsmanager get-secret-value --secret-id /android/signing/password"))
         String password = json['SecretString']
-        sh " SIGNING_KEYSTORE=\'${env.WORKSPACE}/zevrant-services.p12\'" + 'KEYSOTRE_PASSWORD=\'' + password + "\' bash gradlew clean assemble$variant --no-daemon --info"
+        sh " SIGNING_KEYSTORE=\'${env.WORKSPACE}/zevrant-services.p12\' " + 'KEYSOTRE_PASSWORD=\'' + password + "\' bash gradlew clean assemble${variant.capitalize()} --no-daemon --info"
+        //for some reason gradle isn't signing like it's suppost to so we do it manually
+        sh "keytool -v -importkeystore -srckeystore zevrant-services.p12 -srcstoretype PKCS12 -destkeystore zevrabt-services.jks -deststoretype JKS -srcstorepass \'$password\' -deststorepass \'$password\' -noprompt\n"
+        sh "zipalign -p -f -v 4 app/build/outputs/apk/$variant/app-$variant-unsigned.apk ./zevrant-services-unsignedsigned.apk"
+        sh "apksigner verify -v zevrant-services-unsigned.apk --out zevrant-services.apk"
     }
 
     stage("Release") {
