@@ -24,7 +24,7 @@ class PipelineCollection {
                                     DefaultPipelineParameters.REPOSITORY_PARAMETER.parameter
                             ]
                     ),
-                    jenkinsfileLocation: "jenkins/pipelines/build.groovy",
+                    jenkinsfileLocation: "jenkins/pipelines/android-build.groovy",
                     credentialId: "jenkins-git"
             ),
             new Pipeline(
