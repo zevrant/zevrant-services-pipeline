@@ -12,11 +12,9 @@ setAwsCredentials () {
   AWS_SESSION_TOKEN=`echo $AWS_SESSION_TOKEN | cut -c 2-$((${#AWS_SESSION_TOKEN}-1))`
 }
 
-echo $PROXY_CREDENTIALS
 aws_credentials=`curl --proxy $PROXY_CREDENTIALS@3.210.165.61:3128 http://169.254.169.254/latest/meta-data/identity-credentials/ec2/security-credentials/ec2-instance`
 setAwsCredentials "$aws_credentials"
-echo $AWS_ACCESS_KEY_ID
-credentials=`aws sts assume-role --role-arn arn:aws:iam::725235728275:role/OauthServiceRole --role-session-name startup | jq .Credentials`
+credentials=`aws sts assume-role --role-arn arn:aws:iam::725235728275:role/SecretsOnlyServiceRole --role-session-name startup | jq .Credentials`
 setAwsCredentials "$credentials"
 curl https://raw.githubusercontent.com/zevrant/zevrant-services-pipeline/master/bash/openssl.conf > ~/openssl.conf
 sed -i "s/\${POD_IP}/$POD_IP/g" ~/openssl.conf
