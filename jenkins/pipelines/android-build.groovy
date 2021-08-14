@@ -38,7 +38,7 @@ node("master") {
         sh "base64 -d ./zevrant-services.txt > ./zevrant-services.p12"
         json = readJSON text: (sh(returnStdout: true, script: "aws secretsmanager get-secret-value --secret-id /android/signing/password"))
         String password = json['SecretString']
-        sh " SIGNING_KEYSTORE=\'${env.WORKSPACE}/zevrant-services.p12\' " + 'KEYSTORE_PASSWORD=\'' + password + "\' bash gradlew clean assemble${variant.capitalize()} --no-daemon --info"
+        sh " SIGNING_KEYSTORE=\'${env.WORKSPACE}/zevrant-services.p12\' " + 'KEYSTORE_PASSWORD=\'' + password + "\' bash gradlew clean assemble${variant.capitalize()} --no-daemon"
         //for some reason gradle isn't signing like it's suppost to so we do it manually
 //        sh "keytool -v -importkeystore -srckeystore zevrant-services.p12 -srcstoretype PKCS12 -destkeystore zevrabt-services.jks -deststoretype JKS -srcstorepass \'$password\' -deststorepass \'$password\' -noprompt\n"
 //        sh "zipalign -p -f -v 4 app/build/outputs/apk/$variant/app-$variant-unsigned.apk ./zevrant-services-unsignedsigned.apk"
@@ -56,7 +56,7 @@ node("master") {
         ).content)
         println "uploading to " + response['assets_url']
         withCredentials([usernamePassword(credentialsId: 'jenkins-git-access-token', passwordVariable: 'password', usernameVariable: 'username')]) {
-            sh "curl -H 'Authorization: token: $password' -H 'Content-Type: application/vnd.android.package-archive' --data-binary @app/build/outputs/apk/release/app-release-unsigned.apk ${response['assets_url']}/?name=zevrant-services.apk&label=zevrant-services.apk\n"
+            sh "curl -X 'POST' -H 'Authorization: token: $password' -H 'Content-Type: application/vnd.android.package-archive' --data-binary @app/build/outputs/apk/release/app-release-unsigned.apk ${response['assets_url']}/?name=zevrant-services.apk&label=zevrant-services.apk"
         }
 
     }
