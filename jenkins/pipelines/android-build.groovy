@@ -54,12 +54,7 @@ node("master") {
                 requestBody: requestBodyJson,
                 httpMode: 'POST'
         ).content)
-        response = readJSON( text: httpRequest(
-                authentication: 'jenkins-git-access-token',
-                url: response['assets_url'],
 
-
-        ).content)
         withCredentials([usernamePassword(credentialsId: 'jenkins-git-access-token', passwordVariable: 'password', usernameVariable: 'username')]) {
             sh "curl -H 'Authorization: token: $password' -H 'Content-Type: application/vnd.android.package-archive' --data-binary @app/build/outputs/apk/release/app-release-unsigned.apk ${response['assets_url']}"
         }
