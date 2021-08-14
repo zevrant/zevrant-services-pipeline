@@ -47,7 +47,8 @@ node("master") {
         httpRequest(
                 authentication: 'jenkins-git-access-token',
                 url: "https://api.github.com/repos/zevrant/zevrant-android-app/releases",
-                requestBody: requestBodyJson
+                requestBody: requestBodyJson,
+                httpMode: 'POST'
         )
     }
 }
