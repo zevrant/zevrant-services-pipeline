@@ -44,7 +44,7 @@ node("master") {
     stage("Release") {
         GitHubReleaseRequest request = new GitHubReleaseRequest(version, true, true, "Release v$version");
         String requestBodyJson = writeJSON returnText: true, json: request
-        http_request(
+        httpRequest(
                 authentication: 'jenkins-git-access-token',
                 url: "https://api.github.com/repos/zevrant/zevrant-android-app/releases",
                 requestBody: requestBodyJson
