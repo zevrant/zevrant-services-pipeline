@@ -1,3 +1,4 @@
+@Library("CommonUtils")
 import com.zevrant.services.GitHubReleaseRequest
 
 node("master") {
