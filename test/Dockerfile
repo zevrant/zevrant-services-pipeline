@@ -70,7 +70,7 @@ USER jenkins
 #               systemProp.http.proxyPort=83 \n\
 #               systemProp.https.proxyHost=internet.ford.com \n\
 #               systemProp.https.proxyPort=83 \n\
-#               systemProp.http.nonProxyHosts=localhost|19.59.55.93|*.ford.com //This entry will prevent the 503 Nexus service unreachable error' > /home/jenkins/.gradle/gradle.properties && \
+#               systemProp.http.nonProxyHosts=localhost|internet.ford.com|*.ford.com //This entry will prevent the 503 Nexus service unreachable error' > /home/jenkins/.gradle/gradle.properties && \
 #    mkdir -p /home/jenkins/.ssh && \
 #    touch /home/jenkins/.ssh/authorized_keys && \
 #    chmod 700 /home/jenkins/.ssh && \
@@ -86,12 +86,12 @@ CMD cat /etc/resolv.conf \
     && chmod 0700 /home/jenkins/.gradle \
     && chmod 0600 /home/jenkins/.gradle/gradle.properties \
     && echo $'org.gradle.daemon=false\n\
-    systemProp.http.proxyHost=19.12.64.237\n\
+    systemProp.http.proxyHost=internet.ford.com\n\
     systemProp.http.proxyPort=83\n\
-    systemProp.http.nonProxyHosts=*.ford.com|localhost|19.2.0.0/16\n\
-    systemProp.https.proxyHost=19.12.64.237\n\
+    systemProp.http.nonProxyHosts=*.ford.com|localhost|internet.ford.com\n\
+    systemProp.https.proxyHost=internet.ford.com\n\
     systemProp.https.proxyPort=83\n\
-    systemProp.https.nonProxyHosts=*.ford.com|localhost|19.2.0.0/16 //This entry will prevent the 503 Nexus service unreachable error' > /home/jenkins/.gradle/gradle.properties \
+    systemProp.https.nonProxyHosts=*.ford.com|localhost|internet.ford.com //This entry will prevent the 503 Nexus service unreachable error' > /home/jenkins/.gradle/gradle.properties \
     && mkdir -p /home/jenkins/.ssh \
     && chmod 700 /home/jenkins/.ssh \
     && touch /home/jenkins/.ssh/authorized_keys \
