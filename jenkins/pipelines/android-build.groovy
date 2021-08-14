@@ -35,7 +35,7 @@ node("master") {
         sh "base64 -d ./zevrant-services.txt > ./zevrant-services.p12"
         json = readJSON text: (sh(returnStdout: true, script: "aws secretsmanager get-secret-value --secret-id /android/signing/keystore"))
         password = json['SecretString']
-        sh "set +x; SIGNING_KEYSTORE='./zevrant-services.p12' KEYSOTRE_PASSWORD='$password' bash gradlew clean bundle$variant --no-daemon"
+        sh "set +x; SIGNING_KEYSTORE='./zevrant-services.p12' KEYSOTRE_PASSWORD='$password' bash gradlew clean bundle$variant --no-daemon --info"
     }
 
     stage("Release") {
