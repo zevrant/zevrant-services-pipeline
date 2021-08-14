@@ -54,7 +54,7 @@ node("master") {
                 requestBody: requestBodyJson,
                 httpMode: 'POST'
         ).content)
-
+        println "uploading to " + response['assets_url']
         withCredentials([usernamePassword(credentialsId: 'jenkins-git-access-token', passwordVariable: 'password', usernameVariable: 'username')]) {
             sh "curl -H 'Authorization: token: $password' -H 'Content-Type: application/vnd.android.package-archive' --data-binary @app/build/outputs/apk/release/app-release-unsigned.apk ${response['assets_url']}"
         }
