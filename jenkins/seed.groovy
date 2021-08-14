@@ -44,7 +44,7 @@ import com.zevrant.services.PipelineTriggerType
     }
 }
 (PipelineCollection.pipelines as List<Pipeline>).each { pipeline ->
-    createPipeline(pipeline)
+    createPipeline("", pipeline)
 }
 
 /**
