@@ -40,7 +40,7 @@ import com.zevrant.services.PipelineTriggerType
                     jenkinsfileLocation: 'jenkins/pipelines/libraryBuild.groovy',
                     credentialId: 'jenkins-git'
             );
-            createPipeline("", pipeline)
+            createPipeline(jobName  + "/", pipeline)
     }
 }
 (PipelineCollection.pipelines as List<Pipeline>).each { pipeline ->
