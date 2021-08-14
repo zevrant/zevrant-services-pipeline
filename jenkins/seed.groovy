@@ -7,41 +7,44 @@ import com.zevrant.services.PipelineTriggerType
 
     String jobName = ""
     folder("Libraries") {
-        libraryRepository.split("-").each { repositoryName -> jobName += repositoryName.capitalize() + " " }
-        jobName = jobName.trim()
-        folder(jobName) {
+
+    }
+    String folderName = "Libraries/"
+    libraryRepository.split("-").each { repositoryName -> jobName += repositoryName.capitalize() + " " }
+    jobName = jobName.trim()
+    folderName += jobName + "/"
+    folder(folderName) {
+
+    }
+    multibranchPipelineJob(folderName + libraryRepository + "-multibranch") {
+        displayName jobName + " Multibranch"
+        factory {
+            workflowBranchProjectFactory {
+                scriptPath('Jenkinsfile.groovy')
+            }
+        }
+        branchSources {
+            github {
+                id(libraryRepository) // IMPORTANT: use a constant and unique identifier
+                repository(libraryRepository)
+                repoOwner('zevrant')
+                includes('master')
+                scanCredentialsId 'jenkins-git-access-token'
+                checkoutCredentialsId 'jenkins-git'
+            }
 
         }
-        multibranchPipelineJob(jobName  + "/" + libraryRepository + "-multibranch") {
-            displayName jobName += " Multibranch"
-            factory {
-                workflowBranchProjectFactory {
-                    scriptPath('Jenkinsfile.groovy')
-                }
-            }
-            branchSources {
-                github {
-                    id(libraryRepository) // IMPORTANT: use a constant and unique identifier
-                    repository(libraryRepository)
-                    repoOwner('zevrant')
-                    includes('master')
-                    scanCredentialsId 'jenkins-git-access-token'
-                    checkoutCredentialsId 'jenkins-git'
-                    }
-
-                }
-            }
-            Pipeline pipeline = new Pipeline(
-                    name: libraryRepository,
-                    parameters: new ArrayList<>([
-                            DefaultPipelineParameters.BRANCH_PARAMETER.getParameter()
-                    ]),
-                    gitRepo: "git@github.com:zevrant/zevrant-services-pipeline.git",
-                    jenkinsfileLocation: 'jenkins/pipelines/libraryBuild.groovy',
-                    credentialId: 'jenkins-git'
-            );
-            createPipeline(jobName  + "/", pipeline)
     }
+    Pipeline pipeline = new Pipeline(
+            name: libraryRepository,
+            parameters: new ArrayList<>([
+                    DefaultPipelineParameters.BRANCH_PARAMETER.getParameter()
+            ]),
+            gitRepo: "git@github.com:zevrant/zevrant-services-pipeline.git",
+            jenkinsfileLocation: 'jenkins/pipelines/libraryBuild.groovy',
+            credentialId: 'jenkins-git'
+    );
+    createPipeline(folderName, pipeline)
 }
 (PipelineCollection.pipelines as List<Pipeline>).each { pipeline ->
     createPipeline("", pipeline)
@@ -53,7 +56,7 @@ import com.zevrant.services.PipelineTriggerType
  * @param pipeline
  */
 void createPipeline(String folder, Pipeline pipeline) {
-    if(folder == null) {
+    if (folder == null) {
         folder = ""
     }
     pipelineJob(folder + pipeline.name) {
