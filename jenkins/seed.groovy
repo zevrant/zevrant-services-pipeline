@@ -10,21 +10,23 @@ import com.zevrant.services.PipelineTriggerType
         libraryRepository.split("-").each { repositoryName -> jobName += repositoryName.capitalize() + " " }
         jobName = jobName.trim()
         folder(jobName) {
-            multibranchPipelineJob(libraryRepository + "-multibranch") {
-                displayName jobName += " Multibranch"
-                factory {
-                    workflowBranchProjectFactory {
-                        scriptPath('Jenkinsfile.groovy')
-                    }
+
+        }
+        multibranchPipelineJob(jobName  + "/" + libraryRepository + "-multibranch") {
+            displayName jobName += " Multibranch"
+            factory {
+                workflowBranchProjectFactory {
+                    scriptPath('Jenkinsfile.groovy')
                 }
-                branchSources {
-                    github {
-                        id(libraryRepository) // IMPORTANT: use a constant and unique identifier
-                        repository(libraryRepository)
-                        repoOwner('zevrant')
-                        includes('master')
-                        scanCredentialsId 'jenkins-git-access-token'
-                        checkoutCredentialsId 'jenkins-git'
+            }
+            branchSources {
+                github {
+                    id(libraryRepository) // IMPORTANT: use a constant and unique identifier
+                    repository(libraryRepository)
+                    repoOwner('zevrant')
+                    includes('master')
+                    scanCredentialsId 'jenkins-git-access-token'
+                    checkoutCredentialsId 'jenkins-git'
                     }
 
                 }
@@ -38,16 +40,23 @@ import com.zevrant.services.PipelineTriggerType
                     jenkinsfileLocation: 'jenkins/pipelines/libraryBuild.groovy',
                     credentialId: 'jenkins-git'
             );
-            createPipeline(pipeline)
-        }
+            createPipeline("", pipeline)
     }
 }
 (PipelineCollection.pipelines as List<Pipeline>).each { pipeline ->
     createPipeline(pipeline)
 }
 
-void createPipeline(Pipeline pipeline) {
-    pipelineJob(pipeline.name) {
+/**
+ *
+ * @param folder must contain ending / or be empty string
+ * @param pipeline
+ */
+void createPipeline(String folder, Pipeline pipeline) {
+    if(folder == null) {
+        folder = ""
+    }
+    pipelineJob(folder + pipeline.name) {
         description pipeline.description
         String jobDisplayName = ""
         pipeline.name.split("-").each { piece ->
