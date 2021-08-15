@@ -46,18 +46,6 @@ node("master") {
     }
 
     stage("Release") {
-        GitHubReleaseRequest request = new GitHubReleaseRequest(version, true, true, "Release v$version");
-        String requestBodyJson = writeJSON returnText: true, json: request
-        def response = readJSON( text: httpRequest(
-                authentication: 'jenkins-git-access-token',
-                url: "https://api.github.com/repos/zevrant/zevrant-android-app/releases",
-                requestBody: requestBodyJson,
-                httpMode: 'POST'
-        ).content)
-        println "uploading to " + response['assets_url']
-        withCredentials([usernamePassword(credentialsId: 'jenkins-git-access-token', passwordVariable: 'password', usernameVariable: 'username')]) {
-            sh "aws s3 cp ./zevrant-services.apk s3://zevrant-artifact-store/$variant/$version/zevrant-services.apk"
-        }
-
+        sh "aws s3 cp ./zevrant-services.apk s3://zevrant-artifact-store/$variant/$version/zevrant-services.apk"
     }
 }
