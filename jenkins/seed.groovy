@@ -66,8 +66,8 @@ void createPipeline(String folder, Pipeline pipeline) {
             jobDisplayName += piece.capitalize() + " "
         }
 
-        if(pipeline.triggers != null && !triggers.isEmpty()) {
-            triggers.each { trigger ->
+        if(pipeline.triggers != null && !pipeline.triggers.isEmpty()) {
+            pipeline.triggers.each { trigger ->
                 if (trigger.type == PipelineTriggerType.GENERIC) {
                     genericTrigger {
                         genericVariables {
