@@ -40,9 +40,9 @@ node("master") {
         String password = json['SecretString']
         sh " SIGNING_KEYSTORE=\'${env.WORKSPACE}/zevrant-services.p12\' " + 'KEYSTORE_PASSWORD=\'' + password + "\' bash gradlew clean assemble${variant.capitalize()} --no-daemon"
         //for some reason gradle isn't signing like it's suppost to so we do it manually
-        sh "keytool -v -importkeystore -srckeystore zevrant-services.p12 -srcstoretype PKCS12 -destkeystore zevrabt-services.jks -deststoretype JKS -srcstorepass \'$password\' -deststorepass \'$password\' -noprompt"
+        sh "keytool -v -importkeystore -srckeystore zevrant-services.p12 -srcstoretype PKCS12 -destkeystore zevrant-services.jks -deststoretype JKS -srcstorepass \'$password\' -deststorepass \'$password\' -noprompt"
         sh "zipalign -p -f -v 4 app/build/outputs/apk/$variant/app-$variant-unsigned.apk zevrant-services-unsigned.apk"
-        sh "apksigner verify -v zevrant-services-unsigned.apk --in zevrant-services.apk"
+        sh "apksigner sign --ks zevrant-services.jks --in ./zevrant-services-unsigned.apk --out ./zevrant-services.apk --ks-pass \'pass:$password\'"
         sh "apksigner verify -v zevrant-services.apk"
     }
 
