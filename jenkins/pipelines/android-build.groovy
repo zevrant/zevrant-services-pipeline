@@ -46,6 +46,6 @@ node("master") {
     }
 
     stage("Release") {
-        sh "aws s3 cp ./zevrant-services.apk s3://zevrant-artifact-store/$variant/$version/zevrant-services.apk"
+        sh "aws s3 cp ./zevrant-services.apk s3://zevrant-apk-store/$variant/$version/zevrant-services.apk"
     }
 }
