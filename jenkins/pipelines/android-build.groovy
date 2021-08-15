@@ -8,7 +8,7 @@ node("master") {
     BASE_BRANCH = BASE_BRANCH[BASE_BRANCH.size() - 1];
     currentBuild.displayName = "$REPOSITORY merging to $BASE_BRANCH"
     String version = "";
-    String variant = ((BASE_BRANCH == "master") ? "release" : BASE_BRANCH) as String
+    String variant = (BASE_BRANCH == "master")? "release" : BASE_BRANCH
     println(BRANCH_NAME == "master")
     stage("Get Version") {
         def json = readJSON text: (sh(returnStdout: true, script: "aws ssm get-parameter --name ${repository}-VERSION"))

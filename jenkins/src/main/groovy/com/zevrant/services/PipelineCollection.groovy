@@ -25,7 +25,29 @@ class PipelineCollection {
                             ]
                     ),
                     jenkinsfileLocation: "jenkins/pipelines/android-build.groovy",
-                    credentialId: "jenkins-git"
+                    credentialId: "jenkins-git",
+                    triggers: new ArrayList<>([
+                            new PipelineTrigger(
+                                    type: PipelineTriggerType.GENERIC,
+                                    token: 'dwarfEcKRZNYbcRwAX2B8b2V3',
+                                    parameters: new ArrayList<>([
+                                            DefaultPipelineParameters.BRANCH_PARAMETER.parameter,
+                                            DefaultPipelineParameters.REPOSITORY_PARAMETER.parameter
+                                    ]),
+                                    variables: new ArrayList<>([
+                                            new GenericPipelineTriggerVariable(
+                                                    key: "BASE_BRANCH",
+                                                    expressionValue: "\$.ref",
+                                                    triggerVariableType: TriggerVariableType.JSONPATH
+                                            ),
+                                            new GenericPipelineTriggerVariable(
+                                                    key: "REPOSITORY",
+                                                    expressionValue: "\$.repository.name",
+                                                    triggerVariableType: TriggerVariableType.JSONPATH
+                                            )
+                                    ])
+                            )
+                    ])
             ),
             new Pipeline(
                     name: "base-image-build",
@@ -33,8 +55,10 @@ class PipelineCollection {
                     jenkinsfileLocation: "jenkins/pipelines/buildBaseImages.groovy",
                     credentialId: "jenkins-git",
                     triggers: new ArrayList<>([
-                            new PipelineTrigger(PipelineTriggerType.CRON, "0 3 * * 6")
-                            ])
+                            new PipelineTrigger(
+                                    type: PipelineTriggerType.CRON,
+                                    value: "0 3 * * 6")
+                    ])
             )
     ])
 }

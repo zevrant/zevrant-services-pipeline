@@ -2,11 +2,15 @@ package com.zevrant.services
 
 class PipelineTrigger {
 
-    private final PipelineTriggerType type;
-    private final String value;
+    final PipelineTriggerType type
+    final String value
+    final String token
+    final List<GenericPipelineTriggerVariable> variables
 
-    PipelineTrigger(PipelineTriggerType type, String value) {
-        this.type = type
-        this.value = value
+    PipelineTrigger(Map<String, Object> params) {
+        this.type = params.type as PipelineTriggerType
+        this.value = params.value
+        this.token = params.token
+        this.variables = params.variables as ArrayList<GenericPipelineTriggerVariable>
     }
 }

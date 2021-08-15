@@ -66,6 +66,28 @@ void createPipeline(String folder, Pipeline pipeline) {
             jobDisplayName += piece.capitalize() + " "
         }
 
+        if(pipeline.triggers != null && !triggers.isEmpty()) {
+            triggers.each { trigger ->
+                if (trigger.type == PipelineTriggerType.GENERIC) {
+                    genericTrigger {
+                        genericVariables {
+                            if (trigger.variables != null && !trigger.variables.isEmpty()) {
+                                trigger.variables.each { variable ->
+                                    genericVariable {
+                                        key(variable.key)
+                                        value(variable.expressionValue)
+                                        expressionType(variable.triggerVariableType.value)
+                                        defaultValue(variable.defaultValue) //Optional, defaults to empty string
+                                    }
+                                }
+                            }
+                        }
+                        token(trigger.token)
+                    }
+                }
+            }
+        }
+
         displayName(jobDisplayName.trim())
         disabled pipeline.disabled
         logRotator {
