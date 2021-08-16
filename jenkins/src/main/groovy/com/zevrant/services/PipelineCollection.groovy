@@ -36,7 +36,7 @@ class PipelineCollection {
                                     ]),
                                     variables: new ArrayList<>([
                                             new GenericPipelineTriggerVariable(
-                                                    key: "BASE_BRANCH",
+                                                    key: "BRANCH_NAME",
                                                     expressionValue: "\$.ref",
                                                     triggerVariableType: TriggerVariableType.JSONPATH
                                             ),
