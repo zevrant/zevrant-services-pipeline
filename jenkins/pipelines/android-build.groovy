@@ -46,7 +46,7 @@ node("master") {
         if(variant == "release") {
             fileName = "app-release-unsigned"
         }
-        sh "zipalign -p -f -v 4 app/build/outputs/apk/$variant/$fileName.apk zevrant-services-unsigned.apk"
+        sh "zipalign -p -f -v 4 app/build/outputs/apk/$variant/${fileName}.apk zevrant-services-unsigned.apk"
         sh "apksigner sign --ks zevrant-services.jks --in ./zevrant-services-unsigned.apk --out ./zevrant-services.apk --ks-pass \'pass:$password\'"
         sh "apksigner verify -v zevrant-services.apk"
     }
