@@ -1,79 +1,24 @@
+import com.zevrant.services.ApplicationType
 import com.zevrant.services.DefaultPipelineParameters
 import com.zevrant.services.Pipeline
 import com.zevrant.services.PipelineCollection
 import com.zevrant.services.PipelineTriggerType
 
 (libraryRepositories as List<String>).each { libraryRepository ->
-
-    String jobName = ""
-    folder("Libraries") {
-
-    }
-    String folderName = "Libraries/"
-    libraryRepository.split("-").each { repositoryName -> jobName += repositoryName.capitalize() + " " }
-    jobName = jobName.trim()
-    folderName += jobName + "/"
-    folder(folderName.substring(0, folderName.length() -1)) {
-
-    }
-    multibranchPipelineJob(folderName + libraryRepository + "-multibranch") {
-        displayName jobName + " Multibranch"
-        factory {
-            workflowBranchProjectFactory {
-                scriptPath('Jenkinsfile.groovy')
-            }
-        }
-        branchSources {
-            github {
-                id(libraryRepository) // IMPORTANT: use a constant and unique identifier
-                repository(libraryRepository)
-                repoOwner('zevrant')
-                includes('master')
-                scanCredentialsId 'jenkins-git-access-token'
-                checkoutCredentialsId 'jenkins-git'
-            }
-
-        }
-    }
+    String folder = createMultibranch(libraryRepository, ApplicationType.LIBRARY)
     Pipeline pipeline = new Pipeline(
             name: libraryRepository,
             parameters: new ArrayList<>([
-                    DefaultPipelineParameters.BRANCH_PARAMETER.getParameter()
+                    DefaultPipelineParameters.BRANCH_PARAMETER.getPara`meter()
             ]),
             gitRepo: "git@github.com:zevrant/zevrant-services-pipeline.git",
             jenkinsfileLocation: 'jenkins/pipelines/libraryBuild.groovy',
             credentialId: 'jenkins-git'
     );
-    createPipeline(folderName, pipeline)
+    createPipeline(folder, pipeline);
 }
 
-String jobName = "zevrant-android-app"
-String displayNameString = ""
-folder("Android") {}
-String folderName = "Android/"
-jobName.split("-").each { repositoryName -> displayNameString += repositoryName.capitalize() + " " }
-displayNameString = jobName.trim()
-folderName += displayNameString + "/"
-folder(folderName.substring(0, folderName.length() -1)) {}
-multibranchPipelineJob(folderName + jobName + "-multibranch") {
-    displayName displayNameString + "Multibranch"
-    factory {
-        workflowBranchProjectFactory {
-            scriptPath('Jenkinsfile.groovy')
-        }
-    }
-    branchSources {
-        github {
-            id(jobName) // IMPORTANT: use a constant and unique identifier
-            repository('zevrant-android-app')
-            repoOwner('zevrant')
-            includes('master')
-            scanCredentialsId 'jenkins-git-access-token'
-            checkoutCredentialsId 'jenkins-git'
-        }
-
-    }
-}
+String androidFolder = createMultibranch('zevrant-android-app', ApplicationType.ANDROID)
 Pipeline androidPipeline = new Pipeline(
         name: "zevrant-android-app",
         parameters: new ArrayList<>([
@@ -83,7 +28,41 @@ Pipeline androidPipeline = new Pipeline(
         jenkinsfileLocation: 'jenkins/pipelines/libraryBuild.groovy',
         credentialId: 'jenkins-git'
 );
-createPipeline(folderName, androidPipeline)
+createPipeline(androidFolder, androidPipeline)
+
+String createMultibranch(String repositoryName, ApplicationType applicationType) {
+    String jobName = ""
+    folder("Libraries") {
+
+    }
+    String folderName = applicationType.value + "/"
+    repositoryName.split("-").each { name -> jobName += name.capitalize() + " " }
+    jobName = jobName.trim()
+    folderName += jobName + "/"
+    folder(folderName.substring(0, folderName.length() - 1)) {
+
+    }
+    multibranchPipelineJob(folderName + repositoryName + "-multibranch") {
+        displayName jobName + " Multibranch"
+        factory {
+            workflowBranchProjectFactory {
+                scriptPath('Jenkinsfile.groovy')
+            }
+        }
+        branchSources {
+            github {
+                id(repositoryName) // IMPORTANT: use a constant and unique identifier
+                repository(repositoryName)
+                repoOwner('zevrant')
+                includes('master')
+                scanCredentialsId 'jenkins-git-access-token'
+                checkoutCredentialsId 'jenkins-git'
+            }
+
+        }
+    }
+    return folderName;
+}
 
 (PipelineCollection.pipelines as List<Pipeline>).each { pipeline ->
     createPipeline("", pipeline)
@@ -105,7 +84,7 @@ void createPipeline(String folder, Pipeline pipeline) {
             jobDisplayName += piece.capitalize() + " "
         }
 
-        if(pipeline.triggers != null && !pipeline.triggers.isEmpty()) {
+        if (pipeline.triggers != null && !pipeline.triggers.isEmpty()) {
             pipeline.triggers.each { trigger ->
                 if (trigger.type == PipelineTriggerType.GENERIC) {
 //                    genericTrigger {
