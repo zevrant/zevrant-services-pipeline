@@ -48,7 +48,7 @@ import com.zevrant.services.PipelineTriggerType
 }
 
 String jobName = "zevrant-android-app"
-String displayName = ""
+String displayNameString = ""
 folder("Android") {}
 String folderName = "Android/"
 jobName.split("-").each { repositoryName -> displayName += repositoryName.capitalize() + " " }
@@ -56,7 +56,7 @@ jobName = jobName.trim()
 folderName += jobName + "/"
 folder(folderName.substring(0, folderName.length() -1)) {}
 multibranchPipelineJob(folderName + jobName + "-multibranch") {
-    displayName displayName + " Multibranch"
+    displayName displayNameString + "Multibranch"
     factory {
         workflowBranchProjectFactory {
             scriptPath('Jenkinsfile.groovy')
