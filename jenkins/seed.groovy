@@ -32,7 +32,7 @@ createPipeline(androidFolder, androidPipeline)
 
 String createMultibranch(String repositoryName, ApplicationType applicationType) {
     String jobName = ""
-    folder("Libraries") {
+    folder(applicationType.value) {
 
     }
     String folderName = applicationType.value + "/"
