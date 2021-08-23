@@ -4,12 +4,12 @@ import com.zevrant.services.GitHubReleaseRequest
 
 node("master") {
 
-    BASE_BRANCH = BASE_BRANCH.tokenize("/")
-    BASE_BRANCH = BASE_BRANCH[BASE_BRANCH.size() - 1];
-    currentBuild.displayName = "$REPOSITORY merging to $BASE_BRANCH"
+    BRANCH_NAME = BASEBRANCH.tokenize("/")
+    BRANCH_NAME = BRANCH_NAME[BRANCH_NAME.size() - 1];
+    currentBuild.displayName = "$REPOSITORY merging to $BRANCH_NAME"
     String version = "";
-    String variant = (BASE_BRANCH == "master")? "release" : BASE_BRANCH
-    println(BASE_BRANCH == "master")
+    String variant = (BRANCH_NAME == "master")? "release" : BRANCH_NAME
+    println(BRANCH_NAME == "master")
     stage("Get Version") {
         def json = readJSON text: (sh(returnStdout: true, script: "aws ssm get-parameter --name ${repository}-VERSION"))
         version = json['Parameter']['Value']
@@ -17,7 +17,7 @@ node("master") {
 
 
     stage("SCM Checkout") {
-        git credentialsId: 'jenkins-git', branch: BASE_BRANCH,
+        git credentialsId: 'jenkins-git', branch: BRANCH_NAME,
                 url: "git@github.com:zevrant/${REPOSITORY}.git"
     }
 

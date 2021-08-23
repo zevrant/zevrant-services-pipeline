@@ -16,7 +16,7 @@ class PipelineCollection {
                     credentialId: "jenkins-git"
             ),
             new Pipeline(
-                    name: "android-build",
+                    name: "androidBuild",
                     description: "Pipeline to build android apps",
                     parameters: new ArrayList<PipelineParameter>(
                             [
@@ -24,7 +24,7 @@ class PipelineCollection {
                                     DefaultPipelineParameters.REPOSITORY_PARAMETER.parameter
                             ]
                     ),
-                    jenkinsfileLocation: "jenkins/pipelines/android-build.groovy",
+                    jenkinsfileLocation: "jenkins/pipelines/androidBuild.groovy",
                     credentialId: "jenkins-git",
                     triggers: new ArrayList<>([
                             new PipelineTrigger(
