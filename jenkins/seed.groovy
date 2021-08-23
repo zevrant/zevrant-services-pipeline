@@ -65,7 +65,7 @@ multibranchPipelineJob(folderName + jobName + "-multibranch") {
     branchSources {
         github {
             id(jobName) // IMPORTANT: use a constant and unique identifier
-            repository('git@github.com:zevrant/zevrant-android-app.git')
+            repository('zevrant-android-app')
             repoOwner('zevrant')
             includes('master')
             scanCredentialsId 'jenkins-git-access-token'
