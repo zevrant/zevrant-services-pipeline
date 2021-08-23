@@ -159,8 +159,11 @@ void createPipeline(String folder, Pipeline pipeline) {
                         case PipelineTriggerType.CRON:
                             cron(trigger.value);
                             break;
+                        case PipelineTriggerType.GENERIC:
+                            println "WARN: Ignoring Generic trigger as it is not yet implemented"
+                            break
                         default:
-                            throw new RuntimeException("Pipeline Trigger Type Not Implemented ${trigger.Type} for pipeline ${pipeline.name}")
+                            throw new RuntimeException("Pipeline Trigger Type Not Implemented ${trigger.type} for pipeline ${pipeline.name}")
                     }
                 }
             }
