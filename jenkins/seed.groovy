@@ -25,7 +25,7 @@ Pipeline androidPipeline = new Pipeline(
                 DefaultPipelineParameters.BRANCH_PARAMETER.getParameter()
         ]),
         gitRepo: "git@github.com:zevrant/zevrant-services-pipeline.git",
-        jenkinsfileLocation: 'jenkins/pipelines/libraryBuild.groovy',
+        jenkinsfileLocation: 'jenkins/pipelines/androidBuild.groovy',
         credentialId: 'jenkins-git'
 );
 createPipeline(androidFolder, androidPipeline)
