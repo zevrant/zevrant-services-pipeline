@@ -10,9 +10,8 @@ node("master") {
 
     boolean runSeed = false;
     stage("Check seed updates") {
-        String isSeedChanged = sh returnStdout: true, script: 'set +e git log -1 --raw | grep jenkins/seed*.groovy'
-        String isGroovyChanged = sh returnStdout: true, script: 'set +e git log -1 --raw | grep jenkins/src/main/groovy'
-        runSeed = !isSeedChanged.isBlank() || !isGroovyChanged.isBlank()
+        String gitLog = sh returnStdout: true, script: 'git log -1 --raw'
+        runSeed = gitLog.contains("src/main/groovy") || gitLog.contains('jenkins/seed')
     }
 
     List<String> libraryRepositories = new ArrayList<>();
