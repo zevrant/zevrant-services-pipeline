@@ -16,30 +16,21 @@ node("master") {
 
     List<String> libraryRepositories = new ArrayList<>();
     stage("Get library Repositories") {
-        when {
-            runSeed true
-        }
-        steps {
+        if(runSeed true) {
             libraryRepositories.addAll(getNonArchivedReposMatching("common"))
         }
     }
 
     List<String> microserviceRepositories = new ArrayList<>();
     stage("Get Microservice Repositories") {
-        when {
-            runSeed true
-        }
-        steps {
+        if(runSeed true) {
             microserviceRepositories.addAll(getNonArchivedReposMatching('service'))
             microserviceRepositories.addAll(getNonArchivedReposMatching('ui'))
         }
     }
 
     stage("Process Seed File") {
-        when {
-            runSeed true
-        }
-        steps {
+        if(runSeed true) {
             jobDsl(
                     targets: 'jenkins/seed.groovy',
                     removeActions: 'DELETE',
