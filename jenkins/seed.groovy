@@ -75,7 +75,7 @@ multibranchPipelineJob(folderName + jobName + "-multibranch") {
     }
 }
 Pipeline androidPipeline = new Pipeline(
-        name: libraryRepository,
+        name: "zevrant-android-app",
         parameters: new ArrayList<>([
                 DefaultPipelineParameters.BRANCH_PARAMETER.getParameter()
         ]),
