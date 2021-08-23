@@ -57,7 +57,7 @@ String createMultibranch(String repositoryName, ApplicationType applicationType)
                 id(repositoryName) // IMPORTANT: use a constant and unique identifier
                 repository(repositoryName)
                 repoOwner('zevrant')
-                includes('master')
+                includes('master develop')
                 scanCredentialsId 'jenkins-git-access-token'
                 checkoutCredentialsId 'jenkins-git'
             }
