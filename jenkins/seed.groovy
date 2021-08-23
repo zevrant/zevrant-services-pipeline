@@ -51,7 +51,7 @@ String jobName = "zevrant-android-app"
 String displayNameString = ""
 folder("Android") {}
 String folderName = "Android/"
-jobName.split("-").each { repositoryName -> displayName += repositoryName.capitalize() + " " }
+jobName.split("-").each { repositoryName -> displayNameString += repositoryName.capitalize() + " " }
 jobName = jobName.trim()
 folderName += jobName + "/"
 folder(folderName.substring(0, folderName.length() -1)) {}
