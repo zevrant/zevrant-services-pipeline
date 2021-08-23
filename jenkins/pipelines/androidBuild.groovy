@@ -4,7 +4,7 @@ import com.zevrant.services.GitHubReleaseRequest
 
 node("master") {
 
-    BRANCH_NAME = BASEBRANCH.tokenize("/")
+    BRANCH_NAME = BRANCH_NAME.tokenize("/")
     BRANCH_NAME = BRANCH_NAME[BRANCH_NAME.size() - 1];
     currentBuild.displayName = "$REPOSITORY merging to $BRANCH_NAME"
     String version = "";
