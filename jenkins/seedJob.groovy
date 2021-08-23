@@ -8,31 +8,53 @@ node("master") {
         git(url: 'git@github.com:zevrant/zevrant-services-pipeline.git', credentialsId: 'jenkins-git', branch: 'master')
     }
 
+    boolean runSeed = false;
+    stage("Check seed updates") {
+        String isSeedChanged = sh returnStdout: true, script: 'git log -1 --raw | grep jenkins/seed*.groovy'
+        String isGroovyChanged = sh returnStdout: true, script: 'git log -1 --raw | grep jenkins/src/main/groovy'
+        runSeed = !isSeedChanged.isBlank() || !isGroovyChanged.isBlank()
+    }
+
     List<String> libraryRepositories = new ArrayList<>();
     stage("Get library Repositories") {
-        libraryRepositories.addAll(getNonArchivedReposMatching("common"))
+        when {
+            runSeed true
+        }
+        steps {
+            libraryRepositories.addAll(getNonArchivedReposMatching("common"))
+        }
     }
 
     List<String> microserviceRepositories = new ArrayList<>();
     stage("Get Microservice Repositories") {
-        microserviceRepositories.addAll(getNonArchivedReposMatching('service'))
-        microserviceRepositories.addAll(getNonArchivedReposMatching('ui'))
+        when {
+            runSeed true
+        }
+        steps {
+            microserviceRepositories.addAll(getNonArchivedReposMatching('service'))
+            microserviceRepositories.addAll(getNonArchivedReposMatching('ui'))
+        }
     }
 
     stage("Process Seed File") {
-        jobDsl(
-                targets: 'jenkins/seed.groovy',
-                removeActions: 'DELETE',
-                removedJobAction: 'DELETE',
-                removedViewAction: 'DELETE',
-                removedConfigFilesAction: 'DELETE',
-                lookupStrategy: 'SEED_JOB',
-                additionalClasspath: 'jenkins/src/main/groovy/',
-                additionalParameters: [
-                        libraryRepositories     : libraryRepositories,
-                        microserviceRepositories: microserviceRepositories
-                ]
-        )
+        when {
+            runSeed true
+        }
+        steps {
+            jobDsl(
+                    targets: 'jenkins/seed.groovy',
+                    removeActions: 'DELETE',
+                    removedJobAction: 'DELETE',
+                    removedViewAction: 'DELETE',
+                    removedConfigFilesAction: 'DELETE',
+                    lookupStrategy: 'SEED_JOB',
+                    additionalClasspath: 'jenkins/src/main/groovy/',
+                    additionalParameters: [
+                            libraryRepositories     : libraryRepositories,
+                            microserviceRepositories: microserviceRepositories
+                    ]
+            )
+        }
     }
 }
 

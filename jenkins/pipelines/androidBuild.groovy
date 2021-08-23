@@ -26,10 +26,17 @@ node("master") {
     }
 
     stage("Version Update") {
-        def splitVersion = version.tokenize(".");
-        def minorVersion = splitVersion[2]
-        minorVersion = minorVersion.toInteger() + 1
-        version = "${splitVersion[0]}.${splitVersion[1]}.${minorVersion}"
+        if(variant = 'release') {
+            def splitVersion = version.tokenize(".");
+            def minorVersion = splitVersion[2]
+            minorVersion = minorVersion.toInteger() + 1
+            version = "${splitVersion[0]}.${splitVersion[1]}.${minorVersion}"
+        } else {
+            def splitVersion = version.tokenize(".");
+            def majorVersion = splitVersion[0]
+            majorVersion = majorVersion.toInteger() + 1
+            def newVersion = "${majorVersion}.0.0";
+        }
         sh "aws ssm put-parameter --name ${REPOSITORY}-VERSION --value $version --type String --overwrite"
     }
 
