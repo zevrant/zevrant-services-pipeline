@@ -52,7 +52,7 @@ String displayNameString = ""
 folder("Android") {}
 String folderName = "Android/"
 jobName.split("-").each { repositoryName -> displayNameString += repositoryName.capitalize() + " " }
-jobName = jobName.trim()
+displayNameString = jobName.trim()
 folderName += displayNameString + "/"
 folder(folderName.substring(0, folderName.length() -1)) {}
 multibranchPipelineJob(folderName + jobName + "-multibranch") {
