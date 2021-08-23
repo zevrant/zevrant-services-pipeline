@@ -9,7 +9,7 @@ import com.zevrant.services.PipelineTriggerType
     Pipeline pipeline = new Pipeline(
             name: libraryRepository,
             parameters: new ArrayList<>([
-                    DefaultPipelineParameters.BRANCH_PARAMETER.getPara`meter()
+                    DefaultPipelineParameters.BRANCH_PARAMETER.getParameter()
             ]),
             gitRepo: "git@github.com:zevrant/zevrant-services-pipeline.git",
             jenkinsfileLocation: 'jenkins/pipelines/libraryBuild.groovy',
