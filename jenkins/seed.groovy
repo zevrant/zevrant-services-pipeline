@@ -26,7 +26,10 @@ Pipeline androidPipeline = new Pipeline(
         ]),
         gitRepo: "git@github.com:zevrant/zevrant-services-pipeline.git",
         jenkinsfileLocation: 'jenkins/pipelines/androidBuild.groovy',
-        credentialId: 'jenkins-git'
+        credentialId: 'jenkins-git',
+        envs: new HashMap<>([
+                'REPOSITORY': 'zevrant-android-app'
+        ])
 );
 createPipeline(androidFolder, androidPipeline)
 
@@ -102,6 +105,15 @@ void createPipeline(String folder, Pipeline pipeline) {
 //                        }
 //                        token(trigger.token)
 //                    }
+                }
+            }
+        }
+
+        if(pipeline.envs != null
+                && !pipeline.envs.isEmpty() ) {
+            environmentVariables {
+                pipeline.envs.keySet().each { key ->
+                    env(key, pipeline.envs.get(key))
                 }
             }
         }

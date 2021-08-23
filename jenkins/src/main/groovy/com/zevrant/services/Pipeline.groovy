@@ -11,6 +11,7 @@ class Pipeline {
     private final List<PipelineTrigger> triggers;
     private final int buildsToKeep;
     private final disabled;
+    private final Map<String, String> envs;
 
     Pipeline(Map<String, Object> params) {
         this.name = params.name
@@ -22,6 +23,7 @@ class Pipeline {
         this.triggers = (params.triggers as List<PipelineTrigger> ?: new ArrayList<>()) as List<PipelineTrigger>
         this.buildsToKeep = (params.buildsToKeep ?: 10) as int
         this.disabled = (params.disabled ?: false) as boolean
+        this.envs = params.envs ? params.envs as Map<String, String> : null
     }
 
     String getName() {
