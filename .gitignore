@@ -1,1 +1,7 @@
 */.terraform
+*/.gradle
+.gradle/
+/build/
+/.idea/
+/lib/
+/test/

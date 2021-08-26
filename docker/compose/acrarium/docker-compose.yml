@@ -1,0 +1,28 @@
+version: '2.0'
+services:
+  database:
+    image: mysql:5.7
+    container_name: database
+    environment:
+      MYSQL_ROOT_HOST: '%'
+      MYSQL_ROOT_PASSWORD: "[[root_password]]"
+      MYSQL_DATABASE: "acrarium"
+      MYSQL_USER: "acrarium"
+      MYSQL_PASSWORD: "[[secure_password]]"
+    expose:
+      - "3306"
+  #    volumes:
+  #      - acrarium_data:/var/lib/mysql
+  acrarium:
+    image: f43nd1r/acrarium:latest
+    container_name: acrarium
+    depends_on:
+      - database
+    ports:
+      - 8081:8080
+    restart: on-failure
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://database:3306/acrarium?useSSL=false&allowPublicKeyRetrieval=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: "acrarium"
+      SPRING_DATASOURCE_PASSWORD: "[[secure_password]]"
+      SPRING_JPA_DATABASEPLATFORM: org.hibernate.dialect.MySQL57Dialect
