@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zevrant-openssh-server-deployment
+  labels:
+    app: zevrant-openssh-server
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: zevrant-openssh-server
+  template:
+    metadata:
+      labels:
+        app: zevrant-openssh-server
+    spec:
+      imagePullSecrets:
+        - name: regcred
+      nodeSelector:
+        architecture: amd64
+      containers:
+        - name: zevrant-openssh-server
+          image: zevrant/openssh-server:latest
+          ports:
+            - containerPort: 2222
+          env:
+            - name: PUID
+              value: 1000
+            - name: PGID
+              value: 1000
+            - name: SUDO_ACCESS
+              value: false
+            - name: PASSWORD_ACCESS
+              value: false
+            - name: USER_NAME
+              value: zevrant

@@ -6,8 +6,8 @@ metadata:
 spec:
   type: NodePort
   ports:
-    - port: 8080
-      targetPort: 8080
+    - port: 2222
+      targetPort: 2222
       nodePort: 30124
   selector:
-    app: zevrant-home-ui
+    app: zevrant-openssh-server
