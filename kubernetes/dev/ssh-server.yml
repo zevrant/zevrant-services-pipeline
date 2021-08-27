@@ -25,12 +25,12 @@ spec:
             - containerPort: 2222
           env:
             - name: PUID
-              value: 1000
+              value: '1000'
             - name: PGID
-              value: 1000
+              value: '1000'
             - name: SUDO_ACCESS
-              value: false
+              value: 'false'
             - name: PASSWORD_ACCESS
-              value: false
+              value: 'false'
             - name: USER_NAME
-              value: zevrant
+              value: 'zevrant'
