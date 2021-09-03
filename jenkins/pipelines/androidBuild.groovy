@@ -9,7 +9,9 @@ String version = "";
 String variant = (BRANCH_NAME == "master")? "release" : BRANCH_NAME
 
 pipeline {
-
+    agent {
+        label 'master'
+    }
     stages {
         stage("Get Version") {
             steps {
