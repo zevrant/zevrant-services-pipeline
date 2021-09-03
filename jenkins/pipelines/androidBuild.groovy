@@ -2,13 +2,14 @@
 
 import com.zevrant.services.GitHubReleaseRequest
 
+BRANCH_NAME = BRANCH_NAME.tokenize("/")
+BRANCH_NAME = BRANCH_NAME[BRANCH_NAME.size() - 1];
+currentBuild.displayName = "$REPOSITORY merging to $BRANCH_NAME"
+String version = "";
+String variant = (BRANCH_NAME == "master")? "release" : BRANCH_NAME
+
 pipeline {
 
-    BRANCH_NAME = BRANCH_NAME.tokenize("/")
-    BRANCH_NAME = BRANCH_NAME[BRANCH_NAME.size() - 1];
-    currentBuild.displayName = "$REPOSITORY merging to $BRANCH_NAME"
-    String version = "";
-    String variant = (BRANCH_NAME == "master")? "release" : BRANCH_NAME
     stages {
         stage("Get Version") {
             def json = readJSON text: (sh(returnStdout: true, script: "aws ssm get-parameter --name ${repository}-VERSION"))
