@@ -5,10 +5,11 @@ import com.zevrant.services.GitHubReleaseRequest
 BRANCH_NAME = BRANCH_NAME.tokenize("/")
 BRANCH_NAME = BRANCH_NAME[BRANCH_NAME.size() - 1];
 currentBuild.displayName = "$REPOSITORY merging to $BRANCH_NAME"
-String version = "";
+String version = ""
 String variant = (BRANCH_NAME == "master")? "release" : 'develop'
-String pid = "";
+String pid = ""
 String avdName = "jenkins-android-test-$BUILD_ID"
+
 pipeline {
     agent {
         label 'master'
@@ -116,7 +117,8 @@ pipeline {
                 }
             }
         }
-    } post {
+    }
+    post {
         always {
             String junitFileName = 'app/build/outputs/**/connected/TEST-*.xml'
             if(fileExists(junitFileName)) {
