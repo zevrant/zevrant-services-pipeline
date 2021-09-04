@@ -64,9 +64,9 @@ pipeline {
     echo \$secretsInitializer | base64 --decode > app/src/androidTest/java/com/zevrant/services/zevrantandroidapp/secrets/SecretsInitializer.java
                     """
                     echo "waiting for emulator to come online"
-                    sh 'sleep 10 && adb devices'
-                    sh 'sleep 10 && adb devices'
-                    sh 'sleep 10 && adb devices'
+                    sh 'sleep 10 && /opt/android/android-sdk/platform-tools/adb devices'
+                    sh 'sleep 10 && /opt/android/android-sdk/platform-tools/adb devices'
+                    sh 'sleep 10 && /opt/android/android-sdk/platform-tools/adb devices'
                     sh 'bash gradlew clean connectedDevelopTest'
                 }
             }
