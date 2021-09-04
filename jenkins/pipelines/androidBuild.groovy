@@ -120,14 +120,18 @@ pipeline {
     }
     post {
         always {
-            String junitFileName = 'app/build/outputs/**/connected/TEST-*.xml'
-            if(fileExists(junitFileName)) {
-                junit junitFileName
+            steps {
+                script {
+                    String junitFileName = 'app/build/outputs/**/connected/TEST-*.xml'
+                    if(fileExists(junitFileName)) {
+                        junit junitFileName
+                    }
+                    echo "killing emulator with pid $pid"
+                    sh "kill -9 $pid"
+                    echo "deleting avd with name $avdName"
+                    sh "avdmanager delete avd -n $avdName"
+                }
             }
-            echo "killing emulator with pid $pid"
-            sh "kill -9 $pid"
-            echo "deleting avd with name $avdName"
-            sh "avdmanager delete avd -n $avdName"
         }
     }
 }
