@@ -9,7 +9,7 @@ String version = ""
 String variant = (BRANCH_NAME == "master") ? "release" : 'develop'
 String pid = ""
 String avdName = "jenkins-android-test-$BUILD_ID"
-
+String junitFileName = 'app/build/outputs/**/connected/TEST-*.xml'
 pipeline {
     agent {
         label 'master'
@@ -64,10 +64,7 @@ pipeline {
             }
             post {
                 always {
-                    String junitFileName = 'app/build/outputs/**/connected/TEST-*.xml'
-                    if (fileExists(junitFileName)) {
-                        junit junitFileName
-                    }
+                    junit junitFileName
                     echo "killing emulator with pid $pid"
                     sh "kill -9 $pid"
                     echo "deleting avd with name $avdName"
