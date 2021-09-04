@@ -6,7 +6,7 @@ BRANCH_NAME = BRANCH_NAME.tokenize("/")
 BRANCH_NAME = BRANCH_NAME[BRANCH_NAME.size() - 1];
 currentBuild.displayName = "$REPOSITORY merging to $BRANCH_NAME"
 String version = ""
-String variant = (BRANCH_NAME == "master")? "release" : 'develop'
+String variant = (BRANCH_NAME == "master") ? "release" : 'develop'
 String pid = ""
 String avdName = "jenkins-android-test-$BUILD_ID"
 
@@ -45,8 +45,8 @@ pipeline {
         stage("Integration Testing") {
             steps {
                 script {
-                    if(!fileExists('pixel4-snapshot')) {
-                       sh """
+                    if (!fileExists('pixel4-snapshot')) {
+                        sh """
     aws s3 cp s3://zevrant-artifact-store/pixel4-snapshot.zip pixel4-snapshot.zip
     unzip pixel4-snapshot.zip  -d pixel4-snapshot
     folder=`ls pixel4-snapshot`
@@ -61,6 +61,18 @@ pipeline {
                     sh 'bash gradlew clean connectedDevelopTest'
 
                 }
+            }
+        }
+        post {
+            always {
+                String junitFileName = 'app/build/outputs/**/connected/TEST-*.xml'
+                if (fileExists(junitFileName)) {
+                    junit junitFileName
+                }
+                echo "killing emulator with pid $pid"
+                sh "kill -9 $pid"
+                echo "deleting avd with name $avdName"
+                sh "avdmanager delete avd -n $avdName"
             }
         }
 
@@ -110,7 +122,7 @@ pipeline {
         }
 
         stage("Release") {
-            when { expression { BRANCH_NAME == 'develop' || BRANCH_NAME == 'master'}}
+            when { expression { BRANCH_NAME == 'develop' || BRANCH_NAME == 'master' } }
             steps {
                 script {
                     sh "aws s3 cp ./zevrant-services.apk s3://zevrant-apk-store/$variant/$version/zevrant-services.apk"
@@ -118,20 +130,5 @@ pipeline {
             }
         }
     }
-    post {
-        always {
-            steps {
-                script {
-                    String junitFileName = 'app/build/outputs/**/connected/TEST-*.xml'
-                    if(fileExists(junitFileName)) {
-                        junit junitFileName
-                    }
-                    echo "killing emulator with pid $pid"
-                    sh "kill -9 $pid"
-                    echo "deleting avd with name $avdName"
-                    sh "avdmanager delete avd -n $avdName"
-                }
-            }
-        }
-    }
+
 }
