@@ -55,7 +55,7 @@ pipeline {
     rm -r snapshot/\$folder/""".stripIndent()
                     }
                     String startEmulator = "/opt/android/android-sdk/emulator/emulator -sysdir /opt/android/android-sdk/system-images/android-30/google_apis_playstore/x86_64/ -avd $avdName' -no-window -no-boot-anim -no-snapshot-save -snapshot snapshot/"
-                    sh "/opt/android/android-sdk/cmdline-tools/5.0/bin/avdmanager create avd -n $avdName --abi google_apis_playstore/x86_64 --package \'system-images;android-30;google_apis_playstore;x86_64\'"
+                    sh "echo no | /opt/android/android-sdk/cmdline-tools/5.0/bin/avdmanager create avd -n $avdName --abi google_apis_playstore/x86_64 --package \'system-images;android-30;google_apis_playstore;x86_64\'"
                     pid = sh returnStdout: true, script: "nohup $startEmulator &"
                     sh 'bash gradlew clean connectedDevelopTest'
                 }
