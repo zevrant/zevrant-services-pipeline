@@ -50,18 +50,16 @@ pipeline {
     aws s3 cp s3://zevrant-artifact-store/pixel4-snapshot.zip pixel4-snapshot.zip
     unzip pixel4-snapshot.zip  -d pixel4-snapshot
     folder=`ls pixel4-snapshot`
-    cp -r pixel4-snapshot/$folder/* pixel4-snapshot
+    cp -r pixel4-snapshot/\$folder/* pixel4-snapshot
     rm pixel4-snapshot.zip
     rm pixel4-snapshot.zip*
-    rm -r pixel4-snapshot/snap_*""".stripIndent()
+    rm -r pixel4-snapshot/\$folder/""".stripIndent()
                     }
                     String startEmulator = "emulator -sysdir /opt/android/android-sdk/system-images/android-30/google_apis_playstore/x86_64/ -avd $avdName' -no-window -no-boot-anim -no-snapshot-save -snapshot pixel4-snapshot/"
                     sh "avdmanager create avd -n $avdName --abi google_apis_playstore/x86_64 --package 'system-images;android-30;google_apis_playstore;x86_64'"
                     pid = sh returnStdout: true, script: "nohup $startEmulator &"
                     sh 'bash gradlew clean connectedDevelopTest'
-
                 }
-
             }
             post {
                 always {
