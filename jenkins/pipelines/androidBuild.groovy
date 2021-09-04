@@ -37,6 +37,7 @@ pipeline {
             steps {
                 script {
 //                    sh "bash gradlew clean testDevelopTest --no-daemon"
+                    sh "echo skipping..."
                 }
             }
         }
