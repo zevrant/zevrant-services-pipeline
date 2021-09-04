@@ -37,7 +37,7 @@ pipeline {
         stage("Unit Test") {
             steps {
                 script {
-                    "bash gradlew clean testDevelopTest --no-daemon"
+                    sh "bash gradlew clean testDevelopTest --no-daemon"
                 }
             }
         }
@@ -61,14 +61,21 @@ pipeline {
                     sh 'bash gradlew clean connectedDevelopTest'
 
                 }
+
             }
             post {
                 always {
-                    junit junitFileName
-                    echo "killing emulator with pid $pid"
-                    sh "kill -9 $pid"
-                    echo "deleting avd with name $avdName"
-                    sh "avdmanager delete avd -n $avdName"
+                    script {
+                        if(fileExists(junitFileName)) {
+                            junit junitFileName
+                        }
+                        if(pid != "" && pid != null) {
+                            echo "killing emulator with pid $pid"
+                            sh "kill -9 $pid"
+                            echo "deleting avd with name $avdName"
+                            sh "avdmanager delete avd -n $avdName"
+                        }
+                    }
                 }
             }
         }
