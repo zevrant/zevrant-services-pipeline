@@ -7,7 +7,8 @@ BRANCH_NAME = BRANCH_NAME[BRANCH_NAME.size() - 1];
 currentBuild.displayName = "$REPOSITORY merging to $BRANCH_NAME"
 String version = "";
 String variant = (BRANCH_NAME == "master")? "release" : 'develop'
-
+String pid = "";
+String avdName = "jenkins-android-test-$BUILD_ID"
 pipeline {
     agent {
         label 'master'
@@ -32,10 +33,32 @@ pipeline {
             }
         }
 
-        stage("Test") {
+        stage("Unit Test") {
             steps {
                 script {
-                    "bash gradlew clean build --no-daemon"
+                    "bash gradlew clean testDevelopTest --no-daemon"
+                }
+            }
+        }
+
+        stage("Integration Testing") {
+            steps {
+                script {
+                    if(!fileExists('pixel4-snapshot')) {
+                       sh """
+    aws s3 cp s3://zevrant-artifact-store/pixel4-snapshot.zip pixel4-snapshot.zip
+    unzip pixel4-snapshot.zip  -d pixel4-snapshot
+    folder=`ls pixel4-snapshot`
+    cp -r pixel4-snapshot/$folder/* pixel4-snapshot
+    rm pixel4-snapshot.zip
+    rm pixel4-snapshot.zip*
+    rm -r pixel4-snapshot/snap_*""".stripIndent()
+                    }
+                    String startEmulator = "emulator -sysdir /opt/android/android-sdk/system-images/android-30/google_apis_playstore/x86_64/ -avd $avdName' -no-window -no-boot-anim -no-snapshot-save -snapshot pixel4-snapshot/"
+                    sh "avdmanager create avd -n $avdName --abi google_apis_playstore/x86_64 --package 'system-images;android-30;google_apis_playstore;x86_64'"
+                    pid = sh returnStdout: true, script: "nohup $startEmulator &"
+                    sh 'bash gradlew clean connectedDevelopTest'
+
                 }
             }
         }
@@ -92,6 +115,17 @@ pipeline {
                     sh "aws s3 cp ./zevrant-services.apk s3://zevrant-apk-store/$variant/$version/zevrant-services.apk"
                 }
             }
+        }
+    } post {
+        always {
+            String junitFileName = 'app/build/outputs/**/connected/TEST-*.xml'
+            if(fileExists(junitFileName)) {
+                junit junitFileName
+            }
+            echo "killing emulator with pid $pid"
+            sh "kill -9 $pid"
+            echo "deleting avd with name $avdName"
+            sh "avdmanager delete avd -n $avdName"
         }
     }
 }
