@@ -64,9 +64,13 @@ pipeline {
     echo \$secretsInitializer | base64 --decode > app/src/androidTest/java/com/zevrant/services/zevrantandroidapp/secrets/SecretsInitializer.java
                     """
                     echo "waiting for emulator to come online"
-                    sh 'sleep 10 && /opt/android/android-sdk/platform-tools/adb devices'
-                    sh 'sleep 10 && /opt/android/android-sdk/platform-tools/adb devices'
-                    sh 'sleep 10 && /opt/android/android-sdk/platform-tools/adb devices'
+                    String offline = "offline"
+                    while(offline.contains("offline")) {
+                        sh 'sleep 10'
+                        offline = sh returnStdout: true, script: '/opt/android/android-sdk/platform-tools/adb devices'
+                    }
+                    echo 'restarting adb to keep device from showing as unauthorized'
+                    sh '/opt/android/android-sdk/platform-tools/adb kill-server && /opt/android/android-sdk/platform-tools/adb start-server'
                     sh 'bash gradlew clean connectedDevelopTest'
                 }
             }
