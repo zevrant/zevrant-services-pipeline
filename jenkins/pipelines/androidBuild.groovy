@@ -47,7 +47,7 @@ pipeline {
                 script {
                     if (!fileExists('snapshot')) {
                         sh """
-    aws s3 cp s3://zevrant-artifact-store/snapshot.zip snapshot.zip
+    aws s3 cp s3://zevrant-artifact-store/pixel4-snapshot.zip snapshot.zip
     unzip snapshot.zip  -d snapshot
     folder=`ls snapshot`
     cp -r snapshot/\$folder/* snapshot
