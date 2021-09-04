@@ -55,7 +55,7 @@ pipeline {
                     }
                     String startEmulator = "/opt/android/android-sdk/emulator/emulator -sysdir /opt/android/android-sdk/system-images/android-30/google_apis_playstore/x86_64/ -avd $avdName -no-window -no-boot-anim -no-snapshot-save -snapshot snapshot/"
                     sh "echo no | /opt/android/android-sdk/cmdline-tools/5.0/bin/avdmanager create avd -n $avdName --abi google_apis_playstore/x86_64 --package \'system-images;android-30;google_apis_playstore;x86_64\'"
-                    sh "nohup $startEmulator &"
+                    sh "nohup $startEmulator > nohup.out &"
                     sh """
     set +x
     secretsInitializer=`aws secretsmanager get-secret-value --region us-east-1 --secret-id android-secrets-initializer | jq .SecretString`
@@ -76,7 +76,7 @@ pipeline {
                             echo "killing emulator with pid $pid"
                             sh "kill -9 $pid"
                             echo "deleting avd with name $avdName"
-                            sh "/opt/android/android-sdk/tools/bin/avdmanager delete avd -n $avdName"
+                            sh "/opt/android/android-sdk/cmdline-tools/5.0/bin/avdmanager delete avd -n $avdName"
                         }
                         archiveArtifacts artifacts: 'nohup.out', followSymlinks: false
                     }
