@@ -62,7 +62,8 @@ pipeline {
     secretsInitializer=`aws secretsmanager get-secret-value --region us-east-1 --secret-id android-secrets-initializer | jq .SecretString`
     secretsInitializer=`echo \$secretsInitializer | cut -c 2-\$((\${#secretsInitializer}-1))`
     echo \$secretsInitializer | base64 --decode > app/src/androidTest/java/com/zevrant/services/zevrantandroidapp/secrets/SecretsInitializer.java
-    sleep 15
+    set -x
+    sleep 30
                     """
                     sh 'bash gradlew clean connectedDevelopTest'
                 }
