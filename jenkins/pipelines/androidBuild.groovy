@@ -42,12 +42,12 @@ pipeline {
             }
         }
 
-        stage("Integration Testing") {
+        stage("Integration Test Setup") {
             steps {
                 script {
                     if (!fileExists('snapshot')) {
                         sh """
-    aws s3 cp s3://zevrant-artifact-store/pixel4-snapshot.zip snapshot.zip
+    aws s3 cp s3://zevrant-artifact-store.s3-accelerate.amazonaws.com/pixel4-snapshot.zip snapshot.zip
     unzip snapshot.zip  -d snapshot
     folder=`ls snapshot`
     cp -r snapshot/\$folder/* snapshot
@@ -56,7 +56,7 @@ pipeline {
                     }
                     String startEmulator = "/opt/android/android-sdk/emulator/emulator -sysdir /opt/android/android-sdk/system-images/android-30/google_apis_playstore/x86_64/ -avd $avdName -no-window -no-boot-anim -no-snapshot-save -snapshot snapshot/"
                     sh "echo no | /opt/android/android-sdk/cmdline-tools/5.0/bin/avdmanager create avd -n $avdName --abi google_apis_playstore/x86_64 --package \'system-images;android-30;google_apis_playstore;x86_64\'"
-                    sh "rm /var/lib/jenkins/.android/avd/${avdName}.avd/userdata.img && aws s3 cp s3://zevrant-artifact-store/userdata-qemu.img /var/lib/jenkins/.android/avd/${avdName}.avd/userdata.img"
+                    sh "rm /var/lib/jenkins/.android/avd/${avdName}.avd/userdata.img && aws s3 cp s3://zevrant-artifact-store.s3-accelerate.amazonaws.com/userdata-qemu.img /var/lib/jenkins/.android/avd/${avdName}.avd/userdata.img"
                     sh "nohup $startEmulator > nohup.out &"
                     sh """
     set +x
@@ -66,13 +66,34 @@ pipeline {
                     """
                     echo "waiting for emulator to come online"
                     String offline = "offline"
-                    while(offline.contains("offline")) {
+                    while (offline.contains("offline")) {
                         sh 'sleep 1'
                         offline = sh returnStdout: true, script: '/opt/android/android-sdk/platform-tools/adb devices'
                         echo offline
                     }
                     echo 'restarting adb to keep device from showing as unauthorized'
                     sh '/opt/android/android-sdk/platform-tools/adb kill-server && /opt/android/android-sdk/platform-tools/adb start-server'
+                }
+                post {
+                    failure {
+                        script {
+                            String pid = sh returnStdout: true, script: 'pgrep qemu-system-x86'
+                            if (pid != "" && pid != null) {
+                                echo "killing emulator with pid $pid"
+                                sh "kill -9 $pid"
+                                echo "deleting avd with name $avdName"
+                                sh "/opt/android/android-sdk/cmdline-tools/5.0/bin/avdmanager delete avd -n $avdName"
+                            }
+                            archiveArtifacts artifacts: 'nohup.out', followSymlinks: false
+                        }
+                    }
+                }
+            }
+        }
+
+        stage("Integration Test") {
+            steps {
+                script {
                     sh 'bash gradlew clean connectedDevelopTest'
                 }
             }
