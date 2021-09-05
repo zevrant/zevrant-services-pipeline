@@ -56,6 +56,7 @@ pipeline {
                     }
                     String startEmulator = "/opt/android/android-sdk/emulator/emulator -sysdir /opt/android/android-sdk/system-images/android-30/google_apis_playstore/x86_64/ -avd $avdName -no-window -no-boot-anim -no-snapshot-save -snapshot snapshot/"
                     sh "echo no | /opt/android/android-sdk/cmdline-tools/5.0/bin/avdmanager create avd -n $avdName --abi google_apis_playstore/x86_64 --package \'system-images;android-30;google_apis_playstore;x86_64\'"
+                    sh "rm /var/lib/jenkins/.android/avd/${avdName}.avd/userdata.img && aws s3 cp s3://zevrant-artifact-store/userdata-qemu.img /var/lib/jenkins/.android/avd/${avdName}.avd/userdata.img"
                     sh "nohup $startEmulator > nohup.out &"
                     sh """
     set +x
@@ -66,8 +67,9 @@ pipeline {
                     echo "waiting for emulator to come online"
                     String offline = "offline"
                     while(offline.contains("offline")) {
-                        sh 'sleep 10'
+                        sh 'sleep 1'
                         offline = sh returnStdout: true, script: '/opt/android/android-sdk/platform-tools/adb devices'
+                        echo offline
                     }
                     echo 'restarting adb to keep device from showing as unauthorized'
                     sh '/opt/android/android-sdk/platform-tools/adb kill-server && /opt/android/android-sdk/platform-tools/adb start-server'
