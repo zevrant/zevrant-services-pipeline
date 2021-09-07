@@ -73,7 +73,17 @@ pipeline {
                         echo offline
                     }
                     echo 'restarting adb to keep device from showing as unauthorized'
-                    sh '/opt/android/android-sdk/platform-tools/adb kill-server && /opt/android/android-sdk/platform-tools/adb start-server'
+                    int status = sh 'set -e /opt/android/android-sdk/platform-tools/adb kill-server && /opt/android/android-sdk/platform-tools/adb start-server'
+                    int i = 0;
+                    while(status != 0 && i < 10) {
+                        sleep 3
+                        status = sh 'set -e /opt/android/android-sdk/platform-tools/adb kill-server && /opt/android/android-sdk/platform-tools/adb start-server'
+                        i++
+                    }
+                    if(i == 10) {
+                        echo "Failed to restart adb"
+                        throw RuntimeException("Failed to restart ADB")
+                    }
                 }
             }
             post {
