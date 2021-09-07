@@ -80,6 +80,7 @@ pipeline {
                     while(status != 0 && i < 10) {
                         sleep 3
                         status = sh 'set -e /opt/android/android-sdk/platform-tools/adb kill-server && /opt/android/android-sdk/platform-tools/adb start-server'
+                        println "status is" + status
                         i++
                     }
                     if(i == 10) {
