@@ -58,7 +58,7 @@ pipeline {
                     sh "echo no | /opt/android/android-sdk/cmdline-tools/5.0/bin/avdmanager create avd -n $avdName --abi google_apis_playstore/x86_64 --package \'system-images;android-30;google_apis_playstore;x86_64\'"
 //                    sh "aws s3 cp s3://zevrant-artifact-store/userdata-qemu.img /var/lib/jenkins/.android/avd/${avdName}.avd/userdata.img  --endpoint-url https://s3-accelerate.amazonaws.com\n"
 //                    sh "aws s3 cp s3://zevrant-artifact-store/userdata-qemu.img.qcow2 /var/lib/jenkins/.android/avd/${avdName}.avd/userdata.img  --endpoint-url https://s3-accelerate.amazonaws.com\n"
-                    sh "rm -r /var/lib/jenkins/.android/avd/${avdName}.avd/* && cp -r /var/lib/jenkins/build-cache/Pixel_4_API_30.avd/* /var/lib/jenkins/.android/avd/${avdName}.avd/"
+                    sh "rm -r /var/lib/jenkins/.android/avd/${avdName}.avd/ && cp -r /var/lib/jenkins/build-cache/avd-image/ /var/lib/jenkins/.android/avd/${avdName}.avd/"
                     sh "nohup $startEmulator > nohup.out &"
                     sh """
     set +x
@@ -79,7 +79,7 @@ pipeline {
                     while(status != 0 && i < 10) {
                         sleep 3
                         status = sh returnStatus: true, script: 'set -e /opt/android/android-sdk/platform-tools/adb kill-server && /opt/android/android-sdk/platform-tools/adb start-server'
-                        println "status is" + status
+                        println "status is " + status
                         i++
                     }
                     if(i == 10) {
