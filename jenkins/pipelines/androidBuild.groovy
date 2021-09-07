@@ -79,7 +79,7 @@ pipeline {
                     int i = 0;
                     while(status != 0 && i < 10) {
                         sleep 3
-                        status = sh 'set -e /opt/android/android-sdk/platform-tools/adb kill-server && /opt/android/android-sdk/platform-tools/adb start-server'
+                        status = sh returnStatus: true, script: 'set -e /opt/android/android-sdk/platform-tools/adb kill-server && /opt/android/android-sdk/platform-tools/adb start-server'
                         println "status is" + status
                         i++
                     }
