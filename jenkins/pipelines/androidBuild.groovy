@@ -75,18 +75,18 @@ pipeline {
                     echo 'restarting adb to keep device from showing as unauthorized'
                     sh '/opt/android/android-sdk/platform-tools/adb kill-server && /opt/android/android-sdk/platform-tools/adb start-server'
                 }
-                post {
-                    failure {
-                        script {
-                            String pid = sh returnStdout: true, script: 'pgrep qemu-system-x86'
-                            if (pid != "" && pid != null) {
-                                echo "killing emulator with pid $pid"
-                                sh "kill -9 $pid"
-                                echo "deleting avd with name $avdName"
-                                sh "/opt/android/android-sdk/cmdline-tools/5.0/bin/avdmanager delete avd -n $avdName"
-                            }
-                            archiveArtifacts artifacts: 'nohup.out', followSymlinks: false
+            }
+            post {
+                failure {
+                    script {
+                        String pid = sh returnStdout: true, script: 'pgrep qemu-system-x86'
+                        if (pid != "" && pid != null) {
+                            echo "killing emulator with pid $pid"
+                            sh "kill -9 $pid"
+                            echo "deleting avd with name $avdName"
+                            sh "/opt/android/android-sdk/cmdline-tools/5.0/bin/avdmanager delete avd -n $avdName"
                         }
+                        archiveArtifacts artifacts: 'nohup.out', followSymlinks: false
                     }
                 }
             }
