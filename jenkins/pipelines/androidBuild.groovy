@@ -56,8 +56,10 @@ pipeline {
                     }
                     String startEmulator = "/opt/android/android-sdk/emulator/emulator -sysdir /opt/android/android-sdk/system-images/android-30/google_apis_playstore/x86_64/ -avd $avdName -no-window -no-boot-anim -no-snapshot-save -snapshot snapshot/"
                     sh "echo no | /opt/android/android-sdk/cmdline-tools/5.0/bin/avdmanager create avd -n $avdName --abi google_apis_playstore/x86_64 --package \'system-images;android-30;google_apis_playstore;x86_64\'"
-                    sh "aws s3 cp s3://zevrant-artifact-store/userdata-qemu.img /var/lib/jenkins/.android/avd/${avdName}.avd/userdata.img  --endpoint-url https://s3-accelerate.amazonaws.com\n"
-                    sh "aws s3 cp s3://zevrant-artifact-store/userdata-qemu.img.qcow2 /var/lib/jenkins/.android/avd/${avdName}.avd/userdata.img  --endpoint-url https://s3-accelerate.amazonaws.com\n"
+//                    sh "aws s3 cp s3://zevrant-artifact-store/userdata-qemu.img /var/lib/jenkins/.android/avd/${avdName}.avd/userdata.img  --endpoint-url https://s3-accelerate.amazonaws.com\n"
+//                    sh "aws s3 cp s3://zevrant-artifact-store/userdata-qemu.img.qcow2 /var/lib/jenkins/.android/avd/${avdName}.avd/userdata.img  --endpoint-url https://s3-accelerate.amazonaws.com\n"
+                    sh "cp /var/lib/jenkins/build-cache/userdata-qemu.img /var/lib/jenkins/.android/avd/${avdName}.avd/userdata.img"
+                    sh "cp /var/lib/jenkins/build-cache/userdata-qemu.img.qcow2 /var/lib/jenkins/.android/avd/${avdName}.avd/userdata.img"
                     sh "nohup $startEmulator > nohup.out &"
                     sh """
     set +x
