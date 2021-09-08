@@ -74,6 +74,12 @@ pipeline {
                         echo "Failed to restart adb"
                         throw RuntimeException("Failed to restart ADB")
                     }
+                    offline = "offline"
+                    while (offline.contains("offline")) {
+                        sh 'sleep 5'
+                        offline = sh returnStdout: true, script: '/opt/android/android-sdk/platform-tools/adb devices'
+                        echo offline
+                    }
                 }
             }
             post {
