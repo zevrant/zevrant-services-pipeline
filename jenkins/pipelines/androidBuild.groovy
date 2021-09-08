@@ -45,8 +45,8 @@ pipeline {
         stage("Integration Test Setup") {
             steps {
                 script {
-                    String startEmulator = "emulator -avd $avdName -no-window -no-boot-anim -no-snapshot-save -no-snapshot-load"
-                    sh "echo no | avdmanager create avd -n $avdName --abi google_apis_playstore/x86_64 --package \'system-images;android-30;google_apis_playstore;x86_64\'"
+                    String startEmulator = "#!/bin/bash -l emulator -avd $avdName -no-window -no-boot-anim -no-snapshot-save -no-snapshot-load"
+                    sh "echo no | #!/bin/bash -l avdmanager create avd -n $avdName --abi google_apis_playstore/x86_64 --package \'system-images;android-30;google_apis_playstore;x86_64\'"
                     sh "nohup $startEmulator > nohup-${avdName}.out &"
                     sh """
     set +x
@@ -58,15 +58,15 @@ pipeline {
                     String offline = "offline"
                     while (offline.contains("offline")) {
                         sh 'sleep 5'
-                        offline = sh returnStdout: true, script: 'adb devices'
+                        offline = sh returnStdout: true, script: '#!/bin/bash -l adb devices'
                         echo offline
                     }
                     echo 'restarting adb to keep device from showing as unauthorized'
-                    int status = sh 'set -e adb kill-server && adb start-server'
+                    int status = sh '#!/bin/bash -l set -e adb kill-server && adb start-server'
                     int i = 0;
                     while(status != 0 && i < 10) {
                         sleep 3
-                        status = sh returnStatus: true, script: 'set -e adb kill-server && adb start-server'
+                        status = sh returnStatus: true, script: '#!/bin/bash -l set -e adb kill-server && adb start-server'
                         println "status is " + status
                         i++
                     }
@@ -77,7 +77,7 @@ pipeline {
                     offline = "offline"
                     while (offline.contains("offline")) {
                         sh 'sleep 5'
-                        offline = sh returnStdout: true, script: 'adb devices'
+                        offline = sh returnStdout: true, script: '#!/bin/bash -l adb devices'
                         echo offline
                     }
                 }
@@ -90,7 +90,7 @@ pipeline {
                             echo "killing emulator with pid $pid"
                             sh "kill -9 $pid"
                             echo "deleting avd with name $avdName"
-                            sh "avdmanager delete avd -n $avdName"
+                            sh "#!/bin/bash -l avdmanager delete avd -n $avdName"
                         }
                         archiveArtifacts artifacts: "nohup-${avdName}.out", followSymlinks: false
                     }
@@ -115,7 +115,7 @@ pipeline {
                             echo "killing emulator with pid $pid"
                             sh "kill -9 $pid"
                             echo "deleting avd with name $avdName"
-                            sh "/opt/android/android-sdk/cmdline-tools/5.0/bin/avdmanager delete avd -n $avdName"
+                            sh "#!/bin/bash -l avdmanager delete avd -n $avdName"
                         }
                         archiveArtifacts artifacts: 'nohup.out', followSymlinks: false
                     }
