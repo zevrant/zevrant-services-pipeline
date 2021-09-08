@@ -45,21 +45,9 @@ pipeline {
         stage("Integration Test Setup") {
             steps {
                 script {
-                    if (!fileExists('snapshot')) {
-                        sh """
-    aws s3 cp s3://zevrant-artifact-store/pixel4-snapshot.zip snapshot.zip  --endpoint-url https://s3-accelerate.amazonaws.com
-    unzip snapshot.zip  -d snapshot
-    folder=`ls snapshot`
-    cp -r snapshot/\$folder/* snapshot
-    rm snapshot.zip
-    rm -r snapshot/\$folder/""".stripIndent()
-                    }
-                    String startEmulator = "/opt/android/android-sdk/emulator/emulator -sysdir /var/lib/jenkins/.android/avd/${avdName}.avd/ -avd $avdName -no-window -no-boot-anim -no-snapshot-save -snapshot snapshot/"
+                    String startEmulator = "/opt/android/android-sdk/emulator/emulator -sysdir /opt/android/android-sdk/system-images/android-30/google_apis_playstore/x86_64/ -avd $avdName -no-window -no-boot-anim -no-snapshot-save -no-snapshot-load"
                     sh "echo no | /opt/android/android-sdk/cmdline-tools/5.0/bin/avdmanager create avd -n $avdName --abi google_apis_playstore/x86_64 --package \'system-images;android-30;google_apis_playstore;x86_64\'"
-//                    sh "aws s3 cp s3://zevrant-artifact-store/userdata-qemu.img /var/lib/jenkins/.android/avd/${avdName}.avd/userdata.img  --endpoint-url https://s3-accelerate.amazonaws.com\n"
-//                    sh "aws s3 cp s3://zevrant-artifact-store/userdata-qemu.img.qcow2 /var/lib/jenkins/.android/avd/${avdName}.avd/userdata.img  --endpoint-url https://s3-accelerate.amazonaws.com\n"
-                    sh "rm -r /var/lib/jenkins/.android/avd/${avdName}.avd/ && cp -r /var/lib/jenkins/build-cache/avd-image/ /var/lib/jenkins/.android/avd/${avdName}.avd/"
-                    sh "nohup $startEmulator > nohup.out &"
+                    sh "nohup $startEmulator > nohup-${avdName}.out &"
                     sh """
     set +x
     secretsInitializer=`aws secretsmanager get-secret-value --region us-east-1 --secret-id android-secrets-initializer | jq .SecretString`
@@ -91,14 +79,14 @@ pipeline {
             post {
                 failure {
                     script {
-                        String pid = sh returnStdout: true, script: 'pgrep qemu-system-x86'
+                        String pid = sh returnStdout: true, script: ' set -e pgrep qemu-system-x86'
                         if (pid != "" && pid != null) {
                             echo "killing emulator with pid $pid"
                             sh "kill -9 $pid"
                             echo "deleting avd with name $avdName"
                             sh "/opt/android/android-sdk/cmdline-tools/5.0/bin/avdmanager delete avd -n $avdName"
                         }
-                        archiveArtifacts artifacts: 'nohup.out', followSymlinks: false
+                        archiveArtifacts artifacts: "nohup-${avdName}.out", followSymlinks: false
                     }
                 }
             }
