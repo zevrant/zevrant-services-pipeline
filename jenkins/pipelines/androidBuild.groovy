@@ -101,15 +101,7 @@ pipeline {
         stage("Integration Test") {
             steps {
                 script {
-                    int i = 0;
-                    retry {
-                        if (i > 0) {
-                            sleep 5
-                        }
-                        sh 'bash gradlew clean connectedDevelopTest'
-                        i++
-                    }
-
+                    sh 'bash gradlew clean connectedDevelopTest'
                 }
             }
             post {
@@ -119,18 +111,21 @@ pipeline {
 //                        if (fileExists(junitFileName)) {
 //                            junit junitFileName
 //                        }
-                        sh 'ADB_COMMAND="/opt/android/android-sdk/platform-tools/adb" bash gradlew pullReport'
-                        if(fileExists("cucumber-reports/cucumber.xml")) {
-                            junit "cucumber-reports/cucumber.xml"
+                        try {
+                            sh 'ADB_COMMAND="/opt/android/android-sdk/platform-tools/adb" bash gradlew pullReport'
+                            if (fileExists("cucumber-reports/cucumber.xml")) {
+                                junit "cucumber-reports/cucumber.xml"
+                            }
+                        } finally {
+                            String pid = sh returnStdout: true, script: 'pgrep qemu-system-x86'
+                            if (pid != "" && pid != null) {
+                                echo "killing emulator with pid $pid"
+                                sh "kill -9 $pid"
+                                echo "deleting avd with name $avdName"
+                                sh "/opt/android/android-sdk/cmdline-tools/5.0/bin/avdmanager delete avd -n $avdName"
+                            }
+                            archiveArtifacts artifacts: 'nohup.out', followSymlinks: false
                         }
-                        String pid = sh returnStdout: true, script: 'pgrep qemu-system-x86'
-                        if (pid != "" && pid != null) {
-                            echo "killing emulator with pid $pid"
-                            sh "kill -9 $pid"
-                            echo "deleting avd with name $avdName"
-                            sh "/opt/android/android-sdk/cmdline-tools/5.0/bin/avdmanager delete avd -n $avdName"
-                        }
-                        archiveArtifacts artifacts: 'nohup.out', followSymlinks: false
                     }
                 }
             }
