@@ -119,7 +119,7 @@ pipeline {
 //                        if (fileExists(junitFileName)) {
 //                            junit junitFileName
 //                        }
-                        sh 'ADB_COMMAND="/opt/android/android-sdk/platform-tools/adb" ./gradlew pullReport'
+                        sh 'ADB_COMMAND="/opt/android/android-sdk/platform-tools/adb" bash gradlew pullReport'
                         if(fileExists("cucumber-reports/cucumber.xml")) {
                             junit "cucumber-reports/cucumber.xml"
                         }
