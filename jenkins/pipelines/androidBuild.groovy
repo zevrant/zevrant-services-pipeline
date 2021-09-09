@@ -8,7 +8,7 @@ currentBuild.displayName = "$REPOSITORY merging to $BRANCH_NAME"
 String version = ""
 String variant = (BRANCH_NAME == "master") ? "release" : 'develop'
 String avdName = "jenkins-android-test-$BUILD_ID"
-String junitFileName = 'app/build/outputs/**/connected/TEST-*.xml'
+String junitFileName = "app/build/outputs/androidTest-results/connected/TEST-${avdName}(AVD) - 11-app-.xml"
 pipeline {
     agent {
         label 'master'
@@ -107,6 +107,7 @@ pipeline {
             post {
                 always {
                     script {
+                        sh "set -e ls -l app/build/outputs/androidTest-results/connected/"
                         if (fileExists(junitFileName)) {
                             junit junitFileName
                         }
