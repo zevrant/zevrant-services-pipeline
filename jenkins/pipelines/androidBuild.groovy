@@ -106,8 +106,7 @@ pipeline {
                         if (i > 0) {
                             sleep 5
                         }
-                        sh 'bash gradlew clean connectedDevelopTest'
-                        sh 'ADB_COMMAND="/opt/android/android-sdk/platform-tools/adb" ./gradlew pullReport'
+                        sh 'bash set -e gradlew clean connectedDevelopTest'
                         i++
                     }
 
@@ -120,6 +119,7 @@ pipeline {
 //                        if (fileExists(junitFileName)) {
 //                            junit junitFileName
 //                        }
+                        sh 'set -e ADB_COMMAND="/opt/android/android-sdk/platform-tools/adb" ./gradlew pullReport'
                         if(fileExists("cucumber-reports/cucumber.xml")) {
                             junit "cucumber-reports/cucumber.xml"
                         }
