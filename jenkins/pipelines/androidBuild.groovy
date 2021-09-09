@@ -64,13 +64,13 @@ pipeline {
                     echo 'restarting adb to keep device from showing as unauthorized'
                     int status = sh 'set -e /opt/android/android-sdk/platform-tools/adb kill-server && /opt/android/android-sdk/platform-tools/adb start-server'
                     int i = 0;
-                    while(status != 0 && i < 10) {
+                    while (status != 0 && i < 10) {
                         sleep 3
                         status = sh returnStatus: true, script: 'set -e /opt/android/android-sdk/platform-tools/adb kill-server && /opt/android/android-sdk/platform-tools/adb start-server'
                         println "status is " + status
                         i++
                     }
-                    if(i == 10) {
+                    if (i == 10) {
                         echo "Failed to restart adb"
                         throw RuntimeException("Failed to restart ADB")
                     }
@@ -101,7 +101,15 @@ pipeline {
         stage("Integration Test") {
             steps {
                 script {
-                    sh 'bash gradlew clean connectedDevelopTest'
+                    int i = 0;
+                    retry {
+                        if (i > 0) {
+                            sleep 5
+                        }
+                        sh 'bash gradlew clean connectedDevelopTest'
+                        i++
+                    }
+
                 }
             }
             post {
