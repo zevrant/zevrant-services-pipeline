@@ -106,7 +106,7 @@ pipeline {
                         if (i > 0) {
                             sleep 5
                         }
-                        sh 'bash set -e gradlew clean connectedDevelopTest'
+                        sh 'bash gradlew clean connectedDevelopTest'
                         i++
                     }
 
