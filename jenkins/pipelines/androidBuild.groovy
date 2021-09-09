@@ -106,7 +106,7 @@ pipeline {
                         if (i > 0) {
                             sleep 5
                         }
-                        sh 'bash gradlew clean connectedDevelopTest pullReport'
+                        sh 'ADB_COMMAND="/opt/android/android-sdk/platform-tools/adb" bash gradlew clean connectedDevelopTest pullReport'
                         i++
                     }
 
