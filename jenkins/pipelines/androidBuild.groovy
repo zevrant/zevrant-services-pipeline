@@ -106,7 +106,7 @@ pipeline {
                         if (i > 0) {
                             sleep 5
                         }
-                        sh 'bash gradlew clean connectedDevelopTest'
+                        sh 'bash gradlew clean connectedDevelopTest pullReport'
                         i++
                     }
 
@@ -115,9 +115,12 @@ pipeline {
             post {
                 always {
                     script {
-                        sh "set -e ls -l app/build/outputs/androidTest-results/connected/"
-                        if (fileExists(junitFileName)) {
-                            junit junitFileName
+//                        sh "set -e ls -l app/build/outputs/androidTest-results/connected/"
+//                        if (fileExists(junitFileName)) {
+//                            junit junitFileName
+//                        }
+                        if(fileExists("cucumber-reports/cucumber.xml")) {
+                            junit "cucumber-reports/cucumber.xml"
                         }
                         String pid = sh returnStdout: true, script: 'pgrep qemu-system-x86'
                         if (pid != "" && pid != null) {
