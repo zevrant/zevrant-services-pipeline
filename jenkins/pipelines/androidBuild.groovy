@@ -127,6 +127,7 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
 //                                        reportFiles: '*',
 //                                        reportName: "Cucumber Report"
 //                                ])
+                                sh "zip -r html-report.zip cucumber-reports/html-report"
                             }
                         } finally {
                             String pid = sh returnStdout: true, script: 'pgrep qemu-system-x86'
