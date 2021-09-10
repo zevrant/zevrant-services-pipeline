@@ -48,7 +48,7 @@ pipeline {
                     String startEmulator = "/opt/android/android-sdk/emulator/emulator -avd $avdName -no-window -no-boot-anim -no-snapshot-save -no-snapshot-load"
                     sh "echo no | /opt/android/android-sdk/cmdline-tools/5.0/bin/avdmanager create avd -n $avdName --abi google_apis_playstore/x86_64 --package \'system-images;android-30;google_apis_playstore;x86_64\'"
                     sh "nohup $startEmulator > nohup-${avdName}.out &"
-                    sh script: "set +x aws secretsmanager get-secret-value --region us-east-1 --secret-id android-secrets-initializer > secret.txt"
+                    sh script: "aws secretsmanager get-secret-value --region us-east-1 --secret-id android-secrets-initializer > secret.txt"
                     String secret = readJSON(file: 'secret.txt')["SecretString"]
                     sh 'rm secret.txt'
                     secret = secret.replaceAll("\\n", "")
