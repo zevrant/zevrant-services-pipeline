@@ -114,7 +114,14 @@ pipeline {
                         try {
                             sh 'ADB_COMMAND="/opt/android/android-sdk/platform-tools/adb" bash gradlew pullReport'
                             if (fileExists("cucumber-reports/cucumber.xml")) {
-                                junit "cucumber-reports/cucumber.xml"
+                                publishHTML (target: [
+                                        allowMissing: false,
+                                        alwaysLinkToLastBuild: false,
+                                        keepAll: true,
+                                        reportDir: 'cucumber-reports',
+                                        reportFiles: 'index.html',
+                                        reportName: "Cucumber Report"
+                                ])
                             }
                         } finally {
                             String pid = sh returnStdout: true, script: 'pgrep qemu-system-x86'
