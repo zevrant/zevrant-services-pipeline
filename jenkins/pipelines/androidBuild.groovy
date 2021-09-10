@@ -52,11 +52,11 @@ pipeline {
                     String secret = readJSON(file: 'secret.txt')["SecretString"]
                     sh 'rm secret.txt'
                     secret = secret.replaceAll("\\n", "")
-                    writeFile(file: 'script.sh', test: """
+                    writeFile(file: 'bashScript.sh', test: """
 #!/bin/bash
 echo \$1 | base64 --decode > app/src/androidTest/java/com/zevrant/services/zevrantandroidapp/secrets/SecretsInitializer.java
 """)
-                    sh "set +x bash script.sh '$secret'"
+                    sh "set +x bash bashScript.sh '$secret'"
                     echo "waiting for emulator to come online"
                     String offline = "offline"
                     while (offline.contains("offline")) {
