@@ -52,7 +52,7 @@ pipeline {
                     String secret = readJSON(file: 'secret.txt')["SecretString"]
                     sh 'rm secret.txt'
                     secret = secret.replaceAll("\\n", "")
-                    writeFile(file: 'bashScript.sh', test: """
+                    writeFile(file: 'bashScript.sh', text: """
 #!/bin/bash
 echo \$1 | base64 --decode > app/src/androidTest/java/com/zevrant/services/zevrantandroidapp/secrets/SecretsInitializer.java
 """)
