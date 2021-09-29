@@ -4,7 +4,7 @@ import com.zevrant.services.pojo.Version
 import groovy.json.JsonSlurper
 
 public Version getVersion(String applicationName) {
-    Object parametersResponse = new JsonSlurper().parse(sh(returnStdout: true, script: 'aws ssm describe-parameters'));
+    Object parametersResponse = new JsonSlurper().parseText(sh(returnStdout: true, script: 'aws ssm describe-parameters') as String);
     boolean containsParameter = false;
     for (Object parameter : parametersResponse.Parameters) {
         containsParameter = containsParameter || parameter.Name.contains("${applicationName}-VERSION")
