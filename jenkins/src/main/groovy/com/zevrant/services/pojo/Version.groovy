@@ -23,9 +23,9 @@ class Version {
             throw new RuntimeException("The supplied version doesnot match any of the supplied patterns");
         }
         String[] versionPieces = version.tokenize(".")
-        minor = Integer.valueOf(versionPieces[0])
+        minor = Integer.valueOf(versionPieces[2])
         median = Integer.valueOf(versionPieces[1])
-        major = Integer.valueOf(versionPieces[2])
+        major = Integer.valueOf(versionPieces[1])
     }
 
     String toThreeStageVersionString() {

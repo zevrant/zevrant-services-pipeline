@@ -113,22 +113,10 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
             post {
                 always {
                     script {
-//                        sh "set -e ls -l app/build/outputs/androidTest-results/connected/"
-//                        if (fileExists(junitFileName)) {
-//                            junit junitFileName
-//                        }
                         try {
                             sh 'ADB_COMMAND="/opt/android/android-sdk/platform-tools/adb" bash gradlew pullReport'
                             if (fileExists("cucumber-reports/cucumber.xml")) {
                                 cucumber 'cucumber-reports/cucumber.json'
-//                                publishHTML (target: [
-//                                        allowMissing: false,
-//                                        alwaysLinkToLastBuild: false,
-//                                        keepAll: true,
-//                                        reportDir: 'cucumber-reports/html-report',
-//                                        reportFiles: '*',
-//                                        reportName: "Cucumber Report"
-//                                ])
                                 sh "zip -r html-report.zip cucumber-reports/html-report"
                                 archiveArtifacts 'html-report.zip'
                             }
