@@ -25,7 +25,7 @@ class Version {
         String[] versionPieces = version.tokenize(".")
         minor = Integer.valueOf(versionPieces[2])
         median = Integer.valueOf(versionPieces[1])
-        major = Integer.valueOf(versionPieces[1])
+        major = Integer.valueOf(versionPieces[0])
     }
 
     String toThreeStageVersionString() {
