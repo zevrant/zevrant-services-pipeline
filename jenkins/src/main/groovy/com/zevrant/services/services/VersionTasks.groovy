@@ -17,26 +17,27 @@ Version getVersion(String applicationName) {
     return new Version(version)
 }
 
-Version majorVersionUpdate(String appName, Version currentVersion) {
-    currentVersion.setMajor(currentVersion.getMajor() + 1)
-    currentVersion.setMedian(0);
-    currentVersion.setMinor(0)
-
-    sh "aws ssm put-parameter --name ${appName}-VERSION --value ${currentVersion.toThreeStageVersionString()} --type String --overwrite"
-    return currentVersion
+void majorVersionUpdate(String appName, Version currentVersion) {
+    Version version = new Version(currentVersion.toThreeStageVersionString());
+    version.setMajor(currentVersion.getMajor() + 1)
+    version.setMedian(0);
+    version.setMinor(0)
+    sh "aws ssm put-parameter --name ${appName}-VERSION --value ${version.toThreeStageVersionString()} --type String --overwrite"
 }
 
 Version medianVersionUpdate(String appName, Version currentVersion) {
-    currentVersion.setMedian(currentVersion.getMedian() + 1);
-    currentVersion.setMinor(0)
+    Version version = new Version(currentVersion.toThreeStageVersionString());
+    version.setMedian(currentVersion.getMedian() + 1);
+    version.setMinor(0)
 
-    sh "aws ssm put-parameter --name ${appName}-VERSION --value ${currentVersion.toThreeStageVersionString()} --type String --overwrite"
+    sh "aws ssm put-parameter --name ${appName}-VERSION --value ${version.toThreeStageVersionString()} --type String --overwrite"
     return currentVersion
 }
 
 Version minorVersionUpdate(String appName, Version currentVersion) {
+    Version version = new Version(currentVersion.toThreeStageVersionString());
     currentVersion.setMinor(currentVersion.getMinor() + 1)
 
-    sh "aws ssm put-parameter --name ${appName}-VERSION --value ${currentVersion.toThreeStageVersionString()} --type String --overwrite"
+    sh "aws ssm put-parameter --name ${appName}-VERSION --value ${version.toThreeStageVersionString()} --type String --overwrite"
     return currentVersion
 }
