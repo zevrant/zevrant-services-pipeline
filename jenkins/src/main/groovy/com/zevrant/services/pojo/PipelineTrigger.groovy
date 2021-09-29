@@ -1,6 +1,6 @@
 package com.zevrant.services.pojo
 
-import com.zevrant.services.PipelineTriggerType
+import com.zevrant.services.enumerations.PipelineTriggerType
 
 class PipelineTrigger {
 
