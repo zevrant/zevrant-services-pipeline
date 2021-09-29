@@ -12,6 +12,8 @@ String variant = (BRANCH_NAME == "master") ? "release" : 'develop'
 String avdName = "jenkins-android-test-$BUILD_ID"
 String junitFileName = "app/build/outputs/androidTest-results/connected/TEST-${avdName}(AVD) - 11-app-.xml"
 VersionTasks versionTasks = TaskLoader.load(binding, VersionTasks) as VersionTasks
+byte[] b = new byte[2000];
+String versionCode = b.encodeBase64()
 pipeline {
     agent {
         label 'master'
@@ -163,7 +165,7 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
                     sh "base64 -d ./zevrant-services.txt > ./zevrant-services.p12"
                     json = readJSON text: (sh(returnStdout: true, script: "aws secretsmanager get-secret-value --secret-id /android/signing/password"))
                     String password = json['SecretString']
-                    sh " SIGNING_KEYSTORE=\'${env.WORKSPACE}/zevrant-services.p12\' " + 'KEYSTORE_PASSWORD=\'' + password + "\' bash gradlew clean assemble${variant.capitalize()} --no-daemon -PprojVersion='${version.toThreeStageVersionString()}'"
+                    sh " SIGNING_KEYSTORE=\'${env.WORKSPACE}/zevrant-services.p12\' " + 'KEYSTORE_PASSWORD=\'' + password + "\' bash gradlew clean assemble${variant.capitalize()} --no-daemon -PprojVersion='${version.toThreeStageVersionString()}' -PversionCode='${versionCode}'"
                     //for some reason gradle isn't signing like it's suppost to so we do it manually
                     sh "keytool -v -importkeystore -srckeystore zevrant-services.p12 -srcstoretype PKCS12 -destkeystore zevrant-services.jks -deststoretype JKS -srcstorepass \'$password\' -deststorepass \'$password\' -noprompt"
 
@@ -182,6 +184,9 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
                     sh "cp ./zevrant-services.apk /opt/fdroid/repo/zevrant-services-${version.toThreeStageVersionString()}.apk"
                     dir("/opt/fdroid") {
                         sh "fdroid update"
+                        sh "sed -i 's/CurrentVersion: \\\'.*\\\'/CurrentVersion: \\\'${version.toThreeStageVersionString()}\\\'/g' metadata/com.zevrant.services.${(REPOSITORY as String).toLowerCase().replace("-", "")}.${(BRANCH_NAME == "develop"? "develop." : "")}yml"
+                        sh "sed -i 's/CurrentVersionCode: \\\'.*\\\'/CurrentVersionCode: \\\'${}\\\'/g' metadata/com.zevrant.services.${(REPOSITORY as String).toLowerCase().replace("-", "")}.${(BRANCH_NAME == "develop"? "develop." : "")}yml"
+
                     }
                 }
             }
