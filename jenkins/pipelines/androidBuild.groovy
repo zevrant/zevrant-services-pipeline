@@ -196,6 +196,7 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
             steps {
                 script {
                     sh "aws s3 cp ./zevrant-services.apk s3://zevrant-apk-store/$variant/$version/zevrant-services.apk"
+                    sh "cp ./zevrant-services.apk /opt/fdroid/repo/zevrant-services-$version.apk"
                 }
             }
         }
