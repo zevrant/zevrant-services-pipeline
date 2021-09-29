@@ -5,6 +5,10 @@ import groovy.json.JsonSlurper
 
 class VersionTasks {
 
+    VersionTasks(def script) {
+        script.sh('test sh')
+    }
+
     public Version getVersion(String applicationName) {
         JsonSlurper slurper = new JsonSlurper()
         Object parametersResponse = slurper.parse(sh(returnStdout: true, script: 'aws ssm describe-parameters'));
