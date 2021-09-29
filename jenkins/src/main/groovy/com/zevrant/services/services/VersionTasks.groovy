@@ -10,7 +10,7 @@ Version getVersion(String applicationName) {
     }
     String version = ""
     if (containsParameter) {
-        version = readJSON(text: sh(returnStdout: true, script: "aws ssm --name get-parameter ${applicationName}-VERSION")).Value
+        version = readJSON(text: sh(returnStdout: true, script: "aws ssm --name get-parameter ${applicationName}-VERSION")).Parameter.Value
     } else {
         version = "0.0.0"
     }

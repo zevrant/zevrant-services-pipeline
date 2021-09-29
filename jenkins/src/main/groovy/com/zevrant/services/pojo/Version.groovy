@@ -13,6 +13,8 @@ class Version {
     private int major;
 
     Version(String version) {
+        assert version != null: "Supplied version was null"
+        assert version != "": "Supplied version was empty string"
         boolean patternMatches = false;
         for (Pattern pattern : acceptedPatterns) {
             patternMatches = patternMatches || pattern.matcher(version)
