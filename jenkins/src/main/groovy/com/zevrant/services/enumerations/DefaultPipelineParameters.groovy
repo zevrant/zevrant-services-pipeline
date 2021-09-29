@@ -1,4 +1,6 @@
-package com.zevrant.services
+package com.zevrant.services.enumerations
+
+import com.zevrant.services.pojo.PipelineParameter
 
 enum DefaultPipelineParameters {
     REPOSITORY_PARAMETER(new PipelineParameter<String>(String.class, "REPOSITORY", "Branch to be built", "")),

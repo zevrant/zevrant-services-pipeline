@@ -1,4 +1,4 @@
-package com.zevrant.services
+package com.zevrant.services.enumerations
 
 enum PipelineTriggerType {
     CRON,

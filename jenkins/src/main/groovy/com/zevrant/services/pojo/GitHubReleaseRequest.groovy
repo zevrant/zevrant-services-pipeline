@@ -1,4 +1,4 @@
-package com.zevrant.services;
+package com.zevrant.services.pojo;
 
 class GitHubReleaseRequest {
     final String tag_name;

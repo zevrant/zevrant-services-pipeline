@@ -1,8 +1,9 @@
-package com.zevrant.services
+package com.zevrant.services.enumerations
 
 enum ApplicationType {
     LIBRARY('Libraries'),
-    ANDROID('Android');
+    ANDROID('Android'),
+    SPRING('Spring');
 
     final String value;
 

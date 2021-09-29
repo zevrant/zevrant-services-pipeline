@@ -1,14 +1,16 @@
-@Library('CommonUtils') _
+import com.zevrant.services.pojo.Version
+import com.zevrant.services.services.VersionTasks
 
-import com.zevrant.services.GitHubReleaseRequest
+@Library('CommonUtils') _
 
 BRANCH_NAME = BRANCH_NAME.tokenize("/")
 BRANCH_NAME = BRANCH_NAME[BRANCH_NAME.size() - 1];
 currentBuild.displayName = "$REPOSITORY merging to $BRANCH_NAME"
-String version = ""
+Version version = null
 String variant = (BRANCH_NAME == "master") ? "release" : 'develop'
 String avdName = "jenkins-android-test-$BUILD_ID"
 String junitFileName = "app/build/outputs/androidTest-results/connected/TEST-${avdName}(AVD) - 11-app-.xml"
+VersionTasks versionTasks = new VersionTasks();
 pipeline {
     agent {
         label 'master'
@@ -17,8 +19,7 @@ pipeline {
         stage("Get Version") {
             steps {
                 script {
-                    def json = readJSON text: (sh(returnStdout: true, script: "aws ssm get-parameter --name ${repository}-VERSION"))
-                    version = json['Parameter']['Value']
+                    version = versionTasks.getVersion(REPOSITORY as String)
                 }
             }
         }
@@ -150,11 +151,8 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
             when { expression { variant == 'release' } }
             steps {
                 script {
-                    def splitVersion = version.tokenize(".");
-                    def majorVersion = splitVersion[0]
-                    majorVersion = majorVersion.toInteger() + 1
-                    def newVersion = "${majorVersion}.0.0";
-                    sh "aws ssm put-parameter --name ${REPOSITORY}-VERSION --value $version --type String --overwrite"
+
+                    versionTasks.majorVersionUpdate(REPOSITORY as String, version)
                 }
             }
         }
@@ -163,11 +161,7 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
             when { expression { variant != 'release' } }
             steps {
                 script {
-                    def splitVersion = version.tokenize(".");
-                    def minorVersion = splitVersion[2]
-                    minorVersion = minorVersion.toInteger() + 1
-                    version = "${splitVersion[0]}.${splitVersion[1]}.${minorVersion}"
-                    sh "aws ssm put-parameter --name ${REPOSITORY}-VERSION --value $version --type String --overwrite"
+                    versionTasks.minorVersionUpdate(REPOSITORY as String, version)
                 }
             }
         }
@@ -180,7 +174,7 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
                     sh "base64 -d ./zevrant-services.txt > ./zevrant-services.p12"
                     json = readJSON text: (sh(returnStdout: true, script: "aws secretsmanager get-secret-value --secret-id /android/signing/password"))
                     String password = json['SecretString']
-                    sh " SIGNING_KEYSTORE=\'${env.WORKSPACE}/zevrant-services.p12\' " + 'KEYSTORE_PASSWORD=\'' + password + "\' bash gradlew clean assemble${variant.capitalize()} --no-daemon -PprojVersion='${version}'"
+                    sh " SIGNING_KEYSTORE=\'${env.WORKSPACE}/zevrant-services.p12\' " + 'KEYSTORE_PASSWORD=\'' + password + "\' bash gradlew clean assemble${variant.capitalize()} --no-daemon -PprojVersion='${version.toThreeStageVersionString()}'"
                     //for some reason gradle isn't signing like it's suppost to so we do it manually
                     sh "keytool -v -importkeystore -srckeystore zevrant-services.p12 -srcstoretype PKCS12 -destkeystore zevrant-services.jks -deststoretype JKS -srcstorepass \'$password\' -deststorepass \'$password\' -noprompt"
 
@@ -195,8 +189,8 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
             when { expression { BRANCH_NAME == 'develop' || BRANCH_NAME == 'master' } }
             steps {
                 script {
-                    sh "aws s3 cp ./zevrant-services.apk s3://zevrant-apk-store/$variant/$version/*"
-                    sh "cp ./zevrant-services.apk /opt/fdroid/repo/zevrant-services-$version.apk"
+                    sh "aws s3 cp ./zevrant-services.apk s3://zevrant-apk-store/$variant/${version.toThreeStageVersionString()}/*"
+                    sh "cp ./zevrant-services.apk /opt/fdroid/repo/zevrant-services-${version.toThreeStageVersionString()}.apk"
                 }
             }
         }

@@ -1,4 +1,8 @@
-package com.zevrant.services
+package com.zevrant.services.pojo
+
+import com.zevrant.services.PipelineTriggerType
+import com.zevrant.services.enumerations.DefaultPipelineParameters
+import com.zevrant.services.enumerations.TriggerVariableType
 
 class PipelineCollection {
 

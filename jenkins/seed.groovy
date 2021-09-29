@@ -1,7 +1,7 @@
-import com.zevrant.services.ApplicationType
-import com.zevrant.services.DefaultPipelineParameters
-import com.zevrant.services.Pipeline
-import com.zevrant.services.PipelineCollection
+import com.zevrant.services.enumerations.ApplicationType
+import com.zevrant.services.enumerations.DefaultPipelineParameters
+import com.zevrant.services.pojo.Pipeline
+import com.zevrant.services.pojo.PipelineCollection
 import com.zevrant.services.PipelineTriggerType
 
 (libraryRepositories as List<String>).each { libraryRepository ->

@@ -1,4 +1,6 @@
-package com.zevrant.services
+package com.zevrant.services.pojo
+
+import com.zevrant.services.enumerations.TriggerVariableType
 
 class GenericPipelineTriggerVariable {
 
