@@ -1,3 +1,4 @@
+import com.zevrant.services.TaskLoader
 import com.zevrant.services.pojo.Version
 import com.zevrant.services.services.VersionTasks
 
@@ -10,7 +11,7 @@ Version version = null
 String variant = (BRANCH_NAME == "master") ? "release" : 'develop'
 String avdName = "jenkins-android-test-$BUILD_ID"
 String junitFileName = "app/build/outputs/androidTest-results/connected/TEST-${avdName}(AVD) - 11-app-.xml"
-VersionTasks versionTasks = new VersionTasks();
+VersionTasks versionTasks = TaskLoader.load(binding, VersionTasks) as AzCli
 pipeline {
     agent {
         label 'master'
