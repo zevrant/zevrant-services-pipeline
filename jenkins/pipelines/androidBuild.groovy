@@ -11,7 +11,7 @@ Version version = null
 String variant = (BRANCH_NAME == "master") ? "release" : 'develop'
 String avdName = "jenkins-android-test-$BUILD_ID"
 String junitFileName = "app/build/outputs/androidTest-results/connected/TEST-${avdName}(AVD) - 11-app-.xml"
-VersionTasks versionTasks = TaskLoader.load(binding, VersionTasks) as AzCli
+VersionTasks versionTasks = TaskLoader.load(binding, VersionTasks) as VersionTasks
 pipeline {
     agent {
         label 'master'
