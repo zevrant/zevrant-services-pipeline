@@ -1,6 +1,7 @@
 @Library('CommonUtils') _
 
 import com.zevrant.services.GitHubReleaseRequest
+import junit.runner.Version
 
 BRANCH_NAME = BRANCH_NAME.tokenize("/")
 BRANCH_NAME = BRANCH_NAME[BRANCH_NAME.size() - 1];
@@ -180,7 +181,7 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
                     sh "base64 -d ./zevrant-services.txt > ./zevrant-services.p12"
                     json = readJSON text: (sh(returnStdout: true, script: "aws secretsmanager get-secret-value --secret-id /android/signing/password"))
                     String password = json['SecretString']
-                    sh " SIGNING_KEYSTORE=\'${env.WORKSPACE}/zevrant-services.p12\' " + 'KEYSTORE_PASSWORD=\'' + password + "\' bash gradlew clean assemble${variant.capitalize()} --no-daemon"
+                    sh " SIGNING_KEYSTORE=\'${env.WORKSPACE}/zevrant-services.p12\' " + 'KEYSTORE_PASSWORD=\'' + password + "\' bash gradlew clean assemble${variant.capitalize()} --no-daemon -PprojVersion='$version"
                     //for some reason gradle isn't signing like it's suppost to so we do it manually
                     sh "keytool -v -importkeystore -srckeystore zevrant-services.p12 -srcstoretype PKCS12 -destkeystore zevrant-services.jks -deststoretype JKS -srcstorepass \'$password\' -deststorepass \'$password\' -noprompt"
 
