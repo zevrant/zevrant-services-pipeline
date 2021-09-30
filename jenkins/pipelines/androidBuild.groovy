@@ -38,6 +38,7 @@ pipeline {
         }
 
         stage("Unit Test") {
+            when { expression { RUN_TESTS } }
             steps {
                 script {
 //                    sh "bash gradlew clean testDevelopTest --no-daemon"
@@ -47,6 +48,7 @@ pipeline {
         }
 
         stage("Integration Test Setup") {
+            when { expression { RUN_TESTS } }
             steps {
                 script {
                     String startEmulator = "/opt/android/android-sdk/emulator/emulator -avd $avdName -no-window -no-boot-anim -no-snapshot-save -no-snapshot-load"
@@ -107,6 +109,7 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
         }
 
         stage("Integration Test") {
+            when { expression { RUN_TESTS } }
             steps {
                 script {
                     sh 'bash gradlew clean connectedDevelopTest'
@@ -165,18 +168,18 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
                     sh "base64 -d ./zevrant-services.txt > ./zevrant-services.p12"
                     json = readJSON text: (sh(returnStdout: true, script: "aws secretsmanager get-secret-value --secret-id /android/signing/password"))
                     String password = json['SecretString']
-                    sh " SIGNING_KEYSTORE=\'${env.WORKSPACE}/zevrant-services.p12\' " + 'KEYSTORE_PASSWORD=\'' + password + "\' bash gradlew clean assemble${variant.capitalize()} --no-daemon -PprojVersion='${version.toThreeStageVersionString()}' -PversionCode='${versionCode}'"
+                    sh " SIGNING_KEYSTORE=\'${env.WORKSPACE}/zevrant-services.p12\' " + 'KEYSTORE_PASSWORD=\'' + password + "\' bash gradlew clean assemble${variant.capitalize()} --no-daemon -PprojVersion='${version.toThreeStageVersionString()}' -PversionCode='${zversionCode}'"
                     //for some reason gradle isn't signing like it's suppost to so we do it manually
                     sh "keytool -v -importkeystore -srckeystore zevrant-services.p12 -srcstoretype PKCS12 -destkeystore zevrant-services.jks -deststoretype JKS -srcstorepass \'$password\' -deststorepass \'$password\' -noprompt"
 
                     sh "/opt/android/android-sdk/build-tools/31.0.0/zipalign -p -f -v 4 app/build/outputs/apk/$variant/app-${variant}.apk zevrant-services-unsigned.apk"
-                    sh "/opt/android/android-sdk/build-tools/31.0.0/apksigner sign --ks zevrant-services.jks --in ./zevrant-services-unsigned.apk --out ./zevrant-services.apk --ks-pass \'pass:$password\'"
+                    sh "/opt/android/android-sdk/build-tools/31.0.0/apksigner sign --min-sdk-version 29 --ks zevrant-services.jks --in ./zevrant-services-unsigned.apk --out ./zevrant-services.apk --ks-pass \'pass:$password\'"
                     sh "/opt/android/android-sdk/build-tools/31.0.0/apksigner verify -v zevrant-services.apk"
                 }
             }
         }
 
-        stage("Release") {
+        stage("Release to S3 & FDroid") {
             when { expression { BRANCH_NAME == 'develop' || BRANCH_NAME == 'master' } }
             steps {
                 script {
@@ -190,6 +193,10 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
                     }
                 }
             }
+        }
+
+        stage("Release to Google Play") {
+
         }
     }
 

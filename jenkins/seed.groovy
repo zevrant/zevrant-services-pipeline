@@ -22,7 +22,13 @@ String androidFolder = createMultibranch('zevrant-android-app', ApplicationType.
 Pipeline androidPipeline = new Pipeline(
         name: "zevrant-android-app",
         parameters: new ArrayList<>([
-                DefaultPipelineParameters.BRANCH_PARAMETER.getParameter()
+                DefaultPipelineParameters.BRANCH_PARAMETER.getParameter(),
+                new PipelineParameter(
+                    Boolean.class,
+                        "RUN_TESTS",
+                        "Whether tests should be ran",
+                        Boolean.TRUE
+                )
         ]),
         gitRepo: "git@github.com:zevrant/zevrant-services-pipeline.git",
         jenkinsfileLocation: 'jenkins/pipelines/androidBuild.groovy',
