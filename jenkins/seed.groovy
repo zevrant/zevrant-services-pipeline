@@ -95,7 +95,7 @@ void createPipeline(String folder, Pipeline pipeline) {
 
         if (pipeline.triggers != null && !pipeline.triggers.isEmpty()) {
             pipeline.triggers.each { trigger ->
-                if (trigger.type == PipelineTriggerType.GENERIC) {
+//                if (trigger.type == PipelineTriggerType.GENERIC) {
 //                    genericTrigger {
 //                        genericVariables {
 //                            if (trigger.variables != null && !trigger.variables.isEmpty()) {
@@ -111,7 +111,7 @@ void createPipeline(String folder, Pipeline pipeline) {
 //                        }
 //                        token(trigger.token)
 //                    }
-                }
+//                }
             }
         }
 
