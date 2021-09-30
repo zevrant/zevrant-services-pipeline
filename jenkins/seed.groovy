@@ -149,22 +149,22 @@ void createPipeline(String folder, Pipeline pipeline) {
                 }
             }
         }
-        if (pipeline.triggers.size() > 0) {
-            triggers {
-                pipeline.triggers.each { trigger ->
-                    switch (trigger.type) {
-                        case PipelineTriggerType.CRON:
-                            cron(trigger.value);
-                            break;
-                        case PipelineTriggerType.GENERIC:
-                            println "WARN: Ignoring Generic trigger as it is not yet implemented"
-                            break
-                        default:
-                            throw new RuntimeException("Pipeline Trigger Type Not Implemented ${trigger.type} for pipeline ${pipeline.name}")
-                    }
-                }
-            }
-        }
+//        if (pipeline.triggers.size() > 0) {
+//            triggers {
+//                pipeline.triggers.each { trigger ->
+//                    switch (trigger.type) {
+//                        case PipelineTriggerType.CRON:
+//                            cron(trigger.value);
+//                            break;
+//                        case PipelineTriggerType.GENERIC:
+//                            println "WARN: Ignoring Generic trigger as it is not yet implemented"
+//                            break
+//                        default:
+//                            throw new RuntimeException("Pipeline Trigger Type Not Implemented ${trigger.type} for pipeline ${pipeline.name}")
+//                    }
+//                }
+//            }
+//        }
 
         definition {
             cpsScm {
