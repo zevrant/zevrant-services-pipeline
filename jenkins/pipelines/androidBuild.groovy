@@ -1,8 +1,11 @@
+@Library('CommonUtils') _
+
 import com.zevrant.services.TaskLoader
 import com.zevrant.services.pojo.Version
-import com.zevrant.services.services.VersionTasks
 
-@Library('CommonUtils') _
+import com.zevrant.services.services.VersionTasks
+import com.zevrant.services.services.GooglePlayTasks
+
 
 BRANCH_NAME = BRANCH_NAME.tokenize("/")
 BRANCH_NAME = BRANCH_NAME[BRANCH_NAME.size() - 1];
@@ -12,6 +15,7 @@ String variant = (BRANCH_NAME == "master") ? "release" : 'develop'
 String avdName = "jenkins-android-test-$BUILD_ID"
 String junitFileName = "app/build/outputs/androidTest-results/connected/TEST-${avdName}(AVD) - 11-app-.xml"
 VersionTasks versionTasks = TaskLoader.load(binding, VersionTasks) as VersionTasks
+GooglePlayTasks googlePlayTasks = TaskLoader.load(binding, GooglePlayTasks) as GooglePlayTasks
 byte[] b = new byte[2000];
 String versionCode = b.encodeBase64()
 pipeline {
@@ -51,58 +55,58 @@ pipeline {
             when { expression { RUN_TESTS } }
             steps {
                 script {
-                    String startEmulator = "/opt/android/android-sdk/emulator/emulator -avd $avdName -no-window -no-boot-anim -no-snapshot-save -no-snapshot-load"
-                    sh "echo no | /opt/android/android-sdk/cmdline-tools/5.0/bin/avdmanager create avd -n $avdName --abi google_apis_playstore/x86_64 --package \'system-images;android-30;google_apis_playstore;x86_64\'"
-                    sh "nohup $startEmulator > nohup-${avdName}.out &"
-                    sh script: "aws secretsmanager get-secret-value --region us-east-1 --secret-id android-secrets-initializer > secret.txt"
-                    String secret = readJSON(file: 'secret.txt')["SecretString"]
-                    sh 'rm secret.txt'
-                    secret = secret.replaceAll("\\n", "")
-                    writeFile(file: "secret.txt", text: secret)
-                    writeFile(file: 'bashScript.sh', text: """
-#!/bin/bash
-cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services/zevrantandroidapp/secrets/SecretsInitializer.java
-""")
-                    sh "bash bashScript.sh && rm secret.txt"
-                    echo "waiting for emulator to come online"
-                    String offline = "offline"
-                    while (offline.contains("offline")) {
-                        sh 'sleep 5'
-                        offline = sh returnStdout: true, script: '/opt/android/android-sdk/platform-tools/adb devices'
-                        echo offline
-                    }
-                    echo 'restarting adb to keep device from showing as unauthorized'
-                    int status = sh 'set -e /opt/android/android-sdk/platform-tools/adb kill-server && /opt/android/android-sdk/platform-tools/adb start-server'
-                    int i = 0;
-                    while (status != 0 && i < 10) {
-                        sleep 3
-                        status = sh returnStatus: true, script: 'set -e /opt/android/android-sdk/platform-tools/adb kill-server && /opt/android/android-sdk/platform-tools/adb start-server'
-                        println "status is " + status
-                        i++
-                    }
-                    if (i == 10) {
-                        echo "Failed to restart adb"
-                        throw RuntimeException("Failed to restart ADB")
-                    }
-                    offline = "offline"
-                    while (offline.contains("offline")) {
-                        sh 'sleep 5'
-                        offline = sh returnStdout: true, script: '/opt/android/android-sdk/platform-tools/adb devices'
-                        echo offline
-                    }
+//                    String startEmulator = "/opt/android/android-sdk/emulator/emulator -avd $avdName -no-window -no-boot-anim -no-snapshot-save -no-snapshot-load"
+//                    sh "echo no | /opt/android/android-sdk/cmdline-tools/5.0/bin/avdmanager create avd -n $avdName --abi google_apis_playstore/x86_64 --package \'system-images;android-30;google_apis_playstore;x86_64\'"
+//                    sh "nohup $startEmulator > nohup-${avdName}.out &"
+//                    sh script: "aws secretsmanager get-secret-value --region us-east-1 --secret-id android-secrets-initializer > secret.txt"
+//                    String secret = readJSON(file: 'secret.txt')["SecretString"]
+//                    sh 'rm secret.txt'
+//                    secret = secret.replaceAll("\\n", "")
+//                    writeFile(file: "secret.txt", text: secret)
+//                    writeFile(file: 'bashScript.sh', text: """
+//#!/bin/bash
+//cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services/zevrantandroidapp/secrets/SecretsInitializer.java
+//""")
+//                    sh "bash bashScript.sh && rm secret.txt"
+//                    echo "waiting for emulator to come online"
+//                    String offline = "offline"
+//                    while (offline.contains("offline")) {
+//                        sh 'sleep 5'
+//                        offline = sh returnStdout: true, script: '/opt/android/android-sdk/platform-tools/adb devices'
+//                        echo offline
+//                    }
+//                    echo 'restarting adb to keep device from showing as unauthorized'
+//                    int status = sh 'set -e /opt/android/android-sdk/platform-tools/adb kill-server && /opt/android/android-sdk/platform-tools/adb start-server'
+//                    int i = 0;
+//                    while (status != 0 && i < 10) {
+//                        sleep 3
+//                        status = sh returnStatus: true, script: 'set -e /opt/android/android-sdk/platform-tools/adb kill-server && /opt/android/android-sdk/platform-tools/adb start-server'
+//                        println "status is " + status
+//                        i++
+//                    }
+//                    if (i == 10) {
+//                        echo "Failed to restart adb"
+//                        throw RuntimeException("Failed to restart ADB")
+//                    }
+//                    offline = "offline"
+//                    while (offline.contains("offline")) {
+//                        sh 'sleep 5'
+//                        offline = sh returnStdout: true, script: '/opt/android/android-sdk/platform-tools/adb devices'
+//                        echo offline
+//                    }
                 }
             }
             post {
                 failure {
                     script {
-                        String pid = sh returnStdout: true, script: ' set -e pgrep qemu-system-x86'
-                        if (pid != "" && pid != null) {
-                            echo "killing emulator with pid $pid"
-                            sh "kill -9 $pid"
-                            echo "deleting avd with name $avdName"
-                            sh "/opt/android/android-sdk/cmdline-tools/5.0/bin/avdmanager delete avd -n $avdName"
-                        }
-                        archiveArtifacts artifacts: "nohup-${avdName}.out", followSymlinks: false
+//                        String pid = sh returnStdout: true, script: ' set -e pgrep qemu-system-x86'
+//                        if (pid != "" && pid != null) {
+//                            echo "killing emulator with pid $pid"
+//                            sh "kill -9 $pid"
+//                            echo "deleting avd with name $avdName"
+//                            sh "/opt/android/android-sdk/cmdline-tools/5.0/bin/avdmanager delete avd -n $avdName"
+//                        }
+//                        archiveArtifacts artifacts: "nohup-${avdName}.out", followSymlinks: false
                     }
                 }
             }
@@ -112,29 +116,29 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
             when { expression { RUN_TESTS } }
             steps {
                 script {
-                    sh 'bash gradlew clean connectedDevelopTest'
+//                    sh 'bash gradlew clean connectedDevelopTest'
                 }
             }
             post {
                 always {
                     script {
-                        try {
-                            sh 'ADB_COMMAND="/opt/android/android-sdk/platform-tools/adb" bash gradlew pullReport'
-                            if (fileExists("cucumber-reports/cucumber.xml")) {
-                                cucumber 'cucumber-reports/cucumber.json'
-                                sh "zip -r html-report.zip cucumber-reports/html-report"
-                                archiveArtifacts 'html-report.zip'
-                            }
-                        } finally {
-                            String pid = sh returnStdout: true, script: 'pgrep qemu-system-x86'
-                            if (pid != "" && pid != null) {
-                                echo "killing emulator with pid $pid"
-                                sh "kill -9 $pid"
-                                echo "deleting avd with name $avdName"
-                                sh "/opt/android/android-sdk/cmdline-tools/5.0/bin/avdmanager delete avd -n $avdName"
-                            }
-                            archiveArtifacts artifacts: 'nohup.out', followSymlinks: false
-                        }
+//                        try {
+//                            sh 'ADB_COMMAND="/opt/android/android-sdk/platform-tools/adb" bash gradlew pullReport'
+//                            if (fileExists("cucumber-reports/cucumber.xml")) {
+//                                cucumber 'cucumber-reports/cucumber.json'
+//                                sh "zip -r html-report.zip cucumber-reports/html-report"
+//                                archiveArtifacts 'html-report.zip'
+//                            }
+//                        } finally {
+//                            String pid = sh returnStdout: true, script: 'pgrep qemu-system-x86'
+//                            if (pid != "" && pid != null) {
+//                                echo "killing emulator with pid $pid"
+//                                sh "kill -9 $pid"
+//                                echo "deleting avd with name $avdName"
+//                                sh "/opt/android/android-sdk/cmdline-tools/5.0/bin/avdmanager delete avd -n $avdName"
+//                            }
+//                            archiveArtifacts artifacts: 'nohup.out', followSymlinks: false
+//                        }
                     }
                 }
             }
@@ -145,8 +149,7 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
             when { expression { variant == 'release' } }
             steps {
                 script {
-
-                    versionTasks.majorVersionUpdate(REPOSITORY as String, version)
+//                    versionTasks.majorVersionUpdate(REPOSITORY as String, version)
                 }
             }
         }
@@ -155,7 +158,7 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
             when { expression { variant != 'release' } }
             steps {
                 script {
-                    versionTasks.minorVersionUpdate(REPOSITORY as String, version)
+//                    versionTasks.minorVersionUpdate(REPOSITORY as String, version)
                 }
             }
         }
@@ -183,12 +186,12 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
             when { expression { BRANCH_NAME == 'develop' || BRANCH_NAME == 'master' } }
             steps {
                 script {
-                    sh "aws s3 cp ./zevrant-services.apk s3://zevrant-apk-store/$variant/${version.toThreeStageVersionString()}/*"
-                    sh "cp ./zevrant-services.apk /opt/fdroid/repo/zevrant-services-${version.toThreeStageVersionString()}.apk"
-                    dir("/opt/fdroid") {
-                        sh "fdroid update"
-                        sh "sed -i 's/CurrentVersion: \\\'.*\\\'/CurrentVersion: \\\'${version.toThreeStageVersionString()}\\\'/g' metadata/com.zevrant.services.${(REPOSITORY as String).toLowerCase().replace("-", "")}.${(BRANCH_NAME == "develop"? "develop." : "")}yml"
-                        sh "sed -i 's/CurrentVersionCode: \\\'.*\\\'/CurrentVersionCode: \\\'${}\\\'/g' metadata/com.zevrant.services.${(REPOSITORY as String).toLowerCase().replace("-", "")}.${(BRANCH_NAME == "develop"? "develop." : "")}yml"
+//                    sh "aws s3 cp ./zevrant-services.apk s3://zevrant-apk-store/$variant/${version.toThreeStageVersionString()}/*"
+//                    sh "cp ./zevrant-services.apk /opt/fdroid/repo/zevrant-services-${version.toThreeStageVersionString()}.apk"
+//                    dir("/opt/fdroid") {
+//                        sh "fdroid update"
+//                        sh "sed -i 's/CurrentVersion: \\\'.*\\\'/CurrentVersion: \\\'${version.toThreeStageVersionString()}\\\'/g' metadata/com.zevrant.services.${(REPOSITORY as String).toLowerCase().replace("-", "")}.${(BRANCH_NAME == "develop"? "develop." : "")}yml"
+//                        sh "sed -i 's/CurrentVersionCode: \\\'.*\\\'/CurrentVersionCode: \\\'${}\\\'/g' metadata/com.zevrant.services.${(REPOSITORY as String).toLowerCase().replace("-", "")}.${(BRANCH_NAME == "develop"? "develop." : "")}yml"
 
                     }
                 }
@@ -196,8 +199,11 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
         }
 
         stage("Release to Google Play") {
-
+            when { expression { variant == 'release'}}
+            steps {
+                script {
+                    googlePlayTasks.createGoogleCredential();
+                }
+            }
         }
     }
-
-}
