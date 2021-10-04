@@ -1,6 +1,5 @@
 package com.zevrant.services.services
 
-@Grab('com.google.api-client:google-api-client:1.32.1')
 import com.google.auth.oauth2.OAuth2Credentials
 import com.google.auth.oauth2.ServiceAccountCredentials
 import com.zevrant.services.pojo.AppEdit
