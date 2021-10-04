@@ -1,5 +1,4 @@
 @Library('CommonUtils') _
-@Grab('com.google.api-client:google-api-client:1.32.1')
 
 import com.zevrant.services.TaskLoader
 import com.zevrant.services.pojo.Version
@@ -14,7 +13,6 @@ currentBuild.displayName = "$REPOSITORY merging to $BRANCH_NAME"
 Version version = null
 String variant = (BRANCH_NAME == "master") ? "release" : 'develop'
 String avdName = "jenkins-android-test-$BUILD_ID"
-String junitFileName = "app/build/outputs/androidTest-results/connected/TEST-${avdName}(AVD) - 11-app-.xml"
 VersionTasks versionTasks = TaskLoader.load(binding, VersionTasks) as VersionTasks
 GooglePlayTasks googlePlayTasks = TaskLoader.load(binding, GooglePlayTasks) as GooglePlayTasks
 byte[] b = new byte[2000];
@@ -27,6 +25,7 @@ pipeline {
         stage("Get Version") {
             steps {
                 script {
+                    println System.getProperty("java.ext.dirs")
                     version = versionTasks.getVersion(REPOSITORY as String)
                 }
             }
