@@ -152,7 +152,7 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
 
 
         stage("Release Version Update") {
-            when { expression { variant == 'releasez' } }
+            when { expression { variant == 'release' } }
             steps {
                 script {
                     versionTasks.majorVersionUpdate(REPOSITORY as String, version)
