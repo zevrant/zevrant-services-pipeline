@@ -191,7 +191,7 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
 //            when { expression { variant == 'release'}}
             steps {
                 script {
-                    androidApkMove(
+                    androidApkUpload(
                             googleCredentialsId: 'Zevrant Services',
                             trackName: 'production',
                             rolloutPercentage: '100',
