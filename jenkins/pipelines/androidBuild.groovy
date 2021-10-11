@@ -15,6 +15,7 @@ String avdName = "jenkins-android-test-$BUILD_ID"
 VersionTasks versionTasks = TaskLoader.load(binding, VersionTasks) as VersionTasks
 byte[] b = new byte[2000];
 Version versionCode = null;
+boolean runTests = Boolean.parseBoolean(RUN_TESTS as String)
 pipeline {
     agent {
         label 'master'
@@ -41,7 +42,7 @@ pipeline {
         }
 
         stage("Unit Test") {
-            when { expression { RUN_TESTS } }
+            when { expression { runTests} }
             steps {
                 script {
                     sh "bash gradlew clean testDevelopTest"
@@ -50,7 +51,7 @@ pipeline {
         }
 
         stage("Integration Test Setup") {
-            when { expression { RUN_TESTS } }
+            when { expression { runTests } }
             steps {
                 script {
                     String startEmulator = "/opt/android/android-sdk/emulator/emulator -avd $avdName -no-window -no-boot-anim -no-snapshot-save -no-snapshot-load"
@@ -97,7 +98,7 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
             post {
                 failure {
                     script {
-                        if(RUN_TESTS) {
+                        if(runTests) {
                             String pid = sh returnStdout: true, script: ' set -e pgrep qemu-system-x86'
                             if (pid != "" && pid != null) {
                                 echo "killing emulator with pid $pid"
@@ -113,7 +114,7 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
         }
 
         stage("Integration Test") {
-            when { expression { RUN_TESTS } }
+            when { expression { runTests } }
             steps {
                 script {
                     sh 'bash gradlew clean connectedDevelopTest'
