@@ -46,6 +46,6 @@ Version incrementVersionCode(String appName, Version currentVersion) {
     return majorVersionUpdate("$appName-code", currentVersion)
 }
 
-Version getVersionCode(String appName, Version currentVersion) {
+Version getVersionCode(String appName) {
     return getVersion("$appName-code")
 }
