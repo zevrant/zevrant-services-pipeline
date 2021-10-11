@@ -94,9 +94,9 @@ pipeline {
 //                    }
                 }
             }
-            post {
-                failure {
-                    script {
+//            post {
+//                failure {
+//                    script {
 //                        String pid = sh returnStdout: true, script: ' set -e pgrep qemu-system-x86'
 //                        if (pid != "" && pid != null) {
 //                            echo "killing emulator with pid $pid"
@@ -105,9 +105,9 @@ pipeline {
 //                            sh "/opt/android/android-sdk/cmdline-tools/5.0/bin/avdmanager delete avd -n $avdName"
 //                        }
 //                        archiveArtifacts artifacts: "nohup-${avdName}.out", followSymlinks: false
-                    }
-                }
-            }
+//                    }
+//                }
+//            }
         }
 
         stage("Integration Test") {
