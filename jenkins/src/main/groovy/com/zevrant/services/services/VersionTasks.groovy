@@ -44,7 +44,7 @@ Version minorVersionUpdate(String appName, Version currentVersion) {
 
 Version incrementVersionCode(String appName, Version currentVersion) {
     Version version = new Version(currentVersion.toVersionCodeString())
-    sh "aws ssm put-parameter --name ${appName}-VERSION --value ${version.toVersionCodeString()} --type String --overwrite"
+    sh "aws ssm put-parameter --name ${appName}-code-VERSION --value ${version.toVersionCodeString()} --type String --overwrite"
     return currentVersion
 }
 
