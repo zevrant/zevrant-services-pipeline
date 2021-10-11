@@ -177,12 +177,11 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
                     json = readJSON text: (sh(returnStdout: true, script: "aws secretsmanager get-secret-value --secret-id /android/signing/password"))
                     String password = json['SecretString']
                     sh " SIGNING_KEYSTORE=\'${env.WORKSPACE}/zevrant-services.p12\' " + 'KEYSTORE_PASSWORD=\'' + password + "\' bash gradlew clean bundle${variant.capitalize()} -PprojVersion='${version.toThreeStageVersionString()}' -PversionCode='${versionCode.toVersionCodeString()}'"
-                    //for some reason gradle isn't signing like it's suppost to so we do it manually
-                    sh "keytool -v -importkeystore -srckeystore zevrant-services.p12 -srcstoretype PKCS12 -destkeystore zevrant-services.jks -deststoretype JKS -srcstorepass \'$password\' -deststorepass \'$password\' -noprompt"
+                    //for some reason gradle isn't signing like it's supposed to so we do it manually
 
                     sh "/opt/android/android-sdk/build-tools/31.0.0/zipalign -p -f -v 4 app/build/outputs/bundle/$variant/app-${variant}.aab zevrant-services-unsigned.aab"
-                    sh "/opt/android/android-sdk/build-tools/31.0.0/apksigner sign --min-sdk-version 29 --ks zevrant-services.p12 --ks-key-alias key0 --in ./zevrant-services-unsigned.aab --out ./zevrant-services.aab --ks-pass \'pass:$password\'"
-                    sh "/opt/android/android-sdk/build-tools/31.0.0/apksigner verify -v zevrant-services.aab"
+                    sh "jarsigner -verbose -sigalg SHA512withRSA -digestalg SHA-512 -keystore zevrant-services.p12 ./zevrant-services-unsigned.aab -storepass \'$password\' key0"
+                    sh "jarsigner -verify -verbose zevrant-services.aab"
                 }
             }
         }
