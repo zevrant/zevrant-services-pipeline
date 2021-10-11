@@ -149,7 +149,7 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
 
 
         stage("Release Version Update") {
-            when { expression { variant == 'release' } }
+            when { expression { variant == 'releasez' } }
             steps {
                 script {
                     versionTasks.majorVersionUpdate(REPOSITORY as String, version)
@@ -183,6 +183,20 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
                     sh "/opt/android/android-sdk/build-tools/31.0.0/zipalign -p -f -v 4 app/build/outputs/apk/$variant/app-${variant}.apk zevrant-services-unsigned.apk"
                     sh "/opt/android/android-sdk/build-tools/31.0.0/apksigner sign --min-sdk-version 29 --ks zevrant-services.jks --ks-key-alias 1 --in ./zevrant-services-unsigned.apk --out ./zevrant-services.apk --ks-pass \'pass:$password\'"
                     sh "/opt/android/android-sdk/build-tools/31.0.0/apksigner verify -v zevrant-services.apk"
+                }
+            }
+        }
+
+        stage("Release to FDroid") {
+            when { expression { BRANCH_NAME == 'develop' || BRANCH_NAME == 'master' } }
+            steps {
+                script {
+                    sh "cp ./zevrant-services.apk /opt/fdroid/repo/zevrant-services-${version.toThreeStageVersionString()}.apk"
+                    dir("/opt/fdroid") {
+                        sh "fdroid update"
+                        sh "sed -i 's/CurrentVersion: \\\'.*\\\'/CurrentVersion: \\\'${version.toThreeStageVersionString()}\\\'/g' metadata/com.zevrant.services.${(REPOSITORY as String).toLowerCase().replace("-", "")}.${(BRANCH_NAME == "develop" ? "develop." : "")}yml"
+                        sh "sed -i 's/CurrentVersionCode: \\\'.*\\\'/CurrentVersionCode: \\\'${versionCode.toVersionCodeString()}\\\'/g' metadata/com.zevrant.services.${(REPOSITORY as String).toLowerCase().replace("-", "")}.${(BRANCH_NAME == "develop" ? "develop." : "")}yml"
+                    }
                 }
             }
         }
