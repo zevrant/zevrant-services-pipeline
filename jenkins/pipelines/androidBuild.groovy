@@ -195,8 +195,13 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
                     dir("/opt/fdroid") {
                         sh "rm -rf repo/icon*"
                         sh "fdroid update"
-                        sh "sed -i 's/CurrentVersion: \\\'.*\\\'/CurrentVersion: \\\'${version.toThreeStageVersionString()}\\\'/g' metadata/com.zevrant.services.${(REPOSITORY as String).toLowerCase().replace("-", "")}.${(BRANCH_NAME == "develop"? "develop." : "")}yml"
-                        sh "sed -i 's/CurrentVersionCode: \\\'.*\\\'/CurrentVersionCode: \\\'${versionCode.toVersionCodeString()}\\\'/g' metadata/com.zevrant.services.${(REPOSITORY as String).toLowerCase().replace("-", "")}.${(BRANCH_NAME == "develop"? "develop." : "")}yml"
+                        String fileName = "metadata/com.zevrant.services.${(REPOSITORY as String).toLowerCase().replace("-", "")}.${(BRANCH_NAME == "develop" ? "develop." : "")}yml"
+                        String versionFile = readFile(file: fileName)
+                        versionFile = versionFile
+                                .replaceAll("^CurrentVersion .*", "CurrentVersion: '${version.toThreeStageVersionString()}'")
+                                .replaceAll("^CurrentVersionCode: .*", "CurrentVersionCode: '${versionCode.toVersionCodeString()}'")
+                        writeFile(file: fileName, text: versionFile)
+                    }
                 }
             }
         }
