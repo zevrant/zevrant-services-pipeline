@@ -43,8 +43,7 @@ pipeline {
             when { expression { RUN_TESTS } }
             steps {
                 script {
-//                    sh "bash gradlew clean testDevelopTest --no-daemon"
-                    sh "echo skipping..."
+                    sh "bash gradlew clean testDevelopTest"
                 }
             }
         }
@@ -53,90 +52,94 @@ pipeline {
             when { expression { RUN_TESTS } }
             steps {
                 script {
-//                    String startEmulator = "/opt/android/android-sdk/emulator/emulator -avd $avdName -no-window -no-boot-anim -no-snapshot-save -no-snapshot-load"
-//                    sh "echo no | /opt/android/android-sdk/cmdline-tools/5.0/bin/avdmanager create avd -n $avdName --abi google_apis_playstore/x86_64 --package \'system-images;android-30;google_apis_playstore;x86_64\'"
-//                    sh "nohup $startEmulator > nohup-${avdName}.out &"
-//                    sh script: "aws secretsmanager get-secret-value --region us-east-1 --secret-id android-secrets-initializer > secret.txt"
-//                    String secret = readJSON(file: 'secret.txt')["SecretString"]
-//                    sh 'rm secret.txt'
-//                    secret = secret.replaceAll("\\n", "")
-//                    writeFile(file: "secret.txt", text: secret)
-//                    writeFile(file: 'bashScript.sh', text: """
-//#!/bin/bash
-//cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services/zevrantandroidapp/secrets/SecretsInitializer.java
-//""")
-//                    sh "bash bashScript.sh && rm secret.txt"
-//                    echo "waiting for emulator to come online"
-//                    String offline = "offline"
-//                    while (offline.contains("offline")) {
-//                        sh 'sleep 5'
-//                        offline = sh returnStdout: true, script: '/opt/android/android-sdk/platform-tools/adb devices'
-//                        echo offline
-//                    }
-//                    echo 'restarting adb to keep device from showing as unauthorized'
-//                    int status = sh 'set -e /opt/android/android-sdk/platform-tools/adb kill-server && /opt/android/android-sdk/platform-tools/adb start-server'
-//                    int i = 0;
-//                    while (status != 0 && i < 10) {
-//                        sleep 3
-//                        status = sh returnStatus: true, script: 'set -e /opt/android/android-sdk/platform-tools/adb kill-server && /opt/android/android-sdk/platform-tools/adb start-server'
-//                        println "status is " + status
-//                        i++
-//                    }
-//                    if (i == 10) {
-//                        echo "Failed to restart adb"
-//                        throw RuntimeException("Failed to restart ADB")
-//                    }
-//                    offline = "offline"
-//                    while (offline.contains("offline")) {
-//                        sh 'sleep 5'
-//                        offline = sh returnStdout: true, script: '/opt/android/android-sdk/platform-tools/adb devices'
-//                        echo offline
-//                    }
+                    String startEmulator = "/opt/android/android-sdk/emulator/emulator -avd $avdName -no-window -no-boot-anim -no-snapshot-save -no-snapshot-load"
+                    sh "echo no | /opt/android/android-sdk/cmdline-tools/5.0/bin/avdmanager create avd -n $avdName --abi google_apis_playstore/x86_64 --package \'system-images;android-30;google_apis_playstore;x86_64\'"
+                    sh "nohup $startEmulator > nohup-${avdName}.out &"
+                    sh script: "aws secretsmanager get-secret-value --region us-east-1 --secret-id android-secrets-initializer > secret.txt"
+                    String secret = readJSON(file: 'secret.txt')["SecretString"]
+                    sh 'rm secret.txt'
+                    secret = secret.replaceAll("\\n", "")
+                    writeFile(file: "secret.txt", text: secret)
+                    writeFile(file: 'bashScript.sh', text: """
+#!/bin/bash
+cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services/zevrantandroidapp/secrets/SecretsInitializer.java
+""")
+                    sh "bash bashScript.sh && rm secret.txt"
+                    echo "waiting for emulator to come online"
+                    String offline = "offline"
+                    while (offline.contains("offline")) {
+                        sh 'sleep 5'
+                        offline = sh returnStdout: true, script: '/opt/android/android-sdk/platform-tools/adb devices'
+                        echo offline
+                    }
+                    echo 'restarting adb to keep device from showing as unauthorized'
+                    int status = sh 'set -e /opt/android/android-sdk/platform-tools/adb kill-server && /opt/android/android-sdk/platform-tools/adb start-server'
+                    int i = 0;
+                    while (status != 0 && i < 10) {
+                        sleep 3
+                        status = sh returnStatus: true, script: 'set -e /opt/android/android-sdk/platform-tools/adb kill-server && /opt/android/android-sdk/platform-tools/adb start-server'
+                        println "status is " + status
+                        i++
+                    }
+                    if (i == 10) {
+                        echo "Failed to restart adb"
+                        throw RuntimeException("Failed to restart ADB")
+                    }
+                    offline = "offline"
+                    while (offline.contains("offline")) {
+                        sh 'sleep 5'
+                        offline = sh returnStdout: true, script: '/opt/android/android-sdk/platform-tools/adb devices'
+                        echo offline
+                    }
                 }
             }
-//            post {
-//                failure {
-//                    script {
-//                        String pid = sh returnStdout: true, script: ' set -e pgrep qemu-system-x86'
-//                        if (pid != "" && pid != null) {
-//                            echo "killing emulator with pid $pid"
-//                            sh "kill -9 $pid"
-//                            echo "deleting avd with name $avdName"
-//                            sh "/opt/android/android-sdk/cmdline-tools/5.0/bin/avdmanager delete avd -n $avdName"
-//                        }
-//                        archiveArtifacts artifacts: "nohup-${avdName}.out", followSymlinks: false
-//                    }
-//                }
-//            }
+            post {
+                failure {
+                    script {
+                        if(RUN_TESTS) {
+                            String pid = sh returnStdout: true, script: ' set -e pgrep qemu-system-x86'
+                            if (pid != "" && pid != null) {
+                                echo "killing emulator with pid $pid"
+                                sh "kill -9 $pid"
+                                echo "deleting avd with name $avdName"
+                                sh "/opt/android/android-sdk/cmdline-tools/5.0/bin/avdmanager delete avd -n $avdName"
+                            }
+                            archiveArtifacts artifacts: "nohup-${avdName}.out", followSymlinks: false
+                        }
+                    }
+                }
+            }
         }
 
         stage("Integration Test") {
             when { expression { RUN_TESTS } }
             steps {
                 script {
-//                    sh 'bash gradlew clean connectedDevelopTest'
+                    sh 'bash gradlew clean connectedDevelopTest'
                 }
             }
             post {
                 always {
                     script {
-//                        try {
-//                            sh 'ADB_COMMAND="/opt/android/android-sdk/platform-tools/adb" bash gradlew pullReport'
-//                            if (fileExists("cucumber-reports/cucumber.xml")) {
-//                                cucumber 'cucumber-reports/cucumber.json'
-//                                sh "zip -r html-report.zip cucumber-reports/html-report"
-//                                archiveArtifacts 'html-report.zip'
-//                            }
-//                        } finally {
-//                            String pid = sh returnStdout: true, script: 'pgrep qemu-system-x86'
-//                            if (pid != "" && pid != null) {
-//                                echo "killing emulator with pid $pid"
-//                                sh "kill -9 $pid"
-//                                echo "deleting avd with name $avdName"
-//                                sh "/opt/android/android-sdk/cmdline-tools/5.0/bin/avdmanager delete avd -n $avdName"
-//                            }
-//                            archiveArtifacts artifacts: 'nohup.out', followSymlinks: false
-//                        }
+                        if(RUN_TESTS) {
+                            try {
+                                sh 'ADB_COMMAND="/opt/android/android-sdk/platform-tools/adb" bash gradlew pullReport'
+                                if (fileExists("cucumber-reports/cucumber.xml")) {
+                                    cucumber 'cucumber-reports/cucumber.json'
+                                    sh "zip -r html-report.zip cucumber-reports/html-report"
+                                    archiveArtifacts 'html-report.zip'
+                                }
+                            } finally {
+                                String pid = sh returnStdout: true, script: 'pgrep qemu-system-x86'
+                                if (pid != "" && pid != null) {
+                                    echo "killing emulator with pid $pid"
+                                    sh "kill -9 $pid"
+                                    echo "deleting avd with name $avdName"
+                                    sh "/opt/android/android-sdk/cmdline-tools/5.0/bin/avdmanager delete avd -n $avdName"
+                                }
+                                archiveArtifacts artifacts: 'nohup.out', followSymlinks: false
+                            }
+                        }
                     }
                 }
             }
