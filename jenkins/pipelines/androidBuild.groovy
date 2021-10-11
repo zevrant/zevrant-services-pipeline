@@ -131,6 +131,9 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
                                     sh "zip -r html-report.zip cucumber-reports/html-report"
                                     archiveArtifacts 'html-report.zip'
                                 }
+                                if( fileExists("app/src/androidTest/java/com/zevrant/services/zevrantandroidapp/secrets/SecretsInitializer.java")) {
+                                    sh "rm -f app/src/androidTest/java/com/zevrant/services/zevrantandroidapp/secrets/SecretsInitializer.java"
+                                }
                             } finally {
                                 String pid = sh returnStdout: true, script: 'pgrep qemu-system-x86'
                                 if (pid != "" && pid != null) {
