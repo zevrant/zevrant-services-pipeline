@@ -67,6 +67,8 @@ String createMultibranch(String repositoryName, ApplicationType applicationType)
                 includes('master develop')
                 scanCredentialsId 'jenkins-git-access-token'
                 checkoutCredentialsId 'jenkins-git'
+                buildOriginBranchWithPR true
+                buildOriginPRMerge true
             }
 
         }
