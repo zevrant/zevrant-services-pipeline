@@ -14,7 +14,7 @@ String variant = (BRANCH_NAME == "master") ? "release" : 'develop'
 String avdName = "jenkins-android-test-$BUILD_ID"
 VersionTasks versionTasks = TaskLoader.load(binding, VersionTasks) as VersionTasks
 byte[] b = new byte[2000];
-Version versionCode = versionTasks.getVersion("${REPOSITORY.toLowerCase()}")
+Version versionCode = null;
 pipeline {
     agent {
         label 'master'
@@ -25,6 +25,7 @@ pipeline {
                 script {
                     println System.getProperty("java.ext.dirs")
                     version = versionTasks.getVersion(REPOSITORY as String)
+                    versionCode = versionTasks.getVersionCode("${REPOSITORY.toLowerCase()}")
                 }
             }
         }

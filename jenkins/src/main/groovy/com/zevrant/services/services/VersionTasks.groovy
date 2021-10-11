@@ -45,3 +45,7 @@ Version minorVersionUpdate(String appName, Version currentVersion) {
 Version incrementVersionCode(String appName, Version currentVersion) {
     return majorVersionUpdate("$appName-code", currentVersion)
 }
+
+Version getVersionCode(String appName, Version currentVersion) {
+    return getVersion("$appName-code")
+}
