@@ -191,7 +191,7 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
 //            when { expression { variant == 'release'}}
             steps {
                 script {
-                    androidApkMode(
+                    androidApkMove(
                             googleCredentialsId: 'jenkins-gcp',
                             trackName: 'production',
                             rolloutPercentage: '100',
