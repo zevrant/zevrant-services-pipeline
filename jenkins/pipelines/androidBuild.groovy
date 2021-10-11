@@ -4,7 +4,6 @@ import com.zevrant.services.TaskLoader
 import com.zevrant.services.pojo.Version
 
 import com.zevrant.services.services.VersionTasks
-import com.zevrant.services.services.GooglePlayTasks
 
 
 BRANCH_NAME = BRANCH_NAME.tokenize("/")
@@ -14,9 +13,8 @@ Version version = null
 String variant = (BRANCH_NAME == "master") ? "release" : 'develop'
 String avdName = "jenkins-android-test-$BUILD_ID"
 VersionTasks versionTasks = TaskLoader.load(binding, VersionTasks) as VersionTasks
-GooglePlayTasks googlePlayTasks = TaskLoader.load(binding, GooglePlayTasks) as GooglePlayTasks
 byte[] b = new byte[2000];
-String versionCode = b.encodeBase64()
+Version versionCode = versionTasks.getVersion("${REPOSITORY.toLowerCase()}")
 pipeline {
     agent {
         label 'master'
@@ -159,6 +157,8 @@ pipeline {
             steps {
                 script {
 //                    versionTasks.minorVersionUpdate(REPOSITORY as String, version)
+//                    versionTasks.versionIncrement(REPOSITORY as String, versionCode)
+
                 }
             }
         }
@@ -199,10 +199,18 @@ pipeline {
         }
 
         stage("Release to Google Play") {
-            when { expression { variant == 'release'}}
+//            when { expression { variant == 'release'}}
             steps {
                 script {
-                    googlePlayTasks.createGoogleCredential();
+                    androidApkMode(
+                            googleCredentialsId: 'jenkins-gcp',
+                            trackName: 'production',
+                            rolloutPercentage: '100',
+                            fromVersionCode: true,
+                            applicationId: "com.zevrant.services.${((String) REPOSITORY).toLowerCase().replaceAll("-", "")}",
+                            versionCodes: versionCode.toVersionCodeString(),
+                            filesPattern: 'zevrant-services.apk'
+                    )
                 }
             }
         }

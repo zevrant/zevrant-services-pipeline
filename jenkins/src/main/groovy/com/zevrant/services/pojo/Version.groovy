@@ -5,7 +5,8 @@ import java.util.regex.Pattern
 class Version {
 
     private static final List<Pattern> acceptedPatterns = [
-            Pattern.compile("\\d*\\.\\d*\\.\\d*")
+            Pattern.compile("\\d*\\.\\d*\\.\\d*"),
+            Pattern.compile("^\\d*\$")
     ]
 
     private int minor;
@@ -20,16 +21,28 @@ class Version {
             patternMatches = patternMatches || pattern.matcher(version)
         }
         if (!patternMatches) {
-            throw new RuntimeException("The supplied version doesnot match any of the supplied patterns");
+            throw new RuntimeException("The supplied version does not match any of the supplied patterns");
         }
         String[] versionPieces = version.tokenize(".")
-        minor = Integer.valueOf(versionPieces[2])
-        median = Integer.valueOf(versionPieces[1])
-        major = Integer.valueOf(versionPieces[0])
+        switch (versionPieces.length) {
+            case 1:
+                major = Integer.parseInt(version)
+                break;
+            case 3:
+                minor = Integer.valueOf(versionPieces[2])
+                median = Integer.valueOf(versionPieces[1])
+                major = Integer.valueOf(versionPieces[0])
+                break;
+        }
+
     }
 
     String toThreeStageVersionString() {
         return "${major}.${median}.${minor}"
+    }
+
+    String toVersionCodeString() {
+        return "${major}"
     }
 
     int getMinor() {
