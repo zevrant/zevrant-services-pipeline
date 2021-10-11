@@ -180,7 +180,7 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
                     //for some reason gradle isn't signing like it's suppost to so we do it manually
                     sh "keytool -v -importkeystore -srckeystore zevrant-services.p12 -srcstoretype PKCS12 -destkeystore zevrant-services.jks -deststoretype JKS -srcstorepass \'$password\' -deststorepass \'$password\' -noprompt"
 
-                    sh "/opt/android/android-sdk/build-tools/31.0.0/zipalign -p -f -v 4 app/build/outputs/apk/$variant/app-${variant}.aab zevrant-services-unsigned.aab"
+                    sh "/opt/android/android-sdk/build-tools/31.0.0/zipalign -p -f -v 4 app/build/outputs/bundle/$variant/app-${variant}.aab zevrant-services-unsigned.aab"
                     sh "/opt/android/android-sdk/build-tools/31.0.0/apksigner sign --min-sdk-version 29 --ks zevrant-services.p12 --ks-key-alias key0 --in ./zevrant-services-unsigned.aab --out ./zevrant-services.aab --ks-pass \'pass:$password\'"
                     sh "/opt/android/android-sdk/build-tools/31.0.0/apksigner verify -v zevrant-services.aab"
                 }
