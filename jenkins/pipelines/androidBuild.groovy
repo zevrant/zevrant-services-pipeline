@@ -189,9 +189,8 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
                     sh " SIGNING_KEYSTORE=\'${env.WORKSPACE}/zevrant-services.p12\' " + 'KEYSTORE_PASSWORD=\'' + password + "\' bash gradlew clean bundle${variant.capitalize()} -PprojVersion='${version.toThreeStageVersionString()}' -PversionCode='${versionCode.toVersionCodeString()}'"
                     //for some reason gradle isn't signing like it's supposed to so we do it manually
 
-                    sh "/opt/android/android-sdk/build-tools/31.0.0/zipalign -p -f -v 4 app/build/outputs/bundle/$variant/app-${variant}.aab zevrant-services-unsigned.aab"
-                    sh "jarsigner -verbose -sigalg SHA512withRSA -digestalg SHA-512 -keystore zevrant-services.p12 ./zevrant-services-unsigned.aab -storepass \'$password\' key0"
-                    sh "jarsigner -verify -verbose zevrant-services.aab"
+                    sh "jarsigner -verbose -sigalg SHA512withRSA -digestalg SHA-512 -keystore zevrant-services.p12 app/build/outputs/bundle/$variant/app-${variant}.aab -storepass \'$password\' key0"
+                    sh "jarsigner -verify -verbose app/build/outputs/bundle/$variant/app-${variant}.aab zevrant-services-unsigned.aab"
                 }
             }
         }
@@ -223,7 +222,7 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
                             googleCredentialsId: 'Zevrant Services',
                             trackName: 'production',
                             rolloutPercentage: '100',
-                            filesPattern: 'zevrant-services.aab'
+                            filesPattern: "app/build/outputs/bundle/$variant/app-${variant}.aab zevrant-services-unsigned.aab"
                     )
                 }
             }
