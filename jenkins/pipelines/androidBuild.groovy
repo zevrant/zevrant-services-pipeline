@@ -159,8 +159,8 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
             when { expression { variant == 'NEVER' } }
             steps {
                 script {
-//                    versionTasks.minorVersionUpdate(REPOSITORY as String, version)
-//                    versionTasks.versionIncrement(REPOSITORY as String, versionCode)
+                    versionTasks.minorVersionUpdate(REPOSITORY as String, version)
+                    versionTasks.versionIncrement(REPOSITORY as String, versionCode)
 
                 }
             }
