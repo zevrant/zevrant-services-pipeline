@@ -192,7 +192,7 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
             steps {
                 script {
                     androidApkMove(
-                            googleCredentialsId: 'jenkins-gcp',
+                            googleCredentialsId: 'Zevrant Services',
                             trackName: 'production',
                             rolloutPercentage: '100',
                             fromVersionCode: true,
