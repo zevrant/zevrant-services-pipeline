@@ -179,6 +179,12 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
                     sh "base64 -d ./zevrant-services.txt > ./zevrant-services.p12"
                     json = readJSON text: (sh(returnStdout: true, script: "aws secretsmanager get-secret-value --secret-id /android/signing/password"))
                     String password = json['SecretString']
+
+                    String fileName = 'app/build.gradle'
+                    String build = readFile(file: fileName)
+                    build = build.replaceAll("<REPLACE_ME>", "${env.WORKSPACE}/zevrant-services.p12")
+                        .replaceAll("<PASSWORD>", password)
+                    writeFile(file: fileName, text: build)
                     sh " SIGNING_KEYSTORE=\'${env.WORKSPACE}/zevrant-services.p12\' " + 'KEYSTORE_PASSWORD=\'' + password + "\' bash gradlew clean bundle${variant.capitalize()} -PprojVersion='${version.toThreeStageVersionString()}' -PversionCode='${versionCode.toVersionCodeString()}'"
                     //for some reason gradle isn't signing like it's supposed to so we do it manually
 
