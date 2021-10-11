@@ -23,7 +23,6 @@ pipeline {
         stage("Get Version") {
             steps {
                 script {
-                    println System.getProperty("java.ext.dirs")
                     version = versionTasks.getVersion(REPOSITORY as String)
                     versionCode = versionTasks.getVersionCode("${REPOSITORY.toLowerCase()}")
                 }
