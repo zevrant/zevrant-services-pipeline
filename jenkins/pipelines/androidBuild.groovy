@@ -149,7 +149,7 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
 
 
         stage("Release Version Update") {
-            when { expression { variant == 'releaseNEVER' } }
+            when { expression { variant == 'release' } }
             steps {
                 script {
                     versionTasks.majorVersionUpdate(REPOSITORY as String, version)
@@ -158,7 +158,7 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
         }
 
         stage("Development Version Update") {
-            when { expression { variant == 'NEVER' } }
+            when { expression { variant == 'develop' } }
             steps {
                 script {
                     versionTasks.minorVersionUpdate(REPOSITORY as String, version)
@@ -188,7 +188,7 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
         }
 
         stage("Release to Google Play") {
-//            when { expression { variant == 'release'}}
+            when { expression { variant == 'release'}}
             steps {
                 script {
                     androidApkUpload(
