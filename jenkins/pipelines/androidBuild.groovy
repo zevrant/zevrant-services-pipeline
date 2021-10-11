@@ -182,7 +182,8 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
 
                     String fileName = 'app/build.gradle'
                     String build = readFile(file: fileName)
-                    build = build.replaceAll("REPLACE_ME", "${env.WORKSPACE}/zevrant-services.p12")
+                    build = build
+//                            .replaceAll("REPLACE_ME", "${env.WORKSPACE}/zevrant-services.p12")
                         .replaceAll("PASSWORD", password)
                     writeFile(file: fileName, text: build)
                     sh " SIGNING_KEYSTORE=\'${env.WORKSPACE}/zevrant-services.p12\' " + 'KEYSTORE_PASSWORD=\'' + password + "\' bash gradlew clean bundle${variant.capitalize()} -PprojVersion='${version.toThreeStageVersionString()}' -PversionCode='${versionCode.toVersionCodeString()}'"
