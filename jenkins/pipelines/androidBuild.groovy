@@ -213,9 +213,6 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
                             googleCredentialsId: 'Zevrant Services',
                             trackName: 'production',
                             rolloutPercentage: '100',
-                            fromVersionCode: true,
-                            applicationId: "com.zevrant.services.${((String) REPOSITORY).toLowerCase().replaceAll("-", "")}",
-                            versionCodes: versionCode.toVersionCodeString(),
                             filesPattern: 'zevrant-services.aab'
                     )
                 }
