@@ -176,13 +176,13 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
                     sh "base64 -d ./zevrant-services.txt > ./zevrant-services.p12"
                     json = readJSON text: (sh(returnStdout: true, script: "aws secretsmanager get-secret-value --secret-id /android/signing/password"))
                     String password = json['SecretString']
-                    sh " SIGNING_KEYSTORE=\'${env.WORKSPACE}/zevrant-services.p12\' " + 'KEYSTORE_PASSWORD=\'' + password + "\' bash gradlew clean assemble${variant.capitalize()} --no-daemon -PprojVersion='${version.toThreeStageVersionString()}' -PversionCode='${versionCode.toVersionCodeString()}'"
+                    sh " SIGNING_KEYSTORE=\'${env.WORKSPACE}/zevrant-services.p12\' " + 'KEYSTORE_PASSWORD=\'' + password + "\' bash gradlew clean bundle${variant.capitalize()} -PprojVersion='${version.toThreeStageVersionString()}' -PversionCode='${versionCode.toVersionCodeString()}'"
                     //for some reason gradle isn't signing like it's suppost to so we do it manually
                     sh "keytool -v -importkeystore -srckeystore zevrant-services.p12 -srcstoretype PKCS12 -destkeystore zevrant-services.jks -deststoretype JKS -srcstorepass \'$password\' -deststorepass \'$password\' -noprompt"
 
-                    sh "/opt/android/android-sdk/build-tools/31.0.0/zipalign -p -f -v 4 app/build/outputs/apk/$variant/app-${variant}.apk zevrant-services-unsigned.apk"
-                    sh "/opt/android/android-sdk/build-tools/31.0.0/apksigner sign --min-sdk-version 29 --ks zevrant-services.p12 --ks-key-alias key0 --in ./zevrant-services-unsigned.apk --out ./zevrant-services.apk --ks-pass \'pass:$password\'"
-                    sh "/opt/android/android-sdk/build-tools/31.0.0/apksigner verify -v zevrant-services.apk"
+                    sh "/opt/android/android-sdk/build-tools/31.0.0/zipalign -p -f -v 4 app/build/outputs/apk/$variant/app-${variant}.aab zevrant-services-unsigned.aab"
+                    sh "/opt/android/android-sdk/build-tools/31.0.0/apksigner sign --min-sdk-version 29 --ks zevrant-services.p12 --ks-key-alias key0 --in ./zevrant-services-unsigned.aab --out ./zevrant-services.aab --ks-pass \'pass:$password\'"
+                    sh "/opt/android/android-sdk/build-tools/31.0.0/apksigner verify -v zevrant-services.aab"
                 }
             }
         }
@@ -191,7 +191,7 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
             when { expression { BRANCH_NAME == 'develop' || BRANCH_NAME == 'master' } }
             steps {
                 script {
-                    sh "cp ./zevrant-services.apk /opt/fdroid/repo/zevrant-services-${version.toThreeStageVersionString()}.apk"
+                    sh "cp ./zevrant-services.aab /opt/fdroid/repo/zevrant-services-${version.toThreeStageVersionString()}.aab"
                     dir("/opt/fdroid") {
                         sh "rm -rf repo/icon*"
                         sh "fdroid update"
@@ -217,7 +217,7 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
                             fromVersionCode: true,
                             applicationId: "com.zevrant.services.${((String) REPOSITORY).toLowerCase().replaceAll("-", "")}",
                             versionCodes: versionCode.toVersionCodeString(),
-                            filesPattern: 'zevrant-services.apk'
+                            filesPattern: 'zevrant-services.aab'
                     )
                 }
             }
