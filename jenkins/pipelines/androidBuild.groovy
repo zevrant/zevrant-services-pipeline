@@ -216,7 +216,7 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
                             googleCredentialsId: 'Zevrant Services',
                             trackName: 'production',
                             rolloutPercentage: '100',
-                            filesPattern: "app/build/outputs/bundle/$variant/app-${variant}.aab zevrant-services-unsigned.aab"
+                            filesPattern: "app/build/outputs/bundle/$variant/app-${variant}.aab"
                     )
                 }
             }
