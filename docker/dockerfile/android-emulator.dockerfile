@@ -5,7 +5,8 @@ ARG apiLevel
 RUN echo $apiLevel \
     && apt-get update \
     && apt-get upgrade -y \
-    && apt-get install -y –-no-install-recommends wget zip qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils
+    && apt-get install -y wget zip qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils \
+    && apt-get clean
 
 #download android sdk cmdline tools
 RUN wget https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip -O cmdline-tools.zip \
@@ -17,7 +18,12 @@ RUN wget https://dl.google.com/android/repository/commandlinetools-linux-7583922
     && mv /opt/android/cmdline-tools/source.properties /opt/android/cmdline-tools/latest/source.properties \
     && mv /opt/android/cmdline-tools/lib /opt/android/cmdline-tools/latest/lib \
     && mv /opt/android/cmdline-tools/NOTICE.txt /opt/android/cmdline-tools/latest/NOTICE.txt \
-    && ls -la /opt/android/cmdline-tools/latest/bin
+    && chown -R root:developers /opt/android \
+    && chmod a+rx /opt/android/emulator/emulator \
+    && chmod a+rx /opt/android/emulator/ \
+    && chmod -R a+rx /opt/android/emulator/ \
+    && chmod -R a+rx /opt/android/emulator/ \
+    && chmod -R a+rx /opt/android/emulator/ \
 
 ENV ANDROID_SDK_ROOT=/opt/android
 #deprecated but some stuff still may use it
@@ -29,5 +35,7 @@ ENV PATH=/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/game
 #install sdk tools & emulator packages
 RUN sdkmanager --update \
     && echo y | sdkmanager platform-tools "platforms;android-30" "platforms;android-29" "platforms;android-28" "build-tools;31.0.0" "system-images;android-30;google_apis;x86_64" "system-images;android-29;google_apis;x86_64" "system-images;android-28;google_apis;x86_64"
+
+RUN useradd -m -d /var/lib/jenkins -G developers  zevrant-backup-service
 
 

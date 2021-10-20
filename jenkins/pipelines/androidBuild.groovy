@@ -17,6 +17,11 @@ byte[] b = new byte[2000];
 Version versionCode = null;
 boolean runTests = Boolean.parseBoolean(RUN_TESTS as String)
 pipeline {
+    environment {
+        AWS_ACCESS_KEY_ID= credentials('aws-access-key-id')
+        AWS_SECRET_ACCESS_KEY= credentials('aws-secret-access-key')
+        AWS_REGION="us-east"
+    }
     agent {
         docker {
             alwaysPull true
