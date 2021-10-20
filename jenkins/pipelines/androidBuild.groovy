@@ -23,10 +23,8 @@ pipeline {
         AWS_DEFAULT_REGION="us-east-1"
     }
     agent {
-        docker {
-            alwaysPull true
-            image 'zevrant/zevrant-android:latest'
-            args "--device /dev/kvm"
+        kubernetes {
+            inheritFrom 'android'
         }
     }
     stages {
@@ -64,7 +62,7 @@ pipeline {
             steps {
                 script {
                     String startEmulator = "emulator -avd $avdName -no-window -no-boot-anim -no-snapshot-save -no-snapshot-load"
-                    sh "echo no | avdmanager create avd -n $avdName --package \'system-images;android-30;google_apis;x86_64\'"
+                    sh "echo no | avdmanager create avd -n $avdName --package 'system-images;android-30;google_apis;x86_64'"
                     sh "nohup $startEmulator > nohup-${avdName}.out &"
                     sh script: "aws secretsmanager get-secret-value --region us-east-1 --secret-id android-secrets-initializer > secret.txt"
                     String secret = readJSON(file: 'secret.txt')["SecretString"]
