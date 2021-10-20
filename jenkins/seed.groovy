@@ -1,9 +1,3 @@
-import com.zevrant.services.enumerations.ApplicationType
-import com.zevrant.services.enumerations.DefaultPipelineParameters
-import com.zevrant.services.enumerations.PipelineTriggerType
-import com.zevrant.services.pojo.PipelineParameter
-import com.zevrant.services.pojo.Pipeline
-import com.zevrant.services.pojo.PipelineCollection
 
 (libraryRepositories as List<String>).each { libraryRepository ->
     String folder = createMultibranch(libraryRepository, ApplicationType.LIBRARY)
