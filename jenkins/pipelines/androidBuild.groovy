@@ -18,7 +18,11 @@ Version versionCode = null;
 boolean runTests = Boolean.parseBoolean(RUN_TESTS as String)
 pipeline {
     agent {
-        label 'master'
+        docker {
+            alwaysPull true
+            image 'zevrant/zevrant-android:latest'
+            args "--device /dev/kvm"
+        }
     }
     stages {
         stage("Get Version") {
@@ -54,8 +58,8 @@ pipeline {
             when { expression { runTests } }
             steps {
                 script {
-                    String startEmulator = "/opt/android/android-sdk/emulator/emulator -avd $avdName -no-window -no-boot-anim -no-snapshot-save -no-snapshot-load"
-                    sh "echo no | /opt/android/android-sdk/cmdline-tools/5.0/bin/avdmanager create avd -n $avdName --abi google_apis_playstore/x86_64 --package \'system-images;android-30;google_apis_playstore;x86_64\'"
+                    String startEmulator = "emulator -avd $avdName -no-window -no-boot-anim -no-snapshot-save -no-snapshot-load"
+                    sh "echo no | avdmanager create avd -n $avdName --abi google_apis_playstore/x86_64 --package \'system-images;android-30;google_apis_playstore;x86_64\'"
                     sh "nohup $startEmulator > nohup-${avdName}.out &"
                     sh script: "aws secretsmanager get-secret-value --region us-east-1 --secret-id android-secrets-initializer > secret.txt"
                     String secret = readJSON(file: 'secret.txt')["SecretString"]
@@ -71,15 +75,15 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
                     String offline = "offline"
                     while (offline.contains("offline")) {
                         sh 'sleep 5'
-                        offline = sh returnStdout: true, script: '/opt/android/android-sdk/platform-tools/adb devices'
+                        offline = sh returnStdout: true, script: 'adb devices'
                         echo offline
                     }
                     echo 'restarting adb to keep device from showing as unauthorized'
-                    int status = sh 'set -e /opt/android/android-sdk/platform-tools/adb kill-server && /opt/android/android-sdk/platform-tools/adb start-server'
+                    int status = sh 'set -e adb kill-server && adb start-server'
                     int i = 0;
                     while (status != 0 && i < 10) {
                         sleep 3
-                        status = sh returnStatus: true, script: 'set -e /opt/android/android-sdk/platform-tools/adb kill-server && /opt/android/android-sdk/platform-tools/adb start-server'
+                        status = sh returnStatus: true, script: 'set -e adb kill-server && adb start-server'
                         println "status is " + status
                         i++
                     }
@@ -90,7 +94,7 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
                     offline = "offline"
                     while (offline.contains("offline")) {
                         sh 'sleep 5'
-                        offline = sh returnStdout: true, script: '/opt/android/android-sdk/platform-tools/adb devices'
+                        offline = sh returnStdout: true, script: 'adb devices'
                         echo offline
                     }
                 }
@@ -104,7 +108,7 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
                                 echo "killing emulator with pid $pid"
                                 sh "kill -9 $pid"
                                 echo "deleting avd with name $avdName"
-                                sh "/opt/android/android-sdk/cmdline-tools/5.0/bin/avdmanager delete avd -n $avdName"
+                                sh "avdmanager delete avd -n $avdName"
                             }
                             archiveArtifacts artifacts: "nohup-${avdName}.out", followSymlinks: false
                         }
@@ -125,7 +129,7 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
                     script {
                         if(RUN_TESTS) {
                             try {
-                                sh 'ADB_COMMAND="/opt/android/android-sdk/platform-tools/adb" bash gradlew pullReport'
+                                sh 'adb" bash gradlew pullReport'
                                 if (fileExists("cucumber-reports/cucumber.xml")) {
                                     cucumber 'cucumber-reports/cucumber.json'
                                     sh "zip -r html-report.zip cucumber-reports/html-report"
@@ -140,7 +144,7 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
                                     echo "killing emulator with pid $pid"
                                     sh "kill -9 $pid"
                                     echo "deleting avd with name $avdName"
-                                    sh "/opt/android/android-sdk/cmdline-tools/5.0/bin/avdmanager delete avd -n $avdName"
+                                    sh "avdmanager delete avd -n $avdName"
                                 }
                                 archiveArtifacts artifacts: 'nohup.out', followSymlinks: false
                             }
