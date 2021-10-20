@@ -33,6 +33,7 @@ pipeline {
         stage("Get Version") {
             steps {
                 script {
+                    sh 'printenv'
                     version = versionTasks.getVersion(REPOSITORY as String)
                     versionCode = versionTasks.getVersionCode("${REPOSITORY.toLowerCase()}")
                     echo RUN_TESTS
