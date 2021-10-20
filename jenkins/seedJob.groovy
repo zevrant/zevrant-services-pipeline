@@ -2,7 +2,7 @@ import groovy.json.JsonSlurper
 
 @Library('CommonUtils') _
 
-node("master") {
+node {
 
     stage("Git Checkout") {
         git(url: 'git@github.com:zevrant/zevrant-services-pipeline.git', credentialsId: 'jenkins-git', branch: 'master')

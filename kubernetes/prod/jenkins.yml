@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: zevrant-jenkins-service
+  namespace: jenkins
+spec:
+  type: NodePort
+  ports:
+    - port: 8080
+      targetPort: 8080
+      name: http-port
+      nodePort: 30120
+    - port: 5000
+      targetPort: 5000
+      name: agent-port
+  selector:
+    app: zevrant-jenkins-service
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zevrant-jenkins-service-deployment
+  namespace: jenkins
+  labels:
+    app: zevrant-jenkins-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zevrant-jenkins-service
+  template:
+    metadata:
+      labels:
+        app: zevrant-jenkins-service
+    spec:
+      volumes:
+        - name: jenkins
+          nfs:
+            server: 192.168.1.11
+            path: /jenkins/jenkins
+      imagePullSecrets:
+        - name: regcred
+      nodeSelector:
+        architecture: amd64
+      containers:
+        - name: jenkins
+          image: jenkins/jenkins:latest-jdk11
+          volumeMounts:
+            - mountPath: /var/jenkins_home
+              name: jenkins
+          ports:
+            - containerPort: 8080
+              name: http-port
+            - containerPort: 5000
+              name: agent-port
