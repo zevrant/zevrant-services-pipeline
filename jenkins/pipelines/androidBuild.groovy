@@ -20,7 +20,7 @@ pipeline {
     environment {
         AWS_ACCESS_KEY_ID= credentials('aws-access-key-id')
         AWS_SECRET_ACCESS_KEY= credentials('aws-secret-access-key')
-        AWS_REGION="us-east"
+        AWS_DEFAULT_REGION="us-east"
     }
     agent {
         docker {
@@ -33,7 +33,6 @@ pipeline {
         stage("Get Version") {
             steps {
                 script {
-                    sh 'printenv'
                     version = versionTasks.getVersion(REPOSITORY as String)
                     versionCode = versionTasks.getVersionCode("${REPOSITORY.toLowerCase()}")
                     echo RUN_TESTS
