@@ -28,8 +28,7 @@ ENV PATH=$PATH:/opt/android/emulator:/opt/android/platform-tools/:/opt/android/c
 RUN sdkmanager --update \
     && echo y | sdkmanager platform-tools "platforms;android-30" "platforms;android-29" "platforms;android-28" "build-tools;31.0.0" "system-images;android-30;google_apis;x86_64" "system-images;android-29;google_apis;x86_64" "system-images;android-28;google_apis;x86_64"
 
-RUN useradd -m -d /var/lib/jenkins -G developers jenkins
+RUN useradd -m -d /var/lib/jenkins -G developers jenkins \
+    && chmod g+rwx /opt/android /opt/android/emulator/ /opt/android/cmdline-tools/ /opt/android/
 
 USER jenkins
-
-RUN echo no | avdmanager create avd -n api-30 --package 'system-images;android-30;google_apis;x86_64'

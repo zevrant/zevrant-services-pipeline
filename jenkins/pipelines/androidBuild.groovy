@@ -146,6 +146,7 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
                     container('android-emulator') {
                         script {
                             if (RUN_TESTS) {
+                                archiveArtifacts artifacts: "nohup-${avdName}.out", followSymlinks: false
                                 sh 'adb" bash gradlew pullReport'
                                 if (fileExists("cucumber-reports/cucumber.xml")) {
                                     cucumber 'cucumber-reports/cucumber.json'
