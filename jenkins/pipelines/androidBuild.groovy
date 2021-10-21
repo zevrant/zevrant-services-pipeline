@@ -30,10 +30,12 @@ pipeline {
     stages {
         stage("Get Version") {
             steps {
-                script {
-                    version = versionTasks.getVersion(REPOSITORY as String)
-                    versionCode = versionTasks.getVersionCode("${REPOSITORY.toLowerCase()}")
-                    echo RUN_TESTS
+                container('android-emulator') {
+                    script {
+                        version = versionTasks.getVersion(REPOSITORY as String)
+                        versionCode = versionTasks.getVersionCode("${REPOSITORY.toLowerCase()}")
+                        echo RUN_TESTS
+                    }
                 }
             }
         }
@@ -41,9 +43,11 @@ pipeline {
 
         stage("SCM Checkout") {
             steps {
-                script {
-                    git credentialsId: 'jenkins-git', branch: BRANCH_NAME,
-                            url: "git@github.com:zevrant/${REPOSITORY}.git"
+                container('android-emulator') {
+                    script {
+                        git credentialsId: 'jenkins-git', branch: BRANCH_NAME,
+                                url: "git@github.com:zevrant/${REPOSITORY}.git"
+                    }
                 }
             }
         }
@@ -162,8 +166,10 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
         stage("Release Version Update") {
             when { expression { variant == 'release' } }
             steps {
-                script {
-                    versionTasks.majorVersionUpdate(REPOSITORY as String, version)
+                container('android-emulator') {
+                    script {
+                        versionTasks.majorVersionUpdate(REPOSITORY as String, version)
+                    }
                 }
             }
         }
@@ -171,10 +177,11 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
         stage("Development Version Update") {
             when { expression { variant == 'develop' } }
             steps {
-                script {
-                    versionTasks.minorVersionUpdate(REPOSITORY as String, version)
-                    versionTasks.incrementVersionCode(REPOSITORY as String, versionCode)
-
+                container('android-emulator') {
+                    script {
+                        versionTasks.minorVersionUpdate(REPOSITORY as String, version)
+                        versionTasks.incrementVersionCode(REPOSITORY as String, versionCode)
+                    }
                 }
             }
         }
