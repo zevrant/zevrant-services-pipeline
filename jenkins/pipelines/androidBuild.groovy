@@ -52,9 +52,8 @@ pipeline {
             when { expression { runTests && false } } //disable for not TODO
             steps {
                 container('android-emulator') {
-
-                    sh "bash gradlew clean testDevelopTest"
                     script {
+                        sh "bash gradlew clean testDevelopTest"
                     }
                 }
             }
