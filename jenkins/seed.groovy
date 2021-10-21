@@ -19,6 +19,20 @@ import com.zevrant.services.pojo.PipelineCollection
     createPipeline(folder, pipeline);
 }
 
+(microserviceRepositories as List<String>).each { microserviceRepository ->
+    String folder = createMultibranch(microserviceRepository, ApplicationType.SPRING)
+    Pipeline pipeline = new Pipeline(
+            name: libraryRepository,
+            parameters: new ArrayList<>([
+                    DefaultPipelineParameters.BRANCH_PARAMETER.getParameter()
+            ]),
+            gitRepo: "git@github.com:zevrant/zevrant-services-pipeline.git",
+            jenkinsfileLocation: 'jenkins/pipelines/spring-spring-build.groovy',
+            credentialId: 'jenkins-git'
+    );
+    createPipeline(folder, pipeline);
+}
+
 String androidFolder = createMultibranch('zevrant-android-app', ApplicationType.ANDROID)
 Pipeline androidPipeline = new Pipeline(
         name: "zevrant-android-app",
