@@ -50,8 +50,9 @@ pipeline {
 
         stage("Unit Test") {
             when { expression { runTests && false } } //disable for not TODO
-            container('android-emulator') {
-                steps {
+            steps {
+                container('android-emulator') {
+
                     sh "bash gradlew clean testDevelopTest"
                     script {
                     }
@@ -61,8 +62,8 @@ pipeline {
 
         stage("Integration Test Setup") {
             when { expression { runTests } }
-            container('android-emulator') {
-                steps {
+            steps {
+                container('android-emulator') {
                     script {
                         String startEmulator = "emulator -avd $avdName -no-window -no-boot-anim -no-snapshot-save -no-snapshot-load"
                         sh "echo no | avdmanager create avd -n $avdName --package 'system-images;android-30;google_apis;x86_64'"
@@ -105,8 +106,11 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
                         }
                     }
                 }
-                post {
-                    failure {
+            }
+            post {
+                failure {
+                    container('android-emulator') {
+
                         script {
                             if (runTests) {
                                 String pid = sh returnStdout: true, script: ' set -e pgrep qemu-system-x86'
@@ -126,14 +130,17 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
 
         stage("Integration Test") {
             when { expression { runTests } }
-            container('android-emulator') {
-                steps {
+            steps {
+                container('android-emulator') {
+
                     script {
                         sh 'bash gradlew clean connectedDevelopTest'
                     }
                 }
-                post {
-                    always {
+            }
+            post {
+                always {
+                    container('android-emulator') {
                         script {
                             if (RUN_TESTS) {
                                 sh 'adb" bash gradlew pullReport'
@@ -174,11 +181,12 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
         }
 
         stage("Build Artifact") {
-            container('android-emulator') {
-                steps {
+            steps {
+                container('android-emulator') {
                     script {
                         def json = readJSON text: (sh(returnStdout: true, script: "aws secretsmanager get-secret-value --secret-id /android/signing/keystore"))
-                        String keystore = json['SecretString']; writeFile file: './zevrant-services.txt', text: keystore
+                        String keystore = json['SecretString'];
+                        writeFile file: './zevrant-services.txt', text: keystore
                         sh "base64 -d ./zevrant-services.txt > ./zevrant-services.p12"
                         json = readJSON text: (sh(returnStdout: true, script: "aws secretsmanager get-secret-value --secret-id /android/signing/password"))
                         String password = json['SecretString']
