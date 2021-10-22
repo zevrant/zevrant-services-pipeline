@@ -151,7 +151,6 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
                                 archiveArtifacts artifacts: "nohup-${avdName}.out", followSymlinks: false
                                 sh 'bash gradlew pullReport'
                                 if (fileExists("cucumber-reports/cucumber.xml")) {
-                                    cucumber 'cucumber-reports/cucumber.json'
                                     sh "zip -r html-report.zip cucumber-reports/html-report"
                                     archiveArtifacts 'html-report.zip'
                                 }
