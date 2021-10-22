@@ -145,19 +145,18 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
             post {
                 always {
                     container('android-emulator') {
-                        container('android-emulator') {
-                            script {
-                                if (RUN_TESTS) {
-                                    archiveArtifacts artifacts: "nohup-${avdName}.out", followSymlinks: false
-                                    sh 'gradlew pullReport'
-                                    if (fileExists("cucumber-reports/cucumber.xml")) {
-                                        cucumber 'cucumber-reports/cucumber.json'
-                                        sh "zip -r html-report.zip cucumber-reports/html-report"
-                                        archiveArtifacts 'html-report.zip'
-                                    }
-                                    if (fileExists("app/src/androidTest/java/com/zevrant/services/zevrantandroidapp/secrets/SecretsInitializer.java")) {
-                                        sh "rm -f app/src/androidTest/java/com/zevrant/services/zevrantandroidapp/secrets/SecretsInitializer.java"
-                                    }
+                        script {
+
+                            if (RUN_TESTS) {
+                                archiveArtifacts artifacts: "nohup-${avdName}.out", followSymlinks: false
+                                sh 'ls -l; gradlew pullReport'
+                                if (fileExists("cucumber-reports/cucumber.xml")) {
+                                    cucumber 'cucumber-reports/cucumber.json'
+                                    sh "zip -r html-report.zip cucumber-reports/html-report"
+                                    archiveArtifacts 'html-report.zip'
+                                }
+                                if (fileExists("app/src/androidTest/java/com/zevrant/services/zevrantandroidapp/secrets/SecretsInitializer.java")) {
+                                    sh "rm -f app/src/androidTest/java/com/zevrant/services/zevrantandroidapp/secrets/SecretsInitializer.java"
                                 }
                             }
                         }
