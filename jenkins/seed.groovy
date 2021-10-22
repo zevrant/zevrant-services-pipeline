@@ -43,7 +43,7 @@ import com.zevrant.services.pojo.PipelineCollection
             ]
     )
     Pipeline deployPipeline = new Pipeline(
-            name: "${microserviceRepository}-deploy-to-production",
+            name: "${microserviceRepository}-deploy-to-prod",
             parameters: new ArrayList<>([
                     DefaultPipelineParameters.BRANCH_PARAMETER.getParameter(),
             ]),

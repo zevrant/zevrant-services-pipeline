@@ -118,7 +118,7 @@ pipeline {
                             sh "buildah push docker.io/zevrant/${REPOSITORY}:${newVersion}"
                         }
                     }
-                    build job: 'Deploy', parameters: [
+                    build job: "${REPOSITORY}-deploy-to-${env}", parameters: [
                             [$class: 'StringParameterValue', name: 'REPOSITORY', value: REPOSITORY],
                             [$class: 'StringParameterValue', name: 'VERSION', value: version.toThreeStageVersionString()],
                             [$class: 'StringParameterValue', name: 'ENVIRONMENT', value: "develop"]
