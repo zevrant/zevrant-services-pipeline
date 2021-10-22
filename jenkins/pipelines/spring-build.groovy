@@ -98,8 +98,8 @@ pipeline {
                         stash includes: 'build/libs/zevrant-backup-service-0.0.1-SNAPSHOT.jar'
                     }
                     container('buildah') {
-                        sh "docker build -t zevrant/$REPOSITORY:$version ."
-                        sh "docker push zevrant/$REPOSITORY:$version"
+                        sh "buildah bud --storage-driver=vfs -t zevrant/$REPOSITORY:$version ."
+                        sh "buildah push zevrant/$REPOSITORY:$version"
                     }
                 }
             }
@@ -111,8 +111,8 @@ pipeline {
                     String env = (BRANCH_NAME == "master") ? "prod" : "develop"
                     if (env == "prod") {
                         container('buildah') {
-                            sh "docker tag zevrant/${REPOSITORY}:${version} zevrant/${REPOSITORY}:${newVersion}"
-                            sh "docker push zevrant/${REPOSITORY}:${newVersion}"
+                            sh "buildah tag zevrant/${REPOSITORY}:${version} zevrant/${REPOSITORY}:${newVersion}"
+                            sh "buildah push zevrant/${REPOSITORY}:${newVersion}"
                         }
                     }
                     build job: 'Deploy', parameters: [
