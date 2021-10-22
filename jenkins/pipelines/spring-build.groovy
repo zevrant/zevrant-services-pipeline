@@ -29,8 +29,7 @@ pipeline {
             steps {
                 container('spring-jenkins-slave') {
                     script {
-                        String[] podLabel = ((String) sh(returnStdout: true, script: 'echo $POD_LABEL')).split("_");
-                        REPOSITORY = "${podLabel[1]}-${podLabel[2]}-${podLabel[3]}".toLowerCase()
+                        REPOSITORY = sh(returnStdout: true, script: 'echo $JOB_BASE_NAME')
                         version = versionTasks.getVersion(REPOSITORY as String)
                         versionCode = versionTasks.getVersionCode("${REPOSITORY.toLowerCase()}")
                     }
