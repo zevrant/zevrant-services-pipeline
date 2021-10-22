@@ -157,14 +157,18 @@ void createPipeline(String folder, Pipeline pipeline) {
             }
         }
 
-        if(pipeline.envs != null
-                && !pipeline.envs.isEmpty() ) {
-            environmentVariables {
-                envs(pipeline.envs)
-                keepBuildVariables(true)
-                keepSystemVariables(true)
-            }
+        environmentVariables {
+            env('REPOSITORY', '1')
+            keepBuildVariables(true)
         }
+
+//        if (pipeline.envVars.size() > 0) {
+//            environmentVariables {
+//                envs(pipeline.envs)
+//                keepBuildVariables(true)
+//                keepSystemVariables(true)
+//            }
+//        }
 
         displayName(jobDisplayName.trim())
         disabled pipeline.disabled
