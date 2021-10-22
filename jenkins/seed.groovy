@@ -159,7 +159,7 @@ void createPipeline(String folder, Pipeline pipeline) {
 
         environmentVariables {
             for(String envVar : pipeline.envs.keySet()) {
-                echo envVar
+                echo pipeline.envs.get(envVar)
                 env(envVar, pipeline.envs.get(envVar))
             }
             envs(pipeline.envs)
