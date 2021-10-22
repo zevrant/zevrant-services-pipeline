@@ -5,8 +5,8 @@ import com.zevrant.services.pojo.Version
 
 def angularProjects = ["zevrant-home-ui"];
 def environments = ["develop", "prod"];
-BASE_BRANCH = BASE_BRANCH.tokenize("/")
-BASE_BRANCH = BASE_BRANCH[BASE_BRANCH.size() - 1];
+BRANCH_NAME = BRANCH_NAME.tokenize("/")
+BRANCH_NAME = BRANCH_NAME[BRANCH_NAME.size() - 1];
 Version version = null;
 pipeline {
     agent {
@@ -33,7 +33,7 @@ pipeline {
         stage("SCM Checkout") {
             steps {
                 script {
-                    git credentialsId: 'jenkins-git', branch: BASE_BRANCH,
+                    git credentialsId: 'jenkins-git', branch: BRANCH_NAME,
                             url: "git@github.com:zevrant/${REPOSITORY}.git"
                 }
             }
@@ -52,7 +52,7 @@ pipeline {
 
         }
         stage("Develop Version Update") {
-            when { expression { BASE_BRANCH == "develop" } }
+            when { expression { BRANCH_NAME == "develop" } }
             steps {
                 script {
                     versionTasks.minorVersionUpdate(REPOSITORY, version)
@@ -61,7 +61,7 @@ pipeline {
         }
 
         stage("Release Version Update") {
-            when { expression { BASE_BRANCH == "master" } }
+            when { expression { BRANCH_NAME == "master" } }
             steps {
                 script {
                     versionTasks.majorVersionUpdate(REPOSITORY, version)
@@ -82,7 +82,7 @@ pipeline {
         stage("Deploy") {
             steps {
                 script {
-                    String env = (BASE_BRANCH == "master")? "prod" : "develop"
+                    String env = (BRANCH_NAME == "master")? "prod" : "develop"
                     if(env == "prod") {
                         sh "docker tag zevrant/${REPOSITORY}:${version} zevrant/${REPOSITORY}:${newVersion}"
                         sh "docker push zevrant/${REPOSITORY}:${newVersion}"
