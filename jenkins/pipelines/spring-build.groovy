@@ -10,7 +10,8 @@ List<String> angularProjects = ["zevrant-home-ui"];
 BRANCH_NAME = BRANCH_NAME.tokenize("/")
 BRANCH_NAME = BRANCH_NAME[BRANCH_NAME.size() - 1];
 VersionTasks versionTasks = TaskLoader.load(binding, VersionTasks) as VersionTasks
-Version version = null;
+Version version = null
+String REPOSITORY = ""
 pipeline {
     agent {
         kubernetes {
@@ -28,6 +29,8 @@ pipeline {
             steps {
                 container('spring-jenkins-slave') {
                     script {
+                        String[] podLabel = ((String) sh(returnStdout: true, script: 'echo $POD_LABEL')).split("_");
+                        REPOSITORY = "${podLabel[1]}-${podLabel[2]}-${podLabel[3]}".toLowerCase()
                         version = versionTasks.getVersion(REPOSITORY as String)
                         versionCode = versionTasks.getVersionCode("${REPOSITORY.toLowerCase()}")
                     }

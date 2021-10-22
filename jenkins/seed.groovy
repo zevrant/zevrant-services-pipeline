@@ -37,10 +37,7 @@ import com.zevrant.services.pojo.PipelineCollection
             ]),
             gitRepo: "git@github.com:zevrant/zevrant-services-pipeline.git",
             jenkinsfileLocation: 'jenkins/pipelines/kubernetes-deploy.groovy',
-            credentialId: 'jenkins-git',
-            envs: [
-                    REPOSITORY: microserviceRepository
-            ]
+            credentialId: 'jenkins-git'
     )
     Pipeline deployPipeline = new Pipeline(
             name: "${microserviceRepository}-deploy-to-prod",
@@ -49,10 +46,7 @@ import com.zevrant.services.pojo.PipelineCollection
             ]),
             gitRepo: "git@github.com:zevrant/zevrant-services-pipeline.git",
             jenkinsfileLocation: 'jenkins/pipelines/kubernetes-deploy.groovy',
-            credentialId: 'jenkins-git',
-            envs: [
-                    REPOSITORY: microserviceRepository
-            ]
+            credentialId: 'jenkins-git'
     )
     createPipeline(folder, pipeline);
     createPipeline(folder, developDeployPipeline);
@@ -157,22 +151,9 @@ void createPipeline(String folder, Pipeline pipeline) {
             }
         }
 
-        environmentVariables {
-            for(String envVar : pipeline.envs.keySet()) {
-                echo pipeline.envs.get(envVar)
-                env(envVar, pipeline.envs.get(envVar))
-            }
-            envs(pipeline.envs)
-            keepBuildVariables(true)
+        if(pipeline.envs != null && pipeline.envs.keySet() > 0) {
+            throw new RuntimeException("Envs not supported")
         }
-
-//        if (pipeline.envVars.size() > 0) {
-//            environmentVariables {
-//                envs(pipeline.envs)
-//                keepBuildVariables(true)
-//                keepSystemVariables(true)
-//            }
-//        }
 
         displayName(jobDisplayName.trim())
         disabled pipeline.disabled
