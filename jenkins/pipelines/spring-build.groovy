@@ -100,8 +100,8 @@ pipeline {
                     }
                     container('buildah') {
                         unstash 'zevrant-backup-service.jar'
-                        sh "buildah bud --storage-driver=vfs -t zevrant/$REPOSITORY:$version ."
-                        sh "buildah push zevrant/$REPOSITORY:$version"
+                        sh "buildah bud --storage-driver=vfs -t zevrant/$REPOSITORY:${version.toThreeStageVersionString()} ."
+                        sh "buildah push zevrant/$REPOSITORY:${version.toThreeStageVersionString()}"
                     }
                 }
             }
@@ -113,13 +113,13 @@ pipeline {
                     String env = (BRANCH_NAME == "master") ? "prod" : "develop"
                     if (env == "prod") {
                         container('buildah') {
-                            sh "buildah tag zevrant/${REPOSITORY}:${version} zevrant/${REPOSITORY}:${newVersion}"
+                            sh "buildah tag zevrant/${REPOSITORY}:${version.toThreeStageVersionString()} zevrant/${REPOSITORY}:${newVersion.toThreeStageVersionString()}"
                             sh "buildah push zevrant/${REPOSITORY}:${newVersion}"
                         }
                     }
                     build job: 'Deploy', parameters: [
                             [$class: 'StringParameterValue', name: 'REPOSITORY', value: REPOSITORY],
-                            [$class: 'StringParameterValue', name: 'VERSION', value: version],
+                            [$class: 'StringParameterValue', name: 'VERSION', value: version.toThreeStageVersionString()],
                             [$class: 'StringParameterValue', name: 'ENVIRONMENT', value: "develop"]
                     ]
                 }
