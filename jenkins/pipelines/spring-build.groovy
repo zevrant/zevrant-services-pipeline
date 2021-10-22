@@ -45,15 +45,23 @@ pipeline {
             }
         }
 
-        stage("Test") {
+        stage("Javascript Test") {
+            when { expression { fileExists('package.json') } }
             steps {
                 container('spring-jenkins-slave') {
                     script {
-                        if (angularProjects.indexOf(REPOSITORY) > 2) {
-                            sh "npm run test"
-                        } else {
-                            "bash gradlew clean build --no-daemon"
-                        }
+                        sh "npm run test"
+                    }
+                }
+            }
+
+        }
+
+        stage("Java Test") {
+            steps {
+                container('spring-jenkins-slave') {
+                    script {
+                        "bash gradlew clean build --no-daemon"
                     }
                 }
             }
@@ -83,9 +91,13 @@ pipeline {
 
         stage("Build Artifact") {
             steps {
-                container('spring-jenkins-slave') {
-                    script {
+
+                script {
+                    container('spring-jenkins-slave') {
                         sh "bash gradlew clean assemble --no-daemon"
+                        stash includes: 'build/libs/zevrant-backup-service-0.0.1-SNAPSHOT.jar'
+                    }
+                    container('buildah') {
                         sh "docker build -t zevrant/$REPOSITORY:$version ."
                         sh "docker push zevrant/$REPOSITORY:$version"
                     }
@@ -95,19 +107,19 @@ pipeline {
 
         stage("Deploy") {
             steps {
-                container('spring-jenkins-slave') {
-                    script {
-                        String env = (BRANCH_NAME == "master") ? "prod" : "develop"
-                        if (env == "prod") {
+                script {
+                    String env = (BRANCH_NAME == "master") ? "prod" : "develop"
+                    if (env == "prod") {
+                        container('buildah') {
                             sh "docker tag zevrant/${REPOSITORY}:${version} zevrant/${REPOSITORY}:${newVersion}"
                             sh "docker push zevrant/${REPOSITORY}:${newVersion}"
                         }
-                        build job: 'Deploy', parameters: [
-                                [$class: 'StringParameterValue', name: 'REPOSITORY', value: REPOSITORY],
-                                [$class: 'StringParameterValue', name: 'VERSION', value: version],
-                                [$class: 'StringParameterValue', name: 'ENVIRONMENT', value: "develop"]
-                        ]
                     }
+                    build job: 'Deploy', parameters: [
+                            [$class: 'StringParameterValue', name: 'REPOSITORY', value: REPOSITORY],
+                            [$class: 'StringParameterValue', name: 'VERSION', value: version],
+                            [$class: 'StringParameterValue', name: 'ENVIRONMENT', value: "develop"]
+                    ]
                 }
             }
         }

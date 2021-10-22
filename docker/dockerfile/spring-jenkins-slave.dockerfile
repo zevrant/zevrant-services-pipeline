@@ -1,8 +1,8 @@
 FROM zevrant/zevrant-ubuntu-base:latest
 USER root
 
-RUN apt-get update\
-  && apt-get upgrade -y
+RUN apt-get update \
+    && apt-get upgrade -y
 
 RUN useradd -m -d /var/lib/jenkins -G developers jenkins
 
