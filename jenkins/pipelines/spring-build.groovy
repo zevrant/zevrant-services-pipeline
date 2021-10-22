@@ -53,15 +53,19 @@ pipeline {
         }
         stage("Develop Version Update") {
             when { expression { BASE_BRANCH == "develop" } }
-            script {
-                versionTasks.minorVersionUpdate(REPOSITORY, version)
+            steps {
+                script {
+                    versionTasks.minorVersionUpdate(REPOSITORY, version)
+                }
             }
         }
 
         stage("Release Version Update") {
             when { expression { BASE_BRANCH == "master" } }
-            script {
-                versionTasks.majorVersionUpdate(REPOSITORY, version)
+            steps {
+                script {
+                    versionTasks.majorVersionUpdate(REPOSITORY, version)
+                }
             }
         }
 
