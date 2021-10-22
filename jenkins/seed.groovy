@@ -38,9 +38,9 @@ import com.zevrant.services.pojo.PipelineCollection
             gitRepo: "git@github.com:zevrant/zevrant-services-pipeline.git",
             jenkinsfileLocation: 'jenkins/pipelines/kubernetes-deploy.groovy',
             credentialId: 'jenkins-git',
-            envs: {
-                REPOSITORY: microserviceRepository
-            }
+            envs: [
+                    REPOSITORY: microserviceRepository
+            ]
     )
     Pipeline deployPipeline = new Pipeline(
             name: "${microserviceRepository}-deploy-to-production",
@@ -50,9 +50,9 @@ import com.zevrant.services.pojo.PipelineCollection
             gitRepo: "git@github.com:zevrant/zevrant-services-pipeline.git",
             jenkinsfileLocation: 'jenkins/pipelines/kubernetes-deploy.groovy',
             credentialId: 'jenkins-git',
-            envs: {
-                REPOSITORY: microserviceRepository
-            }
+            envs: [
+                    REPOSITORY: microserviceRepository
+            ]
     )
     createPipeline(folder, pipeline);
     createPipeline(folder, developDeployPipeline);
