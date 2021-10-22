@@ -29,7 +29,6 @@ pipeline {
                     script {
                         version = versionTasks.getVersion(REPOSITORY as String)
                         versionCode = versionTasks.getVersionCode("${REPOSITORY.toLowerCase()}")
-                        echo RUN_TESTS
                     }
                 }
             }
