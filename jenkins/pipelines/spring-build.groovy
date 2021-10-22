@@ -98,7 +98,7 @@ pipeline {
                         sh "bash gradlew clean assemble"
                     }
                     container('buildah') {
-                        sh "buildah bud --storage-driver=vfs -t zevrant/$REPOSITORY:${version.toThreeStageVersionString()} ."
+                        sh "buildah bud --storage-driver=vfs -t docker.io/zevrant/$REPOSITORY:${version.toThreeStageVersionString()} ."
                         sh "buildah push docker.io/zevrant/$REPOSITORY:${version.toThreeStageVersionString()}"
                     }
                 }
