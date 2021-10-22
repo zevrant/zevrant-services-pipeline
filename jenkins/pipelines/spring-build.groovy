@@ -85,7 +85,6 @@ pipeline {
         stage("Build Artifact") {
             steps {
                 container('spring-jenkins-slave') {
-                    0
                     script {
                         sh "bash gradlew clean assemble --no-daemon"
                         sh "docker build -t zevrant/$REPOSITORY:$version ."
