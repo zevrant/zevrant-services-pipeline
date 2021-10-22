@@ -158,7 +158,7 @@ void createPipeline(String folder, Pipeline pipeline) {
         }
 
         environmentVariables {
-            env('REPOSITORY', '1')
+            envs(pipeline.envs)
             keepBuildVariables(true)
         }
 
