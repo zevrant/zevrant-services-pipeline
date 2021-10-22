@@ -26,6 +26,7 @@ node {
         if(runSeed) {
             microserviceRepositories.addAll(getNonArchivedReposMatching('service'))
             microserviceRepositories.addAll(getNonArchivedReposMatching('ui'))
+            echo microserviceRepositories
         }
     }
 
