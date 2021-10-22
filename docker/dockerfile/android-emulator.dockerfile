@@ -31,9 +31,17 @@ RUN sdkmanager --update \
 RUN rm -rf /opt/android/emulator/ \
     && mv /opt/android/emulator-2/ /opt/android/emulator/
 
+RUN apt-get install -y locales \
+    && locale-gen "en_US.UTF-8" \
+    && update-locale LC_ALL="en_US.UTF-8"
+
 RUN useradd -m -d /var/lib/jenkins -G developers -G kvm jenkins \
     && chmod g+rwx /opt/android /opt/android/emulator/ /opt/android/cmdline-tools/ \
     && chmod -R g+rw /opt/android \
     && chown -R root:developers /opt/android/
 
 USER jenkins
+
+RUN export LANG="en_US.UTF-8"
+
+ENTRYPOINT bash
