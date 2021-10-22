@@ -111,7 +111,7 @@ pipeline {
                     String env = (BRANCH_NAME == "master") ? "prod" : "develop"
                     if (env == "prod") {
                         container('buildah') {
-                            sh "buildah tag docker.io/zevrant/${REPOSITORY}:${version.toThreeStageVersionString()} zevrant/${REPOSITORY}:${newVersion.toThreeStageVersionString()}"
+                            sh "buildah tag docker.io/zevrant/${REPOSITORY}:${version.toThreeStageVersionString()} docker.io/zevrant/${REPOSITORY}:${newVersion.toThreeStageVersionString()}"
                             sh "buildah push docker.io/zevrant/${REPOSITORY}:${newVersion}"
                         }
                     }
