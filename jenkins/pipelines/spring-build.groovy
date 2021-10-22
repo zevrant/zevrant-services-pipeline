@@ -21,6 +21,7 @@ pipeline {
         AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
         AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
         AWS_DEFAULT_REGION = "us-east-1"
+        DOCKER_TOKEN = credentials('jenkins-dockerhub')
     }
     stages {
         stage("Get Version") {
@@ -98,6 +99,7 @@ pipeline {
                         sh "bash gradlew clean assemble"
                     }
                     container('buildah') {
+                        sh 'echo $DOCKER_TOKEN | buildah login -u zevrant --password-stdin docker.io'
                         sh "buildah bud --storage-driver=vfs -t docker.io/zevrant/$REPOSITORY:${version.toThreeStageVersionString()} ."
                         sh "buildah push docker.io/zevrant/$REPOSITORY:${version.toThreeStageVersionString()}"
                     }
@@ -111,6 +113,7 @@ pipeline {
                     String env = (BRANCH_NAME == "master") ? "prod" : "develop"
                     if (env == "prod") {
                         container('buildah') {
+                            sh 'echo $DOCKER_TOKEN | buildah login -u zevrant --password-stdin docker.io'
                             sh "buildah tag docker.io/zevrant/${REPOSITORY}:${version.toThreeStageVersionString()} docker.io/zevrant/${REPOSITORY}:${newVersion.toThreeStageVersionString()}"
                             sh "buildah push docker.io/zevrant/${REPOSITORY}:${newVersion}"
                         }

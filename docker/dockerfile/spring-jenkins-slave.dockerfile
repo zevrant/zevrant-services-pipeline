@@ -1,4 +1,4 @@
-FROM zevrant/zevrant-ubuntu-base:latest
+FROM docker.io/zevrant/zevrant-ubuntu-base:latest
 USER root
 
 RUN apt-get update \
