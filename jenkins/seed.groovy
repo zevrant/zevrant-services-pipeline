@@ -159,6 +159,7 @@ void createPipeline(String folder, Pipeline pipeline) {
 
         if(pipeline.envs != null
                 && !pipeline.envs.isEmpty() ) {
+            echo "${pipeline}"
             environmentVariables {
                 pipeline.envs.keySet().each { key ->
                     env(key, pipeline.envs.get(key))
