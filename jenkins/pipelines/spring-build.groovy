@@ -11,7 +11,7 @@ Version version = null;
 pipeline {
     agent {
         kubernetes {
-            inheritFrom 'java-build'
+            inheritFrom 'spring-build'
         }
     }
     environment {
