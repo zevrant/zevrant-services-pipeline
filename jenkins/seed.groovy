@@ -159,11 +159,10 @@ void createPipeline(String folder, Pipeline pipeline) {
 
         if(pipeline.envs != null
                 && !pipeline.envs.isEmpty() ) {
-            echo "${pipeline.envs.keySet()} : ${pipeline.envs.get("REPOSITORY")}"
             environmentVariables {
-                pipeline.envs.keySet().each { key ->
-                    env(key, pipeline.envs.get(key))
-                }
+                envs(pipeline.envs)
+                keepBuildVariables(true)
+                keepSystemVariables(true)
             }
         }
 
