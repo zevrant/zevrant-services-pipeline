@@ -1,12 +1,15 @@
 @Library("CommonUtils") _
 
-import groovy.json.JsonSlurper
-import com.zevrant.services.pojo.Version
 
-def angularProjects = ["zevrant-home-ui"];
-def environments = ["develop", "prod"];
+import com.zevrant.services.TaskLoader
+import com.zevrant.services.pojo.Version
+import com.zevrant.services.services.VersionTasks
+
+List<String> angularProjects = ["zevrant-home-ui"];
+
 BRANCH_NAME = BRANCH_NAME.tokenize("/")
 BRANCH_NAME = BRANCH_NAME[BRANCH_NAME.size() - 1];
+VersionTasks versionTasks = TaskLoader.load(binding, VersionTasks) as VersionTasks
 Version version = null;
 pipeline {
     agent {
