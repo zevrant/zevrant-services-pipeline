@@ -158,6 +158,9 @@ void createPipeline(String folder, Pipeline pipeline) {
         }
 
         environmentVariables {
+            for(String envVar : pipeline.envs.keySet()) {
+                env(envVar, pipeline.envs.get(envVar))
+            }
             envs(pipeline.envs)
             keepBuildVariables(true)
         }
