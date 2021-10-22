@@ -22,7 +22,7 @@ import com.zevrant.services.pojo.PipelineCollection
 (microserviceRepositories as List<String>).each { microserviceRepository ->
     String folder = createMultibranch(microserviceRepository, ApplicationType.SPRING)
     Pipeline pipeline = new Pipeline(
-            name: libraryRepository,
+            name: microserviceRepository,
             parameters: new ArrayList<>([
                     DefaultPipelineParameters.BRANCH_PARAMETER.getParameter()
             ]),
