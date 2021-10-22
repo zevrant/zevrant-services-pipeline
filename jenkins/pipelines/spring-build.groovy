@@ -61,7 +61,7 @@ pipeline {
             steps {
                 container('spring-jenkins-slave') {
                     script {
-                        "bash gradlew clean build --no-daemon"
+                        sh "bash gradlew clean build"
                     }
                 }
             }
@@ -94,10 +94,11 @@ pipeline {
 
                 script {
                     container('spring-jenkins-slave') {
-                        sh "bash gradlew clean assemble --no-daemon"
-                        stash includes: 'build/libs/zevrant-backup-service-0.0.1-SNAPSHOT.jar'
+                        sh "bash gradlew clean assemble"
+                        stash includes: 'build/libs/zevrant-backup-service-0.0.1-SNAPSHOT.jar', name: 'zevrant-backup-service.jar'
                     }
                     container('buildah') {
+                        unstash 'zevrant-backup-service.jar'
                         sh "buildah bud --storage-driver=vfs -t zevrant/$REPOSITORY:$version ."
                         sh "buildah push zevrant/$REPOSITORY:$version"
                     }
