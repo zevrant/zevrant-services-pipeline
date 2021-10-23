@@ -9,7 +9,6 @@ pipeline {
             steps {
                 container('kubectl') {
                     script {
-                        sh 'printenv'
                         currentBuild.displayName = "Deploying $REPOSITORY version $VERSION"
                         git credentialsId: 'jenkins-git', branch: (ENVIRONMENT = 'prod') ? 'master' : ENVIRONMENT,
                                 url: "git@github.com:zevrant/${REPOSITORY}.git"
