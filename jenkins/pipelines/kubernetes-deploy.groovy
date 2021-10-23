@@ -7,7 +7,7 @@ pipeline {
     stages {
         stage("SCM Checkout") {
             steps {
-                container('kubernetes') {
+                container('kubectl') {
                     script {
                         sh 'printenv'
                         currentBuild.displayName = "Deploying $REPOSITORY version $VERSION"
@@ -20,7 +20,7 @@ pipeline {
         stage("Deploy Database") {
             when { expression { fileExists('database.yml') } }
             steps {
-                container('kubernetes') {
+                container('kubectl') {
                     script {
                         print ENVIRONMENT
                         sh "sed -i 's/\$ENVIRONMENT/$ENVIRONMENT/g' ./database.yml"
@@ -34,7 +34,7 @@ pipeline {
         stage("Deploy") {
             when { expression { fileExists('database.yml') } }
             steps {
-                container('kubernetes') {
+                container('kubectl') {
                     script {
                         sh "sed -i 's/\$ENVIRONMENT/$ENVIRONMENT/g' ./deployment.yml"
                         sh "sed -i 's/\$VERSION/$VERSION/g' ./deployment.yml"
