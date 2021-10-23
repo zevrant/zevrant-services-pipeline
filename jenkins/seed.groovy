@@ -38,7 +38,10 @@ import com.zevrant.services.pojo.PipelineCollection
             ]),
             gitRepo: "git@github.com:zevrant/zevrant-services-pipeline.git",
             jenkinsfileLocation: 'jenkins/pipelines/kubernetes-deploy.groovy',
-            credentialId: 'jenkins-git'
+            credentialId: 'jenkins-git',
+            envs: new HashMap<>([
+                    'REPOSITORY': microserviceRepository
+            ])
     )
     Pipeline deployPipeline = new Pipeline(
             name: "${microserviceRepository}-deploy-to-prod",
@@ -154,8 +157,13 @@ void createPipeline(String folder, Pipeline pipeline) {
             }
         }
 
-        if(pipeline.envs != null && pipeline.envs.keySet().size() > 0) {
-            throw new RuntimeException("Envs not supported")
+        if(pipeline.envs != null
+                && !pipeline.envs.isEmpty() ) {
+            environmentVariables {
+                pipeline.envs.keySet().each { key ->
+                    env(key, pipeline.envs.get(key))
+                }
+            }
         }
 
         displayName(jobDisplayName.trim())
