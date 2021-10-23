@@ -11,7 +11,6 @@ BRANCH_NAME = BRANCH_NAME.tokenize("/")
 BRANCH_NAME = BRANCH_NAME[BRANCH_NAME.size() - 1];
 VersionTasks versionTasks = TaskLoader.load(binding, VersionTasks) as VersionTasks
 Version version = null
-String REPOSITORY = ""
 pipeline {
     agent {
         kubernetes {
@@ -29,7 +28,6 @@ pipeline {
             steps {
                 container('spring-jenkins-slave') {
                     script {
-                        REPOSITORY = sh(returnStdout: true, script: 'echo $JOB_BASE_NAME')
                         version = versionTasks.getVersion(REPOSITORY as String)
                         versionCode = versionTasks.getVersionCode("${REPOSITORY.toLowerCase()}")
                     }
