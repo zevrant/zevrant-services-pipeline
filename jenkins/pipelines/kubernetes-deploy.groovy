@@ -19,13 +19,16 @@ pipeline {
         }
         stage("Deploy Database") {
             when { expression { fileExists('database.yml') } }
+            environment {
+                KUBECONFIG = credentials('jenkins-kubernetes')
+            }
             steps {
                 container('kubectl') {
                     script {
                         sh "sed -i 's/\$ENVIRONMENT/$ENVIRONMENT/g' ./database.yml"
                         withCredentials([file(credentialsId: 'jenkins-kubernetes', variable: 'kubeconfig')]) {
-                            sh "kubectl apply --kubeconfig $kubeconfig -n zevrant-home-services-$ENVIRONMENT -f ./database.yml"
-                            sh "kubectl rollout --kubeconfig $kubeconfig status deployments $REPOSITORY-db-deployment -n zevrant-home-services-$ENVIRONMENT"
+                            sh "kubectl apply --kubeconfig '$kubeconfig' -n zevrant-home-services-$ENVIRONMENT -f ./database.yml"
+                            sh "kubectl rollout --kubeconfig '$kubeconfig' status deployments $REPOSITORY-db-deployment -n zevrant-home-services-$ENVIRONMENT"
                         }
                     }
                 }
@@ -34,15 +37,16 @@ pipeline {
 
         stage("Deploy") {
             when { expression { fileExists('database.yml') } }
+            environment {
+                KUBECONFIG = credentials('jenkins-kubernetes')
+            }
             steps {
                 container('kubectl') {
                     script {
                         sh "sed -i 's/\$ENVIRONMENT/$ENVIRONMENT/g' ./deployment.yml"
                         sh "sed -i 's/\$VERSION/$VERSION/g' ./deployment.yml"
-                        withCredentials([file(credentialsId: 'jenkins-kubernetes', variable: 'kubeconfig')]) {
-                            sh "kubectl $kubeconfig apply --kubeconfig $kubeconfig -n zevrant-home-services-$ENVIRONMENT -f ./deployment.yml"
-                            sh "kubectl rollout --kubeconfig $kubeconfig status deployments $REPOSITORY-deployment -n zevrant-home-services-$ENVIRONMENT"
-                        }
+                        sh "kubectl $kubeconfig apply-n zevrant-home-services-$ENVIRONMENT -f ./deployment.yml"
+                        sh "kubectl rolloutstatus deployments $REPOSITORY-deployment -n zevrant-home-services-$ENVIRONMENT"
                     }
                 }
             }
