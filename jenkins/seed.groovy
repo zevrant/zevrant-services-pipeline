@@ -28,7 +28,10 @@ import com.zevrant.services.pojo.PipelineCollection
             ]),
             gitRepo: "git@github.com:zevrant/zevrant-services-pipeline.git",
             jenkinsfileLocation: 'jenkins/pipelines/spring-build.groovy',
-            credentialId: 'jenkins-git'
+            credentialId: 'jenkins-git',
+            envs: new HashMap<>([
+                    'REPOSITORY': microserviceRepository
+            ])
     );
     Pipeline developDeployPipeline = new Pipeline(
             name: "${microserviceRepository}-deploy-to-develop",
