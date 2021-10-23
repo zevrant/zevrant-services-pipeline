@@ -9,6 +9,8 @@ pipeline {
             steps {
                 container('kubectl') {
                     script {
+                        String[] baseName = sh(returnStdout: true, script: 'echo $JOB_BASE_NAME').split('-')
+                        REPOSITORY = "${baseName[0]}-${baseName[1]}-${baseName[2]}"
                         currentBuild.displayName = "Deploying $REPOSITORY version $VERSION"
                         git credentialsId: 'jenkins-git', branch: (ENVIRONMENT = 'prod') ? 'master' : ENVIRONMENT,
                                 url: "git@github.com:zevrant/${REPOSITORY}.git"

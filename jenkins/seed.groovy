@@ -34,6 +34,7 @@ import com.zevrant.services.pojo.PipelineCollection
             name: "${microserviceRepository}-deploy-to-develop",
             parameters: new ArrayList<>([
                     DefaultPipelineParameters.BRANCH_PARAMETER.getParameter(),
+                    new PipelineParameter<String>(String.class, "VERSION", "Version to be Deployed", "")
             ]),
             gitRepo: "git@github.com:zevrant/zevrant-services-pipeline.git",
             jenkinsfileLocation: 'jenkins/pipelines/kubernetes-deploy.groovy',
@@ -44,7 +45,7 @@ import com.zevrant.services.pojo.PipelineCollection
             parameters: new ArrayList<>([
                     DefaultPipelineParameters.BRANCH_PARAMETER.getParameter(),
 
-                    new PipelineParameter<String>(String.class, "REPOSITORY", "Branch to be built", "")
+
             ]),
             gitRepo: "git@github.com:zevrant/zevrant-services-pipeline.git",
             jenkinsfileLocation: 'jenkins/pipelines/kubernetes-deploy.groovy',
