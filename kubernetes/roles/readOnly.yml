@@ -3,6 +3,6 @@ kind: Role
 metadata:
   name: readOnly
 rules:
-  - apiGroups: [ "" ] # "" indicates the core API group
+  - apiGroups: [ "", "apps" ] # "" indicates the core API group
     resources: [ "pods", "services", "deployments" ]
     verbs: [ "get", "watch", "list" ]
