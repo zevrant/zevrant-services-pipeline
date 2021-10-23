@@ -10,8 +10,8 @@ pipeline {
                 container('kubectl') {
                     script {
                         currentBuild.displayName = "Deploying $REPOSITORY version $VERSION"
-                        echo "git checkout ${(ENVIRONMENT = 'prod') ? 'master' : ENVIRONMENT}"
-                        git credentialsId: 'jenkins-git', branch: (ENVIRONMENT = 'prod') ? 'master' : ENVIRONMENT,
+                        echo "git checkout ${(ENVIRONMENT == 'prod') ? 'master' : ENVIRONMENT}"
+                        git credentialsId: 'jenkins-git', branch: (ENVIRONMENT == 'prod') ? 'master' : ENVIRONMENT,
                                 url: "git@github.com:zevrant/${REPOSITORY}.git"
                     }
                 }
