@@ -9,3 +9,4 @@ rules:
       - "services"
     verbs:
       - "create"
+      - "patch"

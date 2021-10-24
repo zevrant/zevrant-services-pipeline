@@ -10,6 +10,7 @@ List<String> angularProjects = ["zevrant-home-ui"];
 BRANCH_NAME = BRANCH_NAME.tokenize("/")
 BRANCH_NAME = BRANCH_NAME[BRANCH_NAME.size() - 1];
 VersionTasks versionTasks = TaskLoader.load(binding, VersionTasks) as VersionTasks
+String env = (BRANCH_NAME == "master") ? "prod" : "develop"
 Version version = null
 pipeline {
     agent {
@@ -107,10 +108,10 @@ pipeline {
             }
         }
 
-        stage("Deploy") {
+        stage("Promote Artifact") {
+            when { expression { BRANCH_NAME == "master" } }
             steps {
                 script {
-                    String env = (BRANCH_NAME == "master") ? "prod" : "develop"
                     if (env == "prod") {
                         container('buildah') {
                             sh 'echo $DOCKER_TOKEN | buildah login -u zevrant --password-stdin docker.io'
@@ -118,10 +119,18 @@ pipeline {
                             sh "buildah push docker.io/zevrant/${REPOSITORY}:${newVersion}"
                         }
                     }
+                }
+            }
+        }
+
+        stage("Trigger Deploy") {
+            steps {
+                script {
                     build job: "${REPOSITORY}-deploy-to-${env}", parameters: [
                             [$class: 'StringParameterValue', name: 'VERSION', value: version.toThreeStageVersionString()],
                             [$class: 'StringParameterValue', name: 'ENVIRONMENT', value: "develop"]
-                    ]
+                    ],
+                    wait: false
                 }
             }
         }
