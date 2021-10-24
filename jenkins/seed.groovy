@@ -102,10 +102,6 @@ String createMultibranch(String repositoryName, ApplicationType applicationType)
                 scriptPath('Jenkinsfile.groovy')
             }
         }
-        parameters {
-            stringParam('REPOSITORY', repositoryName)
-            stringParam('APPLICATION_TYPE', applicationType.value())
-        }
         branchSources {
             github {
                 id(repositoryName) // IMPORTANT: use a constant and unique identifier
