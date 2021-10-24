@@ -31,7 +31,6 @@ import com.zevrant.services.pojo.PipelineCollection
             credentialId: 'jenkins-git',
             envs: new HashMap<>([
                     'REPOSITORY': microserviceRepository,
-                    'APPLICATION_TYPE': ApplicationType.SPRING.name()
             ])
     );
     Pipeline developDeployPipeline = new Pipeline(
@@ -95,12 +94,17 @@ String createMultibranch(String repositoryName, ApplicationType applicationType)
     folder(folderName.substring(0, folderName.length() - 1)) {
 
     }
+
     multibranchPipelineJob(folderName + repositoryName + "-multibranch") {
         displayName jobName + " Multibranch"
         factory {
             workflowBranchProjectFactory {
                 scriptPath('Jenkinsfile.groovy')
             }
+        }
+        environmentVariables {
+            env('REPOSITORY', repositoryName)
+            env('APPLICATION_TYPE', applicationType.value())
         }
         branchSources {
             github {
