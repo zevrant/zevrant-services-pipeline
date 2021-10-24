@@ -25,17 +25,6 @@ pipeline {
         DOCKER_TOKEN = credentials('jenkins-dockerhub')
     }
     stages {
-        stage("Get Version") {
-            steps {
-                container('spring-jenkins-slave') {
-                    script {
-                        version = versionTasks.getVersion(REPOSITORY as String)
-                        versionCode = versionTasks.getVersionCode("${REPOSITORY.toLowerCase()}")
-                    }
-                }
-            }
-        }
-
         stage("SCM Checkout") {
             steps {
                 container('spring-jenkins-slave') {
@@ -70,6 +59,18 @@ pipeline {
             }
 
         }
+
+        stage("Get Version") {
+            steps {
+                container('spring-jenkins-slave') {
+                    script {
+                        version = versionTasks.getVersion(REPOSITORY as String)
+                        versionCode = versionTasks.getVersionCode("${REPOSITORY.toLowerCase()}")
+                    }
+                }
+            }
+        }
+
         stage("Develop Version Update") {
             when { expression { BRANCH_NAME == "develop" } }
             steps {
