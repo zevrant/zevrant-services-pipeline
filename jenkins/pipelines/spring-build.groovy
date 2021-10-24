@@ -66,6 +66,7 @@ pipeline {
                     script {
                         version = versionTasks.getVersion(REPOSITORY as String)
                         versionCode = versionTasks.getVersionCode("${REPOSITORY.toLowerCase()}")
+                        currentBuild.displayName = "Building version ${version.toThreeStageVersionString()}"
                     }
                 }
             }
