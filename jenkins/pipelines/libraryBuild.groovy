@@ -79,7 +79,7 @@ pipeline {
             steps {
                 container('spring-jenkins-slave') {
                     script {
-                        sh "bash gradlew clean assemble publish -PprojVersion=${version} --no-daemon"
+                        sh "bash gradlew clean assemble publish -PprojVersion=${version.toThreeStageVersionString()} --no-daemon"
                     }
                 }
             }
