@@ -66,7 +66,7 @@ pipeline {
                 container('spring-jenkins-slave') {
                     script {
                         version = versionTasks.getVersion(REPOSITORY as String)
-                        versionCode = versionTasks.getVersionCode("${REPOSITORY.toLowerCase()}")
+                        previousVersion = versionTasks.getPreviousVersion(REPOSITORY)
                         currentBuild.displayName = "Building version ${version.toThreeStageVersionString()}"
                     }
                 }
@@ -99,7 +99,6 @@ pipeline {
             steps {
                 container('spring-jenkins-slave') {
                     script {
-                        previousVersion = versionTasks.getPreviousVersion(REPOSITORY)
                         versionTasks.majorVersionUpdate(REPOSITORY, version)
                     }
                 }
