@@ -62,7 +62,7 @@ Version getPreviousVersion(String applicationName) {
             currentParamVersion = parameterVersions[i].Version
         }
     }
-    for (int i = 0; i < (int) parameterVersions.length; i++) {
+    for (int i = 0; i < parameterVersions.length; i++) {
         if (String.valueOf(Integer.parseInt(currentParamVersion) - 1) == parameterVersions[i].Value) {
             return new Version(parameterVersions[i].Value as String)
         }
