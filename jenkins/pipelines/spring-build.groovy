@@ -120,9 +120,11 @@ pipeline {
                         sh "bash gradlew clean assemble"
                     }
                     container('buildah') {
-                        sh 'echo $DOCKER_TOKEN | buildah login -u zevrant --password-stdin docker.io'
-                        sh "buildah bud --storage-driver=vfs -t docker.io/zevrant/$REPOSITORY:${version.toThreeStageVersionString()} ."
-                        sh "buildah push docker.io/zevrant/$REPOSITORY:${version.toThreeStageVersionString()}"
+                        if(BRANCH_NAME != "develop") {
+                            sh 'echo $DOCKER_TOKEN | buildah login -u zevrant --password-stdin docker.io'
+                            sh "buildah bud --storage-driver=vfs -t docker.io/zevrant/$REPOSITORY:${version.toThreeStageVersionString()} ."
+                            sh "buildah push docker.io/zevrant/$REPOSITORY:${version.toThreeStageVersionString()}"
+                        }
                     }
                 }
             }
