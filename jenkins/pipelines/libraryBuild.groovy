@@ -6,7 +6,7 @@ import com.zevrant.services.pojo.Version
 import com.zevrant.services.services.VersionTasks
 
 String repository = env.JOB_BASE_NAME
-String version;
+Version version;
 VersionTasks versionTasks = TaskLoader.load(binding, VersionTasks) as VersionTasks
 BRANCH_NAME = BRANCH_NAME.tokenize("/")
 BRANCH_NAME = BRANCH_NAME[BRANCH_NAME.size() - 1];
