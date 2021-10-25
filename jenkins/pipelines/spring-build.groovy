@@ -32,7 +32,7 @@ pipeline {
         }
 
         stage("Javascript Test") {
-            when { expression { fileExists('package.json') } }
+            when { expression { fileExists('package.json') && env != "prod" } }
             steps {
                 container('spring-jenkins-slave') {
                     script {
@@ -44,7 +44,7 @@ pipeline {
         }
 
         stage("Java Test") {
-            when { expression { false } } //TODO fix tests for all services
+            when { expression { false && env != "prod" } } //TODO fix tests for all services
             steps {
                 container('spring-jenkins-slave') {
                     script {
@@ -100,6 +100,7 @@ pipeline {
         }
 
         stage("Build Artifact") {
+            when { expression { env != "prod"}}
             environment {
                 AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
                 AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
