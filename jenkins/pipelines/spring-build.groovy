@@ -137,6 +137,7 @@ pipeline {
         }
 
         stage("Trigger Deploy") {
+            when { expression { BRANCH_NAME == "develop" } }
             steps {
                 script {
                     build job: "${REPOSITORY}-deploy-to-${env}", parameters: [
