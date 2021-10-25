@@ -56,12 +56,12 @@ pipeline {
         }
 
         stage("Get Version") {
+            environment {
+                AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
+                AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
+                AWS_DEFAULT_REGION = "us-east-1"
+            }
             steps {
-                environment {
-                    AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
-                    AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
-                    AWS_DEFAULT_REGION = "us-east-1"
-                }
                 container('spring-jenkins-slave') {
                     script {
                         version = versionTasks.getVersion(REPOSITORY as String)
@@ -74,12 +74,12 @@ pipeline {
 
         stage("Develop Version Update") {
             when { expression { BRANCH_NAME == "develop" } }
+            environment {
+                AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
+                AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
+                AWS_DEFAULT_REGION = "us-east-1"
+            }
             steps {
-                environment {
-                    AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
-                    AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
-                    AWS_DEFAULT_REGION = "us-east-1"
-                }
                 container('spring-jenkins-slave') {
                     script {
                         versionTasks.minorVersionUpdate(REPOSITORY, version)
@@ -100,11 +100,11 @@ pipeline {
         }
 
         stage("Build Artifact") {
+            environment {
+                DOCKER_TOKEN = credentials('jenkins-dockerhub')
+            }
             steps {
                 script {
-                    environment {
-                        DOCKER_TOKEN = credentials('jenkins-dockerhub')
-                    }
                     container('spring-jenkins-slave') {
                         sh "bash gradlew clean assemble"
                     }
@@ -118,18 +118,16 @@ pipeline {
         }
 
         stage("Promote Artifact") {
-            when { expression { BRANCH_NAME == "master" } }
+            when { expression { env == "prod" } }
+            environment {
+                DOCKER_TOKEN = credentials('jenkins-dockerhub')
+            }
             steps {
                 script {
-                    if (env == "prod") {
-                        environment {
-                            DOCKER_TOKEN = credentials('jenkins-dockerhub')
-                        }
-                        container('buildah') {
-                            sh 'echo $DOCKER_TOKEN | buildah login -u zevrant --password-stdin docker.io'
-                            sh "buildah tag docker.io/zevrant/${REPOSITORY}:${version.toThreeStageVersionString()} docker.io/zevrant/${REPOSITORY}:${newVersion.toThreeStageVersionString()}"
-                            sh "buildah push docker.io/zevrant/${REPOSITORY}:${newVersion}"
-                        }
+                    container('buildah') {
+                        sh 'echo $DOCKER_TOKEN | buildah login -u zevrant --password-stdin docker.io'
+                        sh "buildah tag docker.io/zevrant/${REPOSITORY}:${version.toThreeStageVersionString()} docker.io/zevrant/${REPOSITORY}:${newVersion.toThreeStageVersionString()}"
+                        sh "buildah push docker.io/zevrant/${REPOSITORY}:${newVersion}"
                     }
                 }
             }
@@ -142,7 +140,7 @@ pipeline {
                             [$class: 'StringParameterValue', name: 'VERSION', value: version.toThreeStageVersionString()],
                             [$class: 'StringParameterValue', name: 'ENVIRONMENT', value: "develop"]
                     ],
-                    wait: false
+                            wait: false
                 }
             }
         }

@@ -39,12 +39,12 @@ pipeline {
         }
 
         stage("Get Version") {
+            environment {
+                AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
+                AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
+                AWS_DEFAULT_REGION = "us-east-1"
+            }
             steps {
-                environment {
-                    AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
-                    AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
-                    AWS_DEFAULT_REGION = "us-east-1"
-                }
                 container('spring-jenkins-slave') {
                     script {
                         version = versionTasks.getVersion(REPOSITORY as String)
@@ -57,12 +57,12 @@ pipeline {
 
         stage("Develop Version Update") {
             when { expression { BRANCH_NAME == "develop" } }
+            environment {
+                AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
+                AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
+                AWS_DEFAULT_REGION = "us-east-1"
+            }
             steps {
-                environment {
-                    AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
-                    AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
-                    AWS_DEFAULT_REGION = "us-east-1"
-                }
                 container('spring-jenkins-slave') {
                     script {
                         versionTasks.minorVersionUpdate(REPOSITORY, version)
