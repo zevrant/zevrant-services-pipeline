@@ -16,7 +16,7 @@ import com.zevrant.services.pojo.PipelineCollection
             jenkinsfileLocation: 'jenkins/pipelines/libraryBuild.groovy',
             credentialId: 'jenkins-git',
             envs: new HashMap<>([
-                    'REPOSITORY': microserviceRepository,
+                    'REPOSITORY': libraryRepository,
             ])
     );
     createPipeline(folder, pipeline);
