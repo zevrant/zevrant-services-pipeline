@@ -83,7 +83,8 @@ pipeline {
             steps {
                 container('spring-jenkins-slave') {
                     script {
-                        versionTasks.minorVersionUpdate(REPOSITORY, version)
+                        version = versionTasks.minorVersionUpdate(REPOSITORY, version)
+                        currentBuild.displayName = "Building version ${version.toThreeStageVersionString()}"
                     }
                 }
             }

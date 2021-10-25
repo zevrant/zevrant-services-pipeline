@@ -8,11 +8,6 @@ node {
         git(url: 'git@github.com:zevrant/zevrant-services-pipeline.git', credentialsId: 'jenkins-git', branch: 'master')
     }
 
-    stage("Check seed updates") {
-        String gitLog = sh returnStdout: true, script: 'git log -1 --raw'
-        runSeed = gitLog.contains("src/main/groovy") || gitLog.contains('jenkins/seed')
-    }
-
     List<String> libraryRepositories = new ArrayList<>();
     stage("Get library Repositories") {
         libraryRepositories.addAll(getNonArchivedReposMatching("common"))
