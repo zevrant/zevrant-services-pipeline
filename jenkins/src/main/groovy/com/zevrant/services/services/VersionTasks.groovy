@@ -41,6 +41,7 @@ Version minorVersionUpdate(String appName, Version currentVersion) {
     sh "aws ssm put-parameter --name ${appName}-VERSION --value ${version.toThreeStageVersionString()} --type String --overwrite"
     return currentVersion
 }
+version
 
 Version incrementVersionCode(String appName, Version currentVersion) {
     Version version = new Version(String.valueOf(Integer.parseInt(currentVersion.toVersionCodeString()) + 1))
@@ -50,4 +51,21 @@ Version incrementVersionCode(String appName, Version currentVersion) {
 
 Version getVersionCode(String appName) {
     return getVersion("$appName-code")
+}
+
+Version getPreviousVersion(String appName) {
+    def parameterVersions = readJSON(text: sh(returnStdout: true, script: "aws ssm --name get-parameter-history ${applicationName}-VERSION")).Parameters
+    String currentParamVersion = ""
+    String currentVersion = readJSON(text: sh(returnStdout: true, script: "aws ssm --name get-parameter ${applicationName}-VERSION")).Parameter.Value
+    for (int i = 0; i < parameterVersions.length; i++) {
+        if (currentVersion == parameterVersions[i].Value) {
+            currentParamVersion = parameterVersions[i].Version
+        }
+    }
+    for (int i = 0; i < parameterVersions.length as int; i++) {
+        if (String.valueOf(Integer.parseInt(currentParamVersion) - 1) == parameterVersions[i].Value) {
+            return new Version(parameterVersions[i].Value as String)
+        }
+    }
+    throw new RuntimeException("Previous version not found")
 }

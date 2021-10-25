@@ -12,6 +12,7 @@ BRANCH_NAME = BRANCH_NAME[BRANCH_NAME.size() - 1];
 VersionTasks versionTasks = TaskLoader.load(binding, VersionTasks) as VersionTasks
 String env = (BRANCH_NAME == "master") ? "prod" : "develop"
 Version version = null
+Version previousVersion = null
 pipeline {
     agent {
         kubernetes {
@@ -98,6 +99,7 @@ pipeline {
             steps {
                 container('spring-jenkins-slave') {
                     script {
+                        previousVersion = versionTasks.getPreviousVersion(REPOSITORY)
                         versionTasks.majorVersionUpdate(REPOSITORY, version)
                     }
                 }
@@ -135,8 +137,8 @@ pipeline {
                 script {
                     container('buildah') {
                         sh 'echo $DOCKER_TOKEN | buildah login -u zevrant --password-stdin docker.io'
-                        sh "buildah tag docker.io/zevrant/${REPOSITORY}:${version.toThreeStageVersionString()} docker.io/zevrant/${REPOSITORY}:${newVersion.toThreeStageVersionString()}"
-                        sh "buildah push docker.io/zevrant/${REPOSITORY}:${newVersion}"
+                        sh "buildah tag docker.io/zevrant/${REPOSITORY}:${previousVersion.toThreeStageVersionString()} docker.io/zevrant/${REPOSITORY}:${version.toThreeStageVersionString()}"
+                        sh "buildah push docker.io/zevrant/${REPOSITORY}:${version.toThreeStageVersionString()}"
                     }
                 }
             }
