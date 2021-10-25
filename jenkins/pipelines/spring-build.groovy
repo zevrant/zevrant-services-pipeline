@@ -131,11 +131,11 @@ pipeline {
         }
 
         stage("Trigger Deploy") {
-            when { expression { BRANCH_NAME == "develop" } }
+            when { expression { BRANCH_NAME == "develop" || BRANCH_NAME == "master" } }
             steps {
                 script {
                     build job: "${REPOSITORY}-deploy-to-${env}", parameters: [
-                            [$class: 'StringParameterValue', name: 'VERSION', value: previousVersion.toThreeStageVersionString()],
+                            [$class: 'StringParameterValue', name: 'VERSION', value: (BRANCH_NAME == "master")? previousVersion.toThreeStageVersionString() : version.toThreeStageVersionString()],
                             [$class: 'StringParameterValue', name: 'ENVIRONMENT', value: "develop"]
                     ],
                             wait: false
