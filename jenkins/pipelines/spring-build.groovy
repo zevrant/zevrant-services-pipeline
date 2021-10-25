@@ -12,7 +12,6 @@ BRANCH_NAME = BRANCH_NAME[BRANCH_NAME.size() - 1];
 VersionTasks versionTasks = TaskLoader.load(binding, VersionTasks) as VersionTasks
 String env = (BRANCH_NAME == "master") ? "prod" : "develop"
 Version version = null
-Version previousVersion = null
 pipeline {
     agent {
         kubernetes {
@@ -124,22 +123,6 @@ pipeline {
                             sh "buildah bud --storage-driver=vfs -t docker.io/zevrant/$REPOSITORY:${version.toThreeStageVersionString()} ."
                             sh "buildah push docker.io/zevrant/$REPOSITORY:${version.toThreeStageVersionString()}"
                         }
-                    }
-                }
-            }
-        }
-
-        stage("Promote Artifact") {
-            when { expression { env == "prod" } }
-            environment {
-                DOCKER_TOKEN = credentials('jenkins-dockerhub')
-            }
-            steps {
-                script {
-                    container('buildah') {
-                        sh 'echo $DOCKER_TOKEN | buildah login -u zevrant --password-stdin docker.io'
-                        sh "buildah tag docker.io/zevrant/${REPOSITORY}:${previousVersion.toThreeStageVersionString()} docker.io/zevrant/${REPOSITORY}:${version.toThreeStageVersionString()}"
-                        sh "buildah push docker.io/zevrant/${REPOSITORY}:${version.toThreeStageVersionString()}"
                     }
                 }
             }
