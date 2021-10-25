@@ -13,7 +13,7 @@ BRANCH_NAME = BRANCH_NAME[BRANCH_NAME.size() - 1];
 pipeline {
     agent {
         kubernetes {
-            inheritFrom: 'spring-build'
+            inheritFrom 'spring-build'
         }
     }
     stages {
