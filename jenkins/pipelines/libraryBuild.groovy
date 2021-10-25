@@ -55,8 +55,7 @@ pipeline {
             }
         }
 
-        stage("Develop Version Update") {
-            when { expression { BRANCH_NAME == "develop" } }
+        stage("Version Update") {
             environment {
                 AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
                 AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
@@ -66,22 +65,6 @@ pipeline {
                 container('spring-jenkins-slave') {
                     script {
                         versionTasks.minorVersionUpdate(REPOSITORY, version)
-                    }
-                }
-            }
-        }
-
-        stage("Release Version Update") {
-            when { expression { BRANCH_NAME == "master" } }
-            environment {
-                AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
-                AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
-                AWS_DEFAULT_REGION = "us-east-1"
-            }
-            steps {
-                container('spring-jenkins-slave') {
-                    script {
-                        versionTasks.majorVersionUpdate(REPOSITORY, version)
                     }
                 }
             }
