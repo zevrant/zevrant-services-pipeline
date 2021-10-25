@@ -36,14 +36,14 @@ Version medianVersionUpdate(String appName, Version currentVersion) {
 
 Version minorVersionUpdate(String appName, Version currentVersion) {
     Version version = new Version(currentVersion.toThreeStageVersionString());
-    currentVersion.setMinor(currentVersion.getMinor() + 1)
+    version.setMinor(currentVersion.getMinor() + 1)
 
     sh "aws ssm put-parameter --name ${appName}-VERSION --value ${version.toThreeStageVersionString()} --type String --overwrite"
     return currentVersion
 }
 
 Version incrementVersionCode(String appName, Version currentVersion) {
-    Version version = new Version(currentVersion.toVersionCodeString())
+    Version version = new Version(String.valueOf(Integer.parseInt(currentVersion.toVersionCodeString()) + 1))
     sh "aws ssm put-parameter --name ${appName}-code-VERSION --value ${version.toVersionCodeString()} --type String --overwrite"
     return currentVersion
 }
