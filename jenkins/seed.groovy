@@ -49,19 +49,22 @@ import com.zevrant.services.pojo.PipelineCollection
                     'ENVIRONMENT': 'develop'
             ])
     )
-    Pipeline deployPipeline = new Pipeline(
+    Pipeline prodDeployPipeline = new Pipeline(
             name: "${microserviceRepository}-deploy-to-prod",
             parameters: new ArrayList<>([
-                    DefaultPipelineParameters.BRANCH_PARAMETER.getParameter(),
-
-
+                    new PipelineParameter<String>(String.class, "VERSION", "Version to be Deployed", "")
             ]),
             gitRepo: "git@github.com:zevrant/zevrant-services-pipeline.git",
             jenkinsfileLocation: 'jenkins/pipelines/kubernetes-deploy.groovy',
-            credentialId: 'jenkins-git'
+            credentialId: 'jenkins-git',
+            envs: new HashMap<>([
+                    'REPOSITORY': microserviceRepository,
+                    'ENVIRONMENT': 'prod'
+            ])
     )
     createPipeline(folder, pipeline);
     createPipeline(folder, developDeployPipeline);
+    createPipeline(folder, prodDeployPipeline);
 }
 
 String androidFolder = createMultibranch('zevrant-android-app', ApplicationType.ANDROID)
