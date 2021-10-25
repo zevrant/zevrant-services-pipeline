@@ -12,6 +12,7 @@ BRANCH_NAME = BRANCH_NAME[BRANCH_NAME.size() - 1];
 VersionTasks versionTasks = TaskLoader.load(binding, VersionTasks) as VersionTasks
 String env = (BRANCH_NAME == "master") ? "prod" : "develop"
 Version version = null
+Version previousVersion = null
 pipeline {
     agent {
         kubernetes {
@@ -65,7 +66,7 @@ pipeline {
                 container('spring-jenkins-slave') {
                     script {
                         version = versionTasks.getVersion(REPOSITORY as String)
-                        previousVersion = versionTasks.getPreviousVersion(REPOSITORY)
+                        versionCode = versionTasks.getVersionCode("${REPOSITORY.toLowerCase()}")
                         currentBuild.displayName = "Building version ${version.toThreeStageVersionString()}"
                     }
                 }
@@ -98,7 +99,8 @@ pipeline {
             steps {
                 container('spring-jenkins-slave') {
                     script {
-                        versionTasks.majorVersionUpdate(REPOSITORY, version)
+                        previousVersion = new Version(version.toThreeStageVersionString())
+                        version = versionTasks.majorVersionUpdate(REPOSITORY, version)
                     }
                 }
             }
@@ -123,6 +125,22 @@ pipeline {
                             sh "buildah bud --storage-driver=vfs -t docker.io/zevrant/$REPOSITORY:${version.toThreeStageVersionString()} ."
                             sh "buildah push docker.io/zevrant/$REPOSITORY:${version.toThreeStageVersionString()}"
                         }
+                    }
+                }
+            }
+        }
+
+        stage("Promote Artifact") {
+            when { expression { env == "prod" } }
+            environment {
+                DOCKER_TOKEN = credentials('jenkins-dockerhub')
+            }
+            steps {
+                script {
+                    container('buildah') {
+                        sh 'echo $DOCKER_TOKEN | buildah login -u zevrant --password-stdin docker.io'
+                        sh "buildah tag docker.io/zevrant/${REPOSITORY}:${previousVersion.toThreeStageVersionString()} docker.io/zevrant/${REPOSITORY}:${version.toThreeStageVersionString()}"
+                        sh "buildah push docker.io/zevrant/${REPOSITORY}:${version.toThreeStageVersionString()}"
                     }
                 }
             }
