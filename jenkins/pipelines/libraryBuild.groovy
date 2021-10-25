@@ -1,41 +1,95 @@
+@Library("CommonUtils")
+
 import groovy.json.JsonSlurper
+import com.zevrant.services.TaskLoader
+import com.zevrant.services.pojo.Version
+import com.zevrant.services.services.VersionTasks
 
-node("master") {
-
-    String repository = env.JOB_BASE_NAME
-    String version = ""
-
-    stage("Get Version") {
-        def json = readJSON text: (sh(returnStdout: true, script: "aws ssm get-parameter --name ${repository}-VERSION"))
-        version = json['Parameter']['Value']
+String repository = env.JOB_BASE_NAME
+String version;
+VersionTasks versionTasks = TaskLoader.load(binding, VersionTasks) as VersionTasks
+BRANCH_NAME = BRANCH_NAME.tokenize("/")
+BRANCH_NAME = BRANCH_NAME[BRANCH_NAME.size() - 1];
+pipeline {
+    agent {
+        kubernetes {
+            inheritFrom: 'spring-build'
+        }
     }
+    stages {
+        stage("SCM Checkout") {
+            steps {
+                container('spring-jenkins-slave') {
+                    script {
+                        git credentialsId: 'jenkins-git', branch: env.BRANCH_NAME,
+                                url: "git@github.com:zevrant/${repository}.git"
+                    }
+                }
+            }
+        }
 
-    stage("SCM Checkout") {
-        git credentialsId: 'jenkins-git', branch: env.BRANCH_NAME,
-                url: "git@github.com:zevrant/${repository}.git"
+        stage("Test") {
+            steps {
+                container('spring-jenkins-slave') {
+                    script {
+                        "bash gradlew clean build --no-daemon"
+                    }
+                }
+            }
+        }
+
+        stage("Get Version") {
+            steps {
+                environment {
+                    AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
+                    AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
+                    AWS_DEFAULT_REGION = "us-east-1"
+                }
+                container('spring-jenkins-slave') {
+                    script {
+                        version = versionTasks.getVersion(REPOSITORY as String)
+                        versionCode = versionTasks.getVersionCode("${REPOSITORY.toLowerCase()}")
+                        currentBuild.displayName = "Building version ${version.toThreeStageVersionString()}"
+                    }
+                }
+            }
+        }
+
+        stage("Develop Version Update") {
+            when { expression { BRANCH_NAME == "develop" } }
+            steps {
+                environment {
+                    AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
+                    AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
+                    AWS_DEFAULT_REGION = "us-east-1"
+                }
+                container('spring-jenkins-slave') {
+                    script {
+                        versionTasks.minorVersionUpdate(REPOSITORY, version)
+                    }
+                }
+            }
+        }
+
+        stage("Release Version Update") {
+            when { expression { BRANCH_NAME == "master" } }
+            steps {
+                container('spring-jenkins-slave') {
+                    script {
+                        versionTasks.majorVersionUpdate(REPOSITORY, version)
+                    }
+                }
+            }
+        }
+
+        stage("Build & Publish") {
+            steps {
+                container('spring-jenkins-slave') {
+                    script {
+                        sh "bash gradlew clean assemble publish -PprojVersion=${version} --no-daemon"
+                    }
+                }
+            }
+        }
     }
-
-    stage("Test") {
-        "bash gradlew clean build --no-daemon"
-    }
-
-    stage("Version Update") {
-        String[] splitVersion = version.tokenize(".");
-        def minorVersion = splitVersion[2]
-        minorVersion = minorVersion.toInteger() + 1
-        version = "${splitVersion[0]}.${splitVersion[1]}.${minorVersion}"
-        sh "aws ssm put-parameter --name ${repository}-VERSION --value $version --type String --overwrite"
-    }
-
-    stage("Build & Publish") {
-        sh "bash gradlew clean assemble publish -PprojVersion=${version} --no-daemon"
-    }
-
-//    stage ("Deploy Library") {
-//        build job: 'deploy-library', parameters: [
-//                [$class: 'StringParameterValue', name: 'REPOSITORY', value: REPOSITORY],
-//                [$class: 'StringParameterValue', name: 'VERSION', value: version],
-//                [$class: 'StringParameterValue', name: 'ENVIRONMENT', value: "develop"]
-//        ]
-//    }
 }

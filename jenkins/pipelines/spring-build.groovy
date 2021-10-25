@@ -18,12 +18,7 @@ pipeline {
             inheritFrom 'spring-build'
         }
     }
-    environment {
-        AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
-        AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
-        AWS_DEFAULT_REGION = "us-east-1"
-        DOCKER_TOKEN = credentials('jenkins-dockerhub')
-    }
+
     stages {
         stage("SCM Checkout") {
             steps {
@@ -62,6 +57,11 @@ pipeline {
 
         stage("Get Version") {
             steps {
+                environment {
+                    AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
+                    AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
+                    AWS_DEFAULT_REGION = "us-east-1"
+                }
                 container('spring-jenkins-slave') {
                     script {
                         version = versionTasks.getVersion(REPOSITORY as String)
@@ -75,6 +75,11 @@ pipeline {
         stage("Develop Version Update") {
             when { expression { BRANCH_NAME == "develop" } }
             steps {
+                environment {
+                    AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
+                    AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
+                    AWS_DEFAULT_REGION = "us-east-1"
+                }
                 container('spring-jenkins-slave') {
                     script {
                         versionTasks.minorVersionUpdate(REPOSITORY, version)
@@ -96,8 +101,10 @@ pipeline {
 
         stage("Build Artifact") {
             steps {
-
                 script {
+                    environment {
+                        DOCKER_TOKEN = credentials('jenkins-dockerhub')
+                    }
                     container('spring-jenkins-slave') {
                         sh "bash gradlew clean assemble"
                     }
@@ -115,6 +122,9 @@ pipeline {
             steps {
                 script {
                     if (env == "prod") {
+                        environment {
+                            DOCKER_TOKEN = credentials('jenkins-dockerhub')
+                        }
                         container('buildah') {
                             sh 'echo $DOCKER_TOKEN | buildah login -u zevrant --password-stdin docker.io'
                             sh "buildah tag docker.io/zevrant/${REPOSITORY}:${version.toThreeStageVersionString()} docker.io/zevrant/${REPOSITORY}:${newVersion.toThreeStageVersionString()}"

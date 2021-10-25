@@ -17,29 +17,12 @@ byte[] b = new byte[2000];
 Version versionCode = null;
 boolean runTests = Boolean.parseBoolean(RUN_TESTS as String)
 pipeline {
-    environment {
-        AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
-        AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
-        AWS_DEFAULT_REGION = "us-east-1"
-    }
     agent {
         kubernetes {
             inheritFrom 'android'
         }
     }
     stages {
-        stage("Get Version") {
-            steps {
-                container('android-emulator') {
-                    script {
-                        version = versionTasks.getVersion(REPOSITORY as String)
-                        versionCode = versionTasks.getVersionCode("${REPOSITORY.toLowerCase()}")
-                    }
-                }
-            }
-        }
-
-
         stage("SCM Checkout") {
             steps {
                 container('android-emulator') {
@@ -163,9 +146,28 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
             }
         }
 
-
+        stage("Get Version") {
+            environment {
+                AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
+                AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
+                AWS_DEFAULT_REGION = "us-east-1"
+            }
+            steps {
+                container('android-emulator') {
+                    script {
+                        version = versionTasks.getVersion(REPOSITORY as String)
+                        versionCode = versionTasks.getVersionCode("${REPOSITORY.toLowerCase()}")
+                    }
+                }
+            }
+        }
         stage("Release Version Update") {
             when { expression { variant == 'release' } }
+            environment {
+                AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
+                AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
+                AWS_DEFAULT_REGION = "us-east-1"
+            }
             steps {
                 container('android-emulator') {
                     script {
@@ -178,6 +180,11 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
         stage("Development Version Update") {
             when { expression { variant == 'develop' } }
             steps {
+                environment {
+                    AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
+                    AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
+                    AWS_DEFAULT_REGION = "us-east-1"
+                }
                 container('android-emulator') {
                     script {
                         versionTasks.minorVersionUpdate(REPOSITORY as String, version)
