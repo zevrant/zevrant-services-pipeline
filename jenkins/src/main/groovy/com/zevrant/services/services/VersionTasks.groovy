@@ -57,12 +57,13 @@ Version getPreviousVersion(String applicationName) {
     def parameterVersions = readJSON(text: sh(returnStdout: true, script: "aws ssm --name get-parameter-history ${applicationName}-VERSION")).Parameters
     String currentParamVersion = ""
     String currentVersion = readJSON(text: sh(returnStdout: true, script: "aws ssm --name get-parameter ${applicationName}-VERSION")).Parameter.Value
-    for (int i = 0; i < parameterVersions.length; i++) {
+    int size = parameterVersions.size()
+    for (int i = 0; i < size; i++) {
         if (currentVersion == parameterVersions[i].Value) {
             currentParamVersion = parameterVersions[i].Version
         }
     }
-    for (int i = 0; i < parameterVersions.length; i++) {
+    for (int i = 0; i < size; i++) {
         if (String.valueOf(Integer.parseInt(currentParamVersion) - 1) == parameterVersions[i].Value) {
             return new Version(parameterVersions[i].Value as String)
         }
