@@ -100,7 +100,7 @@ pipeline {
                 container('spring-jenkins-slave') {
                     script {
                         previousVersion = new Version(version.toThreeStageVersionString())
-                        version = versionTasks.majorVersionUpdate(REPOSITORY, version)
+                        versionTasks.majorVersionUpdate(REPOSITORY, version)
                     }
                 }
             }
@@ -130,28 +130,12 @@ pipeline {
             }
         }
 
-        stage("Promote Artifact") {
-            when { expression { env == "prod" } }
-            environment {
-                DOCKER_TOKEN = credentials('jenkins-dockerhub')
-            }
-            steps {
-                script {
-                    container('buildah') {
-                        sh 'echo $DOCKER_TOKEN | buildah login -u zevrant --password-stdin docker.io'
-                        sh "buildah tag docker.io/zevrant/${REPOSITORY}:${previousVersion.toThreeStageVersionString()} docker.io/zevrant/${REPOSITORY}:${version.toThreeStageVersionString()}"
-                        sh "buildah push docker.io/zevrant/${REPOSITORY}:${version.toThreeStageVersionString()}"
-                    }
-                }
-            }
-        }
-
         stage("Trigger Deploy") {
             when { expression { BRANCH_NAME == "develop" } }
             steps {
                 script {
                     build job: "${REPOSITORY}-deploy-to-${env}", parameters: [
-                            [$class: 'StringParameterValue', name: 'VERSION', value: version.toThreeStageVersionString()],
+                            [$class: 'StringParameterValue', name: 'VERSION', value: previousVersion.toThreeStageVersionString()],
                             [$class: 'StringParameterValue', name: 'ENVIRONMENT', value: "develop"]
                     ],
                             wait: false

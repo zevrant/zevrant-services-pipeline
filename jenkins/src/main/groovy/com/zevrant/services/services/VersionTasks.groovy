@@ -17,12 +17,13 @@ Version getVersion(String applicationName) {
     return new Version(version)
 }
 
-void majorVersionUpdate(String applicationName, Version currentVersion) {
+Version majorVersionUpdate(String applicationName, Version currentVersion) {
     Version version = new Version(currentVersion.toThreeStageVersionString());
     version.setMajor(currentVersion.getMajor() + 1)
     version.setMedian(0);
     version.setMinor(0)
     sh "aws ssm put-parameter --name ${applicationName}-VERSION --value ${version.toThreeStageVersionString()} --type String --overwrite"
+    return version
 }
 
 Version medianVersionUpdate(String applicationName, Version currentVersion) {
@@ -31,7 +32,7 @@ Version medianVersionUpdate(String applicationName, Version currentVersion) {
     version.setMinor(0)
 
     sh "aws ssm put-parameter --name ${applicationName}-VERSION --value ${version.toThreeStageVersionString()} --type String --overwrite"
-    return currentVersion
+    return version
 }
 
 Version minorVersionUpdate(String applicationName, Version currentVersion) {
@@ -39,14 +40,14 @@ Version minorVersionUpdate(String applicationName, Version currentVersion) {
     version.setMinor(currentVersion.getMinor() + 1)
 
     sh "aws ssm put-parameter --name ${applicationName}-VERSION --value ${version.toThreeStageVersionString()} --type String --overwrite"
-    return currentVersion
+    return version
 }
 version
 
 Version incrementVersionCode(String applicationName, Version currentVersion) {
     Version version = new Version(String.valueOf(Integer.parseInt(currentVersion.toVersionCodeString()) + 1))
     sh "aws ssm put-parameter --name ${applicationName}-code-VERSION --value ${version.toVersionCodeString()} --type String --overwrite"
-    return currentVersion
+    return version
 }
 
 Version getVersionCode(String applicationName) {
