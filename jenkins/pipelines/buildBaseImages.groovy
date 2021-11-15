@@ -88,7 +88,7 @@ pipeline {
                             String[] repoBits = repo.split("-")
                             String jenkinsAppName = "${repoBits[0].capitalize()} ${repoBits[1].capitalize()} ${repoBits[2].capitalize()}"
                             buildJobs["Build $branch for $repo"] = {
-                                build job: "Spring/${jenkinsAppName}/${jenkinsAppName}", parameters: [
+                                build job: "Spring/${jenkinsAppName}/${repo}", parameters: [
                                         [$class: 'StringParameterValue', name: 'BRANCH_NAME', value: "refs/heads/$branch"]
                                 ]
                             }
