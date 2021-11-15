@@ -3,7 +3,7 @@ import java.util.List
 def imagesToBuild = ["zevrant-ubuntu-base"]
 def branchesToBuild = ["develop"]
 
-node("master") {
+node("spring-build") {
 
     stage("Git Checkout") {
         git(url: 'git@github.com:zevrant/zevrant-services-pipeline.git', credentialsId: 'jenkins-git', branch: 'master')
