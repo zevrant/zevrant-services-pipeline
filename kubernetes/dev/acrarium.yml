@@ -41,6 +41,25 @@ spec:
       nodeSelector:
         architecture: amd64
       containers:
+        - name: acrarium-db-postgres
+          image: postgres:14.0
+          volumeMounts:
+            - name: acrarium-db
+              mountPath: /opt/postgres/
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: acrarium-db-password
+                  key: password
+            - name: PGDATA
+              value: /opt/postgres/postgres
+            - name: POSTGRES_USER
+              value: zevrant
+            - name: POSTGRES_DB
+              value: acrarium
+          ports:
+            - containerPort: 5432
         - name: mysql
           volumeMounts:
             - name: acrarium-db
