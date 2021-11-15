@@ -1,7 +1,9 @@
-FROM zevrant/zevrant-ubuntu-base:latest
+FROM docker.io/ubuntu:latest
 
 RUN apt-get update \
     && apt-get upgrade -y \
+    && DEBIAN_FRONTEND="noninteractive" apt-get -y install openjdk-11-jdk python3 python3-pip wget iproute2 net-tools jq curl wget zip qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils \
+    && ln -sf /usr/lib/jvm/java-1.11.0-openjdk-amd64/ /usr/bin/java \
     && apt-get install -y wget zip qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils \
     && apt-get clean
 
@@ -21,8 +23,14 @@ ENV ANDROID_SDK_ROOT=/opt/android
 #deprecated but some stuff still may use it
 ENV ANDROID_HOME=/opt/android
 
+ENV JAVA_HOME /usr/lib/jvm/java-1.11.0-openjdk-amd64/
+
 #Set path for downloaded tools
-ENV PATH=$PATH:/opt/android/emulator:/opt/android/platform-tools/:/opt/android/cmdline-tools/latest/bin/:/opt/android/build-tools/31.0.0/
+ENV PATH=$PATH:/usr/local/scripts:/usr/local/scripts/python:$JAVA_HOME/bin:/opt/android/emulator:/opt/android/platform-tools/:/opt/android/cmdline-tools/latest/bin/:/opt/android/build-tools/31.0.0/
+
+RUN pip3 install awscli
+
+RUN groupadd --system developers
 
 #install sdk tools & emulator packages
 RUN sdkmanager --update \
