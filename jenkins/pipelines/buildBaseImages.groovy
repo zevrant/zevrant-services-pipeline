@@ -1,6 +1,6 @@
 import java.util.List
 
-def imagesToBuild = ["zevrant-ubuntu-base"]
+def imagesToBuild = ["zevrant-ubuntu-base", 'android-emulator']
 def branchesToBuild = ["develop"]
 Map<String, List<String>> affectedRepos = new HashMap<>();
 branchesToBuild.each({ branch ->
