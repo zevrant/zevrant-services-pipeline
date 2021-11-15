@@ -23,20 +23,17 @@ pipeline {
         }
 
         stage("Build & Push Dockerfiles") {
+            environment {
+                DOCKER_TOKEN = credentials('jenkins-dockerhub')
+            }
             steps {
                 script {
                     dir("docker/dockerfile") {
-                        container('buildah') {
-                            withCredentials([string(credentialsId: 'jenkins-dockerhub', variable: 'dockerToken')]) {
+                        sh 'echo $DOCKER_TOKEN | buildah login -u zevrant --password-stdin docker.io'
 
-                                withEnv(["DOCKER_TOKEN = " + dockerToken]) {
-                                    sh 'buildah login -u zevrant --password-stdin docker.io << $DOCKER_TOKEN'
-                                    imagesToBuild.each { image ->
-                                        sh "buildah bud -t zevrant/${image}:latest -f ${image}.dockerfile --pull ."
-                                        sh "buildah push zevrant/${image}:latest"
-                                    }
-                                }
-                            }
+                        imagesToBuild.each { image ->
+                            sh "buildah bud -t zevrant/${image}:latest -f ${image}.dockerfile --pull ."
+                            sh "buildah push zevrant/${image}:latest"
                         }
                     }
                 }
