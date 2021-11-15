@@ -28,12 +28,14 @@ pipeline {
             }
             steps {
                 script {
-                    dir("docker/dockerfile") {
-                        sh 'echo $DOCKER_TOKEN | buildah login -u zevrant --password-stdin docker.io'
+                    container('buildah') {
+                        dir("docker/dockerfile") {
+                            sh 'echo $DOCKER_TOKEN | buildah login -u zevrant --password-stdin docker.io'
 
-                        imagesToBuild.each { image ->
-                            sh "buildah bud -t zevrant/${image}:latest -f ${image}.dockerfile --pull ."
-                            sh "buildah push zevrant/${image}:latest"
+                            imagesToBuild.each { image ->
+                                sh "buildah bud -t zevrant/${image}:latest -f ${image}.dockerfile --pull ."
+                                sh "buildah push zevrant/${image}:latest"
+                            }
                         }
                     }
                 }
