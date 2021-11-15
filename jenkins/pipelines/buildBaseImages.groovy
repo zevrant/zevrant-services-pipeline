@@ -33,8 +33,8 @@ pipeline {
                             sh 'echo $DOCKER_TOKEN | buildah login -u zevrant --password-stdin docker.io'
 
                             imagesToBuild.each { image ->
-                                sh "buildah bud -t zevrant/${image}:latest -f ${image}.dockerfile --pull ."
-                                sh "buildah push zevrant/${image}:latest"
+                                sh "buildah bud -t docker.io/zevrant/${image}:latest -f ${image}.dockerfile --pull ."
+                                sh "buildah push docker.io/zevrant/${image}:latest"
                             }
                         }
                     }
