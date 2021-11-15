@@ -1,5 +1,7 @@
 FROM docker.io/ubuntu:latest
 
+RUN groupadd --system developers
+
 RUN apt-get update \
     && apt-get upgrade -y \
     && DEBIAN_FRONTEND="noninteractive" apt-get -y install openjdk-11-jdk python3 python3-pip wget iproute2 net-tools jq curl wget zip qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils \
@@ -29,8 +31,6 @@ ENV JAVA_HOME /usr/lib/jvm/java-1.11.0-openjdk-amd64/
 ENV PATH=$PATH:/usr/local/scripts:/usr/local/scripts/python:$JAVA_HOME/bin:/opt/android/emulator:/opt/android/platform-tools/:/opt/android/cmdline-tools/latest/bin/:/opt/android/build-tools/31.0.0/
 
 RUN pip3 install awscli
-
-RUN groupadd --system developers
 
 #install sdk tools & emulator packages
 RUN sdkmanager --update \
