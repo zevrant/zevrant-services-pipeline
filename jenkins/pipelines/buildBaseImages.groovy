@@ -31,12 +31,12 @@ pipeline {
                     container('buildah') {
                         dir("docker/dockerfile") {
                             sh 'echo $DOCKER_TOKEN | buildah login -u zevrant --password-stdin docker.io'
-                            def imageBuilds = []
+                            def imageBuilds = [:]
                             imagesToBuild.each { image ->
-                                imageBuilds.add( {
+                                imageBuilds[image] = {
                                     sh "buildah bud -t docker.io/zevrant/${image}:latest -f ${image}.dockerfile --pull ."
                                     sh "buildah push docker.io/zevrant/${image}:latest"
-                                })
+                                }
                             }
                             parallel imageBuilds
                         }
