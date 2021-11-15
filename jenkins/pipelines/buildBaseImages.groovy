@@ -12,8 +12,8 @@ node("spring-build") {
     stage("Build & Push Dockerfiles") {
         dir("docker/dockerfile") {
             imagesToBuild.each { image ->
-                sh "docker build . -t zevrant/${image}:latest -f ${image}.dockerfile --no-cache --pull"
-                sh "docker push zevrant/${image}:latest"
+                sh "buildah bud -t zevrant/${image}:latest -f ${image}.dockerfile --pull ."
+                sh "buildah push zevrant/${image}:latest"
             }
         }
     }
@@ -58,10 +58,11 @@ node("spring-build") {
         branchesToBuild.each { branch ->
             println("Build $branch branch for these repositories")
             affectedRepos.get(branch).each { repo ->
+                String[] repoBits = repo.split("-")
+                String jenkinsAppName = "${repoBits[0].capitalize()} ${repoBits[1].capitalize()} ${repoBits[2].capitalize()}"
                 buildJobs["Build $branch for $repo"] = {
-                    build job: 'Build', parameters: [
-                            [$class: 'StringParameterValue', name: 'REPOSITORY', value: repo],
-                            [$class: 'StringParameterValue', name: 'BASE_BRANCH', value: "refs/heads/$branch"]
+                    build job: "Spring/${jenkinsAppName}/${jenkinsAppName}", parameters: [
+                            [$class: 'StringParameterValue', name: 'BRANCH_NAME', value: "refs/heads/$branch"]
                     ]
                 }
             }
