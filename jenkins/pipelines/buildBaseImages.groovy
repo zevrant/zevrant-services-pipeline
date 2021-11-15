@@ -12,9 +12,9 @@ node("spring-build") {
     stage("Build & Push Dockerfiles") {
         dir("docker/dockerfile") {
             container('buildah') {
-                withCredentials([string(credentialsId: 'jenkins-dockerhub', variable: 'dockertoken')]) {
+                withCredentials([string(credentialsId: 'jenkins-dockerhub', variable: 'dockerToken')]) {
 
-                    withEnv(['DOCKER_TOKEN = credentials(\'jenkins-dockerhub\')']) {
+                    withEnv(['DOCKER_TOKEN = $dockerToken']) {
                         sh 'buildah login -u zevrant --password-stdin docker.io << $DOCKER_TOKEN'
                         imagesToBuild.each { image ->
                             sh "buildah bud -t zevrant/${image}:latest -f ${image}.dockerfile --pull ."
