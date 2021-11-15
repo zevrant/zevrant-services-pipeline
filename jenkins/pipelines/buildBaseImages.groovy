@@ -14,7 +14,7 @@ node("spring-build") {
             container('buildah') {
                 withCredentials([string(credentialsId: 'jenkins-dockerhub', variable: 'dockerToken')]) {
 
-                    withEnv(['DOCKER_TOKEN = $dockerToken']) {
+                    withEnv(["DOCKER_TOKEN = " + dockerToken]) {
                         sh 'buildah login -u zevrant --password-stdin docker.io << $DOCKER_TOKEN'
                         imagesToBuild.each { image ->
                             sh "buildah bud -t zevrant/${image}:latest -f ${image}.dockerfile --pull ."
