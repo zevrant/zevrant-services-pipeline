@@ -48,7 +48,7 @@ pipeline {
                 container('spring-jenkins-slave') {
                     script {
                         version = versionTasks.getVersion(REPOSITORY as String) as Version
-                        currentBuild.displayName "Building Version ${version.toThreeStageVersionString()}"
+                        currentBuild.displayName = "Building Version ${version.toThreeStageVersionString()}" as String
                     }
                 }
             }
