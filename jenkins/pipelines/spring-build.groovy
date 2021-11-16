@@ -32,18 +32,6 @@ pipeline {
             }
         }
 
-        stage("Javascript Test") {
-            when { expression { fileExists('package.json') && env != "prod" } }
-            steps {
-                container('spring-jenkins-slave') {
-                    script {
-                        sh "npm run test"
-                    }
-                }
-            }
-
-        }
-
         stage("Java Test") {
             when { expression { false && env != "prod" } } //TODO fix tests for all services
             steps {
@@ -123,7 +111,7 @@ pipeline {
                     container('buildah') {
                         if(BRANCH_NAME == "develop") {
                             sh 'echo $DOCKER_TOKEN | buildah login -u zevrant --password-stdin docker.io'
-                            sh "buildah bud --storage-driver=vfs -t docker.io/zevrant/$REPOSITORY:${version.toThreeStageVersionString()} ."
+                            sh "buildah bud -t docker.io/zevrant/$REPOSITORY:${version.toThreeStageVersionString()} ."
                             sh "buildah push docker.io/zevrant/$REPOSITORY:${version.toThreeStageVersionString()}"
                         }
                     }
