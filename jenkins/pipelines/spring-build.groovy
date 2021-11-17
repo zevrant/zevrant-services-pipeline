@@ -8,8 +8,6 @@ import com.zevrant.services.services.VersionTasks
 List<String> angularProjects = ["zevrant-home-ui"];
 
 String branchName = (BRANCH_NAME.startsWith('PR-')) ? CHANGE_BRANCH : BRANCH_NAME
-//branchName = branchName.tokenize("/")
-//branchName = branchName[branchName.size() - 1];
 VersionTasks versionTasks = TaskLoader.load(binding, VersionTasks) as VersionTasks
 String env = (BRANCH_NAME == "master") ? "prod" : "develop"
 Version version = null
@@ -126,7 +124,7 @@ pipeline {
             when { expression { BRANCH_NAME == "develop" || BRANCH_NAME == "master" } }
             steps {
                 script {
-                    build job: "${REPOSITORY}-deploy-to-${env}", parameters: [
+                    build job: "Spring/Zevrant Home Ui/${REPOSITORY}-deploy-to-${env}", parameters: [
                             [$class: 'StringParameterValue', name: 'VERSION', value: (BRANCH_NAME == "master")? previousVersion.toThreeStageVersionString() : version.toThreeStageVersionString()],
                             [$class: 'StringParameterValue', name: 'ENVIRONMENT', value: "develop"]
                     ],
