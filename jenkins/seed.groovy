@@ -62,7 +62,7 @@ import com.zevrant.services.pojo.PipelineCollection
                     'ENVIRONMENT': 'prod'
             ])
     )
-    createPipeline(folder, pipeline);
+//    createPipeline(folder, pipeline);
     createPipeline(folder, developDeployPipeline);
     createPipeline(folder, prodDeployPipeline);
 }
