@@ -110,6 +110,13 @@ String createMultibranch(String repositoryName, ApplicationType applicationType)
                 remoteJenkinsFile("jenkins/pipelines/spring-build.groovy")
                 remoteJenkinsFileSCM {
                     gitSCM {
+                        extensions {
+                            wipeWorkspace()
+                            cloneOption {
+                                shallow(true)
+                                depth(1)
+                            }
+                        }
                         userRemoteConfigs {
                             userRemoteConfig {
                                 name("Zevrant Services Pipeline") //Custom Repository Name or ID
