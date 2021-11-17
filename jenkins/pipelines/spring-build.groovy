@@ -13,6 +13,7 @@ VersionTasks versionTasks = TaskLoader.load(binding, VersionTasks) as VersionTas
 String env = (BRANCH_NAME == "master") ? "prod" : "develop"
 Version version = null
 Version previousVersion = null
+String REPOSITORY = scm.getUserRemoteConfigs()[0].getUrl().tokenize('/').last().split("\\.")[0]
 pipeline {
     agent {
         kubernetes {
