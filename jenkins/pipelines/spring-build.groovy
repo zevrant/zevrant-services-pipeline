@@ -27,6 +27,7 @@ pipeline {
             steps {
                 container('spring-jenkins-slave') {
                     script {
+                        echo "Checking out ${branchName} from repo ${REPOSITORY}"
                         git credentialsId: 'jenkins-git', branch: branchName,
                                 url: "git@github.com:zevrant/${REPOSITORY}.git"
                     }
