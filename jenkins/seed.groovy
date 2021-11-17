@@ -106,10 +106,15 @@ String createMultibranch(String repositoryName, ApplicationType applicationType)
         factory {
             remoteJenkinsFileWorkflowBranchProjectFactory {
                 localMarker("")
-                matchBranches(true)
+                matchBranches(false)
                 remoteJenkinsFile("jenkins/pipelines/spring-build.groovy")
                 remoteJenkinsFileSCM {
                     gitSCM {
+                        branches {
+                            branchSpec {
+                                name('master')
+                            }
+                        }
                         extensions {
                             wipeWorkspace()
                             cloneOption {
