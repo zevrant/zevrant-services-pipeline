@@ -8,8 +8,8 @@ import com.zevrant.services.services.VersionTasks
 List<String> angularProjects = ["zevrant-home-ui"];
 
 String branchName = (BRANCH_NAME.startsWith('PR-')) ? CHANGE_BRANCH : BRANCH_NAME
-branchName = branchName.tokenize("/")
-branchName = branchName[branchName.size() - 1];
+//branchName = branchName.tokenize("/")
+//branchName = branchName[branchName.size() - 1];
 VersionTasks versionTasks = TaskLoader.load(binding, VersionTasks) as VersionTasks
 String env = (BRANCH_NAME == "master") ? "prod" : "develop"
 Version version = null

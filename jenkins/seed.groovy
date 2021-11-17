@@ -260,6 +260,7 @@ void createPipeline(String folder, Pipeline pipeline) {
                         extensions {
                             cloneOptions {
                                 shallow(true)
+                                depth(1)
                             }
                         }
                     }
