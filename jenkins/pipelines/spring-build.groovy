@@ -7,8 +7,9 @@ import com.zevrant.services.services.VersionTasks
 
 List<String> angularProjects = ["zevrant-home-ui"];
 
-BRANCH_NAME = BRANCH_NAME.tokenize("/")
-BRANCH_NAME = BRANCH_NAME[BRANCH_NAME.size() - 1];
+String branchName = (BRANCH_NAME.startsWith('PR-')) ? CHANGE_BRANCH : BRANCH_NAME
+branchName = branchName.tokenize("/")
+branchName = branchName[branchName.size() - 1];
 VersionTasks versionTasks = TaskLoader.load(binding, VersionTasks) as VersionTasks
 String env = (BRANCH_NAME == "master") ? "prod" : "develop"
 Version version = null
@@ -26,7 +27,7 @@ pipeline {
             steps {
                 container('spring-jenkins-slave') {
                     script {
-                        git credentialsId: 'jenkins-git', branch: BRANCH_NAME,
+                        git credentialsId: 'jenkins-git', branch: branchName,
                                 url: "git@github.com:zevrant/${REPOSITORY}.git"
                     }
                 }
