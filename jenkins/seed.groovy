@@ -115,6 +115,9 @@ String createMultibranch(String repositoryName, ApplicationType applicationType)
                             cloneOption {
                                 shallow(true)
                                 depth(1)
+                                noTags(true)
+                                reference("")
+                                timeout(10)
                             }
                         }
                         userRemoteConfigs {
