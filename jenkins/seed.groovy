@@ -24,18 +24,18 @@ import com.zevrant.services.pojo.PipelineCollection
 
 (microserviceRepositories as List<String>).each { microserviceRepository ->
     String folder = createMultibranch(microserviceRepository, ApplicationType.SPRING)
-    Pipeline pipeline = new Pipeline(
-            name: microserviceRepository,
-            parameters: new ArrayList<>([
-                    DefaultPipelineParameters.BRANCH_PARAMETER.getParameter()
-            ]),
-            gitRepo: "git@github.com:zevrant/zevrant-services-pipeline.git",
-            jenkinsfileLocation: 'jenkins/pipelines/spring-build.groovy',
-            credentialId: 'jenkins-git',
-            envs: new HashMap<>([
-                    'REPOSITORY': microserviceRepository,
-            ])
-    );
+//    Pipeline pipeline = new Pipeline(
+//            name: microserviceRepository,
+//            parameters: new ArrayList<>([
+//                    DefaultPipelineParameters.BRANCH_PARAMETER.getParameter()
+//            ]),
+//            gitRepo: "git@github.com:zevrant/zevrant-services-pipeline.git",
+//            jenkinsfileLocation: 'jenkins/pipelines/spring-build.groovy',
+//            credentialId: 'jenkins-git',
+//            envs: new HashMap<>([
+//                    'REPOSITORY': microserviceRepository,
+//            ])
+//    );
     Pipeline developDeployPipeline = new Pipeline(
             name: "${microserviceRepository}-deploy-to-develop",
             parameters: new ArrayList<>([
@@ -45,7 +45,7 @@ import com.zevrant.services.pojo.PipelineCollection
             jenkinsfileLocation: 'jenkins/pipelines/kubernetes-deploy.groovy',
             credentialId: 'jenkins-git',
             envs: new HashMap<>([
-                    'REPOSITORY': microserviceRepository,
+                    'REPOSITORY' : microserviceRepository,
                     'ENVIRONMENT': 'develop'
             ])
     )
@@ -58,7 +58,7 @@ import com.zevrant.services.pojo.PipelineCollection
             jenkinsfileLocation: 'jenkins/pipelines/kubernetes-deploy.groovy',
             credentialId: 'jenkins-git',
             envs: new HashMap<>([
-                    'REPOSITORY': microserviceRepository,
+                    'REPOSITORY' : microserviceRepository,
                     'ENVIRONMENT': 'prod'
             ])
     )
@@ -73,7 +73,7 @@ Pipeline androidPipeline = new Pipeline(
         parameters: new ArrayList<>([
                 DefaultPipelineParameters.BRANCH_PARAMETER.getParameter(),
                 new PipelineParameter(
-                    Boolean.class,
+                        Boolean.class,
                         "RUN_TESTS",
                         "Whether tests should be ran",
                         Boolean.TRUE
@@ -104,8 +104,24 @@ String createMultibranch(String repositoryName, ApplicationType applicationType)
     multibranchPipelineJob(folderName + repositoryName + "-multibranch") {
         displayName jobName + " Multibranch"
         factory {
-            workflowBranchProjectFactory {
-                scriptPath('Jenkinsfile.groovy')
+            remoteJenkinsFileWorkflowBranchProjectFactory {
+                localMarker("")
+                matchBranches(true)
+                remoteJenkinsFile("jenkins/pipelines/spring-build.groovy")
+                remoteJenkinsFileSCM {
+                    gitSCM {
+                        userRemoteConfigs {
+                            userRemoteConfig {
+                                name("Zevrant Services Pipeline") //Custom Repository Name or ID
+                                url("git@github.com:zevrant/zevrant-services-pipeline.git") //URL for the repository
+                                refspec("master") // Branch spec
+                                credentialsId("jenkins-git") // Credential ID. Leave blank if not required
+                            }
+                            browser {} // Leave blank for default Git Browser
+                            gitTool("") //Leave blank for default git executable
+                        }
+                    }
+                }
             }
         }
         branchSources {
@@ -167,8 +183,8 @@ void createPipeline(String folder, Pipeline pipeline) {
             }
         }
 
-        if(pipeline.envs != null
-                && !pipeline.envs.isEmpty() ) {
+        if (pipeline.envs != null
+                && !pipeline.envs.isEmpty()) {
             environmentVariables {
                 pipeline.envs.keySet().each { key ->
                     env(key, pipeline.envs.get(key))
