@@ -21,18 +21,6 @@ pipeline {
     }
 
     stages {
-        stage("SCM Checkout") {
-            steps {
-                container('spring-jenkins-slave') {
-                    script {
-                        echo "Checking out ${branchName} from repo ${REPOSITORY}"
-                        git credentialsId: 'jenkins-git', branch: branchName,
-                                url: "git@github.com:zevrant/${REPOSITORY}.git"
-                    }
-                }
-            }
-        }
-
         stage("Java Test") {
             when { expression { false && env != "prod" } } //TODO fix tests for all services
             steps {
