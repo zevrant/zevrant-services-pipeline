@@ -124,7 +124,8 @@ pipeline {
             when { expression { BRANCH_NAME == "develop" || BRANCH_NAME == "master" } }
             steps {
                 script {
-                    build job: "Spring/Zevrant Home Ui/${REPOSITORY}-deploy-to-${env}", parameters: [
+                    String repositorySplit = REPOSITORY.split("-")
+                    build job: "Spring/${repositorySplit[0].capitalize()} ${repositorySplit[1].capitalize()} ${repositorySplit[2].capitalize()}/${REPOSITORY}-deploy-to-${env}", parameters: [
                             [$class: 'StringParameterValue', name: 'VERSION', value: (BRANCH_NAME == "master")? previousVersion.toThreeStageVersionString() : version.toThreeStageVersionString()],
                             [$class: 'StringParameterValue', name: 'ENVIRONMENT', value: "develop"]
                     ],
