@@ -19,7 +19,7 @@ metadata:
     app: zevrant-keycloak-service
 spec:
   #  Additional config is needed to switch to HA mode
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: zevrant-keycloak-service
@@ -51,10 +51,6 @@ spec:
               port: 8443
             initialDelaySeconds: 180
           env:
-            - name: KEYCLOAK_USER
-              value: admin
-            - name: KEYCLOAK_PASSWORD
-              value: admin
             - name: DB_ADDR
               value: zevrant-keycloak-service-db
             - name: DB_PORT
