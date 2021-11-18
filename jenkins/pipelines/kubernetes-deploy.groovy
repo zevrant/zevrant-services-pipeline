@@ -45,7 +45,9 @@ pipeline {
                     script {
                         sh "sed -i 's/\$ENVIRONMENT/$ENVIRONMENT/g' ./deployment.yml"
                         sh "sed -i 's/\$VERSION/$VERSION/g' ./deployment.yml"
-                        def yamlDocs = readYaml(text: ((String) readFile(file: 'deployment.yml')))
+                        String deploymentText = ((String) readFile(file: 'deployment.yml'))
+                        println(deploymentText)
+                        def yamlDocs = readYaml(text: deploymentText)
                         int timeout = yamlDocs[yamlDocs.size() - 1].spec.replicas
                         sh "kubectl apply -n zevrant-home-services-$ENVIRONMENT -f ./deployment.yml"
                         sh "kubectl rollout status deployments $REPOSITORY-deployment -n zevrant-home-services-$ENVIRONMENT --timeout=${timeout}s"
