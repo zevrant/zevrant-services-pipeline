@@ -107,7 +107,7 @@ pipeline {
             steps {
                 script {
                     container('spring-jenkins-slave') {
-                        sh "bash gradlew clean assemble"
+                        sh "CI=ci bash gradlew clean assemble"
                     }
                     container('buildah') {
                         if(BRANCH_NAME == "develop") {
