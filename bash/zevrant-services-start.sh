@@ -19,9 +19,10 @@ setAwsCredentials "$credentials"
 curl https://raw.githubusercontent.com/zevrant/zevrant-services-pipeline/master/bash/openssl.conf > ~/openssl.conf
 sed -i "s/\${POD_IP}/$POD_IP/g" ~/openssl.conf
 sed -i "s/\${SERVICE_NAME}/$1/g" ~/openssl.conf
-if [[ "$ADDITIONAL_IP" != "" ]]; then
+echo $3
+if [[ "$3" != "" ]]; then
   echo "applying additional ip $ADDITIONAL_IP"
-  echo "		IP.2 = $ADDITIONAL_IP" >> ~/openssl.conf
+  echo "		IP.2 = $3" >> ~/openssl.conf
 fi
 cat ~/openssl.conf
 openssl req -newkey rsa:4096 -nodes -keyout ~/private.pem -days 365 -out ~/public.csr -config ~/openssl.conf
