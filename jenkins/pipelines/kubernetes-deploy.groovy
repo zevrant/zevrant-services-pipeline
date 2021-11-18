@@ -48,7 +48,13 @@ pipeline {
                         String deploymentText = ((String) readFile(file: 'deployment.yml'))
                         println(deploymentText)
                         def yamlDocs = readYaml(text: deploymentText)
-                        int timeout = yamlDocs[yamlDocs.size() - 1].spec.replicas
+                        println yamlDocs.toString()
+                        int timeout = 90;
+                        if(yamlDocs.size() > 1) {
+                            timeout = yamlDocs[yamlDocs.size() - 1].spec.replicas
+                        } else {
+                            timeout = yamlDocs.spec.replicas * 90
+                        }
                         sh "kubectl apply -n zevrant-home-services-$ENVIRONMENT -f ./deployment.yml"
                         sh "kubectl rollout status deployments $REPOSITORY-deployment -n zevrant-home-services-$ENVIRONMENT --timeout=${timeout}s"
                     }
