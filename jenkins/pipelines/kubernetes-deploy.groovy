@@ -36,7 +36,7 @@ pipeline {
         }
 
         stage("Deploy") {
-            when { expression { fileExists('database.yml') } }
+            when { expression { fileExists('deployment.yml') } }
             environment {
                 KUBECONFIG = credentials('jenkins-kubernetes')
             }
