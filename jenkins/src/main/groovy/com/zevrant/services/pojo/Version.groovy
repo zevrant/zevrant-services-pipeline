@@ -12,6 +12,7 @@ class Version {
     private int minor;
     private int median;
     private int major;
+    private boolean semanticVersion;
 
     Version(String version) {
         assert version != null: "Supplied version was null"
@@ -32,6 +33,7 @@ class Version {
                 minor = Integer.valueOf(versionPieces[2])
                 median = Integer.valueOf(versionPieces[1])
                 major = Integer.valueOf(versionPieces[0])
+                isSemanticVersion = true
                 break;
         }
 
@@ -67,5 +69,13 @@ class Version {
 
     void setMajor(int major) {
         this.major = major
+    }
+
+    boolean isSemanticVersion() {
+        return semanticVersion
+    }
+
+    void setSemanticVersion(boolean semanticVersion) {
+        this.semanticVersion = semanticVersion
     }
 }
