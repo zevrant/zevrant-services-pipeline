@@ -12,7 +12,7 @@ class Version {
     private int minor;
     private int median;
     private int major;
-    private boolean semanticVersion;
+    private boolean semanticVersion = false
 
     Version(String version) {
         assert version != null: "Supplied version was null"
@@ -72,7 +72,7 @@ class Version {
     }
 
     boolean isSemanticVersion() {
-        return semanticVersion
+        return this.semanticVersion
     }
 
     void setSemanticVersion(boolean semanticVersion) {
