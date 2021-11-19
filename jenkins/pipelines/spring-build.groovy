@@ -90,8 +90,8 @@ pipeline {
                     container('buildah') {
                         if(BRANCH_NAME == "develop") {
                             String versionString = (version.isSemanticVersion())
-                                    ? ${version.toThreeStageVersionString()}
-                                    : ${version.toVersionCodeString()}
+                                    ? version.toThreeStageVersionString()
+                                    : version.toVersionCodeString()
                             sh 'echo $DOCKER_TOKEN | buildah login -u zevrant --password-stdin docker.io'
                             sh "buildah bud -t docker.io/zevrant/$REPOSITORY:${versionString} ."
                             sh "buildah push docker.io/zevrant/$REPOSITORY:${versionString}"
@@ -107,8 +107,8 @@ pipeline {
                 script {
                     String[] repositorySplit = REPOSITORY.split("-")
                     String versionString = (version.isSemanticVersion())
-                            ? ${version.toThreeStageVersionString()}
-                            : ${version.toVersionCodeString()}
+                            ? version.toThreeStageVersionString()
+                            : version.toVersionCodeString()
                     build job: "Spring/${repositorySplit[0].capitalize()} ${repositorySplit[1].capitalize()} ${repositorySplit[2].capitalize()}/${REPOSITORY}-deploy-to-${env}" as String, parameters: [
                             [$class: 'StringParameterValue', name: 'VERSION', value: versionString],
                             [$class: 'StringParameterValue', name: 'ENVIRONMENT', value: "develop"]
