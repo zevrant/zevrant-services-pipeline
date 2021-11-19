@@ -1,6 +1,7 @@
 @Library("CommonUtils") _
 
 
+import com.lesfurets.jenkins.unit.global.lib.Library
 import com.zevrant.services.TaskLoader
 import com.zevrant.services.pojo.Version
 import com.zevrant.services.services.VersionTasks
@@ -42,7 +43,7 @@ pipeline {
             steps {
                 container('spring-jenkins-slave') {
                     script {
-                        version = versionTasks.getVersion(REPOSITORY as String)
+                        version = versionTasks.getVersion(REPOSITORY as String) as Version
                         versionCode = versionTasks.getVersionCode("${REPOSITORY.toLowerCase()}")
                         currentBuild.displayName = "Building version ${version.toThreeStageVersionString()}"
                     }
