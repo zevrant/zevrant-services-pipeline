@@ -33,7 +33,7 @@ class Version {
                 minor = Integer.valueOf(versionPieces[2])
                 median = Integer.valueOf(versionPieces[1])
                 major = Integer.valueOf(versionPieces[0])
-                isSemanticVersion = true
+                semanticVersion = true
                 break;
         }
 

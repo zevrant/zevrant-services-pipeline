@@ -22,8 +22,8 @@ pipeline {
     }
 
     stages {
-        stage("Java Test") {
-            when { expression { false && env != "prod" } } //TODO fix tests for all services
+        stage("Test") {
+            when { expression { false } } //TODO fix tests for all services
             steps {
                 container('spring-jenkins-slave') {
                     script {
@@ -51,7 +51,7 @@ pipeline {
             }
         }
 
-        stage("Develop Version Update") {
+        stage("Version Update") {
             when { expression { BRANCH_NAME == "develop" } }
             environment {
                 AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
@@ -107,7 +107,7 @@ pipeline {
                     String versionString = (version.isSemanticVersion())
                             ? ${version.toThreeStageVersionString()}
                             : ${version.toVersionCodeString()}
-                    build job: "Spring/${repositorySplit[0].capitalize()} ${repositorySplit[1].capitalize()} ${repositorySplit[2].capitalize()}/${REPOSITORY}-deploy-to-${env}", parameters: [
+                    build job: "Spring/${repositorySplit[0].capitalize()} ${repositorySplit[1].capitalize()} ${repositorySplit[2].capitalize()}/${REPOSITORY}-deploy-to-${env}" as String, parameters: [
                             [$class: 'StringParameterValue', name: 'VERSION', value: versionString],
                             [$class: 'StringParameterValue', name: 'ENVIRONMENT', value: "develop"]
                     ],
