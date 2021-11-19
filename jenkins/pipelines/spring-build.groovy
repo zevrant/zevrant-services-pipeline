@@ -89,9 +89,11 @@ pipeline {
                     }
                     container('buildah') {
                         if(BRANCH_NAME == "develop") {
-
+                            String versionString = (version.isSemanticVersion())
+                                    ? ${version.toThreeStageVersionString()}
+                                    : ${version.toVersionCodeString()}
                             sh 'echo $DOCKER_TOKEN | buildah login -u zevrant --password-stdin docker.io'
-                            sh "buildah bud -t docker.io/zevrant/$REPOSITORY: ."
+                            sh "buildah bud -t docker.io/zevrant/$REPOSITORY:${versionString} ."
                             sh "buildah push docker.io/zevrant/$REPOSITORY:${versionString}"
                         }
                     }
