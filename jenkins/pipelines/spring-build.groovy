@@ -50,7 +50,7 @@ pipeline {
         }
 
         stage("Version Update") {
-            when { expression { BRANCH_NAME == "develop" } }
+            when { expression { BRANCH_NAME == "master" } }
             environment {
                 AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
                 AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
@@ -79,14 +79,12 @@ pipeline {
                         sh "CI=ci bash gradlew clean assemble"
                     }
                     container('buildah') {
-                        if(BRANCH_NAME == "develop") {
-                            String versionString = (BRANCH_NAME == master)
-                                    ? version.toVersionCodeString()
-                                    : "${versionString}-${BRANCH_NAME}" as String
-                            sh 'echo $DOCKER_TOKEN | buildah login -u zevrant --password-stdin docker.io'
-                            sh "buildah bud -t docker.io/zevrant/$REPOSITORY:${versionString} ."
-                            sh "buildah push docker.io/zevrant/$REPOSITORY:${versionString}"
-                        }
+                        String versionString = (BRANCH_NAME == master)
+                                ? version.toVersionCodeString()
+                                : "${versionString}-${BRANCH_NAME}" as String
+                        sh 'echo $DOCKER_TOKEN | buildah login -u zevrant --password-stdin docker.io'
+                        sh "buildah bud -t docker.io/zevrant/$REPOSITORY:${versionString} ."
+                        sh "buildah push docker.io/zevrant/$REPOSITORY:${versionString}"
                     }
                 }
             }
