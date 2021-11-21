@@ -11,12 +11,15 @@ node {
     List<String> libraryRepositories = new ArrayList<>();
     stage("Get library Repositories") {
         libraryRepositories.addAll(getNonArchivedReposMatching("common"))
+
     }
 
     List<String> microserviceRepositories = new ArrayList<>();
     stage("Get Microservice Repositories") {
         microserviceRepositories.addAll(getNonArchivedReposMatching('service'))
         microserviceRepositories.addAll(getNonArchivedReposMatching('ui'))
+        microserviceRepositories.addAll(getNonArchivedReposMatching('backend'))
+
         echo "Found these repositories ${microserviceRepositories}"
     }
 
