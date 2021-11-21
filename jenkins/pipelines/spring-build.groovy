@@ -10,9 +10,7 @@ List<String> angularProjects = ["zevrant-home-ui"];
 
 String branchName = (BRANCH_NAME.startsWith('PR-')) ? CHANGE_BRANCH : BRANCH_NAME
 VersionTasks versionTasks = TaskLoader.load(binding, VersionTasks) as VersionTasks
-String env = (BRANCH_NAME == "master") ? "prod" : "develop"
 Version version = null
-Version previousVersion = null
 String REPOSITORY = scm.getUserRemoteConfigs()[0].getUrl().tokenize('/').last().split("\\.")[0]
 pipeline {
     agent {
@@ -75,7 +73,6 @@ pipeline {
         }
 
         stage("Build Artifact") {
-            when { expression { env != "prod"}}
             environment {
                 AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
                 AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
@@ -92,6 +89,9 @@ pipeline {
                             String versionString = (version.isSemanticVersion())
                                     ? version.toThreeStageVersionString()
                                     : version.toVersionCodeString()
+                            versionString = (BRANCH_NAME == master)
+                                    ? versionString
+                                    : "${versionString}-${BRANCH_NAME}" as String
                             sh 'echo $DOCKER_TOKEN | buildah login -u zevrant --password-stdin docker.io'
                             sh "buildah bud -t docker.io/zevrant/$REPOSITORY:${versionString} ."
                             sh "buildah push docker.io/zevrant/$REPOSITORY:${versionString}"
@@ -109,6 +109,9 @@ pipeline {
                     String versionString = (version.isSemanticVersion())
                             ? version.toThreeStageVersionString()
                             : version.toVersionCodeString()
+                    versionString = (BRANCH_NAME == master)
+                            ? versionString
+                            : "${versionString}-${BRANCH_NAME}" as String
                     build job: "Spring/${repositorySplit[0].capitalize()} ${repositorySplit[1].capitalize()} ${repositorySplit[2].capitalize()}/${REPOSITORY}-deploy-to-develop" as String, parameters: [
                             [$class: 'StringParameterValue', name: 'VERSION', value: versionString],
                     ],
