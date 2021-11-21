@@ -43,7 +43,7 @@ pipeline {
                     script {
                         version = versionTasks.getVersion(REPOSITORY as String) as Version
                         versionCode = versionTasks.getVersionCode("${REPOSITORY.toLowerCase()}")
-                        currentBuild.displayName = "Building version ${version.toThreeStageVersionString()}"
+                        currentBuild.displayName = "Building version ${version.toVersionCodeString()}"
                     }
                 }
             }
@@ -59,14 +59,8 @@ pipeline {
             steps {
                 container('spring-jenkins-slave') {
                     script {
-                        if(version.isSemanticVersion()) {
-                            version = versionTasks.minorVersionUpdate(REPOSITORY, version)
-                            currentBuild.displayName = "Building version ${version.toThreeStageVersionString()}"
-                        } else {
                             version = versionTasks.incrementVersion(REPOSITORY, version);
                             currentBuild.displayName = "Building version ${version.toVersionCodeString()}"
-                        }
-
                     }
                 }
             }
@@ -86,11 +80,8 @@ pipeline {
                     }
                     container('buildah') {
                         if(BRANCH_NAME == "develop") {
-                            String versionString = (version.isSemanticVersion())
-                                    ? version.toThreeStageVersionString()
-                                    : version.toVersionCodeString()
-                            versionString = (BRANCH_NAME == master)
-                                    ? versionString
+                            String versionString = (BRANCH_NAME == master)
+                                    ? version.toVersionCodeString()
                                     : "${versionString}-${BRANCH_NAME}" as String
                             sh 'echo $DOCKER_TOKEN | buildah login -u zevrant --password-stdin docker.io'
                             sh "buildah bud -t docker.io/zevrant/$REPOSITORY:${versionString} ."
@@ -102,15 +93,12 @@ pipeline {
         }
 
         stage("Trigger Deploy") {
-            when { expression { BRANCH_NAME == "develop" || BRANCH_NAME == "master" } }
+            when { expression { BRANCH_NAME == "master" } }
             steps {
                 script {
                     String[] repositorySplit = REPOSITORY.split("-")
-                    String versionString = (version.isSemanticVersion())
-                            ? version.toThreeStageVersionString()
-                            : version.toVersionCodeString()
-                    versionString = (BRANCH_NAME == master)
-                            ? versionString
+                    String versionString = (BRANCH_NAME == master)
+                            ? version.toVersionCodeString()
                             : "${versionString}-${BRANCH_NAME}" as String
                     build job: "Spring/${repositorySplit[0].capitalize()} ${repositorySplit[1].capitalize()} ${repositorySplit[2].capitalize()}/${REPOSITORY}-deploy-to-develop" as String, parameters: [
                             [$class: 'StringParameterValue', name: 'VERSION', value: versionString],
