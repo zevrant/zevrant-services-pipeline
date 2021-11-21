@@ -79,7 +79,7 @@ pipeline {
                         sh "CI=ci bash gradlew clean assemble"
                     }
                     container('buildah') {
-                        String versionString = (BRANCH_NAME == master)
+                        String versionString = (BRANCH_NAME == "master")
                                 ? version.toVersionCodeString()
                                 : "${versionString}-${BRANCH_NAME}" as String
                         sh 'echo $DOCKER_TOKEN | buildah login -u zevrant --password-stdin docker.io'
