@@ -95,7 +95,7 @@ pipeline {
             steps {
                 script {
                     String[] repositorySplit = REPOSITORY.split("-")
-                    String versionString = (BRANCH_NAME == master)
+                    String versionString = (BRANCH_NAME == "master")
                             ? version.toVersionCodeString()
                             : "${versionString}-${BRANCH_NAME}" as String
                     build job: "Spring/${repositorySplit[0].capitalize()} ${repositorySplit[1].capitalize()} ${repositorySplit[2].capitalize()}/${REPOSITORY}-deploy-to-develop" as String, parameters: [
