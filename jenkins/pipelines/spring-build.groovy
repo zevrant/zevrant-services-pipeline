@@ -109,9 +109,8 @@ pipeline {
                     String versionString = (version.isSemanticVersion())
                             ? version.toThreeStageVersionString()
                             : version.toVersionCodeString()
-                    build job: "Spring/${repositorySplit[0].capitalize()} ${repositorySplit[1].capitalize()} ${repositorySplit[2].capitalize()}/${REPOSITORY}-deploy-to-${env}" as String, parameters: [
+                    build job: "Spring/${repositorySplit[0].capitalize()} ${repositorySplit[1].capitalize()} ${repositorySplit[2].capitalize()}/${REPOSITORY}-deploy-to-develop" as String, parameters: [
                             [$class: 'StringParameterValue', name: 'VERSION', value: versionString],
-                            [$class: 'StringParameterValue', name: 'ENVIRONMENT', value: "develop"]
                     ],
                             wait: false
                 }
