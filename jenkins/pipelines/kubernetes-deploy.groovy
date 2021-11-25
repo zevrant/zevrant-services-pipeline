@@ -48,16 +48,10 @@ pipeline {
                         println(deploymentText)
                         def yamlDocs = readYaml(text: deploymentText)
                         println yamlDocs
-                        println yamlDocs.spec
+                        println yamlDocs.spec.replicas
                         int timeout = 90;
-                        if(yamlDocs.size() > 1) {
-                            List<String> spec = readYaml(text: yamlDocs.get(yamlDocs.size() - 1) as String) as List<String>
-
-                            timeout = (spec.find({ specItem ->
-                                if(specItem.contains("replicas:")) {
-                                    return replicas;
-                                }
-                            }).split(":")[1] as int) * 90
+                        if(yamlDocs.spec != null && yamlDocs.spec.replicas != null) {
+                            timeout = (yamlDocs.spec.replicas as int) * 90
                         }
                         sh "kubectl apply -n zevrant-home-services-$ENVIRONMENT -f ./deployment.yml"
                         sh "kubectl rollout status deployments $REPOSITORY-deployment -n zevrant-home-services-$ENVIRONMENT --timeout=${timeout}s"
