@@ -46,7 +46,7 @@ pipeline {
                         sh "sed -i 's/\$VERSION/$VERSION/g' ./deployment.yml"
                         String deploymentText = ((String) readFile(file: 'deployment.yml'))
                         println(deploymentText)
-                        def yamlDocs = readYaml(text: deploymentText) as List<String>
+                        def yamlDocs = readYaml(text: deploymentText)
                         println yamlDocs.get(yamlDocs.size() - 1)
                         int timeout = 90;
                         if(yamlDocs.size() > 1) {
