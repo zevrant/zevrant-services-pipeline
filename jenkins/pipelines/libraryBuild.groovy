@@ -5,11 +5,9 @@ import com.zevrant.services.TaskLoader
 import com.zevrant.services.pojo.Version
 import com.zevrant.services.services.VersionTasks
 
-String repository = env.JOB_BASE_NAME
+String REPOSITORY = scm.getUserRemoteConfigs()[0].getUrl().tokenize('/').last().split("\\.")[0]
 Version version;
 VersionTasks versionTasks = TaskLoader.load(binding, VersionTasks) as VersionTasks
-BRANCH_NAME = BRANCH_NAME.tokenize("/")
-BRANCH_NAME = BRANCH_NAME[BRANCH_NAME.size() - 1];
 pipeline {
     agent {
         kubernetes {
@@ -17,16 +15,6 @@ pipeline {
         }
     }
     stages {
-        stage("SCM Checkout") {
-            steps {
-                container('spring-jenkins-slave') {
-                    script {
-                        git credentialsId: 'jenkins-git', branch: env.BRANCH_NAME,
-                                url: "git@github.com:zevrant/${repository}.git"
-                    }
-                }
-            }
-        }
 
         stage("Test") {
             steps {
@@ -48,7 +36,7 @@ pipeline {
                 container('spring-jenkins-slave') {
                     script {
                         version = versionTasks.getVersion(REPOSITORY as String) as Version
-                        currentBuild.displayName = "Building Version ${version.toThreeStageVersionString()}" as String
+                        currentBuild.displayName = "Building Version ${version.toVersionCodeString()}" as String
                     }
                 }
             }
@@ -79,7 +67,7 @@ pipeline {
             steps {
                 container('spring-jenkins-slave') {
                     script {
-                        sh "bash gradlew clean assemble publish -PprojVersion=${version.toThreeStageVersionString()} --no-daemon"
+                        sh "bash gradlew clean assemble publish -PprojVersion=${version.toVersionCodeString()} --no-daemon"
                     }
                 }
             }
