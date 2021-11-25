@@ -52,11 +52,11 @@ pipeline {
                         if(yamlDocs.size() > 1) {
                             List<String> spec = readYaml(text: yamlDocs.get(yamlDocs.size() - 1) as String) as List<String>
 
-                            timeout = spec.find({ specItem ->
+                            timeout = (spec.find({ specItem ->
                                 if(specItem.contains("replicas:")) {
                                     return replicas;
                                 }
-                            }).split(":")[1] as int * 90
+                            }).split(":")[1] as int) * 90
                         }
                         sh "kubectl apply -n zevrant-home-services-$ENVIRONMENT -f ./deployment.yml"
                         sh "kubectl rollout status deployments $REPOSITORY-deployment -n zevrant-home-services-$ENVIRONMENT --timeout=${timeout}s"
