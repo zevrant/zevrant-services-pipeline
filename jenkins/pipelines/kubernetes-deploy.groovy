@@ -46,13 +46,17 @@ pipeline {
                         sh "sed -i 's/\$VERSION/$VERSION/g' ./deployment.yml"
                         String deploymentText = ((String) readFile(file: 'deployment.yml'))
                         println(deploymentText)
-                        Map<String, Object> yamlDocs = readYaml(text: deploymentText)
-                        println yamlDocs.keySet().toString()
+                        List<String> yamlDocs = readYaml(text: deploymentText) as List<String>
+                        println yamlDocs.get(yamlDocs.size() - 1)
                         int timeout = 90;
                         if(yamlDocs.size() > 1) {
-                            timeout = yamlDocs[yamlDocs.size() - 1].spec.replicas
-                        } else {
-                            timeout = yamlDocs.spec.replicas * 90
+                            List<String> spec = readYaml(text: yamlDocs.get(yamlDocs.size() - 1) as String) as List<String>
+
+                            timeout = spec.find({ specItem ->
+                                if(specItem.contains("replicas:")) {
+                                    return replicas;
+                                }
+                            }).split(":")[1] as int * 90
                         }
                         sh "kubectl apply -n zevrant-home-services-$ENVIRONMENT -f ./deployment.yml"
                         sh "kubectl rollout status deployments $REPOSITORY-deployment -n zevrant-home-services-$ENVIRONMENT --timeout=${timeout}s"
