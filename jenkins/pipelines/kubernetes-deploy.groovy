@@ -47,7 +47,8 @@ pipeline {
                         String deploymentText = ((String) readFile(file: 'deployment.yml'))
                         println(deploymentText)
                         def yamlDocs = readYaml(text: deploymentText)
-                        println yamlDocs.get(yamlDocs.size() - 1)
+                        println yamlDocs
+                        println yamlDocs.keys
                         int timeout = 90;
                         if(yamlDocs.size() > 1) {
                             List<String> spec = readYaml(text: yamlDocs.get(yamlDocs.size() - 1) as String) as List<String>
