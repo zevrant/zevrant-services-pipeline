@@ -1,4 +1,3 @@
-curl https://raw.githubusercontent.com/zevrant/zevrant-services-pipeline/master/bash/openssl.conf > ~/openssl.conf
 sed -i "s/\${POD_IP}/$POD_IP/g" ~/openssl.conf
 sed -i "s/\${SERVICE_NAME}/$1/g" ~/openssl.conf
 echo "$3"
