@@ -107,7 +107,16 @@ String createMultibranch(String repositoryName, ApplicationType applicationType)
             remoteJenkinsFileWorkflowBranchProjectFactory {
                 localMarker("")
                 matchBranches(false)
-                remoteJenkinsFile("jenkins/pipelines/spring-build.groovy")
+                switch (applicationType) {
+                    case ApplicationType.SPRING:
+                        remoteJenkinsFile ("jenkins/pipelines/spring-build.groovy")
+                        break;
+                    case ApplicationType.LIBRARY:
+                        remoteJenkinsFile ("jenkins/pipelines/libraryBuild.groovy")
+                        break;
+                    case ApplicationType.ANDROID:
+                        remoteJenkinsFile ("jenkins/pipelines/androidBuild.groovy")
+                }
                 remoteJenkinsFileSCM {
                     gitSCM {
                         branches {

@@ -47,13 +47,9 @@ pipeline {
                         String deploymentText = ((String) readFile(file: 'deployment.yml'))
                         println(deploymentText)
                         def yamlDocs = readYaml(text: deploymentText)
-                        println yamlDocs
-                        println yamlDocs.spec.replicas
                         int timeout = 90;
                         if(yamlDocs.spec != null && yamlDocs.spec.replicas != null) {
-                            println "is List ${yamlDocs.spec.replicas instanceof List}"
-                            println "is String[] ${yamlDocs.spec.replicas instanceof Object[]}"
-                            if(yamlDocs.spec.replicas instanceof List || yamlDocs.spec.replicas instanceof Object[]) {
+                            if(yamlDocs.spec.replicas instanceof List) {
                                 timeout = ((yamlDocs.spec.replicas as List)[1] as int) * 90
                             } else {
                                 timeout = (yamlDocs.spec.replicas as int) * 90
