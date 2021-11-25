@@ -46,8 +46,8 @@ pipeline {
                         sh "sed -i 's/\$VERSION/$VERSION/g' ./deployment.yml"
                         String deploymentText = ((String) readFile(file: 'deployment.yml'))
                         println(deploymentText)
-                        def yamlDocs = readYaml(text: deploymentText)
-                        println yamlDocs.toString()
+                        Map<String, Object> yamlDocs = readYaml(text: deploymentText)
+                        println yamlDocs.keySet().toString()
                         int timeout = 90;
                         if(yamlDocs.size() > 1) {
                             timeout = yamlDocs[yamlDocs.size() - 1].spec.replicas
