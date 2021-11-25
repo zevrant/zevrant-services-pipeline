@@ -51,7 +51,13 @@ pipeline {
                         println yamlDocs.spec.replicas
                         int timeout = 90;
                         if(yamlDocs.spec != null && yamlDocs.spec.replicas != null) {
-                            timeout = (yamlDocs.spec.replicas as int) * 90
+                            println "is List ${yamlDocs.spec.replicas instanceof List}"
+                            println "is String[] ${yamlDocs.spec.replicas instanceof Object[]}"
+                            if(yamlDocs.spec.replicas instanceof List || yamlDocs.spec.replicas instanceof Object[]) {
+                                timeout = ((yamlDocs.spec.replicas as List)[1] as int) * 90
+                            } else {
+                                timeout = (yamlDocs.spec.replicas as int) * 90
+                            }
                         }
                         sh "kubectl apply -n zevrant-home-services-$ENVIRONMENT -f ./deployment.yml"
                         sh "kubectl rollout status deployments $REPOSITORY-deployment -n zevrant-home-services-$ENVIRONMENT --timeout=${timeout}s"
