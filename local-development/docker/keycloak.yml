@@ -26,4 +26,5 @@ services:
       DB_VENDOR: POSTGRES
       SERVICE_NAME: localhost
       POD_IP: 127.0.0.1
-      PROXY_CREDENTIALS:
+      AWS_ACCESS_KEY_ID:
+      AWS_SECRET_ACCESS_KEY:

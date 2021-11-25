@@ -10,10 +10,10 @@ RUN microdnf install -y jq python3-pip \
 
 USER jboss
 
-RUN curl https://raw.githubusercontent.com/zevrant/zevrant-services-pipeline/master/bash/zevrant-services-start.sh > ~/startup.sh
+RUN curl https://raw.githubusercontent.com/zevrant/zevrant-services-pipeline/master/bash/zevrant-services-start.sh > ~/startup.sh \
+    && curl https://raw.githubusercontent.com/zevrant/zevrant-services-pipeline/master/bash/openssl.conf > /opt/jboss/openssl.conf
 
-ENTRYPOINT export ROLE_ARN="arn:aws:iam::725235728275:role/SecretsOnlyServiceRole" \
-    && password=`date +%s | sha256sum | base64 | head -c 32` \
+ENTRYPOINT password=`date +%s | sha256sum | base64 | head -c 32` \
     && bash ~/startup.sh $SERVICE_NAME $password $ADDITIONAL_IP\
     && echo $password | openssl pkcs12 -in ~/zevrant-services.p12 -out /etc/x509/https/tls.key -passout pass: -nodes -nocerts -passin pass:$password \
     && openssl pkcs12 -in ~/zevrant-services.p12 -out /etc/x509/https/tls.crt -nokeys -passout pass: -passin pass:$password \

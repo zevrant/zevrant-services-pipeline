@@ -51,7 +51,7 @@ pipeline {
             steps {
                 container('spring-jenkins-slave') {
                     script {
-                        versionTasks.incrementVersionCode(REPOSITORY, version)
+                        versionTasks.incrementVersion(REPOSITORY, version)
 
                     }
                 }
