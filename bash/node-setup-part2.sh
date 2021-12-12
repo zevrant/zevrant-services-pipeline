@@ -147,6 +147,11 @@ sleep 10
 
 usermod -G docker zevrant
 
+curl https://raw.githubusercontent.com/zevrant/zevrant-services-pipeline/master/bash/zevrant-services.crt \
+      -o /usr/local/share/ca-certificates/zevrant-services.crt \
+    && update-ca-certificates -v \
+    && ls -l /etc/ssl/certs/zevrant-services.pem
+
 systemctl enable node-exporter
 systemctl enable kubeconfig
 systemctl enable docker
