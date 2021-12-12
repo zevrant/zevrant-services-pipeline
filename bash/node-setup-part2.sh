@@ -1,9 +1,7 @@
 #!/bin/bash
 
-## Install Updates and dependencies
-apt-get update
-apt-get full-upgrade -y
-apt-get install -y jq awscli curl
+## Install dependencies
+apt-get install -y jq awscli gnupg lsb-release ca-certificates
 groupadd developers
 ##Install Node Exporter (Prometheus)
 mkdir -p /opt/node-exporter
@@ -14,6 +12,23 @@ mv node_exporter-* node-exporter
 mv node-exporter/* /opt/node-exporter
 rm -r node-exporter*
 adduser --system --shel /bin/false --no-create-home --disabled-login node-exporter
+
+##Install GPG keys & APT Repositories
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add
+apt-get update
+apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
+
+##Install Docker
+apt-get install -y docker-ce docker-ce-cli containerd.io
+
+##Install Kubernetes
+apt-get install -y kubeadm kubelet kubectl
+swapoff –a
+sed -i.bak '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
 
 #Generate SSL certificate, MUST BE REFRESHED EVERY 8 DAYS!!!!!
 myIp=""
@@ -86,6 +101,30 @@ ExecStart=/opt/node-exporter/node_exporter --web.config=/opt/node-exporter/confi
 WantedBy=multi-user.target
 EOF
 
+cat << EOF > /etc/systemd/system/kubeconfig.service
+[Unit]
+Description=Node Exporter
+
+Before=network.target
+
+[Service]
+User=root
+ExecStart=/usr/local/bin/kubeconfig.sh
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+cat << EOF > /usr/local/bin/kubeconfig.sh
+#!/bin/bash
+sysctl net.ipv4.conf.all.forwarding=1
+iptables -P FORWARD ACCEPT
+iptables -P FORWARD ACCEPT
+iptables -P OUTPUT ACCEPT
+iptables --flush
+iptables -tnat --flush
+EOF
+
 cat << EOF > /opt/node-exporter/config.yml
 tls_server_config:
   cert_file: public.crt
@@ -93,7 +132,24 @@ tls_server_config:
 EOF
 
 chown -R node-exporter:developers /opt/node-exporter
+chown root:root /usr/local/bin/kubeconfig.sh
+chmod 0700 /usr/local/bin/kubeconfig.sh
 
+#Start & Enable Services
 systemctl daemon-reload
-systemctl start node-exporter
+systemctl start docker
+systemctl start kubelet
+
+sleep 10
+
+[ -z "$(systemctl status docker | grep active)" ] && echo "Docker has failed to start"
+[ -z "$(systemctl status kubelet | grep active)" ] && echo "Kubelet has failed to start"
+
+usermod -G docker zevrant
+
 systemctl enable node-exporter
+systemctl enable kubeconfig
+systemctl enable docker
+echo "Installation Complete Press Enter to Reboot"
+read
+reboot
