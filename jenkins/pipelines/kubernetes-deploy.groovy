@@ -25,10 +25,8 @@ pipeline {
                 container('kubectl') {
                     script {
                         sh "sed -i 's/\$ENVIRONMENT/$ENVIRONMENT/g' ./database.yml"
-                        withCredentials([file(credentialsId: 'jenkins-kubernetes', variable: 'kubeconfig')]) {
-                            sh "kubectl apply -n zevrant-home-services-$ENVIRONMENT -f ./database.yml"
-                            sh "kubectl rollout status deployments $REPOSITORY-db-deployment -n zevrant-home-services-$ENVIRONMENT --timeout=5m"
-                        }
+                        sh "kubectl apply -n zevrant-home-services-$ENVIRONMENT -f ./database.yml"
+                        sh "kubectl rollout status deployments $REPOSITORY-db-deployment -n zevrant-home-services-$ENVIRONMENT --timeout=5m"
                     }
                 }
             }
@@ -48,8 +46,8 @@ pipeline {
                         println(deploymentText)
                         def yamlDocs = readYaml(text: deploymentText)
                         int timeout = 90;
-                        if(yamlDocs.spec != null && yamlDocs.spec.replicas != null) {
-                            if(yamlDocs.spec.replicas instanceof List) {
+                        if (yamlDocs.spec != null && yamlDocs.spec.replicas != null) {
+                            if (yamlDocs.spec.replicas instanceof List) {
                                 timeout = ((yamlDocs.spec.replicas as List)[1] as int) * 90
                             } else {
                                 timeout = (yamlDocs.spec.replicas as int) * 90

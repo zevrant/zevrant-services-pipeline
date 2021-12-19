@@ -28,7 +28,7 @@ apt-get install -y docker-ce docker-ce-cli containerd.io
 ##Install Kubernetes
 apt-get install -y kubeadm kubelet kubectl
 swapoff –a
-sed -i.bak '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
+sed -i 's/\/swap.img/#\/swap.img/g' /etc/fstab
 
 #Generate SSL certificate, MUST BE REFRESHED EVERY 8 DAYS!!!!!
 myIp=""
@@ -123,6 +123,10 @@ iptables -P FORWARD ACCEPT
 iptables -P OUTPUT ACCEPT
 iptables --flush
 iptables -tnat --flush
+
+if [[ ]]; then
+  ln -s
+
 EOF
 
 cat << EOF > /opt/node-exporter/config.yml

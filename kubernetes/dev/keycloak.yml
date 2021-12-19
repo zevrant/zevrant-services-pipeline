@@ -43,13 +43,13 @@ spec:
               scheme: HTTPS
               path: /auth/realms/master
               port: 8443
-            initialDelaySeconds: 180
+            initialDelaySeconds: 60
           livenessProbe:
             httpGet:
               scheme: HTTPS
               path: /auth/realms/master
               port: 8443
-            initialDelaySeconds: 180
+            initialDelaySeconds: 60
           env:
             - name: DB_ADDR
               value: zevrant-keycloak-service-db
@@ -72,14 +72,26 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
-            - name: PROXY_CREDENTIALS
-              valueFrom:
-                secretKeyRef:
-                  name: proxy-creds
-                  key: proxyCreds
             - name: JDBC_PARAMS
               value: 'connectionTimeout=30000'
             - name: PROXY_ADDRESS_FORWARDING
               value: "true"
             - name: ADDITIONAL_IP
               value: '192.168.1.17'
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-aws
+                  key: username
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-aws
+                  key: password
+            - name: KEYCLOAK_USER
+              value: admin
+            - name: KEYCLOAK_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-admin
+                  key: password

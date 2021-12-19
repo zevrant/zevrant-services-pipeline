@@ -10,7 +10,7 @@ spec:
       targetPort: 3000
       nodePort: 30128
   selector:
-    app: zevrant-prometheus-service
+    app: zevrant-grafana-service
 
 ---
 
@@ -33,18 +33,18 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: zevrant-prometheus-service-deployment
+  name: zevrant-grafana-service
   labels:
-    app: zevrant-prometheus-service
+    app: zevrant-grafana-service
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: zevrant-prometheus-service
+      app: zevrant-grafana-service
   template:
     metadata:
       labels:
-        app: zevrant-prometheus-service
+        app: zevrant-grafana-service
     spec:
       nodeSelector:
         architecture: amd64
@@ -61,15 +61,57 @@ spec:
             path: /grafana-dev-certs
       containers:
         - name: grafana
+          imagePullPolicy: Always
           image: zevrant/grafana:latest
           ports:
             - containerPort: 3000
+          livenessProbe:
+            initialDelaySeconds: 5
+            httpGet:
+              port: 3000
+          readinessProbe:
+            initialDelaySeconds: 5
+            httpGet:
+              port: 3000
           volumeMounts:
             - name: database
               mountPath: /var/lib/grafana
             - name: certs
               mountPath: /etc/ssl/certs/
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zevrant-prometheus-service
+  labels:
+    app: zevrant-prometheus-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zevrant-prometheus-service
+  template:
+    metadata:
+      labels:
+        app: zevrant-prometheus-service
+    spec:
+      nodeSelector:
+        architecture: amd64
+      imagePullSecrets:
+        - name: regcred
+      containers:
         - name: zevrant-prometheus-service
-          image: zevrant/prometheus:2.27.1
+          imagePullPolicy: Always
+          image: zevrant/prometheus:latest
           ports:
-            - containerPort: 3310
+            - containerPort: 9090
+          livenessProbe:
+            httpGet:
+              port: 9090
+            initialDelaySeconds: 5
+          readinessProbe:
+            httpGet:
+              port: 9090
+            initialDelaySeconds: 5

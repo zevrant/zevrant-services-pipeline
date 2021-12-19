@@ -44,3 +44,14 @@ scrape_configs:
       insecure_skip_verify: true
     static_configs:
       - targets: [ 'zevrant-home-ui' ]
+  - job_name: node
+    scheme: https
+    tls_config:
+      ca_file: /etc/ssl/certs/zevrant-services.pem
+    metrics_path: '/metrics'
+    static_configs:
+      - targets:
+        - '192.168.1.17:9100'
+        - '192.168.1.18:9100'
+        - '192.168.1.13:9100'
+        - '192.168.1.15:9100'

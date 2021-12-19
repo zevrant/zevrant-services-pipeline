@@ -37,7 +37,7 @@ spec:
             server: 192.168.1.11
             path: /i-data/420aa917/nfs/keycloak-dev
       nodeSelector:
-        architecture: arm
+        architecture: amd64
       containers:
         - name: zevrant-keycloak-service-db
           image: postgres:14
@@ -59,3 +59,10 @@ spec:
               value: keycloak
           ports:
             - containerPort: 5432
+          resources:
+            requests:
+              memory: 2Gi
+              cpu: 500m
+            limits:
+              memory: 4Gi
+              cpu: 1000m

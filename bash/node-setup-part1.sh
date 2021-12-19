@@ -22,4 +22,4 @@ echo 'zevrant ALL=(ALL:ALL) NOPASSWD: ALL' > /etc/sudoers.d/admin-users
 chmod 0440 /etc/sudoers.d/admin-users
 
 systemctl daemon-reload
-systemctl start sshd
+systemctl restart sshd
