@@ -2,41 +2,64 @@ import groovy.json.JsonSlurper
 
 @Library('CommonUtils') _
 
-node {
+List<String> libraryRepositories = new ArrayList<>();
+List<String> microserviceRepositories = new ArrayList<>();
 
-    stage("Git Checkout") {
-        git(url: 'git@github.com:zevrant/zevrant-services-pipeline.git', credentialsId: 'jenkins-git', branch: 'master')
+pipeline{
+    agent {
+        kubernetes {
+            inheritFrom 'jnlp'
+        }
     }
+    stages {
 
-    List<String> libraryRepositories = new ArrayList<>();
-    stage("Get library Repositories") {
-        libraryRepositories.addAll(getNonArchivedReposMatching("common"))
+        stage("Git Checkout") {
+            steps {
+                script {
+                    git(url: 'git@github.com:zevrant/zevrant-services-pipeline.git', credentialsId: 'jenkins-git', branch: 'master')
+                }
+            }
+        }
 
-    }
+        stage("Get library Repositories") {
+            steps {
+                script {
+                    libraryRepositories.addAll(getNonArchivedReposMatching("common"))
+                }
+            }
+        }
 
-    List<String> microserviceRepositories = new ArrayList<>();
-    stage("Get Microservice Repositories") {
-        microserviceRepositories.addAll(getNonArchivedReposMatching('service'))
-        microserviceRepositories.addAll(getNonArchivedReposMatching('ui'))
-        microserviceRepositories.addAll(getNonArchivedReposMatching('backend'))
+        stage("Get Microservice Repositories") {
+            steps {
+                script {
+                    microserviceRepositories.addAll(getNonArchivedReposMatching('service'))
+                    microserviceRepositories.addAll(getNonArchivedReposMatching('ui'))
+                    microserviceRepositories.addAll(getNonArchivedReposMatching('backend'))
 
-        echo "Found these repositories ${microserviceRepositories}"
-    }
+                    echo "Found these repositories ${microserviceRepositories}"
+                }
+            }
+        }
 
-    stage("Process Seed File") {
-        jobDsl(
-                targets: 'jenkins/seed.groovy',
-                removeActions: 'DELETE',
-                removedJobAction: 'DELETE',
-                removedViewAction: 'DELETE',
-                removedConfigFilesAction: 'DELETE',
-                lookupStrategy: 'SEED_JOB',
-                additionalClasspath: 'jenkins/src/main/groovy/',
-                additionalParameters: [
-                        libraryRepositories     : libraryRepositories,
-                        microserviceRepositories: microserviceRepositories
-                ]
-        )
+        stage("Process Seed File") {
+            steps {
+                script {
+                    jobDsl(
+                            targets: 'jenkins/seed.groovy',
+                            removeActions: 'DELETE',
+                            removedJobAction: 'DELETE',
+                            removedViewAction: 'DELETE',
+                            removedConfigFilesAction: 'DELETE',
+                            lookupStrategy: 'SEED_JOB',
+                            additionalClasspath: 'jenkins/src/main/groovy/',
+                            additionalParameters: [
+                                    libraryRepositories     : libraryRepositories,
+                                    microserviceRepositories: microserviceRepositories
+                            ]
+                    )
+                }
+            }
+        }
     }
 }
 
