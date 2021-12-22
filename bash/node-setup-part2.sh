@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ## Install dependencies
-apt-get install -y jq awscli gnupg lsb-release ca-certificates
+apt-get install -y jq awscli gnupg lsb-release ca-certificates software-properties-common nfs-common
 groupadd developers
 ##Install Node Exporter (Prometheus)
 mkdir -p /opt/node-exporter
@@ -123,10 +123,7 @@ iptables -P FORWARD ACCEPT
 iptables -P OUTPUT ACCEPT
 iptables --flush
 iptables -tnat --flush
-
-if [[ ]]; then
-  ln -s
-
+net.bridge.bridge-nf-call-iptables = 1
 EOF
 
 cat << EOF > /opt/node-exporter/config.yml

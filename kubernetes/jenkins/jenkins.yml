@@ -66,6 +66,13 @@ spec:
               name: http-port
             - containerPort: 5000
               name: agent-port
+          resources:
+            requests:
+              memory: 1Gi
+              cpu: 500m
+            limits:
+              memory: 4Gi
+              cpu: 1500m
 #          env:
 #            - name: JAVA_OPTS
 #              value: '-Dorg.jenkinsci.plugins.durabletask.BourneShellScript.LAUNCH_DIAGNOSTICS=true'

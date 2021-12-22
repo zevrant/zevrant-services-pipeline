@@ -1,0 +1,27 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: createPods
+rules:
+  - apiGroups:
+      - "" # "" indicates the core API group
+    resources:
+      - "pods"
+    verbs:
+      - "create"
+      - "patch"
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: execJenkinsPods
+  namespace: jenkins
+rules:
+  - apiGroups:
+      - "" # "" indicates the core API group
+    resources:
+      - "pods/exec"
+    verbs:
+      - "get"
