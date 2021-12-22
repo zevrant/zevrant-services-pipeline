@@ -57,6 +57,7 @@ spec:
       containers:
         - name: jenkins
           image: jenkins/jenkins:lts-jdk11
+          imagePullPolicy: Always
           volumeMounts:
             - mountPath: /var/jenkins_home
               name: jenkins

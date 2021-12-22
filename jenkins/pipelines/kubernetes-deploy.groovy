@@ -42,6 +42,7 @@ pipeline {
                     script {
                         sh "sed -i 's/\$ENVIRONMENT/$ENVIRONMENT/g' ./deployment.yml"
                         sh "sed -i 's/\$VERSION/$VERSION/g' ./deployment.yml"
+                        sh "sed -i 's/\$REPLICAS/${ENVIRONMENT == 'prod'? 2 : 1}/g' ./deployment.yml"
                         String deploymentText = ((String) readFile(file: 'deployment.yml'))
                         println(deploymentText)
                         def yamlDocs = readYaml(text: deploymentText)
