@@ -77,7 +77,7 @@ spec:
             - name: PROXY_ADDRESS_FORWARDING
               value: "true"
             - name: ADDITIONAL_IP
-              value: '192.168.1.17'
+              value: '172.16.0.10'
             - name: AWS_ACCESS_KEY_ID
               valueFrom:
                 secretKeyRef:

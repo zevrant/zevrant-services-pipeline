@@ -41,7 +41,7 @@ spec:
       volumes:
         - name: zookeeper-data
           nfs:
-            server: 192.168.1.11
+            server: nfs-controller.zevrant-services.com
             path: /zookeeper
       imagePullSecrets:
         - name: regcred
@@ -107,6 +107,6 @@ spec:
             - name: KAFKA_CFG_LISTENERS
               value: "INTERNAL_PLAINTEXT://localhost:9093,EXTERNAL_PLAINTEXT://0.0.0.0:9092"
             - name: KAFKA_CFG_ADVERTISED_LISTENERS
-              value: "EXTERNAL_PLAINTEXT://192.168.1.17:30129,INTERNAL_PLAINTEXT://localhost:9093"
+              value: "EXTERNAL_PLAINTEXT://zevrant-01.zevrant-services.com:30129,INTERNAL_PLAINTEXT://localhost:9093"
             - name: KAFKA_INTER_BROKER_LISTENER_NAME
               value: "INTERNAL_PLAINTEXT"

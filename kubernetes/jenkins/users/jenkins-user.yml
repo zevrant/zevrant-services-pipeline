@@ -22,7 +22,7 @@ subjects:
     apiGroup: ""
 roleRef:
   # "roleRef" specifies the binding to a Role / ClusterRole
-  kind: Role #this must be Role or ClusterRole
+  kind: ClusterRole #this must be Role or ClusterRole
   name: readOnly # this must match the name of the Role or ClusterRole you wish to bind to
   apiGroup: rbac.authorization.k8s.io
 
@@ -43,7 +43,7 @@ subjects:
     apiGroup: ""
 roleRef:
   # "roleRef" specifies the binding to a Role / ClusterRole
-  kind: Role #this must be Role or ClusterRole
+  kind: ClusterRole #this must be Role or ClusterRole
   name: readOnly # this must match the name of the Role or ClusterRole you wish to bind to
   apiGroup: rbac.authorization.k8s.io
 
@@ -64,7 +64,7 @@ subjects:
     apiGroup: ""
 roleRef:
   # "roleRef" specifies the binding to a Role / ClusterRole
-  kind: Role #this must be Role or ClusterRole
+  kind: ClusterRole #this must be Role or ClusterRole
   name: readOnly # this must match the name of the Role or ClusterRole you wish to bind to
   apiGroup: rbac.authorization.k8s.io
 
@@ -83,7 +83,7 @@ subjects:
     apiGroup: ""
 roleRef:
   # "roleRef" specifies the binding to a Role / ClusterRole
-  kind: Role #this must be Role or ClusterRole
+  kind: ClusterRole #this must be Role or ClusterRole
   name: createPods # this must match the name of the Role or ClusterRole you wish to bind to
   apiGroup: rbac.authorization.k8s.io
 
@@ -102,7 +102,7 @@ subjects:
     apiGroup: ""
 roleRef:
   # "roleRef" specifies the binding to a Role / ClusterRole
-  kind: Role #this must be Role or ClusterRole
+  kind: ClusterRole #this must be Role or ClusterRole
   name: createServices # this must match the name of the Role or ClusterRole you wish to bind to
   apiGroup: rbac.authorization.k8s.io
 
@@ -121,7 +121,7 @@ subjects:
     apiGroup: ""
 roleRef:
   # "roleRef" specifies the binding to a Role / ClusterRole
-  kind: Role #this must be Role or ClusterRole
+  kind: ClusterRole #this must be Role or ClusterRole
   name: createServices # this must match the name of the Role or ClusterRole you wish to bind to
   apiGroup: rbac.authorization.k8s.io
 
@@ -140,7 +140,7 @@ subjects:
     apiGroup: ""
 roleRef:
   # "roleRef" specifies the binding to a Role / ClusterRole
-  kind: Role #this must be Role or ClusterRole
+  kind: ClusterRole #this must be Role or ClusterRole
   name: createDeployments # this must match the name of the Role or ClusterRole you wish to bind to
   apiGroup: rbac.authorization.k8s.io
 
@@ -159,7 +159,7 @@ subjects:
     apiGroup: ""
 roleRef:
   # "roleRef" specifies the binding to a Role / ClusterRole
-  kind: Role #this must be Role or ClusterRole
+  kind: ClusterRole #this must be Role or ClusterRole
   name: createDeployments # this must match the name of the Role or ClusterRole you wish to bind to
   apiGroup: rbac.authorization.k8s.io
 
@@ -178,6 +178,6 @@ subjects:
     apiGroup: ""
 roleRef:
   # "roleRef" specifies the binding to a Role / ClusterRole
-  kind: Role #this must be Role or ClusterRole
+  kind: ClusterRole #this must be Role or ClusterRole
   name: execJenkinsPods # this must match the name of the Role or ClusterRole you wish to bind to
   apiGroup: rbac.authorization.k8s.io

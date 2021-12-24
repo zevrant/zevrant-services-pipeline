@@ -32,7 +32,7 @@ spec:
       volumes:
         - name: splunk-storage
           nfs:
-            server: 192.168.1.11
+            server: nfs-controller.zevrant-services.com
             path: /i-data/420aa917/nfs/splunk/dev
       imagePullSecrets:
         - name: regcred

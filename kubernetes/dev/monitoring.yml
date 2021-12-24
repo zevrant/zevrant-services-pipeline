@@ -53,11 +53,11 @@ spec:
       volumes:
         - name: database
           nfs:
-            server: 192.168.1.11
+            server: nfs-controller.zevrant-services.com
             path: /grafana-dev
         - name: certs
           nfs:
-            server: 192.168.1.11
+            server: nfs-controller.zevrant-services.com
             path: /grafana-dev-certs
       containers:
         - name: grafana

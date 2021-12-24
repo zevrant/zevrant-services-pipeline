@@ -20,7 +20,7 @@ class PipelineCollection {
             new Pipeline(
                     name: 'Pod cleanup',
                     description: "Terminated and failed or evicted pods",
-                    jenkinsfileLocation: 'jenkins/pipelines/deleteEvictions.groovy',
+                    jenkinsfileLocation: 'jenkins/pipelines/podCleanup.groovy',
                     credentialId: "jenkins-git",
                     triggers: new ArrayList<>([
                             new PipelineTrigger(

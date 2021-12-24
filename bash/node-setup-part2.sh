@@ -13,6 +13,8 @@ mv node-exporter/* /opt/node-exporter
 rm -r node-exporter*
 adduser --system --shel /bin/false --no-create-home --disabled-login node-exporter
 
+echo 'DNS=172.16.0.254' >> /etc/systemd/resolved.conf
+
 ##Install GPG keys & APT Repositories
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
 echo \
@@ -35,7 +37,7 @@ myIp=""
 read -ra "output" <<< "$(hostname -I)"
 for ip in "${output[@]}"
 do
-  if [[ "$ip" == *"192.168.1"* ]]; then
+  if [[ "$ip" == *"172.16.0"* ]]; then
     myIp=$ip
     break;
   fi
@@ -103,7 +105,7 @@ EOF
 
 cat << EOF > /etc/systemd/system/kubeconfig.service
 [Unit]
-Description=Node Exporter
+Description=Kube Config
 
 Before=network.target
 

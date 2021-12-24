@@ -51,7 +51,7 @@ scrape_configs:
     metrics_path: '/metrics'
     static_configs:
       - targets:
-        - '192.168.1.17:9100'
-        - '192.168.1.18:9100'
-        - '192.168.1.13:9100'
-        - '192.168.1.15:9100'
+        - 'zevrant-01.zevrant-services.com:9100'
+        - 'zevrant-02.zevrant-services.com:9100'
+        - 'zevrant-03.zevrant-services.com:9100'
+        - 'zevrant-04.zevrant-services.com:9100'
