@@ -48,7 +48,7 @@ spec:
       volumes:
         - name: jenkins
           nfs:
-            server: 192.168.1.11
+            server: nfs-controller.zevrant-services.com
             path: /jenkins/jenkins
       imagePullSecrets:
         - name: regcred

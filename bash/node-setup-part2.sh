@@ -80,7 +80,7 @@ certificateRequest=$(cat ./public.csr)
 certificateRequest=$(printf "%q" "$certificateRequest")
 certificateRequest=$(echo "$certificateRequest" | cut -c 3-$((${#certificateRequest}-1)))
 certificateRequest="{\"certificateRequest\":\"$certificateRequest\",\"ip\":\"$myIp\"}"
-curl --insecure https://192.168.1.17:9009/zevrant-certificate-service/certs --data "$certificateRequest" \
+curl --insecure https://zevrant-01.zevrant-services.com:9009/zevrant-certificate-service/certs --data "$certificateRequest" \
   --user "$username":"$password" -H "Content-Type: application/json" -X POST -o /opt/node-exporter/public.crt
 rm openssl.conf public.csr
 cat << EOF > /etc/systemd/system/node-exporter.service
@@ -156,6 +156,8 @@ curl https://raw.githubusercontent.com/zevrant/zevrant-services-pipeline/master/
 systemctl enable node-exporter
 systemctl enable kubeconfig
 systemctl enable docker
+sed -i 's~ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock~ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock --exec-opt native.cgroupdriver=systemd~g' /lib/systemd/system/docker.service
+
 echo "Installation Complete Press Enter to Reboot"
 read
 reboot
