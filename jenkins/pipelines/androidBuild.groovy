@@ -18,7 +18,7 @@ String avdName = "jenkins-android-test-$BUILD_ID"
 VersionTasks versionTasks = TaskLoader.load(binding, VersionTasks) as VersionTasks
 byte[] b = new byte[2000];
 Version versionCode = null;
-boolean runTests = Boolean.parseBoolean(RUN_TESTS as String)
+boolean runTests = env.RUN_TESTS ? Boolean.parseBoolean(RUN_TESTS as String) : true
 pipeline {
     agent {
         kubernetes {
@@ -26,16 +26,6 @@ pipeline {
         }
     }
     stages {
-        stage("SCM Checkout") {
-            steps {
-                container('android-emulator') {
-                    script {
-                        git credentialsId: 'jenkins-git', branch: BRANCH_NAME,
-                                url: "git@github.com:zevrant/${REPOSITORY}.git"
-                    }
-                }
-            }
-        }
 
         stage("Unit Test") {
             when { expression { runTests && false } } //disable for not TODO
