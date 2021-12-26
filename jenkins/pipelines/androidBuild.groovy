@@ -179,12 +179,12 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
 
         stage("Development Version Update") {
             when { expression { variant == 'develop' } }
+            environment {
+                AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
+                AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
+                AWS_DEFAULT_REGION = "us-east-1"
+            }
             steps {
-                environment {
-                    AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
-                    AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
-                    AWS_DEFAULT_REGION = "us-east-1"
-                }
                 container('android-emulator') {
                     script {
                         versionTasks.minorVersionUpdate(REPOSITORY as String, version)
