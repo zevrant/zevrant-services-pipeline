@@ -129,13 +129,18 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
 
                             if (runTests) {
                                 archiveArtifacts artifacts: "nohup-${avdName}.out", followSymlinks: false
-                                sh 'bash gradlew pullReport'
-                                if (fileExists("cucumber-reports/cucumber.xml")) {
-                                    sh "zip -r html-report.zip cucumber-reports/html-report"
-                                    archiveArtifacts 'html-report.zip'
-                                }
-                                if (fileExists("app/src/androidTest/java/com/zevrant/services/zevrantandroidapp/secrets/SecretsInitializer.java")) {
-                                    sh "rm -f app/src/androidTest/java/com/zevrant/services/zevrantandroidapp/secrets/SecretsInitializer.java"
+
+                                if (fileExists("app/build/reports/androidTests/connected/index.html")) {
+                                    publishHTML(target: [
+                                            allowMissing: false,
+                                            alwaysLinkToLastBuild: false,
+                                            keepAll: true,
+                                            reportDir: 'app/build/reports/androidTests/connected/',
+                                            reportFiles: "**/*",
+                                            reportName: 'JUnit Test Report',
+                                            reportTitles: 'JUnit Test Report'
+                                    ]
+                                    )
                                 }
                             }
                         }
