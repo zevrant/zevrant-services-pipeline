@@ -1,5 +1,7 @@
 @Library('CommonUtils') _
 
+
+import com.lesfurets.jenkins.unit.global.lib.Library
 import com.zevrant.services.TaskLoader
 import com.zevrant.services.pojo.Version
 
@@ -8,6 +10,7 @@ import com.zevrant.services.services.VersionTasks
 
 BRANCH_NAME = BRANCH_NAME.tokenize("/")
 BRANCH_NAME = BRANCH_NAME[BRANCH_NAME.size() - 1];
+String REPOSITORY = scm.getUserRemoteConfigs()[0].getUrl().tokenize('/').last().split("\\.")[0]
 currentBuild.displayName = "$REPOSITORY merging to $BRANCH_NAME"
 Version version = null
 String variant = (BRANCH_NAME == "master") ? "release" : 'develop'
