@@ -21,6 +21,9 @@ pipeline {
                             projectName: artifactJob,
                             selector: lastSuccessful()
                     )
+                    if(fileExists('app/build/outputs/bundle/release/app-release.aab')) {
+                        sh 'mv app/build/outputs/bundle/release/app-release.aab app-release.aab'
+                    }
                 }
             }
         }
