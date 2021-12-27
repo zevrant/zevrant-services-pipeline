@@ -19,8 +19,7 @@ pipeline {
                             : 'Android/Zevrant Android App/zevrant-android-app-multibranch/master'
                     copyArtifacts(
                             projectName: artifactJob,
-                            selector: lastSuccessful(),
-                            filter: "app-release.aab"
+                            selector: lastSuccessful()
                     )
                 }
             }
