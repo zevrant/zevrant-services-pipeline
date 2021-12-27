@@ -1,0 +1,68 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: zevrant-keycloak-service-db
+spec:
+  ports:
+    - port: 5432
+      targetPort: 5432
+  selector:
+    app: zevrant-keycloak-service-db
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zevrant-keycloak-service-db-deployment
+  annotations:
+    iam.amazonaws.com/role: OauthServiceRole
+  labels:
+    app: zevrant-keycloak-service-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zevrant-keycloak-service-db
+  template:
+    metadata:
+      labels:
+        app: zevrant-keycloak-service-db
+    spec:
+      imagePullSecrets:
+        - name: regcred
+      volumes:
+        - name: database
+          nfs:
+            server: nfs-controller.zevrant-services.com
+            path: /keycloak
+      nodeSelector:
+        architecture: amd64
+      containers:
+        - name: zevrant-keycloak-service-db
+          image: postgres:14
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: database
+              mountPath: /opt/postgres/
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-db-password
+                  key: password
+            - name: PGDATA
+              value: /opt/postgres/
+            - name: POSTGRES_USER
+              value: zevrant
+            - name: POSTGRES_DB
+              value: keycloak
+          ports:
+            - containerPort: 5432
+          resources:
+            requests:
+              memory: 2Gi
+              cpu: 500m
+            limits:
+              memory: 4Gi
+              cpu: 1000m

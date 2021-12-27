@@ -112,7 +112,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: jenkins-create-services-zevrant-home-services-prod
-  namespace: zevrant-home-services-develop
+  namespace: zevrant-home-services-prod
 subjects:
   # You can specify more than one "subject"
   - kind: ServiceAccount

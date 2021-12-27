@@ -67,6 +67,9 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
                             sh 'sleep 5'
                             offline = sh returnStdout: true, script: 'adb devices'
                             echo offline
+                            if(!offline.contains("device") && !offline.contains('emulator')) {
+                                throw new RuntimeException("Emulator did not start check nohup output")
+                            }
                         }
                         echo 'restarting adb to keep device from showing as unauthorized'
                         int status = sh 'set -e adb kill-server && adb start-server'
@@ -122,6 +125,7 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
                 container('android-emulator') {
 
                     script {
+                        sh 'adb devices'
                         sh 'echo $ANDROID_HOME'
                         sh 'bash gradlew clean connectedDevelopTest'
                     }
@@ -214,6 +218,7 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
         stage("Trigger Internal Testing Release") {
             steps {
                 script {
+                    String[] repositorySplit = REPOSITORY.split("-")
                     build(
                             job: "Android/${repositorySplit[0].capitalize()} ${repositorySplit[1].capitalize()} ${repositorySplit[2].capitalize()}/${REPOSITORY}-Release-To-Internal-Testing" as String, parameters: [
                             [$class: 'StringParameterValue', name: 'VERSION', value: versionString],
