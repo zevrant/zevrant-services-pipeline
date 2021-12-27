@@ -5,21 +5,25 @@ import com.lesfurets.jenkins.unit.global.lib.Library
 pipeline {
     agent {
         kubernetes {
-            inheritFrom ""
+            inheritFrom "jnlp"
         }
     }
 
     stages {
 
         stage("Get Artifact") {
-            String artifactJob = (ENVIRONMENT == 'prod')
-                    ? 'Android/Zevrant Android App/Zevrant-Android-App-Release-To-Internal-Testing'
-                    : 'Android/Zevrant Android App/zevrant-android-app-multibranch/master'
-            copyArtifacts(
-                    projectName: artifactJob,
-                    selector: lastSuccessful(),
-                    filter: "app-release.aab"
-            )
+            steps {
+                script {
+                    String artifactJob = (ENVIRONMENT == 'prod')
+                            ? 'Android/Zevrant Android App/Zevrant-Android-App-Release-To-Internal-Testing'
+                            : 'Android/Zevrant Android App/zevrant-android-app-multibranch/master'
+                    copyArtifacts(
+                            projectName: artifactJob,
+                            selector: lastSuccessful(),
+                            filter: "app-release.aab"
+                    )
+                }
+            }
         }
 
         stage("Release to Google Play") {
