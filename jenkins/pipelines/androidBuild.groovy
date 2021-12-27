@@ -169,6 +169,7 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
                     script {
                         version = versionTasks.getVersion(REPOSITORY as String)
                         versionCode = versionTasks.getVersionCode("${REPOSITORY.toLowerCase()}")
+                        currentBuild.displayName = "Building version ${version.toVersionCodeString()}, version code ${versionCode.toVersionCodeString()}"
                     }
                 }
             }
@@ -183,6 +184,7 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
                 container('android-emulator') {
                     script {
                         versionTasks.incrementVersion(REPOSITORY as String, version)
+                        versionTasks.incrementVersionCode(REPOSITORY as String, versionCode)
                     }
                 }
             }
