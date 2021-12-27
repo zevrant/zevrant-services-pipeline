@@ -202,12 +202,16 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
         }
 
         stage("Trigger Internal Testing Release") {
-            build(
-                    job: "Android/${repositorySplit[0].capitalize()} ${repositorySplit[1].capitalize()} ${repositorySplit[2].capitalize()}/${REPOSITORY}-Release-To-Internal-Testing" as String, parameters: [
-                        [$class: 'StringParameterValue', name: 'VERSION', value: versionString],
+            steps {
+                script {
+                    build(
+                            job: "Android/${repositorySplit[0].capitalize()} ${repositorySplit[1].capitalize()} ${repositorySplit[2].capitalize()}/${REPOSITORY}-Release-To-Internal-Testing" as String, parameters: [
+                            [$class: 'StringParameterValue', name: 'VERSION', value: versionString],
                     ],
-                    wait: false
-            )
+                            wait: false
+                    )
+                }
+            }
         }
 
     }
