@@ -38,7 +38,7 @@ pipeline {
                             googleCredentialsId: 'Google Play Console Developer',
                             trackName: (ENVIRONMENT == "prod")? 'production' : 'internal',
                             rolloutPercentage: '100',
-                            filesPattern: "app/build/outputs/bundle/release/app-release.aab"
+                            filesPattern: "app-release.aab"
                     )
                     archiveArtifacts('app-release.aab')
                 }
