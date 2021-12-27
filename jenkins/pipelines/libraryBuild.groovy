@@ -1,4 +1,4 @@
-@Library("CommonUtils")
+@com.lesfurets.jenkins.unit.global.lib.Library("CommonUtils")
 
 import groovy.json.JsonSlurper
 import com.zevrant.services.TaskLoader

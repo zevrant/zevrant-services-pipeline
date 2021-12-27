@@ -132,13 +132,13 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
 
                                 if (fileExists("app/build/reports/androidTests/connected/index.html")) {
                                     publishHTML(target: [
-                                            allowMissing: false,
+                                            allowMissing         : false,
                                             alwaysLinkToLastBuild: false,
-                                            keepAll: true,
-                                            reportDir: 'app/build/reports/androidTests/connected/',
-                                            reportFiles: "**/*",
-                                            reportName: 'JUnit Test Report',
-                                            reportTitles: 'JUnit Test Report'
+                                            keepAll              : true,
+                                            reportDir            : 'app/build/reports/androidTests/connected/',
+                                            reportFiles          : "**/*",
+                                            reportName           : 'JUnit Test Report',
+                                            reportTitles         : 'JUnit Test Report'
                                     ]
                                     )
                                 }
@@ -164,8 +164,7 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
                 }
             }
         }
-        stage("Release Version Update") {
-            when { expression { variant == 'release' } }
+        stage("Version Update") {
             environment {
                 AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
                 AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
@@ -174,24 +173,7 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
             steps {
                 container('android-emulator') {
                     script {
-                        versionTasks.majorVersionUpdate(REPOSITORY as String, version)
-                    }
-                }
-            }
-        }
-
-        stage("Development Version Update") {
-            when { expression { variant == 'develop' } }
-            environment {
-                AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
-                AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
-                AWS_DEFAULT_REGION = "us-east-1"
-            }
-            steps {
-                container('android-emulator') {
-                    script {
-                        versionTasks.minorVersionUpdate(REPOSITORY as String, version)
-                        versionTasks.incrementVersionCode(REPOSITORY as String, versionCode)
+                        versionTasks.incrementVersion(REPOSITORY as String, version)
                     }
                 }
             }
@@ -201,38 +183,32 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
             steps {
                 container('android-emulator') {
                     script {
-                        def json = readJSON text: (sh(returnStdout: true, script: "aws secretsmanager get-secret-value --secret-id /android/signing/keystore"))
+                        def json = readJSON text: (sh(returnStdout: true, script: "aws secretsmanager get-secret-value --secret-id /android/signing/keystore")) as String
                         String keystore = json['SecretString'];
                         writeFile file: './zevrant-services.txt', text: keystore
                         sh "base64 -d ./zevrant-services.txt > ./zevrant-services.p12"
-                        json = readJSON text: (sh(returnStdout: true, script: "aws secretsmanager get-secret-value --secret-id /android/signing/password"))
+                        json = readJSON text: (sh(returnStdout: true, script: "aws secretsmanager get-secret-value --secret-id /android/signing/password")) as String
                         String password = json['SecretString']
 
-                        sh "bash gradlew clean bundle${variant.capitalize()} -PprojVersion='${version.toThreeStageVersionString()}' -PversionCode='${versionCode.toVersionCodeString()}'"
+                        sh "bash gradlew clean bundle${variant.capitalize()} -PprojVersion='${version.toVersionCodeString()}' -PversionCode='${versionCode.toVersionCodeString()}'"
                         //for some reason gradle isn't signing like it's supposed to so we do it manually
 
                         sh "jarsigner -verbose -sigalg SHA512withRSA -digestalg SHA-512 -keystore zevrant-services.p12 app/build/outputs/bundle/$variant/app-${variant}.aab -storepass \'$password\' key0"
                         sh "jarsigner -verify -verbose app/build/outputs/bundle/$variant/app-${variant}.aab zevrant-services-unsigned.aab"
-                        stash includes: "app/build/outputs/bundle/$variant/app-${variant}.aab", name: "app-${variant}.aab"
+                        archiveArtifacts(artifacts: "app/build/outputs/bundle/release/app-release.aab")
                     }
                 }
             }
         }
 
-        stage("Release to Google Play") {
-            when { expression { variant == 'release' } }
-            steps {
-                script {
-                    unstash name: "app-${variant}.aab"
-                    sh 'ls -l'
-                    androidApkUpload(
-                            googleCredentialsId: 'Zevrant Services',
-                            trackName: 'production',
-                            rolloutPercentage: '100',
-                            filesPattern: "app/build/outputs/bundle/$variant/app-${variant}.aab"
-                    )
-                }
-            }
+        stage("Trigger Internal Testing Release") {
+            build(
+                    job: "Android/${repositorySplit[0].capitalize()} ${repositorySplit[1].capitalize()} ${repositorySplit[2].capitalize()}/${REPOSITORY}-Release-To-Internal-Testing" as String, parameters: [
+                        [$class: 'StringParameterValue', name: 'VERSION', value: versionString],
+                    ],
+                    wait: false
+            )
         }
+
     }
 }

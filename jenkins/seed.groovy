@@ -86,7 +86,35 @@ Pipeline androidPipeline = new Pipeline(
                 'REPOSITORY': 'zevrant-android-app'
         ])
 );
+Pipeline androidDevelopDeployPipeline = new Pipeline(
+        name: "Zevrant-Android-App-Release-To-Internal-Testing",
+        parameters: new ArrayList<>([
+                new PipelineParameter<String>(String.class, "VERSION", "Version to be Deployed", "")
+        ]),
+        gitRepo: "git@github.com:zevrant/zevrant-services-pipeline.git",
+        jenkinsfileLocation: 'jenkins/pipelines/android-deploy.groovy',
+        credentialId: 'jenkins-git',
+        envs: new HashMap<>([
+                'REPOSITORY' : 'zevrant-android-app',
+                'ENVIRONMENT': 'develop'
+        ])
+)
+Pipeline androidProdDeployPipeline = new Pipeline(
+        name: "Zevrant-Android-App-Release-To-Production",
+        parameters: new ArrayList<>([
+                new PipelineParameter<String>(String.class, "VERSION", "Version to be Deployed", "")
+        ]),
+        gitRepo: "git@github.com:zevrant/zevrant-services-pipeline.git",
+        jenkinsfileLocation: 'jenkins/pipelines/android-deploy.groovy',
+        credentialId: 'jenkins-git',
+        envs: new HashMap<>([
+                'REPOSITORY' : 'zevrant-android-app',
+                'ENVIRONMENT': 'prod'
+        ])
+)
 createPipeline(androidFolder, androidPipeline)
+createPipeline(androidFolder, androidDevelopDeployPipeline)
+createPipeline(androidFolder, androidProdDeployPipeline)
 
 String createMultibranch(String repositoryName, ApplicationType applicationType) {
     String jobName = ""
