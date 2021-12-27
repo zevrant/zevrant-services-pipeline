@@ -45,7 +45,6 @@ String androidFolder = createMultibranch('zevrant-android-app', ApplicationType.
 Pipeline androidDevelopDeployPipeline = new Pipeline(
         name: "Zevrant-Android-App-Release-To-Internal-Testing",
         parameters: new ArrayList<>([
-                new PipelineParameter<String>(String.class, "VERSION", "Version to be Deployed", "")
         ]),
         gitRepo: "git@github.com:zevrant/zevrant-services-pipeline.git",
         jenkinsfileLocation: 'jenkins/pipelines/android-deploy.groovy',
@@ -58,7 +57,6 @@ Pipeline androidDevelopDeployPipeline = new Pipeline(
 Pipeline androidProdDeployPipeline = new Pipeline(
         name: "Zevrant-Android-App-Release-To-Production",
         parameters: new ArrayList<>([
-                new PipelineParameter<String>(String.class, "VERSION", "Version to be Deployed", "")
         ]),
         gitRepo: "git@github.com:zevrant/zevrant-services-pipeline.git",
         jenkinsfileLocation: 'jenkins/pipelines/android-deploy.groovy',

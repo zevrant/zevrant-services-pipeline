@@ -12,8 +12,11 @@ pipeline {
     stages {
 
         stage("Get Artifact") {
+            String artifactJob = (ENVIRONMENT == 'prod')
+                    ? 'Android/Zevrant Android App/Zevrant-Android-App-Release-To-Internal-Testing'
+                    : 'Android/Zevrant Android App/zevrant-android-app-multibranch/master'
             copyArtifacts(
-                    projectName: 'Android/Zevrant Android App/zevrant-android-app-multibranch/master',
+                    projectName: artifactJob,
                     selector: lastSuccessful(),
                     filter: "app-release.aab"
             )
@@ -31,6 +34,7 @@ pipeline {
                             rolloutPercentage: '100',
                             filesPattern: "app/build/outputs/bundle/release/app-release.aab"
                     )
+                    archiveArtifacts('app-release.aab')
                 }
             }
         }

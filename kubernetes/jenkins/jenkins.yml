@@ -68,7 +68,7 @@ spec:
               name: agent-port
           resources:
             requests:
-              memory: 1Gi
+              memory: 4Gi
               cpu: 500m
             limits:
               memory: 4Gi
