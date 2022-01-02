@@ -1,5 +1,9 @@
 FROM docker.io/ubuntu:latest
 
+ARG sdkVersion=31
+
+ENV SDK_VERSION=$sdkVersion
+
 RUN groupadd --system developers
 
 RUN apt-get update \
@@ -35,8 +39,8 @@ RUN pip3 install awscli
 #install sdk tools & emulator packages
 RUN sdkmanager --update \
     && echo y | sdkmanager platform-tools "platforms;android-31" \
-    && echo y | sdkmanager platform-tools "emulator" "build-tools;30.0.3" "system-images;android-31;google_apis;x86_64"
-
+    && echo y | sdkmanager platform-tools "emulator" "build-tools;31.0.0" \
+    && echo y | sdkmanager "system-images;android-$SDK_VERSION;google_apis;x86_64"
 #RUN rm -rf /opt/android/emulator/ \
 #    && cp -r /opt/android/emulator-2/ /opt/android/emulator/
 
