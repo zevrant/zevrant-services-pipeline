@@ -34,10 +34,11 @@ RUN pip3 install awscli
 
 #install sdk tools & emulator packages
 RUN sdkmanager --update \
-    && echo y | sdkmanager platform-tools "platforms;android-30" "emulator" "build-tools;30.0.3" "system-images;android-30;google_apis;x86_64"
+    && echo y | sdkmanager platform-tools "platforms;android-31" \
+    && echo y | sdkmanager platform-tools "emulator" "build-tools;30.0.3" "system-images;android-31;google_apis;x86_64"
 
-RUN rm -rf /opt/android/emulator/ \
-    && mv /opt/android/emulator-2/ /opt/android/emulator/
+#RUN rm -rf /opt/android/emulator/ \
+#    && cp -r /opt/android/emulator-2/ /opt/android/emulator/
 
 RUN apt-get install -y locales \
     && locale-gen "en_US.UTF-8" \
