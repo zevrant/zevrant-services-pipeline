@@ -1,0 +1,16 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: test
+  namespace: preprod-shared
+spec:
+  secretName: k8s-internal-tls
+  issuerRef:
+    name: acme-issuer
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+  duration: 24h
+  renewBefore: 18h
+  dnsNames:
+    - test.preprod.zevrant-services.com

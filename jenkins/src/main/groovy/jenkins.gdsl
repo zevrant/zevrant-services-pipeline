@@ -141,8 +141,8 @@ contributor(nodeCtx) {
         method(name: 'zip', type: 'Object', namedParams: [parameter(name: 'zipFile', type: 'java.lang.String'), parameter(name: 'archive', type: 'boolean'), parameter(name: 'dir', type: 'java.lang.String'), parameter(name: 'exclude', type: 'java.lang.String'), parameter(name: 'glob', type: 'java.lang.String'), parameter(name: 'overwrite', type: 'boolean'), ], doc: 'Create Zip file')
         method(name: 'archive', type: 'Object', params: [includes:'java.lang.String'], doc: 'Advanced/Deprecated Archive artifacts')
         method(name: 'archive', type: 'Object', namedParams: [parameter(name: 'includes', type: 'java.lang.String'), parameter(name: 'excludes', type: 'java.lang.String'), ], doc: 'Archive artifacts')
-        method(name: 'containerLog', type: 'Object', params: [name:'java.lang.String'], doc: 'Advanced/Deprecated Get container log from Kubernetes')
-        method(name: 'containerLog', type: 'Object', namedParams: [parameter(name: 'name', type: 'java.lang.String'), parameter(name: 'limitBytes', type: 'int'), parameter(name: 'returnLog', type: 'boolean'), parameter(name: 'sinceSeconds', type: 'int'), parameter(name: 'tailingLines', type: 'int'), ], doc: 'Get container log from Kubernetes')
+        method(name: 'containerLog', type: 'Object', params: [name:'java.lang.String'], doc: 'Advanced/Deprecated Get container log from KubernetesService.groovy')
+        method(name: 'containerLog', type: 'Object', namedParams: [parameter(name: 'name', type: 'java.lang.String'), parameter(name: 'limitBytes', type: 'int'), parameter(name: 'returnLog', type: 'boolean'), parameter(name: 'sinceSeconds', type: 'int'), parameter(name: 'tailingLines', type: 'int'), ], doc: 'Get container log from KubernetesService.groovy')
         method(name: 'unarchive', type: 'Object', params: [:], doc: 'Advanced/Deprecated Copy archived artifacts into the workspace')
         method(name: 'unarchive', type: 'Object', namedParams: [parameter(name: 'mapping', type: 'java.util.Map'), ], doc: 'Copy archived artifacts into the workspace')
     }
@@ -273,7 +273,7 @@ contributor(closures) {
         method(name: 'label', type: 'String', params: [expr: 'String'])
         method(name: 'docker', type: 'String', params: [docker_image: 'String'])
         method(name: 'dockerfile', type: 'boolean', params: [use_dockerfile: 'boolean'])
-        method(name: 'kubernetes', type: 'Object', params: [body: 'Closure'], doc: 'Kubernetes pods configuration')
+        method(name: 'kubernetes', type: 'Object', params: [body: 'Closure'], doc: 'KubernetesService.groovy pods configuration')
 
         if(enclosingCall("kubernetes")) {
             method(name: 'inheritFrom', type: 'String', params: [expr: 'String'])

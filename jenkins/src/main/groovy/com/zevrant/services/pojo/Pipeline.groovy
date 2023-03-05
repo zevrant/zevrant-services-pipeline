@@ -11,19 +11,21 @@ class Pipeline {
     private final List<PipelineTrigger> triggers;
     private final int buildsToKeep;
     private final disabled;
-    private final Map<String, String> envs;
+    private final Map<String, String> envs
+    private final boolean allowConcurrency
 
     Pipeline(Map<String, Object> params) {
         this.name = params.name
         this.description = params.description ?: ""
         this.parameters = (params.parameters ?: new ArrayList<>()) as ArrayList<PipelineParameter>
-        this.gitRepo = params.gitRepo ?: "git@github.com:Zevrant/zevrant-services-pipeline.git"
+        this.gitRepo = params.gitRepo ?: "ssh://git@ssh.gitea.zevrant-services.com:30121/zevrant-services/zevrant-services-pipeline.git"
         this.jenkinsfileLocation = params.jenkinsfileLocation
-        this.credentialId = params.credentialId
+        this.credentialId = params.credentialId ?: 'jenkins-git'
         this.triggers = (params.triggers as List<PipelineTrigger> ?: new ArrayList<>()) as List<PipelineTrigger>
         this.buildsToKeep = (params.buildsToKeep ?: 10) as int
         this.disabled = (params.disabled ?: false) as boolean
         this.envs = params.envs ? params.envs as Map<String, String> : new HashMap<>() as Map<String, String>
+        this.allowConcurrency = params.allowConcurency
     }
 
     String getName() {
@@ -58,8 +60,17 @@ class Pipeline {
         return buildsToKeep
     }
 
-    def getDisabled() {
+    boolean getDisabled() {
         return disabled
     }
+
+    boolean getAllowConcurrency() {
+        return allowConcurrency
+    }
+
+    Map<String, String> getEnvs() {
+        return envs
+    }
+
 }
 

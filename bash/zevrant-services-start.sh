@@ -6,15 +6,13 @@ if [[ "$3" != "" ]]; then
   echo "		IP.2 = $3" >> ~/openssl.conf
 fi
 cat ~/openssl.conf
-openssl req -newkey rsa:4096 -nodes -keyout ~/private.pem -days 365 -out ~/public.csr -config ~/openssl.conf
-username=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id certificateUsername | jq .SecretString)
-password=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id certificatePassword | jq .SecretString)
-username=$(echo "$username" | cut -c 2-$((${#username}-1)))
-password=$(echo "$password" | cut -c 2-$((${#password}-1)))
-certificateRequest=$(cat ~/public.csr)
-certificateRequest=$(printf "%q" "$certificateRequest")
-certificateRequest=$(echo "$certificateRequest" | cut -c 3-$((${#certificateRequest}-1)))
-certificateRequest="{\"certificateRequest\":\"$certificateRequest\",\"ip\":\"$POD_IP\"}"
-curl --insecure https://zevrant-01.zevrant-services.com:9009/zevrant-certificate-service/certs --data "$certificateRequest" --user "$username":"$password" -H "Content-Type: application/json" -X POST > ~/public.crt
+
+VAULT_ADDR="https://develop.vault.zevrant-services.com"
+
+if [[ "$ENVIRONMENT" == "prod" ]]; then
+  VAULT_ADDR="https://vault.zevrant-services.com"
+fi
+
+step ca bootstrap --ca-url certificate-authority.shared.svc.cluster.local --fingerprint 302e9a4e65cd9525a8479bc3bcd14c64050712559954e6cbf866469eba69fe37
 openssl pkcs12 -export -inkey ~/private.pem -in ~/public.crt -passout "pass:$2" -out ~/zevrant-services.p12
 rm ~/public.crt ~/private.pem ~/openssl.conf

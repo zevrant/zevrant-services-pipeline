@@ -1,0 +1,175 @@
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: preprod-shared
+  name: vault
+spec:
+  type: NodePort
+  ports:
+    - port: 8443
+      targetPort: 8443
+      nodePort: 30129
+      name: https-nodeport
+    - port: 80
+      targetPort: 80
+      name: http
+      nodePort: 30626
+    - port: 443
+      targetPort: 8443
+      name: https
+  selector:
+    app: vault
+
+---
+
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: vault
+  namespace: preprod-shared
+spec:
+  secretName: vault-tls
+  issuerRef:
+    name: acme-issuer
+  duration: 24h
+  renewBefore: 23h
+  dnsNames:
+    - vault.preprod.zevrant-services.com
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vault
+  namespace: preprod-shared
+  labels:
+    app: vault
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: vault
+  template:
+    metadata:
+      labels:
+        app: vault
+    spec:
+      securityContext:
+        fsGroup: 1000
+        fsGroupChangePolicy: "Always"
+      volumes:
+        - name: vault-data
+          persistentVolumeClaim:
+            claimName: vault
+        - name: vault-cert
+          secret:
+            secretName: vault-tls
+        - name: password-volume
+          emptyDir:
+            sizeLimit: "1Mi"
+        - name: vault-keys
+          secret:
+            secretName: vault-key
+            defaultMode: 0400
+
+      initContainers:
+        - name: secret-init
+          image: docker.io/zevrant/zevrant-ubuntu-base:latest
+          imagePullPolicy: Always
+          volumeMounts:
+#            - name: vault-data
+#              mountPath: /vault
+            - mountPath: /opt/secrets
+              name: password-volume
+            - mountPath: /var/zevrant-services/vault-keys
+              name: vault-keys
+          command:
+            - /bin/bash
+          args:
+            - -c
+            - |
+              mkdir -p /opt/secrets/vault-keys
+              cp /var/zevrant-services/vault-keys/* /opt/secrets/vault-keys/
+              chown -R 1000:1000 /opt/secrets
+      containers:
+        - name: vault-unsealer
+          image: docker.io/zevrant/vault-unsealer:latest
+          imagePullPolicy: "Always"
+          volumeMounts:
+            - mountPath: /var/zevrant-services
+              name: password-volume
+          env:
+            - name: URL
+              value: 'vault.preprod.zevrant-services.com'
+            - name: KEY1
+              valueFrom:
+                secretKeyRef:
+                  name: vault-key
+                  key: vault-key-1
+            - name: KEY2
+              valueFrom:
+                secretKeyRef:
+                  name: vault-key
+                  key: vault-key-2
+            - name: KEY3
+              valueFrom:
+                secretKeyRef:
+                  name: vault-key
+                  key: vault-key-3
+            - name: CA_FINGERPRINT
+              valueFrom:
+                secretKeyRef:
+                  key: fingerprint
+                  name: ca-fingerprint
+        - name: vault
+          image: docker.io/vault:latest
+          command:
+            - "/bin/sh"
+          args:
+            - "-c"
+            - "ls -l /opt/acme/certs; ls -l /opt/acme/certs/..data/; docker-entrypoint.sh server"
+          securityContext:
+            capabilities:
+              add:
+                - IPC_LOCK
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: vault-data
+              mountPath: /vault
+            - name: vault-cert
+              mountPath: /opt/acme/certs/
+          env:
+            - name: VAULT_API_ADDR
+              value: https://develop.vault.zevrant-services.com
+            - name: VAULT_UI
+              value: 'true'
+            - name: VAULT_LOCAL_CONFIG
+              value: '{ "storage": { "file": { "path": "/vault/data"} }, "listener": [{"tcp": {"address": "0.0.0.0:8443", "tls_cert_file": "/opt/acme/certs/tls.crt", "tls_key_file": "/opt/acme/certs/tls.key"}}],"backend": {"file": {"path": "/vault/file"}}, "default_lease_ttl": "168h", "max_lease_ttl": "720h"}'
+          ports:
+            - containerPort: 8443
+          resources:
+            requests:
+              memory: 8Gi
+              cpu: 2000m
+            limits:
+              memory: 8Gi
+              cpu: 2000m
+          readinessProbe:
+            httpGet:
+              scheme: HTTPS
+              path: /ui
+              port: 8443
+            failureThreshold: 5
+            periodSeconds: 5
+            initialDelaySeconds: 15
+          livenessProbe:
+            httpGet:
+              scheme: HTTPS
+              path: /ui
+              port: 8443
+            failureThreshold: 5
+            periodSeconds: 5
+            initialDelaySeconds: 15
+

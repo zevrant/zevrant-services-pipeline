@@ -1,0 +1,107 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: certificate-authority
+  namespace: preprod-shared
+spec:
+  type: NodePort
+  ports:
+    - port: 443
+      targetPort: 8443
+      name: https
+  selector:
+    app: certificate-authority
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: certificate-authority
+  namespace: preprod-shared
+  labels:
+    app: certificate-authority
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: certificate-authority
+  template:
+    metadata:
+      labels:
+        app: certificate-authority
+    spec:
+      securityContext:
+        fsGroup: 1000
+        fsGroupChangePolicy: "Always"
+      imagePullSecrets:
+        - name: regcred
+      volumes:
+        - name: step-ca
+          persistentVolumeClaim:
+            claimName: preprod-shared-ca
+        - name: certificate-authority-password
+          secret:
+            secretName: certificate-authority-password
+            defaultMode: 0400
+      dnsPolicy: "None"
+      dnsConfig:
+        nameservers:
+          - 1.1.1.1
+          - 8.8.8.8
+      containers:
+        - name: certificate-authority
+          image: docker.io/zevrant/step-ca:latest
+          ports:
+            - containerPort: 8443
+          volumeMounts:
+            - name: step-ca
+              mountPath: /opt/step-ca
+            - mountPath: /var/zevrant-services/ca-password
+              name: certificate-authority-password
+          env:
+            - name: CA_NAME
+              value: 'Zevrant Services Preprod Shared'
+            - name: CA_DNS
+              value: certificate-authority
+            - name: CA_DNS_1
+              value: certificate-authority.develop.svc.cluster.local
+            - name: SECRET_FILE_PATH
+              value: /var/zevrant-services/ca-password/password
+#          readinessProbe:
+#            httpGet:
+#              scheme: HTTPS
+#              path: /acme/acme/directory
+#              port: 8443
+#            failureThreshold: 5
+#            periodSeconds: 5
+#          livenessProbe:
+#            httpGet:
+#              scheme: HTTPS
+#              path: /acme/acme/directory
+#              port: 8443
+#            failureThreshold: 5
+#            periodSeconds: 5
+
+---
+
+---
+
+apiVersion: certmanager.step.sm/v1beta1
+kind: StepIssuer
+metadata:
+  name: step-issuer
+spec:
+  # The CA URL.
+  url: https://certificate-authority
+  # The base64 encoded version of the CA root certificate in PEM format.
+  caBundle: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUIyekNDQVdJQ0ZFY0VQTkFyZXkwZFcwbTltMUFINGU2cUxXblRNQW9HQ0NxR1NNNDlCQU1FTUZJeEN6QUoKQmdOVkJBWVRBbFZUTVJFd0R3WURWUVFJREFoTmFXTm9hV2RoYmpFUk1BOEdBMVVFQnd3SVFtRjVJRU5wZEhreApIVEFiQmdOVkJBTU1GSHBsZG5KaGJuUXRjMlZ5ZG1salpYTXVZMjl0TUI0WERUSXlNRGd5TURFMk16WTFObG9YCkRUSXpNRGd5TURFMk16WTFObG93VWpFTE1Ba0dBMVVFQmhNQ1ZWTXhFVEFQQmdOVkJBZ01DRTFwWTJocFoyRnUKTVJFd0R3WURWUVFIREFoQ1lYa2dRMmwwZVRFZE1Cc0dBMVVFQXd3VWVtVjJjbUZ1ZEMxelpYSjJhV05sY3k1agpiMjB3ZGpBUUJnY3Foa2pPUFFJQkJnVXJnUVFBSWdOaUFBUyt1L2ZEOFF1SEdmQjJuRFhLeUNHYWRJMFpSSzFGCkVrU1U5bzVmYS94QXh1SGVkdmFjUDUyQk9ldERRRlUxa0JlVStoM0gxWVB0cHV6U0hGcnhkQWlkVXByQTVDYjEKVEV5N1FQdkdZMGhOZ05aNWVvSEVKd1lUZUs2MUlQL2I4ZzB3Q2dZSUtvWkl6ajBFQXdRRFp3QXdaQUl3UDdkegpsSmZiOEhQQW5NTklrKzJzUXh5bHRmMWJYUXJUeDY3R1Q1dlllMlZTNzV5STYyWlYveWNHUmdTbTlkSmRBakJBCk1nM21rTlc0djRNeldZMmZFcnRta1RSdVZ1NW4vc2FDSnBHWi82akFLMHFSdHpBQWRETkpsUHRWMk5QWE1WRT0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
+  # The provisioner name, kid, and a reference to the provisioner password secret.
+  provisioner:
+    name: "step-issuer"
+    kid: zQUIgEjRBrqAaO28eX3TEhFI6rHtGDwb2PM_C_1HZWg
+    passwordRef:
+      name: step-issuer-provisioner-password
+      key: password

@@ -1,0 +1,271 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: loki
+  namespace: monitoring2
+spec:
+  type: NodePort
+  ports:
+    - port: 3100
+      targetPort: 3100
+      nodePort: 30139
+      name: http
+  selector:
+    app: loki
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    v1.min.io/log-pg: loki-log
+  name: loki-log-loki-log-0
+  namespace: monitoring2
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 50Gi
+  storageClassName: kadalu.monitoring
+  volumeMode: Filesystem
+  volumeName: "pvc-8f6fbbcf-5720-4927-829e-6deb78a5d2e0"
+
+---
+
+
+#apiVersion: cert-manager.io/v1
+#kind: Certificate
+#metadata:
+#  name: loki
+#  namespace: monitoring2
+#spec:
+#  secretName: loki-tls
+#  issuerRef:
+#    name: acme-issuer
+#  duration: 24h
+#  renewBefore: 23h
+#  dnsNames:
+#    - loki.preprod.zevrant-services.com
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: loki
+  namespace: monitoring2
+  labels:
+    app: loki
+spec:
+  strategy:
+    type: Recreate
+  replicas: 1
+  selector:
+    matchLabels:
+      app: loki
+  template:
+    metadata:
+      labels:
+        app: loki
+    spec:
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: DoNotSchedule
+      securityContext:
+        fsGroup: 1000
+        fsGroupChangePolicy: "Always"
+      volumes:
+        - name: minio-credentials
+          secret:
+            secretName: minio-loki-credentials
+        - name: runtime-config
+          emptyDir:
+            sizeLimit: 1Gi
+#        - name: loki-cert
+#          secret:
+#            secretName: loki-tls
+        - name: loki-data
+          persistentVolumeClaim:
+            claimName: loki-cache
+        - name: loki-config
+          configMap:
+            name: loki
+      imagePullSecrets:
+        - name: regcred
+      initContainers:
+        - name: secret-init
+          image: docker.io/zevrant/zevrant-ubuntu-base:latest
+          volumeMounts:
+            - mountPath: /var/secrets/minio-credentials
+              name: minio-credentials
+            - mountPath: /var/config/loki-config
+              name: loki-config
+            - mountPath: /var/config/runtime-config
+              name: runtime-config
+          command:
+            - /bin/sh
+          args:
+            - -c
+            - | 
+              cp /var/config/loki-config/config.yml /var/config/runtime-config/config.yml
+              sed -i "s/<<ACCESS_KEY_ID>>/$(cat /var/secrets/minio-credentials/username)/g" /var/config/runtime-config/config.yml
+              sed -i "s/<<SECRET_ACCESS_KEY>>/$(cat /var/secrets/minio-credentials/password)/g" /var/config/runtime-config/config.yml
+      containers:
+        - name: loki
+          image: grafana/loki:latest
+          imagePullPolicy: Always
+          args:
+            - -config.file=/mnt/config/config.yml
+          volumeMounts:
+#            - name: loki-cert
+#              mountPath: /opt/acme/certs/
+            - name: loki-data
+              mountPath: /loki
+            - name: runtime-config
+              mountPath: /mnt/config
+          ports:
+            - containerPort: 3100
+#            - containerPort: 9094
+              name: loki-alert
+              protocol: TCP
+          startupProbe:
+            httpGet:
+              scheme: HTTP
+              path: /ready
+              port: 3100
+            periodSeconds: 5
+            failureThreshold: 8
+            successThreshold: 1
+          livenessProbe:
+            httpGet:
+              scheme: HTTP
+              path: /ready
+              port: 3100
+            periodSeconds: 5
+            failureThreshold: 3
+            successThreshold: 1
+          resources:
+            requests:
+              memory: 1Gi
+              cpu: 100m
+            limits:
+              memory: 4Gi
+              cpu: 2000m
+#          env:
+#            - name: GF_SERVER_PROTOCOL
+#              value: https
+#            - name: GF_SERVER_CERT_FILE
+#              value: /opt/acme/certs/tls.crt
+#            - name: GF_SERVER_CERT_KEY
+#              value: /opt/acme/certs/tls.key
+#            - name: POD_IP
+#              valueFrom:
+#                fieldRef:
+#                  fieldPath: status.podIP
+#            - name: POSTGRES_HOST
+#              value: grafana-db:5432
+#            - name: POSTGRES_DATABASE_NAME
+#              value: grafana
+#            - name: POSTGRES_USER
+#              value: zevrant
+#            - name: POSTGTRES_DATABASE_PASSWORD
+#              valueFrom:
+#                secretKeyRef:
+#                  name: grafana-db-password
+#                  key: password
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: loki
+  namespace: monitoring2
+data:
+  config.yml: |
+    compactor:
+      working_directory: /loki/data/retention
+      shared_store: s3
+      compaction_interval: 10m
+      retention_enabled: true
+      retention_delete_delay: 2h
+      retention_delete_worker_count: 150
+    auth_enabled: false
+    server:
+      http_listen_port: 3100
+      grpc_listen_port: 9096
+    
+    common:
+      path_prefix: /tmp/loki
+      replication_factor: 1
+      ring:
+        instance_addr: 127.0.0.1
+        kvstore:
+          store: inmemory
+      storage:
+        s3:
+          bucketnames: loki
+          s3: https://minio.monitoring2.svc.cluster.local/
+          s3forcepathstyle: true
+          access_key_id: <<ACCESS_KEY_ID>>
+          secret_access_key: <<SECRET_ACCESS_KEY>>
+          http_config:
+            insecure_skip_verify: true
+    storage_config:
+      aws:
+        bucketnames: loki
+        s3: https://minio.monitoring2.svc.cluster.local/
+        s3forcepathstyle: true
+        access_key_id: <<ACCESS_KEY_ID>>
+        secret_access_key: <<SECRET_ACCESS_KEY>>
+        http_config:
+          insecure_skip_verify: true
+      boltdb_shipper:
+        active_index_directory: /loki/index
+        shared_store: s3
+        cache_location: /loki/boltdb-cache
+
+    query_range:
+      results_cache:
+        cache:
+          embedded_cache:
+            enabled: true
+            max_size_mb: 100
+            
+    schema_config:
+      configs:
+        - from: 2020-10-24
+          store: boltdb-shipper
+          object_store: s3
+          schema: v11
+          index:
+            prefix: index_
+            period: 24h
+    
+    ruler:
+      alertmanager_url: http://grafana:9094
+    
+    limits_config:
+      enforce_metric_name: false
+      reject_old_samples: true
+      reject_old_samples_max_age: 168h
+      ingestion_rate_mb: 1000000000
+      ingestion_burst_size_mb: 5000000000
+      per_stream_rate_limit: 1000000000
+      per_stream_rate_limit_burst: 1000000000
+    
+    # By default, Loki will send anonymous, but uniquely-identifiable usage and configuration
+    # analytics to Grafana Labs. These statistics are sent to https://stats.grafana.org/
+    #
+    # Statistics help us better understand how Loki is used, and they show us performance
+    # levels for most users. This helps us prioritize features and documentation.
+    # For more information on what's sent, look at
+    # https://github.com/grafana/loki/blob/main/pkg/usagestats/stats.go
+    # Refer to the buildReport method to see what goes into a report.
+    #
+    # If you would like to disable reporting, uncomment the following lines:
+    analytics:
+      reporting_enabled: false
+      

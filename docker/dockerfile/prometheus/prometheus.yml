@@ -1,60 +1,61 @@
+#file: noinspection YAMLSchemaValidation
 global:
   scrape_interval: 10s
 
-rule_files:
-  - /etc/prometheus/rules.yml
+#rule_files:
+#  - /etc/prometheus/rules.yml
 
-alerting:
-  alertmanagers:
-    - static_configs:
-        - targets:
-            # Alertmanager's default port is 9093
-            - localhost:9093
+#alerting:
+#  alertmanagers:
+#    - static_configs:
+#        - targets:
+#            # Alertmanager's default port is 9093
+#            - localhost:9093
 
-scrape_configs:
-  - job_name: 'zevrant-oauth2-service'
-    metrics_path: '/zevrant-oauth2-service/actuator/prometheus'
-    scrape_interval: 5s
-    scheme: 'https'
-    tls_config:
-      insecure_skip_verify: true
-    static_configs:
-      - targets: ['zevrant-oauth2-service']
-  - job_name: 'zevrant-model-service'
-    metrics_path: '/zevrant-model-service/actuator/prometheus'
-    scrape_interval: 5s
-    scheme: 'https'
-    tls_config:
-      insecure_skip_verify: true
-    static_configs:
-      - targets: [ 'zevrant-model-service' ]
-  - job_name: 'zevrant-outsource-service'
-    metrics_path: '/zevrant-outsource-service/actuator/prometheus'
-    scrape_interval: 5s
-    scheme: 'https'
-    tls_config:
-      insecure_skip_verify: true
-    static_configs:
-      - targets: [ 'zevrant-outsource-service' ]
-  - job_name: 'zevrant-home-ui'
-    metrics_path: '/zevrant-home-ui/actuator/prometheus'
-    scrape_interval: 5s
-    scheme: 'https'
-    tls_config:
-      insecure_skip_verify: true
-    static_configs:
-      - targets: [ 'zevrant-home-ui' ]
-  - job_name: node
-    scheme: https
-    tls_config:
-      ca_file: /etc/ssl/certs/zevrant-services.pem
-    metrics_path: '/metrics'
-    static_configs:
-      - targets:
-        - 'zevrant-01.zevrant-services.com:9100'
-        - 'zevrant-02.zevrant-services.com:9100'
-        - 'zevrant-03.zevrant-services.com:9100'
-        - 'zevrant-04.zevrant-services.com:9100'
+#scrape_configs:
+#  - job_name: 'zevrant-oauth2-service'
+#    metrics_path: '/zevrant-oauth2-service/actuator/prometheus'
+#    scrape_interval: 5s
+#    scheme: 'https'
+#    tls_config:
+#      insecure_skip_verify: true
+#    static_configs:
+#      - targets: ['zevrant-oauth2-service']
+#  - job_name: 'zevrant-model-service'
+#    metrics_path: '/zevrant-model-service/actuator/prometheus'
+#    scrape_interval: 5s
+#    scheme: 'https'
+#    tls_config:
+#      insecure_skip_verify: true
+#    static_configs:
+#      - targets: [ 'zevrant-model-service' ]
+#  - job_name: 'zevrant-outsource-service'
+#    metrics_path: '/zevrant-outsource-service/actuator/prometheus'
+#    scrape_interval: 5s
+#    scheme: 'https'
+#    tls_config:
+#      insecure_skip_verify: true
+#    static_configs:
+#      - targets: [ 'zevrant-outsource-service' ]
+#  - job_name: 'zevrant-home-ui'
+#    metrics_path: '/zevrant-home-ui/actuator/prometheus'
+#    scrape_interval: 5s
+#    scheme: 'https'
+#    tls_config:
+#      insecure_skip_verify: true
+#    static_configs:
+#      - targets: [ 'zevrant-home-ui' ]
+#  - job_name: node
+#    scheme: https
+#    tls_config:
+#      ca_file: /etc/ssl/certs/zevrant-services.pem
+#    metrics_path: '/metrics'
+#    static_configs:
+#      - targets:
+#        - 'zevrant-01.zevrant-services.com:9100'
+#        - 'zevrant-02.zevrant-services.com:9100'
+#        - 'zevrant-03.zevrant-services.com:9100'
+#        - 'zevrant-04.zevrant-services.com:9100'
   - job_name: 'kubernetes-apiservers'
     kubernetes_sd_configs:
       - role: endpoints

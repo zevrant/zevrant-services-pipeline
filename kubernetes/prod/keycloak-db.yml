@@ -2,6 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: zevrant-keycloak-service-db
+  namespace: prod
 spec:
   ports:
     - port: 5432
@@ -14,9 +15,8 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: zevrant-keycloak-service-db-deployment
-  annotations:
-    iam.amazonaws.com/role: OauthServiceRole
+  name: zevrant-keycloak-service-db
+  namespace: prod
   labels:
     app: zevrant-keycloak-service-db
 spec:
@@ -35,11 +35,11 @@ spec:
         - name: database
           nfs:
             server: nfs-controller.zevrant-services.com
-            path: /keycloak
-      nodeSelector:
-        architecture: amd64
+            path: /nfs/exports/keycloak
+
       containers:
         - name: zevrant-keycloak-service-db
+#          command: psql pg_resetwal DATADIR
           image: postgres:14
           imagePullPolicy: Always
           volumeMounts:
@@ -66,3 +66,17 @@ spec:
             limits:
               memory: 4Gi
               cpu: 1000m
+          readinessProbe:
+            initialDelaySeconds: 5
+            exec:
+              command: ["psql", "-w", "-U", "$POSTGRES_USER", "-d", "$POSTGRES_DB", "-c", "SELECT 1"]
+            failureThreshold: 3
+            successThreshold: 5
+            periodSeconds: 5
+          livenessProbe:
+            initialDelaySeconds: 5
+            exec:
+              command: [ "psql", "-w", "-U", "$POSTGRES_USER", "-d", "$POSTGRES_DB", "-c", "SELECT 1" ]
+            failureThreshold: 3
+            successThreshold: 5
+            periodSeconds: 5

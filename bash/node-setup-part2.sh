@@ -1,19 +1,19 @@
 #!/bin/bash
 
 ## Install dependencies
-apt-get install -y jq awscli gnupg lsb-release ca-certificates software-properties-common nfs-common
+apt-get install -y jq gnupg lsb-release ca-certificates software-properties-common nfs-common
 groupadd developers
 ##Install Node Exporter (Prometheus)
 mkdir -p /opt/node-exporter
-url="$(curl -s https://api.github.com/repos/prometheus/node_exporter/releases/latest | jq .assets[2].browser_download_url)"
-curl -L $(echo "$url" | cut -c 2-$((${#url}-1))) -o node-exporter.tar.gz
+url="$(curl -s https://gitea.zevrant-services.com/api/v1/repos/prometheus/node_exporter/releases/latest | jq .assets[2].browser_download_url)"
+curl -L "$(echo "$url" | cut -c 2-$((${#url}-1)))" -o node-exporter.tar.gz
 tar xvf node-exporter.tar.gz
 mv node_exporter-* node-exporter
 mv node-exporter/* /opt/node-exporter
 rm -r node-exporter*
 adduser --system --shel /bin/false --no-create-home --disabled-login node-exporter
 
-echo 'DNS=172.16.0.254' >> /etc/systemd/resolved.conf
+echo 'DNS=172.16.1.254' >> /etc/systemd/resolved.conf
 
 ##Install GPG keys & APT Repositories
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
@@ -50,9 +50,9 @@ echo "$3"
 
 openssl req -newkey rsa:4096 -nodes -keyout /opt/node-exporter/private.pem -days 8 -out ./public.csr -config ./openssl.conf
 echo 'Enter AWS Access Key Id.'
-read AWS_ACCESS_KEY_ID
+read -r AWS_ACCESS_KEY_ID
 echo 'Enter AWS Secret Access Key'
-read AWS_SECRET_ACCESS_KEY
+read -r AWS_SECRET_ACCESS_KEY
 
 mkdir -p ~/.aws/
 
@@ -103,36 +103,14 @@ ExecStart=/opt/node-exporter/node_exporter --web.config=/opt/node-exporter/confi
 WantedBy=multi-user.target
 EOF
 
-cat << EOF > /etc/systemd/system/kubeconfig.service
-[Unit]
-Description=Kube Config
-
-Before=network.target
-
-[Service]
-User=root
-ExecStart=/usr/local/bin/kubeconfig.sh
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-cat << EOF > /usr/local/bin/kubeconfig.sh
-#!/bin/bash
-sysctl net.ipv4.conf.all.forwarding=1
-iptables -P FORWARD ACCEPT
-iptables -P FORWARD ACCEPT
-iptables -P OUTPUT ACCEPT
-iptables --flush
-iptables -tnat --flush
-net.bridge.bridge-nf-call-iptables = 1
-EOF
-
 cat << EOF > /opt/node-exporter/config.yml
 tls_server_config:
   cert_file: public.crt
   key_file: private.pem
 EOF
+
+echo "vm.max_map_count = 262144" >> /etc/sysctl.conf
+sysctl -p
 
 chown -R node-exporter:developers /opt/node-exporter
 chown root:root /usr/local/bin/kubeconfig.sh
@@ -150,7 +128,7 @@ sleep 10
 
 usermod -G docker zevrant
 
-curl https://raw.githubusercontent.com/zevrant/zevrant-services-pipeline/master/bash/zevrant-services.crt \
+curl http://zevrant-01.zevrant-services.com:7644/cacert.pem \
       -o /usr/local/share/ca-certificates/zevrant-services.crt \
     && update-ca-certificates -v \
     && ls -l /etc/ssl/certs/zevrant-services.pem
@@ -160,6 +138,47 @@ systemctl enable kubeconfig
 systemctl enable docker
 sed -i 's~ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock~ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock --exec-opt native.cgroupdriver=systemd~g' /lib/systemd/system/docker.service
 
+
+sudo mkdir -p /etc/containerd && containerd config default >> /etc/containerd/config.tom
+echo "br_netfilter" >> /etc/modules
+modprobe br_netfilter
+echo 'net.bridge.bridge-nf-call-iptables = 1' >> /etc/sysctl.conf
+echo 'net.ipv4.conf.all.forwarding=1' >> /etc/sysctl.conf
+sysctl -p
+sudo swapoff -a
+apt-get install iptables-persistent -y
+iptables -P FORWARD ACCEPT
+iptables -P FORWARD ACCEPT
+iptables -P OUTPUT ACCEPT
+iptables --flush
+iptables -tnat --flush
+iptables-save
+
+##BIND9 config
+apt-get install -y bind9
+echo '172.16.1.10:/bind9 /etc/bind glusterfs defaults 0 0' >> /etc/fstab
+mount -a
+echo '[Unit]
+Description=BIND Domain Name Server
+Documentation=man:named(8)
+After=network.target etc-bind.mount
+Wants=nss-lookup.target
+Before=nss-lookup.target
+
+[Service]
+EnvironmentFile=-/etc/default/named
+ExecStart=/usr/sbin/named -f $OPTIONS
+ExecReload=/usr/sbin/rndc reload
+ExecStop=/usr/sbin/rndc stop
+
+[Install]
+WantedBy=multi-user.target
+Alias=bind9.service
+' | tee /etc/systemd/system/bind9.service
+systemctl daemon-reload
+systemctl restart bind9
+
 echo "Installation Complete Press Enter to Reboot"
-read
+read -r
 reboot
+

@@ -1,0 +1,23 @@
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: acme-issuer
+  namespace: develop
+spec:
+  acme:
+    email: gdittrick@zevrant-services.com
+    privateKeySecretRef:
+      name: ca-private-key
+    server: https://certificate-authority.develop.svc.cluster.local/acme/acme/directory
+    solvers:
+      - selector:
+          dnsZones:
+            - 'develop.zevrant-services.com'
+        dns01:
+          route53:
+            region: us-east-1
+            accessKeyID: AKIA2RW3K76J7MDEVWUY
+            hostedZoneID: Z081184728HML2PBPBD8S
+            secretAccessKeySecretRef:
+              name: route53-credentials-secret
+              key: secret-access-key

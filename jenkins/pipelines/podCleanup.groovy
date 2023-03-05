@@ -7,9 +7,6 @@ pipeline {
 
     stages {
         stage("Delete Evictions") {
-            environment {
-                KUBECONFIG = credentials('jenkins-kubernetes')
-            }
             steps {
                 container('kubectl') {
                     script {

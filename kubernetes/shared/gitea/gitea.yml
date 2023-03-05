@@ -1,0 +1,289 @@
+#apiVersion: cert-manager.io/v1
+#kind: Certificate
+#metadata:
+#  name: gitea
+#spec:
+#  secretName: gitea-tls
+#  issuerRef:
+#    name: acme-issuer
+#  privateKey:
+#    algorithm: ECDSA
+#    size: 256
+#    rotationPolicy: Always
+#  duration: 24h
+#  renewBefore: 13h
+#  dnsNames:
+#    - gitea.zevrant-services.com
+#    - ssh.gitea.zevrant-services.com
+#
+#---
+
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: gitea-data
+  namespace: shared
+spec:
+  storageClassName: kadalu.shared
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 50Gi
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: gitea
+  namespace: shared
+spec:
+  type: NodePort
+  ports:
+    - port: 3000
+      targetPort: 3000
+      nodePort: 30125
+      name: http
+    - port: 2222
+      targetPort: 2222
+      nodePort: 30121
+      name: ssh
+  selector:
+    app: gitea
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gitea
+  namespace: shared
+  labels:
+    app: gitea
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: gitea
+  template:
+    metadata:
+      labels:
+        app: gitea
+    spec:
+      securityContext:
+        runAsUser: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: "Always"
+      imagePullSecrets:
+        - name: regcred
+      volumes:
+        - name: keystore-volume
+          emptyDir:
+            sizeLimit: "1Mi"
+        - name: config-copy
+          emptyDir:
+            sizeLimit: 1Mi
+#        - name: gitea-cert
+#          secret:
+#            secretName: gitea-tls
+#            defaultMode: 0400
+        - name: gitea-data
+          persistentVolumeClaim:
+            claimName: gitea-data
+        - name: gitea-config
+          configMap:
+            name: gitea
+        - name: gitea-timezone
+          persistentVolumeClaim:
+            claimName: gitea-timezone
+        - name: gitea-localtime
+          persistentVolumeClaim:
+            claimName: gitea-localtime
+      initContainers:
+        - name: config-init
+          imagePullPolicy: Always
+          image: docker.io/zevrant/zevrant-ubuntu-base:latest
+          volumeMounts:
+            - name: gitea-config
+              mountPath: /etc/gitea
+            - name: config-copy
+              mountPath: /opt/config-copy
+          command:
+            - /bin/sh
+          args:
+            - -c
+            - cp /etc/gitea/app.ini /opt/config-copy/app.ini
+      containers:
+        - name: gitea
+          image: docker.io/zevrant/gitea:latest-rootless
+#          command:
+#            - /bin/sh
+#          args:
+#            - -c
+#            - sleep 9999999999
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+            - containerPort: 2222
+          volumeMounts:
+#            - name: gitea-cert
+#              mountPath: /opt/acme/certs
+#              readOnly: true
+            - name: gitea-data
+              mountPath: /var/lib/gitea
+            - name: config-copy
+              mountPath: /etc/gitea
+            - name: gitea-timezone
+              mountPath: /etc/timezone
+            - name: gitea-localtime
+              mountPath: /etc/localtime
+          env:
+            - name: GITEA__database__DB_TYPE
+              value: postgres
+            - name: GITEA__database__HOST
+              value: gitea-db:5432
+            - name: GITEA__database__NAME
+              value: gitea
+            - name: GITEA__database__USER
+              value: zevrant
+            - name: GITEA__database__PASSWD
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: gitea-db-password
+            - name: DEFAULT_BRANCH
+              value: master
+          startupProbe:
+            httpGet:
+              scheme: HTTP
+              path: /api/healthz
+              port: 3000
+            failureThreshold: 14
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              scheme: HTTP
+              path: /api/healthz
+              port: 3000
+            failureThreshold: 5
+            periodSeconds: 5
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gitea
+  namespace: shared
+data:
+  app.ini: |
+    APP_NAME = Zevrant Services
+    RUN_USER = git
+    RUN_MODE = prod
+    IMPORT_LOCAL_PATHS = true
+    
+    [metrics]
+    ENABLED=true
+    ENABLED_ISSUE_BY_REPOSITORY=true
+    ENABLED_ISSUE_BY_LABEL=true
+    
+    [repository]
+    ROOT = /var/lib/gitea/git/repositories
+
+    [repository.local]
+    LOCAL_COPY_PATH = /tmp/gitea/local-repo
+
+    [repository.upload]
+    TEMP_PATH = /tmp/gitea/uploads
+
+    [server]
+    APP_DATA_PATH           = /var/lib/gitea
+    SSH_DOMAIN              = gitea.zevrant-services.com
+    HTTP_PORT               = 3000
+    REDIRECT_OTHER_PORT	= true
+    PORT_TO_REDIRECT	= 3001
+    ROOT_URL                = http://gitea.zevrant-services.com/
+    DISABLE_SSH             = false
+    # SSH_SERVER_CIPHERS      = 3des-cbc aes128-cbc aes192-cbc aes256-cbc aes128-ctr aes192-ctr aes256-ctr aes128-gcm@openssh.com aes256-gcm@openssh.com chacha20-poly1305@openssh.com
+    # SSH_SERVER_KEY_EXCHANGES = ssh-ed25519 ssh-ed25519-cert-v01@openssh.com sk-ssh-ed25519@openssh.com sk-ssh-ed25519-cert-v01@openssh.com ssh-rsa ssh-dss ecdsa-sha2-nistp256 ecdsa-sha2-nistp384 ecdsa-sha2-nistp521 sk-ecdsa-sha2-nistp256@openssh.com ssh-rsa-cert-v01@openssh.com ssh-dss-cert-v01@openssh.com ecdsa-sha2-nistp256-cert-v01@openssh.com ecdsa-sha2-nistp384-cert-v01@openssh.com ecdsa-sha2-nistp521-cert-v01@openssh.com sk-ecdsa-sha2-nistp256-cert-v01@openssh.com
+    ; In rootless gitea container only internal ssh server is supported
+    START_SSH_SERVER        = true
+    SSH_PORT                = 30121
+    SSH_LISTEN_PORT         = 2222
+    BUILTIN_SSH_SERVER_USER = git
+    LFS_START_SERVER        = true
+    LFS_CONTENT_PATH        = /var/lib/gitea/git/lfs
+    DOMAIN                  = gitea.zevrant-services.com
+    LFS_JWT_SECRET          = iNGInu3z1U5DSO-im6vJ_ZIV_EgxPpwqHiHHfG7V2SM
+    OFFLINE_MODE            = false
+
+    PROTOCOL		= http
+    # DOMAIN			= gitea.zevrant-services.com
+    # ENABLE_ACME		= true
+    # ACME_ACCEPTTOS		= true
+    # ACME_EMAIL		= gerethd@gmail.com
+    [database]
+    PATH     = /var/lib/gitea/data/gitea.db
+    DB_TYPE  = postgres
+    HOST     = gitea-db:5432
+    NAME     = gitea
+    USER     = zevrant
+    PASSWD   = `2aJuNV^Fao18eX5pfLb#5sfu`
+    SCHEMA   = 
+    SSL_MODE = disable
+    CHARSET  = utf8
+    LOG_SQL  = false
+
+    [session]
+    PROVIDER_CONFIG = /var/lib/gitea/data/sessions
+    PROVIDER        = file
+
+    [picture]
+    AVATAR_UPLOAD_PATH            = /var/lib/gitea/data/avatars
+    REPOSITORY_AVATAR_UPLOAD_PATH = /var/lib/gitea/data/gitea/repo-avatars
+    DISABLE_GRAVATAR              = false
+    ENABLE_FEDERATED_AVATAR       = true
+
+    [attachment]
+    PATH = /var/lib/gitea/data/attachments
+
+    [log]
+    ROOT_PATH = /var/lib/gitea/data/log
+    MODE      = console
+    LEVEL     = debug
+    ROUTER    = console
+
+    [security]
+    INSTALL_LOCK                  = true
+    SECRET_KEY                    = 
+    REVERSE_PROXY_LIMIT           = 1
+    REVERSE_PROXY_TRUSTED_PROXIES = *
+    INTERNAL_TOKEN                = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE2NTUwODEzNjh9.Nz38hHbhrp3Fo-2OGACtVdDDX_6yU2JxPT5DX9jbqUg
+    PASSWORD_HASH_ALGO            = pbkdf2
+
+    [service]
+    DISABLE_REGISTRATION              = true
+    REQUIRE_SIGNIN_VIEW               = true
+    REGISTER_EMAIL_CONFIRM            = false
+    ENABLE_NOTIFY_MAIL                = false
+    ALLOW_ONLY_EXTERNAL_REGISTRATION  = false
+    ENABLE_CAPTCHA                    = false
+    DEFAULT_KEEP_EMAIL_PRIVATE        = false
+    DEFAULT_ALLOW_CREATE_ORGANIZATION = false
+    DEFAULT_ENABLE_TIMETRACKING       = true
+    NO_REPLY_ADDRESS                  = noreply.gitea@zevrant-services.com
+
+    [mailer]
+    ENABLED = false
+
+    [openid]
+    ENABLE_OPENID_SIGNIN = true
+    ENABLE_OPENID_SIGNUP = true
+
+    [webhook]
+    ALLOWED_HOST_LIST = *.zevrant-services.com
+    PAGIN_NUM         = 25
+

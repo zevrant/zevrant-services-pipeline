@@ -1,13 +1,12 @@
-@Library("CommonUtils")
-
-import groovy.json.JsonSlurper
-import com.zevrant.services.TaskLoader
+import com.zevrant.services.ServiceLoader
 import com.zevrant.services.pojo.Version
-import com.zevrant.services.services.VersionTasks
+import com.zevrant.services.services.VersionService
 
 String REPOSITORY = scm.getUserRemoteConfigs()[0].getUrl().tokenize('/').last().split("\\.")[0]
+String branchName = (BRANCH_NAME.startsWith('PR-')) ? CHANGE_BRANCH : BRANCH_NAME
+
 Version version;
-VersionTasks versionTasks = TaskLoader.load(binding, VersionTasks) as VersionTasks
+VersionService versionTasks = ServiceLoader.load(binding, VersionService) as VersionService
 pipeline {
     agent {
         kubernetes {
@@ -69,6 +68,16 @@ pipeline {
                     script {
                         sh "bash gradlew clean assemble publish -PprojVersion=${version.toVersionCodeString()} --no-daemon"
                     }
+                }
+            }
+        }
+    }
+    post {
+        always {
+            script {
+                String appName = "${REPOSITORY.split("-")[1].capitalize()} ${REPOSITORY.split("-")[2].capitalize()}"
+                withCredentials([string(credentialsId: 'discord-webhook', variable: 'webhookUrl')]) {
+                    discordSend description: "Jenkins Build for ${appName} on branch ${branchName} building version ${version.toVersionCodeString()} was ${currentBuild.currentResult}", link: env.BUILD_URL, result: currentBuild.currentResult, title: "Spring Build", webhookURL: webhookUrl
                 }
             }
         }

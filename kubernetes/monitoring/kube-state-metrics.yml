@@ -1,0 +1,41 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kube-state-metrics
+  namespace: monitoring2
+spec:
+  selector:
+    matchLabels:
+      app: kube-state-metrics
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: kube-state-metrics
+    spec:
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: DoNotSchedule
+      serviceAccountName: prometheus
+      containers:
+        - name: kube-state-metrics
+          image: quay.io/coreos/kube-state-metrics:latest
+          ports:
+            - containerPort: 8080
+              name: monitoring
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: kube-state-metrics
+  namespace: monitoring2
+spec:
+  selector:
+    app: kube-state-metrics
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080

@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  finalizers:
+    - kubernetes.io/pvc-protection
+  labels:
+    v1.min.io/log-pg: shared-log
+  name: shared-log-shared-log-0
+  namespace: shared
+spec:
+  storageClassName: kadalu.shared
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 50Gi
+  volumeMode: Filesystem

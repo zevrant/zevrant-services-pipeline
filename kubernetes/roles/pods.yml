@@ -25,6 +25,7 @@ rules:
       - "pods/exec"
     verbs:
       - "get"
+      - "create"
 
 ---
 

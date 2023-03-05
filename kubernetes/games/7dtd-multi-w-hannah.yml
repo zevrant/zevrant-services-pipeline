@@ -1,0 +1,122 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: sevendtd
+  namespace: games
+spec:
+  type: NodePort
+  ports:
+    - port: 26900
+      targetPort: 26900
+      nodePort: 31900
+      protocol: TCP
+      name: tcp
+    - port: 26900
+      targetPort: 26900
+      nodePort: 31900
+      name: udp
+      protocol: UDP
+    - port: 26901
+      targetPort: 26901
+      nodePort: 31901
+      name: tcpone
+      protocol: TCP
+    - port: 26901
+      targetPort: 26901
+      nodePort: 31901
+      name: udpone
+      protocol: UDP
+    - port: 26902
+      targetPort: 26902
+      nodePort: 31902
+      name: udptwo
+      protocol: UDP
+  selector:
+    app: 7dtd
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: 7dtd
+  namespace: games
+  labels:
+    app: 7dtd
+spec:
+  strategy:
+    type: Recreate
+  replicas: 1
+  selector:
+    matchLabels:
+      app: 7dtd
+  template:
+    metadata:
+      labels:
+        app: 7dtd
+    spec:
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: DoNotSchedule
+      securityContext:
+        fsGroup: 1000
+        fsGroupChangePolicy: "Always"
+      volumes:
+        - name: 7dtd-worlds
+          glusterfs:
+            endpoints: glusterfs-cluster
+            path: 172.16.1.10:/backups/7dtdserver/Worlds
+            readOnly: false
+        - name: 7dtd-config
+          glusterfs:
+            endpoints: glusterfs-cluster
+            path: 172.16.1.10:/backups/7dtdserver/config
+            readOnly: false
+        - name: 7dtd-saves
+          glusterfs:
+            endpoints: glusterfs-cluster
+            path: 172.16.1.10:/backups/7dtdserver/Saves
+            readOnly: false
+#        - name: 7dtd-config
+#          configMap:
+#            name: 7dtd
+      imagePullSecrets:
+        - name: regcred
+      containers:
+        - name: 7dtd
+          image: docker.io/zevrant/7dtd:latest
+          imagePullPolicy: Always
+          volumeMounts:
+#            - name: 7dtd-cert
+#              mountPath: /opt/acme/certs/
+            - name: 7dtd-config
+              mountPath: /opt/7dtdconfig
+            - name: 7dtd-worlds
+              mountPath: '/home/steam/Steam/steamapps/common/7 Days to Die Dedicated Server/Data/Worlds'
+            - name: 7dtd-saves
+              mountPath: /home/steam/.local/share/7DaysToDie/Saves
+          ports:
+            - containerPort: 26900
+              name: tcp
+              protocol: TCP
+            - containerPort: 26900
+              name: udp
+              protocol: UDP
+            - containerPort: 26901
+              name: tcp1
+              protocol: TCP
+            - containerPort: 26901
+              name: udp1
+              protocol: UDP
+            - containerPort: 8080
+              name: tcp2
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 600m
+              memory: 5Gi
+            limits:
+              cpu: 1200m
+              memory: 6Gi
+

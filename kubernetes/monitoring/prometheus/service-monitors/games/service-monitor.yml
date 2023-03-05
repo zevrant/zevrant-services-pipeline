@@ -1,0 +1,20 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  namespace: games
+  name: 7dtd
+  labels:
+    app: prometheus
+spec:
+  endpoints:
+    - port: 7dtd
+      scheme: http
+      path: /metrics
+      honorLabels: true
+  jobLabel: node-exporter
+  namespaceSelector:
+    matchNames:
+      - monitoring2
+  selector:
+    matchLabels:
+      app: node-exporter

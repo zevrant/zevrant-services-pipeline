@@ -1,0 +1,129 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: artifactory-jcr
+spec:
+  secretName: artifactory-jcr-tls
+  issuerRef:
+    name: acme-issuer
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+    rotationPolicy: Always
+  duration: 24h
+  renewBefore: 13h
+  dnsNames:
+    - artifactory-jcr.zevrant-services.com
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: artifactory-jcr
+  namespace: shared
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 8081
+      targetPort: 8081
+#      nodePort: 30127
+      name: http
+    - port: 8082
+      targetPort: 8082
+#      nodePort: 30123
+      name: ui
+  selector:
+    app: artifactory-jcr
+
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: artifactory-jcr
+  namespace: shared
+  labels:
+    app: artifactory-jcr
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: artifactory-jcr
+  template:
+    metadata:
+      labels:
+        app: artifactory-jcr
+    spec:
+      securityContext:
+        fsGroup: 1030
+        fsGroupChangePolicy: "Always"
+      imagePullSecrets:
+        - name: regcred
+      volumes:
+        #        - name: keystore-volume
+        #          emptyDir:
+        #            sizeLimit: "1Mi"
+        #            defaultMode: 0400
+        - name: artifactory-config
+          configMap:
+            name: artifactory
+        - name: artifactory-keys
+          persistentVolumeClaim:
+            claimName: artifactory-keys
+        - name: artifactory-key
+          persistentVolumeClaim:
+            claimName: artifactory-key
+            readOnly: false
+      initContainers:
+        - name: config-init
+          imagePullPolicy: Always
+          image: docker.io/zevrant/zevrant-ubuntu-base:latest
+          volumeMounts:
+            - name: artifactory-keys
+              mountPath: /var/opt/jfrog/artifactory/etc/
+            - mountPath: /var/config/artifactory-config
+              name: artifactory-config
+          command:
+            - /bin/sh
+          args:
+            - -c
+            - cp /var/config/artifactory-config/system.yaml /var/opt/jfrog/artifactory/etc/system.yaml
+            - cp /var/config/artifactory-config/binarystore.xml /var/opt/jfrog/artifactory/etc/artifactory/binarystore.xml
+      containers:
+        - name: artifactory-container-registry
+          volumeMounts:
+            - name: artifactory-keys
+              mountPath: /var/opt/jfrog/artifactory/etc/
+            - name: artifactory-key
+              mountPath: /var/opt/jfrog/artifactory/etc/security/
+          image: releases-docker.jfrog.io/jfrog/artifactory-jcr:latest
+          imagePullPolicy: Always
+          env:
+            - name: JF_SHARED_DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: artifactory-db-password
+            - name: JF_SHARED_DATABASE_USERNAME
+              value: zevrant
+            - name: JFROG_HOME
+              value: /var/opt/jfrog
+            - name: HA_HOST_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+#          startupProbe:
+#            httpGet:
+#              scheme: HTTPS
+#              path: /api/healthz
+#              port: 3000
+#            failureThreshold: 14
+#            periodSeconds: 5
+#          livenessProbe:
+#            httpGet:
+#              scheme: HTTPS
+#              path: /api/healthz
+#              port: 3000
+#            failureThreshold: 5
+#            periodSeconds: 5

@@ -1,0 +1,100 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: certificate-authority
+  namespace: minio-operator
+spec:
+  type: NodePort
+  ports:
+    - port: 443
+      targetPort: 8443
+      name: https
+  selector:
+    app: certificate-authority
+---
+
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: minio-operator-ca
+  namespace: minio-operator
+spec:
+  storageClassName: kadalu.preprod-shared
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: certificate-authority
+  namespace: minio-operator
+  labels:
+    app: certificate-authority
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: certificate-authority
+  template:
+    metadata:
+      labels:
+        app: certificate-authority
+    spec:
+      securityContext:
+        fsGroup: 1000
+        fsGroupChangePolicy: "Always"
+      imagePullSecrets:
+        - name: regcred
+      volumes:
+        - name: step-ca
+          persistentVolumeClaim:
+            claimName: minio-operator-ca
+        - name: certificate-authority-password
+          secret:
+            secretName: certificate-authority-password
+            defaultMode: 0400
+      dnsPolicy: "None"
+      dnsConfig:
+        nameservers:
+          - 1.1.1.1
+          - 8.8.8.8
+      containers:
+        - name: certificate-authority
+          image: docker.io/zevrant/step-ca:latest
+          ports:
+            - containerPort: 8443
+          volumeMounts:
+            - name: step-ca
+              mountPath: /opt/step-ca
+            - mountPath: /var/zevrant-services/ca-password
+              name: certificate-authority-password
+          env:
+            - name: CA_NAME
+              value: 'Zevrant Services Minio Operator'
+            - name: CA_DNS
+              value: certificate-authority
+            - name: CA_DNS_1
+              value: certificate-authority.preprod-shared.svc.cluster.local
+            - name: SECRET_FILE_PATH
+              value: /var/zevrant-services/ca-password/password
+#          readinessProbe:
+#            httpGet:
+#              scheme: HTTPS
+#              path: /acme/acme/directory
+#              port: 8443
+#            failureThreshold: 5
+#            periodSeconds: 5
+#          livenessProbe:
+#            httpGet:
+#              scheme: HTTPS
+#              path: /acme/acme/directory
+#              port: 8443
+#            failureThreshold: 5
+#            periodSeconds: 5

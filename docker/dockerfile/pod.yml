@@ -29,8 +29,6 @@ spec:
   imagePullSecrets:
     - name: regcred
   nodeName: zevrant-03
-  nodeSelector:
-    architecture: amd64
   preemptionPolicy: PreemptLowerPriority
   priority: 0
   restartPolicy: Never

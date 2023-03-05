@@ -1,0 +1,13 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: createPvc
+rules:
+  - apiGroups:
+      - "" # "" indicates the core API group
+    resources:
+      - "persistentvolumeclaims"
+    verbs:
+      - "get"
+      - "create"
+      - "patch"

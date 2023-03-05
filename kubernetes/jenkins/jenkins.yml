@@ -1,78 +1,159 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: zevrant-jenkins-nodeport-service
+  name: jenkins-nodeport
   namespace: jenkins
 spec:
   type: NodePort
   ports:
-    - port: 8080
-      targetPort: 8080
+    - port: 8443
+      targetPort: 8443
       name: http-port
       nodePort: 30120
   selector:
-    app: zevrant-jenkins-service
+    app: jenkins
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: zevrant-jenkins-service
+  name: jenkins
   namespace: jenkins
 spec:
   ports:
     - port: 50000
       targetPort: 50000
       name: agent-port
+    - port: 8080
+      targetPort: 8080
+      name: inbound-agent-port
   selector:
-    app: zevrant-jenkins-service
+    app: jenkins
 ---
 
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: zevrant-jenkins-service-deployment
+  name: jenkins
   namespace: jenkins
   labels:
-    app: zevrant-jenkins-service
+    app: jenkins
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
-      app: zevrant-jenkins-service
+      app: jenkins
   template:
     metadata:
       labels:
-        app: zevrant-jenkins-service
+        app: jenkins
     spec:
+      securityContext:
+        fsGroup: 1000
+        fsGroupChangePolicy: "Always"
       serviceAccountName: jenkins
       volumes:
         - name: jenkins
-          nfs:
-            server: nfs-controller.zevrant-services.com
-            path: /jenkins/jenkins
+          persistentVolumeClaim:
+            claimName: jenkins-data
+        - name: password-volume
+          emptyDir:
+            sizeLimit: "1Mi"
+        - name: keystore-volume
+          emptyDir:
+            sizeLimit: "1Mi"
+        - name: jenkins-cert
+          secret:
+            secretName: jenkins-tls
+            defaultMode: 0400
       imagePullSecrets:
         - name: regcred
-      nodeSelector:
-        architecture: amd64
+      initContainers:
+        - name: secret-init
+          image: docker.io/zevrant/zevrant-ubuntu-base:latest
+          imagePullPolicy: Always
+          securityContext:
+            runAsUser: 1000
+          volumeMounts:
+            - mountPath: /opt/secrets
+              name: password-volume
+              readOnly: false
+            - mountPath: /opt/keystore
+              name: keystore-volume
+              readOnly: false
+            - name: jenkins-cert
+              mountPath: /opt/acme/certs
+              readOnly: true
+          command:
+            - /bin/bash
+          args:
+            - -c
+            - |
+              mkdir -p /opt/secrets/keystore
+              openssl rand 256 | base64 -w 0 > /opt/secrets/password
+              openssl pkcs12 -export -inkey /opt/acme/certs/..data/tls.key -in /opt/acme/certs/..data/tls.crt -passout 'file:/opt/secrets/password' -out /opt/keystore/zevrant-services.p12
       containers:
         - name: jenkins
-          image: jenkins/jenkins:lts-jdk11
+          image: docker.io/zevrant/jenkins:latest
           imagePullPolicy: Always
+          command:
+            - /bin/sh
+          args:
+            - -c
+            - |
+              export JENKINS_OPTS="$JENKINS_OPTS --httpsKeyStorePassword=$(cat /var/zevrant-services/keystore/password)"
+              /usr/local/bin/jenkins.sh
+          startupProbe:
+            httpGet:
+              scheme: HTTPS
+              path: /login
+              port: 8443
+            periodSeconds: 10
+            failureThreshold: 20
+            successThreshold: 1
+          livenessProbe:
+            httpGet:
+              scheme: HTTPS
+              path: /login
+              port: 8443
+            periodSeconds: 15
+            failureThreshold: 2
+            successThreshold: 1
           volumeMounts:
-            - mountPath: /var/jenkins_home
+            - mountPath: /var/jenkins_home/
               name: jenkins
+            - mountPath: /var/zevrant-services/keystore
+              name: password-volume
+            - mountPath: /opt/acme/certs/
+              name: keystore-volume
           ports:
             - containerPort: 8080
               name: http-port
+            - containerPort: 8443
+              name: https-port
             - containerPort: 5000
               name: agent-port
           resources:
             requests:
-              memory: 4Gi
-              cpu: 500m
+              memory: 8Gi
+              cpu: 4000m
             limits:
-              memory: 4Gi
-              cpu: 1500m
-#          env:
-#            - name: JAVA_OPTS
-#              value: '-Dorg.jenkinsci.plugins.durabletask.BourneShellScript.LAUNCH_DIAGNOSTICS=true'
+              memory: 8Gi
+              cpu: 4000m
+          env:
+            - name: CASC_JENKINS_CONFIG
+              value: "/var/jenkins_home/casc_configs/"
+            - name: JENKINS_OPTS
+              value: "--httpPort=8080 --httpsPort=8443 --httpsKeyStore=/opt/acme/certs/zevrant-services.p12 -Djavax.net.ssl.trustStore=/var/jenkins_home/keystore/cacerts"
+            - name: JAVA_OPTS
+              value: >
+                -Dorg.jenkinsci.plugins.durabletask.BourneShellScript.LAUNCH_DIAGNOSTICS=true
+            - name: JENKINS_LISTEN_ADDRESS
+              value: 0.0.0.0
+            - name: JENKINS_HTTPS_LISTEN_ADDRESS
+              value: "0.0.0.0"
+            - name: JENKINS_HTTPS_PORT
+              value: "8443"
+            - name: JENKINS_HTTPS_KEYSTORE
+              value: "/opt/acme/certs/zevrant-services.p12"

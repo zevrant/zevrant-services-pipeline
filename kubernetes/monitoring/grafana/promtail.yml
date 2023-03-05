@@ -1,0 +1,235 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: promtail
+  namespace: monitoring2
+spec:
+  ports:
+    - port: 9080
+      targetPort: 9080
+      name: http
+  selector:
+    app: promtail
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: monitoring2
+  name: promtail
+spec:
+  type: NodePort
+  ports:
+    - port: 9080
+      targetPort: 9080
+      nodePort: 30620
+      name: http
+  selector:
+    app: promtail
+
+
+#apiVersion: cert-manager.io/v1
+#kind: Certificate
+#metadata:
+#  name: promtail
+#  namespace: monitoring2
+#spec:
+#  secretName: promtail-tls
+#  issuerRef:
+#    name: acme-issuer
+#  duration: 24h
+#  renewBefore: 23h
+#  dnsNames:
+#    - promtail.preprod.zevrant-services.com
+---
+
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: promtail
+  namespace: monitoring2
+  labels:
+    app: promtail
+spec:
+  selector:
+    matchLabels:
+      app: promtail
+  template:
+    metadata:
+      labels:
+        app: promtail
+    spec:
+      serviceAccountName: prometheus
+      securityContext:
+        fsGroup: 1000
+        fsGroupChangePolicy: "Always"
+      volumes:
+        #        - name: promtail-cert
+        #          secret:
+        #            secretName: promtail-tls
+        - name: promtail-config
+          configMap:
+            name: promtail
+        - name: host-logs
+          hostPath:
+            path: /var/log
+      imagePullSecrets:
+        - name: regcred
+      containers:
+        - name: promtail
+          image: grafana/promtail:latest
+          imagePullPolicy: Always
+          args:
+            - -config.file=/mnt/config/config.yml
+          volumeMounts:
+            #            - name: promtail-cert
+            #              mountPath: /opt/acme/certs/
+            - name: host-logs
+              mountPath: /opt/host
+            - name: promtail-config
+              mountPath: /mnt/config
+          ports:
+            - containerPort: 9080
+              #            - containerPort: 9094
+              name: promtail-alert
+              protocol: TCP
+          env:
+            - name: HOSTNAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          startupProbe:
+            httpGet:
+              scheme: HTTP
+              path: /targets
+              port: 9080
+            periodSeconds: 5
+            failureThreshold: 4
+            successThreshold: 1
+          livenessProbe:
+            httpGet:
+              scheme: HTTP
+              path: /targets
+              port: 9080
+            periodSeconds: 5
+            failureThreshold: 3
+            successThreshold: 1
+          resources:
+            requests:
+              memory: 1Gi
+              cpu: 100m
+            limits:
+              memory: 4Gi
+              cpu: 1000m
+#          env:
+#            - name: GF_SERVER_PROTOCOL
+#              value: https
+#            - name: GF_SERVER_CERT_FILE
+#              value: /opt/acme/certs/tls.crt
+#            - name: GF_SERVER_CERT_KEY
+#              value: /opt/acme/certs/tls.key
+#            - name: POD_IP
+#              valueFrom:
+#                fieldRef:
+#                  fieldPath: status.podIP
+#            - name: POSTGRES_HOST
+#              value: grafana-db:5432
+#            - name: POSTGRES_DATABASE_NAME
+#              value: grafana
+#            - name: POSTGRES_USER
+#              value: zevrant
+#            - name: POSTGTRES_DATABASE_PASSWORD
+#              valueFrom:
+#                secretKeyRef:
+#                  name: grafana-db-password
+#                  key: password
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: promtail
+  namespace: monitoring2
+data:
+  config.yml: |
+    server:
+      http_listen_port: 9080
+      grpc_listen_port: 9081
+    
+    positions:
+      filename: /tmp/positions.yaml
+    
+    clients:
+      - url: http://loki:3100/loki/api/v1/push
+    
+    scrape_configs:
+      - job_name: node-logs
+        static_configs:
+          - targets:
+              - localhost
+            labels:
+              job: varlogs
+              __path__: /opt/host/syslog
+      - job_name: kubernetes_pods
+        kubernetes_sd_configs:
+            - role: pod
+        pipeline_stages:
+          - docker: { }
+        relabel_configs:
+          - source_labels:
+              - __meta_kubernetes_pod_controller_name
+            target_label: __service__
+          - source_labels:
+              - __meta_kubernetes_pod_node_name
+            target_label: __host__
+          - action: labelmap
+            regex: __meta_kubernetes_pod_label_(.+)
+          - action: replace
+            replacement: $1
+            source_labels:
+              - name
+            target_label: job
+          - action: replace
+            source_labels:
+              - __meta_kubernetes_namespace
+            target_label: namespace
+          - action: replace
+            source_labels:
+              - __meta_kubernetes_pod_name
+            target_label: pod
+          - action: replace
+            source_labels:
+              - __meta_kubernetes_pod_container_name
+            target_label: container
+          - replacement: /opt/host/pods/*$1*/$2*.log
+            separator: /
+            source_labels:
+              - __meta_kubernetes_pod_uid
+              - __meta_kubernetes_pod_container_name
+            target_label: __path__
+#      - job_name: 'kubernetes-pods'
+#        kubernetes_sd_configs:
+#          - role: pod
+#
+#            api_server: loadbalancer.zevrant-services.com:6443
+#            tls_config:
+#              ca_file: /run/secrets/kubernetes.io/serviceaccount/ca.crt
+#            authorization:
+#              credentials_file: /run/secrets/kubernetes.io/serviceaccount/token
+#        relabel_configs:
+#          - source_labels: [ '__meta_kubernetes_namespace' ]
+#    #        action: replace
+#            target_label: 'kubernetes_pod_namespace'
+#          - source_labels: ['__meta_kubernetes_pod_node_name']
+#            target_label: '__host__'
+#            action: replace
+#          - source_labels:
+#              - __meta_kubernetes_pod_name
+#            target_label: pod_name
+#            action: replace
+        
+              
+        
+        

@@ -1,0 +1,1 @@
+gluster volume create $1 replica 3 transport tcp 172.16.1.16:/glusterfs/bricks/$1 172.16.1.9:/glusterfs/bricks/$1 172.16.1.7:/glusterfs/bricks/$1 172.16.1.8:/glusterfs/bricks/$1 172.16.1.13:/glusterfs/bricks/$1 172.16.1.10:/glusterfs/bricks/$1 force

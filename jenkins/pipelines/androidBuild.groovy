@@ -2,10 +2,10 @@
 
 
 import com.lesfurets.jenkins.unit.global.lib.Library
-import com.zevrant.services.TaskLoader
+import com.zevrant.services.ServiceLoader
 import com.zevrant.services.pojo.Version
 
-import com.zevrant.services.services.VersionTasks
+import com.zevrant.services.services.VersionService
 
 
 BRANCH_NAME = BRANCH_NAME.tokenize("/")
@@ -15,7 +15,7 @@ currentBuild.displayName = "$REPOSITORY merging to $BRANCH_NAME"
 Version version = null
 String variant = (BRANCH_NAME == "master") ? "release" : 'develop'
 String avdName = "jenkins-android-test-$BUILD_ID"
-VersionTasks versionTasks = TaskLoader.load(binding, VersionTasks) as VersionTasks
+VersionService versionTasks = ServiceLoader.load(binding, VersionService) as VersionService
 byte[] b = new byte[2000];
 Version versionCode = null;
 boolean runTests = env.RUN_TESTS ? Boolean.parseBoolean(RUN_TESTS as String) : true
@@ -28,11 +28,16 @@ pipeline {
     stages {
 
         stage("Unit Test") {
-            when { expression { runTests && false } } //disable for not TODO
+            when { expression { runTests  && false } }
+            environment {
+                AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
+                AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
+                AWS_DEFAULT_REGION = "us-east-1"
+            }
             steps {
                 container('android-emulator') {
                     script {
-                        sh "bash gradlew clean testDevelopTest"
+                        sh "bash gradlew clean testDevelopTestUnitTest"
                     }
                 }
             }
@@ -48,9 +53,9 @@ pipeline {
             steps {
                 container('android-emulator') {
                     script {
-                        String startEmulator = "emulator -avd $avdName -no-window -no-boot-anim -no-snapshot-save -no-snapshot-load"
-                        sh "echo no | avdmanager create avd -n $avdName --package 'system-images;android-31;google_apis;x86_64'"
-                        sh "nohup $startEmulator > nohup-${avdName}.out &"
+//                        String startEmulator = "emulator -avd $avdName -no-window -no-boot-anim -no-snapshot-save -no-snapshot-load"
+//                        sh ""
+//                        sh "nohup $startEmulator > nohup-${avdName}.out &"
                         sh script: "aws secretsmanager get-secret-value --region us-east-1 --secret-id android-secrets-initializer > secret.txt"
                         String secret = readJSON(file: 'secret.txt')["SecretString"]
                         sh 'rm secret.txt'
@@ -61,57 +66,57 @@ pipeline {
 cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services/zevrantandroidapp/secrets/SecretsInitializer.java
 """)
                         sh "bash bashScript.sh && rm secret.txt"
-                        echo "waiting for emulator to come online"
-                        String offline = "offline"
-                        while (offline.contains("offline")) {
-                            sh 'sleep 5'
-                            offline = sh returnStdout: true, script: 'adb devices'
-                            echo offline
-                            if(!offline.contains("device") && !offline.contains('emulator')) {
-                                throw new RuntimeException("Emulator did not start check nohup output")
-                            }
-                        }
-                        echo 'restarting adb to keep device from showing as unauthorized'
-                        int status = sh 'set -e adb kill-server && adb start-server'
-                        int i = 0;
-                        while (status != 0 && i < 10) {
-                            sleep 3
-                            status = sh returnStatus: true, script: 'set -e adb kill-server && adb start-server'
-                            println "status is " + status
-                            i++
-                        }
-                        if (i == 10) {
-                            echo "Failed to restart adb"
-                            throw RuntimeException("Failed to restart ADB")
-                        }
-                        offline = "offline"
-                        while (offline.contains("offline")) {
-                            sh 'sleep 5'
-                            offline = sh returnStdout: true, script: 'adb devices'
-                            echo offline
-                        }
+//                        echo "waiting for emulator to come online"
+//                        String offline = "offline"
+//                        while (offline.contains("offline")) {
+//                            sh 'sleep 5'
+//                            offline = sh returnStdout: true, script: 'adb devices'
+//                            echo offline
+//                            if(!offline.contains("device") && !offline.contains('emulator')) {
+//                                throw new RuntimeException("Emulator did not start check nohup output")
+//                            }
+//                        }
+//                        echo 'restarting adb to keep device from showing as unauthorized'
+//                        int status = sh 'set -e adb kill-server && adb start-server'
+//                        int i = 0;
+//                        while (status != 0 && i < 10) {
+//                            sleep 3
+//                            status = sh returnStatus: true, script: 'set -e adb kill-server && adb start-server'
+//                            println "status is " + status
+//                            i++
+//                        }
+//                        if (i == 10) {
+//                            echo "Failed to restart adb"
+//                            throw RuntimeException("Failed to restart ADB")
+//                        }
+//                        offline = "offline"
+//                        while (offline.contains("offline")) {
+//                            sh 'sleep 5'
+//                            offline = sh returnStdout: true, script: 'adb devices'
+//                            echo offline
+//                        }
                     }
                 }
             }
-            post {
-                failure {
-                    container('android-emulator') {
-
-                        script {
-                            if (runTests) {
-                                String pid = sh returnStdout: true, script: ' set -e pgrep qemu-system-x86'
-                                if (pid != "" && pid != null) {
-                                    echo "killing emulator with pid $pid"
-                                    sh "kill -9 $pid"
-                                    echo "deleting avd with name $avdName"
-                                    sh "avdmanager delete avd -n $avdName"
-                                }
-                                archiveArtifacts artifacts: "nohup-${avdName}.out", followSymlinks: false
-                            }
-                        }
-                    }
-                }
-            }
+//            post {
+//                failure {
+//                    container('android-emulator') {
+//
+//                        script {
+//                            if (runTests) {
+//                                String pid = sh returnStdout: true, script: ' set -e pgrep qemu-system-x86'
+//                                if (pid != "" && pid != null) {
+//                                    echo "killing emulator with pid $pid"
+//                                    sh "kill -9 $pid"
+//                                    echo "deleting avd with name $avdName"
+//                                    sh "avdmanager delete avd -n $avdName"
+//                                }
+//                                archiveArtifacts artifacts: "nohup-${avdName}.out", followSymlinks: false
+//                            }
+//                        }
+//                    }
+//                }
+//            }
         }
 
         stage("Integration Test") {
@@ -127,7 +132,7 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
                     script {
                         sh 'adb devices'
                         sh 'echo $ANDROID_HOME'
-                        sh 'bash gradlew clean connectedDevelopTest'
+                        sh 'bash gradlew clean connectedDevelopTest -PtestVariant=developTest'
                     }
                 }
             }
@@ -145,7 +150,7 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
                                             alwaysLinkToLastBuild: false,
                                             keepAll              : true,
                                             reportDir            : 'app/build/reports/androidTests/connected/',
-                                            reportFiles          : "**/*",
+                                            reportFiles          : "index.html",
                                             reportName           : 'JUnit Test Report',
                                             reportTitles         : 'JUnit Test Report'
                                     ]
@@ -230,5 +235,15 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
             }
         }
 
+    }
+    post {
+        always {
+            script {
+                String appName = "${REPOSITORY.split("-")[1].capitalize()} ${REPOSITORY.split("-")[2].capitalize()}"
+                withCredentials([string(credentialsId: 'discord-webhook', variable: 'webhookUrl')]) {
+                    discordSend description: "Jenkins Build for ${appName} on branch ${BRANCH_NAME} ${currentBuild.currentResult}", link: env.BUILD_URL, result: currentBuild.currentResult, title: "Spring Build", webhookURL: webhookUrl
+                }
+            }
+        }
     }
 }

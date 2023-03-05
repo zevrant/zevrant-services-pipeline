@@ -2,6 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: zevrant-keycloak-service
+  namespace: prod
 spec:
   type: NodePort
   ports:
@@ -14,12 +15,13 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: zevrant-keycloak-service-deployment
+  name: zevrant-keycloak-service
+  namespace: prod
   labels:
     app: zevrant-keycloak-service
 spec:
   #  Additional config is needed to switch to HA mode
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: zevrant-keycloak-service
@@ -30,8 +32,7 @@ spec:
     spec:
       imagePullSecrets:
         - name: regcred
-      nodeSelector:
-        architecture: amd64
+
       containers:
         - name: zevrant-keycloak-service
           image: docker.io/zevrant/keycloak-service:latest
@@ -41,16 +42,24 @@ spec:
           readinessProbe:
             httpGet:
               scheme: HTTPS
-              path: /auth/realms/master
+              path: /auth
               port: 8443
             initialDelaySeconds: 60
+            periodSeconds: 10
+            failureThreshold: 3
+            successThreshold: 1
           livenessProbe:
             httpGet:
               scheme: HTTPS
-              path: /auth/realms/master
+              path: /auth
               port: 8443
             initialDelaySeconds: 60
+            periodSeconds: 10
+            failureThreshold: 3
+            successThreshold: 1
           env:
+            - name: DB_VENDOR
+              value: POSTGRES
             - name: DB_ADDR
               value: zevrant-keycloak-service-db
             - name: DB_PORT
@@ -64,29 +73,29 @@ spec:
                   key: password
             - name: DB_USER
               value: zevrant
-            - name: DB_VENDOR
-              value: POSTGRES
             - name: SERVICE_NAME
               value: zevrant-keycloak-service
             - name: POD_IP
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
+            - name: ENVIRONMENT
+              value: prod
             - name: JDBC_PARAMS
               value: 'connectionTimeout=30000'
             - name: PROXY_ADDRESS_FORWARDING
               value: "true"
             - name: ADDITIONAL_IP
-              value: '172.16.0.10'
-            - name: AWS_ACCESS_KEY_ID
+              value: '172.16.1.10'
+            - name: ACCESS_KEY_ID
               valueFrom:
                 secretKeyRef:
-                  name: keycloak-aws
+                  name: keycloak-vault-credentials
                   key: username
-            - name: AWS_SECRET_ACCESS_KEY
+            - name: SECRET_ACCESS_KEY
               valueFrom:
                 secretKeyRef:
-                  name: keycloak-aws
+                  name: keycloak-vault-credentials
                   key: password
             - name: KEYCLOAK_USER
               value: admin

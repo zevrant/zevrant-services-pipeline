@@ -1,0 +1,159 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana
+  namespace: monitoring2
+spec:
+  type: NodePort
+  ports:
+    - port: 443
+      targetPort: 3000
+      nodePort: 30138
+      name: https
+  selector:
+    app: grafana
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana-alerting
+  namespace: monitoring2
+  labels:
+    app.kubernetes.io/name: grafana-alerting
+    app.kubernetes.io/part-of: grafana
+spec:
+  type: ClusterIP
+  clusterIP: 'None'
+  ports:
+    - port: 9094
+  selector:
+    app: grafana
+---
+
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: grafana
+  namespace: monitoring2
+spec:
+  secretName: grafana-tls
+  issuerRef:
+    name: acme-issuer
+  duration: 24h
+  renewBefore: 23h
+  dnsNames:
+    - grafana.preprod.zevrant-services.com
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+  namespace: monitoring2
+  labels:
+    app: grafana
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: DoNotSchedule
+      securityContext:
+        fsGroup: 1000
+        fsGroupChangePolicy: "Always"
+      volumes:
+        - name: grafana-cert
+          secret:
+            secretName: grafana-tls
+        - name: grafana-config
+          configMap:
+            name: grafana
+      imagePullSecrets:
+        - name: regcred
+      containers:
+        - name: grafana
+          image: grafana/grafana-oss:latest
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: grafana-cert
+              mountPath: /opt/acme/certs/
+            - name: grafana-config
+              mountPath: /etc/grafana
+          ports:
+            - containerPort: 3000
+            - containerPort: 9094
+              name: grafana-alert
+              protocol: TCP
+          startupProbe:
+            httpGet:
+              scheme: HTTPS
+              path: /api/health
+              port: 3000
+            periodSeconds: 5
+            failureThreshold: 4 
+            successThreshold: 1
+          livenessProbe:
+            httpGet:
+              scheme: HTTPS
+              path: /api/health
+              port: 3000
+            periodSeconds: 5
+            failureThreshold: 3
+            successThreshold: 1
+          env:
+            - name: GF_SERVER_PROTOCOL
+              value: https
+            - name: GF_SERVER_CERT_FILE
+              value: /opt/acme/certs/tls.crt
+            - name: GF_SERVER_CERT_KEY
+              value: /opt/acme/certs/tls.key
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: POSTGRES_HOST
+              value: grafana-db:5432
+            - name: POSTGRES_DATABASE_NAME
+              value: grafana
+            - name: POSTGRES_USER
+              value: zevrant
+            - name: POSTGTRES_DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: grafana-db-password
+                  key: password
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana
+  namespace: monitoring2
+data:
+  grafana.ini: |
+    [database]
+    type = postgres
+    host = ${POSTGRES_HOST}
+    name = ${POSTGRES_DATABASE_NAME}
+    user = ${POSTGRES_USER}
+    password = ${POSTGTRES_DATABASE_PASSWORD}
+    
+    [unified_alerting]
+    enabled = true
+    ha_listen_address = "${POD_IP}:9094"
+    ha_peers = "grafana-alerting:9094"
+    ha_advertise_address = "${POD_IP}:9094"
+    
+    [server]
+    domain = grafana.preprod.zevrant-services.com
+    root_url = %(protocol)s://%(domain)s

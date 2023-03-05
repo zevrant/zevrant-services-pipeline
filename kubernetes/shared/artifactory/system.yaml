@@ -1,0 +1,23 @@
+configVersion: 1
+shared:
+  security:
+  node:
+    id: $HOSTNAME
+    haEnabled: true
+  database:
+    type: postgresql
+    driver: org.postgresql.Driver
+    url: jdbc:postgresql://artifactory-db:5432/artifactory
+  metrics:
+    enabled: true
+  healthCheck:
+    intervalSecs: 15
+    probes:
+      readiness:
+        failOnLongFailingReadiness:
+          enabled: true
+        failureDurationSecs: 60
+      liveness:
+        failOnLongFailingReadiness:
+          enabled: true
+        failureDurationSecs: 60

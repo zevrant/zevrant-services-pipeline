@@ -1,0 +1,38 @@
+apiVersion: kadalu-operator.storage/v1alpha1
+kind: KadaluStorage
+metadata:
+  name: develop
+  namespace: develop
+spec:
+  type: "Disperse"
+  storage:
+    - node: "zevrant-01"
+      path: "/glusterfs/kadalu/develop"
+    - node: "zevrant-02"
+      path: "/glusterfs/kadalu/develop"
+    - node: "zevrant-03"
+      path: "/glusterfs/kadalu/develop"
+    - node: "zevrant-04"
+      path: "/glusterfs/kadalu/develop"
+    - node: "zevrant-05"
+      path: "/glusterfs/kadalu/develop"
+    - node: "zevrant-06"
+      path: "/glusterfs/kadalu/develop"
+  disperse:
+    data: 4
+    redundancy: 2
+  pvReclaimPolicy: delete
+
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: develop-ca
+  namespace: develop
+spec:
+  storageClassName: kadalu.develop
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi

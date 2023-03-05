@@ -1,0 +1,76 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: certificate-authority
+  namespace: prod
+spec:
+  type: NodePort
+  ports:
+    - port: 443
+      targetPort: 8443
+      name: https
+  selector:
+    app: certificate-authority
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: certificate-authority
+  namespace: prod
+  labels:
+    app: certificate-authority
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: certificate-authority
+  template:
+    metadata:
+      labels:
+        app: certificate-authority
+    spec:
+      securityContext:
+        fsGroup: 1000
+        fsGroupChangePolicy: "Always"
+      imagePullSecrets:
+        - name: regcred
+      volumes:
+        - name: step-ca
+          glusterfs:
+            endpoints: glusterfs-cluster
+            path: ca-prod
+            readOnly: false
+      containers:
+        - name: certificate-authority
+          image: docker.io/zevrant/step-ca:latest
+          ports:
+            - containerPort: 8443
+          volumeMounts:
+            - name: step-ca
+              mountPath: /opt/step-ca
+          env:
+            - name: CA_NAME
+              value: 'Zevrant Services Prod'
+            - name: CA_DNS
+              value: certificate-authority
+            - name: CA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: certificate-authority-password
+          readinessProbe:
+            httpGet:
+              scheme: HTTPS
+              path: /acme/acme/directory
+              port: 8443
+            failureThreshold: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              scheme: HTTPS
+              path: /acme/acme/directory
+              port: 8443
+            failureThreshold: 5
+            periodSeconds: 5

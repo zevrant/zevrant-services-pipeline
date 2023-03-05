@@ -1,0 +1,83 @@
+version: '3.7'
+services:
+  zevrant-keycloak-service-db:
+    hostname: zevrant-keycloak-service-db
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-q", "-d", "${DB_NAME}", "-U", "${DB_USER}" ]
+      timeout: 45s
+      interval: 10s
+      retries: 10
+    user: "999:999"
+    ports:
+      - "5441:5432"
+    image: docker.io/postgres:14
+    pull_policy: always
+    container_name: keycloak-postgres-db
+    volumes:
+      - keycloak-postgres:/opt/postgres
+    environment:
+      POSTGRES_USER: sa
+      POSTGRES_PASSWORD: example
+      POSTGRES_DB: keycloak
+      PGDATA: /opt/postgres/
+  zevrant-keycloak-service:
+    network_mode: host
+    hostname: zevrant-keycloak-service
+    depends_on:
+      - zevrant-keycloak-service-db
+    ports:
+      - "9011:8080"
+    image: docker.io/zevrant/keycloak:18.0.2
+    command:
+      - echo $KC_DB_URL_HOST
+      - /bin/kc.sh start-dev
+    container_name: keycloak
+    volumes:
+      - /storage/keys:/storage/keys
+    pull_policy: always
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: admin
+      KC_DB_URL_HOST: 172.16.1.34
+      KC_DB_URL_PORT: 5441
+      KC_DB_URL_DATABASE: keycloak
+      KC_DB_USERNAME: sa
+      KC_DB_PASSWORD: example
+      KC_HTTP_ENABLED: true
+      KC_HOSTNAME: localhost:9011
+      KC_HOSTNAME_STRICT_HTTPS: false
+      DB_VENDOR: POSTGRES
+      KC_PROXY: passthrough
+      JDBC_PARAMS: "&connectTimeout=30000"
+      SERVICE_NAME: localhost
+      EXTERNAL_HOSTNAME: localhost:9011
+      ENVIRONMENT: local
+  vault:
+    network_mode: host
+    ports:
+      - "8200:8200"
+    user: "root"
+    image: docker.io/vault:latest
+    pull_policy: always
+#    command:
+#      - /bin/bash docker-entrypoint.sh dev
+    environment:
+      VAULT_DEV_ROOT_TOKEN_ID: localtestingtoken
+    cap_add:
+      - IPC_LOCK
+#    volumes:
+#      - vault:/home/vault/.vault
+  clam-av:
+    ports:
+      - "3310:3310"
+    image: docker.io/mkodockx/docker-clamav:latest
+    pull_policy: always
+    environment:
+      CLAMD_CONF_MaxFileSize: 999999M
+      CLAMD_CONF_MaxScanSize: 999999M
+      CLAMD_CONF_StreamMaxLength: 999999M
+volumes:
+  keycloak-postgres:
+  vault:

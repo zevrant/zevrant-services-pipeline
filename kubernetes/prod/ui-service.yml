@@ -1,14 +1,18 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: ingress-nodeport-prod
-  namespace: zevrant-home-services-prod
+  name: zevrant-home-ui
+  namespace: prod
 spec:
   type: NodePort
   ports:
     - port: 8080
       targetPort: 8080
-      nodePort: 30123
+      nodePort: 30124
+      name: app-port
+    - port: 80
+      targetPort: 80
+      name: acme
   selector:
     app: zevrant-home-ui
 #
@@ -18,7 +22,7 @@ spec:
 #kind: Service
 #metadata:
 #  name: ingress-nodeport-prod
-#  namespace: zevrant-home-services-prod
+#  namespace: prod
 #spec:
 #  type: NodePort
 #  ports:

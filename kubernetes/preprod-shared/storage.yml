@@ -1,0 +1,64 @@
+apiVersion: kadalu-operator.storage/v1alpha1
+kind: KadaluStorage
+metadata:
+  name: preprod-shared
+  namespace: preprod-shared
+spec:
+  type: "Disperse"
+  storage:
+    - node: "zevrant-01"
+      path: "/glusterfs/bricks/kadalu/preprod-shared"
+    - node: "zevrant-02"
+      path: "/glusterfs/bricks/kadalu/preprod-shared"
+    - node: "zevrant-03"
+      path: "/glusterfs/bricks/kadalu/preprod-shared"
+    - node: "zevrant-04"
+      path: "/glusterfs/bricks/kadalu/preprod-shared"
+    - node: "zevrant-05"
+      path: "/glusterfs/bricks/kadalu/preprod-shared"
+    - node: "zevrant-06"
+      path: "/glusterfs/bricks/kadalu/preprod-shared"
+  disperse:
+    data: 4
+    redundancy: 2
+  pvReclaimPolicy: delete
+
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: vault
+  namespace: preprod-shared
+spec:
+  storageClassName: kadalu.preprod-shared
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: preprod-shared-ca
+  namespace: preprod-shared
+spec:
+  storageClassName: kadalu.preprod-shared
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: keycloak-database
+  namespace: preprod-shared
+spec:
+  storageClassName: kadalu.preprod-shared
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi

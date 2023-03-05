@@ -3,6 +3,8 @@ import com.zevrant.services.enumerations.PipelineTriggerType
 import com.zevrant.services.pojo.PipelineParameter
 import com.zevrant.services.pojo.Pipeline
 import com.zevrant.services.pojo.PipelineCollection
+import com.zevrant.services.pojo.KubernetesServiceCollection
+import com.zevrant.services.pojo.PipelineTrigger
 
 (libraryRepositories as List<String>).each { libraryRepository ->
     createMultibranch(libraryRepository, ApplicationType.LIBRARY as ApplicationType)
@@ -15,26 +17,38 @@ import com.zevrant.services.pojo.PipelineCollection
             parameters: new ArrayList<>([
                     new PipelineParameter<String>(String.class, "VERSION", "Version to be Deployed", "")
             ]),
-            gitRepo: "git@github.com:zevrant/zevrant-services-pipeline.git",
+            gitRepo: "ssh://git@ssh.gitea.zevrant-services.com:30121/zevrant-services/zevrant-services-pipeline.git",
             jenkinsfileLocation: 'jenkins/pipelines/kubernetes-deploy.groovy',
             credentialId: 'jenkins-git',
             envs: new HashMap<>([
                     'REPOSITORY' : microserviceRepository,
                     'ENVIRONMENT': 'develop'
-            ])
+            ]),
+            triggers           : [
+                    new PipelineTrigger([
+                            type : PipelineTriggerType.CRON,
+                            value: "H */11 * * *"
+                    ])
+            ],
     )
     Pipeline prodDeployPipeline = new Pipeline(
             name: "${microserviceRepository}-deploy-to-prod",
             parameters: new ArrayList<>([
                     new PipelineParameter<String>(String.class, "VERSION", "Version to be Deployed", "")
             ]),
-            gitRepo: "git@github.com:zevrant/zevrant-services-pipeline.git",
+            gitRepo: "ssh://git@ssh.gitea.zevrant-services.com:30121/zevrant-services/zevrant-services-pipeline.git",
             jenkinsfileLocation: 'jenkins/pipelines/kubernetes-deploy.groovy',
             credentialId: 'jenkins-git',
             envs: new HashMap<>([
                     'REPOSITORY' : microserviceRepository,
                     'ENVIRONMENT': 'prod'
-            ])
+            ]),
+            triggers           : [
+                    new PipelineTrigger([
+                            type : PipelineTriggerType.CRON,
+                            value: "H */11 * * *"
+                    ])
+            ],
     )
     createPipeline(folder, developDeployPipeline);
     createPipeline(folder, prodDeployPipeline);
@@ -46,7 +60,7 @@ Pipeline androidDevelopDeployPipeline = new Pipeline(
         name: "Zevrant-Android-App-Release-To-Internal-Testing",
         parameters: new ArrayList<>([
         ]),
-        gitRepo: "git@github.com:zevrant/zevrant-services-pipeline.git",
+        gitRepo: "ssh://git@ssh.gitea.zevrant-services.com:30121/zevrant-services/zevrant-services-pipeline.git",
         jenkinsfileLocation: 'jenkins/pipelines/android-deploy.groovy',
         credentialId: 'jenkins-git',
         envs: new HashMap<>([
@@ -58,7 +72,7 @@ Pipeline androidProdDeployPipeline = new Pipeline(
         name: "Zevrant-Android-App-Release-To-Production",
         parameters: new ArrayList<>([
         ]),
-        gitRepo: "git@github.com:zevrant/zevrant-services-pipeline.git",
+        gitRepo: "ssh://git@ssh.gitea.zevrant-services.com:30121/zevrant-services/zevrant-services-pipeline.git",
         jenkinsfileLocation: 'jenkins/pipelines/android-deploy.groovy',
         credentialId: 'jenkins-git',
         envs: new HashMap<>([
@@ -68,8 +82,9 @@ Pipeline androidProdDeployPipeline = new Pipeline(
 )
 createPipeline(androidFolder, androidDevelopDeployPipeline)
 createPipeline(androidFolder, androidProdDeployPipeline)
+String adminFolder = createMultibranch('jenkins-cac', ApplicationType.ADMIN_UTILITIES, 'jenkins/pipelines/admin/cacUpdate.groovy')
 
-String createMultibranch(String repositoryName, ApplicationType applicationType) {
+String createMultibranch(String repositoryName, ApplicationType applicationType, String customPipelineLocation = "") {
     String jobName = ""
     folder(applicationType.value) {
 
@@ -88,16 +103,28 @@ String createMultibranch(String repositoryName, ApplicationType applicationType)
             remoteJenkinsFileWorkflowBranchProjectFactory {
                 localMarker("")
                 matchBranches(false)
-                switch (applicationType) {
-                    case ApplicationType.SPRING:
-                        remoteJenkinsFile ("jenkins/pipelines/spring-build.groovy")
-                        break;
-                    case ApplicationType.LIBRARY:
-                        remoteJenkinsFile ("jenkins/pipelines/libraryBuild.groovy")
-                        break;
-                    case ApplicationType.ANDROID:
-                        remoteJenkinsFile ("jenkins/pipelines/androidBuild.groovy")
+                if (applicationType == ApplicationType.ADMIN_UTILITIES
+                        && customPipelineLocation != null
+                        && customPipelineLocation != "") {
+                    remoteJenkinsFile customPipelineLocation
+                } else if (applicationType == ApplicationType.ADMIN_UTILITIES
+                        && customPipelineLocation == ''
+                        || customPipelineLocation == null) {
+                    throw new RuntimeException("Custom pipeline must be specified for Admin application types")
+                } else {
+                    remoteJenkinsFile applicationType.getRemoteJenkinsfile()
                 }
+
+//                switch (applicationType) {
+//                    case ApplicationType.SPRING:
+//                        remoteJenkinsFile ("jenkins/pipelines/spring-build.groovy")
+//                        break;
+//                    case ApplicationType.LIBRARY:
+//                        remoteJenkinsFile ("jenkins/pipelines/libraryBuild.groovy")
+//                        break;
+//                    case ApplicationType.ANDROID:
+//                        remoteJenkinsFile ("jenkins/pipelines/androidBuild.groovy")
+//                }
                 remoteJenkinsFileSCM {
                     gitSCM {
                         branches {
@@ -118,7 +145,8 @@ String createMultibranch(String repositoryName, ApplicationType applicationType)
                         userRemoteConfigs {
                             userRemoteConfig {
                                 name("Zevrant Services Pipeline") //Custom Repository Name or ID
-                                url("git@github.com:zevrant/zevrant-services-pipeline.git") //URL for the repository
+                                url("ssh://git@ssh.gitea.zevrant-services.com:30121/zevrant-services/zevrant-services-pipeline.git")
+                                //URL for the repository
                                 refspec("master") // Branch spec
                                 credentialsId("jenkins-git") // Credential ID. Leave blank if not required
                             }
@@ -130,17 +158,36 @@ String createMultibranch(String repositoryName, ApplicationType applicationType)
             }
         }
         branchSources {
-            github {
-                id(repositoryName) // IMPORTANT: use a constant and unique identifier
-                repository(repositoryName)
-                repoOwner('zevrant')
-                includes('master')
-                scanCredentialsId 'jenkins-git-access-token'
-                checkoutCredentialsId 'jenkins-git'
-                buildOriginBranchWithPR true
-                buildOriginPRMerge true
+//            git {
+//                id(repositoryName) // IMPORTANT: use a constant and unique identifier
+//                remote("ssh://git@ssh.gitea.zevrant-services.com:30121/zevrant-services/${repositoryName}.git")
+//                credentialsId 'jenkins-git-access-token'
+//                checkoutCredentialsId 'jenkins-git'
+//            }
+            branchSource {
+                source {
+                    giteaSCMSource {
+                        serverUrl('https://gitea.zevrant-services.com')
+                        repoOwner('zevrant-services')
+                        repository(repositoryName)
+                        credentialsId('gitea-access-token')
+                        id(repositoryName)
+                        traits {
+                            giteaPullRequestDiscovery {
+                                strategyId(0)
+                            }
+                            headWildcardFilter {
+                                includes('master PR-*')
+                                excludes('')
+                            }
+                            giteaBranchDiscovery {
+                                strategyId(3)
+                            }
+                            wipeWorkspaceTrait()
+                        }
+                    }
+                }
             }
-
         }
     }
     return folderName;
@@ -148,6 +195,32 @@ String createMultibranch(String repositoryName, ApplicationType applicationType)
 
 (PipelineCollection.pipelines as List<Pipeline>).each { pipeline ->
     createPipeline("", pipeline)
+}
+
+
+String kubernetesServicesFolder = 'kubernetes-services'
+folder(kubernetesServicesFolder) {
+    displayName = 'Kubernetes Services'
+}
+
+KubernetesServiceCollection.services.each { kubernetesService ->
+    kubernetesService.environments.each { environment ->
+        Pipeline pipeline = new Pipeline([
+                name               : kubernetesService.serviceName.capitalize(),
+                triggers           : [
+                        new PipelineTrigger([
+                                type : PipelineTriggerType.CRON,
+                                value: "H */11 * * *"
+                        ])
+                ],
+                envs               : [
+                        ENVIRONMENT : environment.getNamespaceName(),
+                        SERVICE_NAME: kubernetesService.serviceName
+                ],
+                jenkinsfileLocation: 'jenkins/pipelines/serviceDeploy.groovy'
+        ])
+        createPipeline(kubernetesServicesFolder.concat('/'), pipeline)
+    }
 }
 
 /**
@@ -168,23 +241,23 @@ void createPipeline(String folder, Pipeline pipeline) {
 
         if (pipeline.triggers != null && !pipeline.triggers.isEmpty()) {
             pipeline.triggers.each { trigger ->
-//                if (trigger.type == PipelineTriggerType.GENERIC) {
-//                    genericTrigger {
-//                        genericVariables {
-//                            if (trigger.variables != null && !trigger.variables.isEmpty()) {
-//                                trigger.variables.each { variable ->
-//                                    genericVariable {
-//                                        key(variable.key)
-//                                        value(variable.expressionValue)
-//                                        expressionType(variable.triggerVariableType.value)
-//                                        defaultValue(variable.defaultValue) //Optional, defaults to empty string
-//                                    }
-//                                }
-//                            }
-//                        }
-//                        token(trigger.token)
-//                    }
-//                }
+                if (trigger.type == PipelineTriggerType.GENERIC) {
+                    genericTrigger {
+                        genericVariables {
+                            if (trigger.variables != null && !trigger.variables.isEmpty()) {
+                                trigger.variables.each { variable ->
+                                    genericVariable {
+                                        key(variable.key)
+                                        value(variable.expressionValue)
+                                        expressionType(variable.triggerVariableType.value)
+                                        defaultValue(variable.defaultValue) //Optional, defaults to empty string
+                                    }
+                                }
+                            }
+                        }
+                        token(trigger.token)
+                    }
+                }
             }
         }
 
@@ -222,26 +295,37 @@ void createPipeline(String folder, Pipeline pipeline) {
                 }
             }
         }
-        if (pipeline.triggers.size() > 0) {
-            triggers {
-                pipeline.triggers.each { trigger ->
-                    switch (trigger.type) {
-                        case PipelineTriggerType.CRON:
-                            cron(trigger.value);
-                            break;
-                        case PipelineTriggerType.GENERIC:
-                            println "WARN: Ignoring Generic trigger as it is not yet implemented"
-                            break
-                        default:
-                            throw new RuntimeException("Pipeline Trigger Type Not Implemented ${trigger.type} for pipeline ${pipeline.name}")
+        properties {
+            if (pipeline.triggers.size() > 0) {
+                pipelineTriggers {
+                    triggers {
+                        cron {
+                            pipeline.triggers.each { trigger ->
+                                switch (trigger.type) {
+                                    case PipelineTriggerType.CRON:
+                                        spec(trigger.value);
+                                        break;
+                                    case PipelineTriggerType.GENERIC:
+                                        println "WARN: Ignoring Generic trigger as it is not yet implemented"
+                                        break
+                                    default:
+                                        throw new RuntimeException("Pipeline Trigger Type Not Implemented ${trigger.type} for pipeline ${pipeline.name}")
+                                }
+                            }
+                        }
+
                     }
                 }
             }
+            if(!pipeline.allowConcurrency) {
+                disableConcurrentBuilds{
+                    abortPrevious(false)
+                }
+            }
         }
-
         definition {
             cpsScm {
-                lightweight(true)
+                lightweight(false)
                 scm {
                     git {
                         remote {
