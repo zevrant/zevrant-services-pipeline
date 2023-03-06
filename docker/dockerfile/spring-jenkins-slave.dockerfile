@@ -1,4 +1,4 @@
-FROM docker.io/zevrant/zevrant-ubuntu-base:latest
+FROM docker.io/zevrant/ubuntu-base:latest
 USER root
 
 RUN apt-get install -y git

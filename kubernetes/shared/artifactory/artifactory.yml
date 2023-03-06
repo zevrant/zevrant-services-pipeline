@@ -89,7 +89,7 @@ spec:
       initContainers:
         - name: config-init
           imagePullPolicy: Always
-          image: docker.io/zevrant/zevrant-ubuntu-base:latest
+          image: docker.io/zevrant/ubuntu-base:latest
           volumeMounts:
 #            - name: artifactory-keys
 #              mountPath: /var/opt/jfrog/artifactory/etc/

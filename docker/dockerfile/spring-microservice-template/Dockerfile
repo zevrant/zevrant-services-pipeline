@@ -1,4 +1,4 @@
-FROM docker.io/zevrant/zevrant-ubuntu-base:latest
+FROM containers.zevrant-services.com/zevrant/ubuntu-base:latest
 
 ARG serviceName
 ARG containerPort

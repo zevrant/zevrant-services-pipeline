@@ -40,7 +40,7 @@ spec:
         architecture: amd64
       containers:
         - name: zevrant-keycloak-service-db
-          image: postgres:14
+          image: containers.zevrant-services.com/zevrant/postrges:14
           imagePullPolicy: Always
           volumeMounts:
             - name: database

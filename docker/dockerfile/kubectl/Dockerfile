@@ -1,4 +1,4 @@
-FROM docker.io/zevrant/zevrant-ubuntu-base:latest
+FROM containers.zevrant-services.com/zevrant/ubuntu-base:latest
 
 RUN apt-get update \
     && apt-get install -y apt-transport-https ca-certificates \

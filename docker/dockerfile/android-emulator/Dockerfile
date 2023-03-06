@@ -1,4 +1,4 @@
-FROM docker.io/ubuntu:latest
+FROM containers.zevrant-services.com/ubuntu:latest
 
 
 

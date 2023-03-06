@@ -105,7 +105,7 @@ spec:
       initContainers:
         - name: config-init
           imagePullPolicy: Always
-          image: docker.io/zevrant/zevrant-ubuntu-base:latest
+          image: containers.zevrant-services.com/zevrant/ubuntu-base:latest
           volumeMounts:
             - name: gitea-config
               mountPath: /etc/gitea
@@ -118,7 +118,7 @@ spec:
             - cp /etc/gitea/app.ini /opt/config-copy/app.ini
       containers:
         - name: gitea
-          image: docker.io/zevrant/gitea:latest-rootless
+          image: containers.zevrant-services.com/zevrant/gitea:latest-rootless
 #          command:
 #            - /bin/sh
 #          args:

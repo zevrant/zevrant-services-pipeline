@@ -51,7 +51,7 @@ spec:
             defaultMode: 0400
       initContainers:
         - name: init-myservice
-          image: docker.io/zevrant/zevrant-ubuntu-base:latest
+          image: docker.io/zevrant/ubuntu-base:latest
           volumeMounts:
             - mountPath: /opt/secrets
               name: password-volume

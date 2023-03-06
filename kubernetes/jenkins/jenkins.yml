@@ -71,7 +71,7 @@ spec:
         - name: regcred
       initContainers:
         - name: secret-init
-          image: docker.io/zevrant/zevrant-ubuntu-base:latest
+          image: docker.io/zevrant/ubuntu-base:latest
           imagePullPolicy: Always
           securityContext:
             runAsUser: 1000

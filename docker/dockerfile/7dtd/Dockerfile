@@ -1,4 +1,4 @@
-FROM docker.io/cm2network/steamcmd:latest
+FROM containers.zevrant-services.com/cm2network/steamcmd:latest
 
 RUN /home/steam/steamcmd/steamcmd.sh +login anonymous +app_update 294420 +quit
 USER root

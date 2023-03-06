@@ -1,5 +1,5 @@
 {
   "imageName": "spring-jenkins-slave",
   "version": "0",
-  "baseImage": "docker.io/zevrant/zevrant-ubuntu-base:latest"
+  "baseImage": "docker.io/zevrant/ubuntu-base:latest"
 }

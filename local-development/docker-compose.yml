@@ -10,7 +10,7 @@ services:
     user: "999:999"
     ports:
       - "5441:5432"
-    image: docker.io/postgres:14
+    image: docker.io/containers.zevrant-services.com/zevrant/postrges:14
     pull_policy: always
     container_name: keycloak-postgres-db
     volumes:

@@ -76,6 +76,7 @@ spec:
   selector:
     matchLabels:
       app: artifactory-jcr
+  serviceName: artifactory-jcr
   template:
     metadata:
       labels:
@@ -106,7 +107,7 @@ spec:
       initContainers:
         - name: config-init
           imagePullPolicy: Always
-          image: docker.io/zevrant/zevrant-ubuntu-base:latest
+          image: docker.io/zevrant/ubuntu-base:latest
           volumeMounts:
             - name: artifactory-etc
               mountPath: /var/opt/jfrog/artifactory/etc/
@@ -169,9 +170,13 @@ spec:
             - mountPath: /etc/nginx/nginx.conf
               name: nginx-config
               subPath: nginx.conf
+            - mountPath: /etc/nginx/sites-enabled/default
+              name: nginx-config
+              subPath: default
             - name: artifactory-jcr-cert
               mountPath: /opt/acme/certs
               readOnly: true
+
 #          startupProbe:
 #            httpGet:
 #              scheme: HTTPS
@@ -235,19 +240,6 @@ data:
   binarystore.xml:
     <config version="2">
       <chain template="file-system"/>
-#      <chain>
-#        <provider id="cache-fs" type="cache-fs">
-#          <provider id="s3-storage-v3" type="s3-storage-v3"/>
-#          </provider>
-#      </chain>
-#      <provider id="s3-storage-v3" type="s3-storage-v3">
-#        <endpoint>https://minio.shared.svc.cluster.local/</endpoint>
-#        <bucketName>artifactory</bucketName>
-#        <path></path>
-#        <region>us-east-1</region>
-#        <identity>artifactory</identity>
-#        <credential>a&amp;oV5s9HmR^VS2D#3gc#*%Q3dSZhs7^!9urv5Ckr</credential>
-#      </provider>
     </config>
 
 ---
@@ -255,53 +247,123 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: artifactory-jcr
+  name: nginx-artifactory
   namespace: shared
 data:
   nginx.conf: |
-    ssl_certificate      /opt/acme/certs/tls.crt;
-    ssl_certificate_key  /opt/acme/certs/tls.key;
-    ssl_session_cache    shared:SSL:1m;
+    user www-data;
+    worker_processes auto;
+    pid /run/nginx.pid;
+    include /etc/nginx/modules-enabled/*.conf;
+  
+    events {
+    worker_connections 150000;
+    # multi_accept on;
+    }
     
+    http {
+
+        client_max_body_size 999999999999M;
+
+        proxy_connect_timeout       600;
+        proxy_send_timeout          600;
+        proxy_read_timeout          600;
+        send_timeout                600;
+
+        ##
+        # Basic Settings
+        ##
+
+        sendfile on;
+        tcp_nopush on;
+        tcp_nodelay on;
+        keepalive_timeout 65;
+        types_hash_max_size 2048;
+        server_tokens on;
+
+        server_names_hash_bucket_size 128;
+        # server_name_in_redirect off;
+
+        include /etc/nginx/mime.types;
+        default_type application/octet-stream;
+
+        ##
+        # SSL Settings
+        ##
+
+        ssl_protocols TLSv1 TLSv1.1 TLSv1.2; # Dropping SSLv3, ref: POODLE
+        ssl_prefer_server_ciphers on;
+
+        ##
+        # Logging Settings
+        ##
+
+        access_log /var/log/nginx/access.log;
+        error_log /var/log/nginx/error.log;
+
+        ##
+        # Gzip Settings
+        ##
+
+        gzip on;
+
+        # gzip_vary on;
+        # gzip_proxied any;
+        # gzip_comp_level 6;
+        # gzip_buffers 16 8k;
+        # gzip_http_version 1.1;
+        # gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
+
+        ##
+        # Virtual Host Configs
+        ##
+
+        include /etc/nginx/conf.d/*.conf;
+        include /etc/nginx/sites-enabled/*;
+
+        ignore_invalid_headers off;
+    }
+  
+    stream {
+      
+    }
+  default: |
     server {
       listen 8443 ssl;
+      listen [::]:8443;
       server_name containers.zevrant-services.com;
+      ssl_certificate /opt/acme/certs/tls.crt;
+      ssl_certificate_key /opt/acme/certs/tls.key;
+      underscores_in_headers    on;
+
       if ($http_x_forwarded_proto = '') {
-  
+
               set $http_x_forwarded_proto  $scheme;
-  
+
       }
-      rewrite ^/$ /ui/ redirect;
-  
-      rewrite ^/ui$ /ui/ redirect;
-  
+
       chunked_transfer_encoding on;
-  
+
       client_max_body_size 0;
-  
+
       location / {
-  
-      proxy_read_timeout  2400s;
-  
-      proxy_pass_header   Server;
-  
-      proxy_cookie_path   ~*^/.* /;
-  
-      proxy_buffer_size 128k;
-  
-      proxy_buffers 40 128k;
-  
-      proxy_busy_buffers_size 128k;
-  
-      proxy_pass          http://localhost:8082;
-  
-      proxy_set_header    X-JFrog-Override-Base-Url $http_x_forwarded_proto://$host:$server_port;
-  
-      proxy_set_header    X-Forwarded-Port  $server_port;
-  
-      proxy_set_header    X-Forwarded-Proto $http_x_forwarded_proto;
-  
-      proxy_set_header    Host              $http_host;
-  
-      proxy_set_header    X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_read_timeout  2400s;
+        proxy_pass_header   Server;
+        proxy_cookie_path   ~*^/.* /;
+        proxy_buffer_size 128k;
+        proxy_buffers 40 128k;
+        proxy_busy_buffers_size 128k;
+        proxy_pass          http://localhost:8082/;
+        proxy_set_header    X-JFrog-Override-Base-Url $http_x_forwarded_proto://$host;
+        proxy_set_header    X-Forwarded-Port  $server_port;
+        proxy_set_header    X-Forwarded-Proto $http_x_forwarded_proto;
+        proxy_set_header    Host              $http_host;
+        proxy_set_header    X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_intercept_errors on;
+        error_page 301 302 307 = @handle_redirect;
+      }
+      location @handle_redirect {
+        set $saved_redirect_location '$upstream_http_location';
+        proxy_pass $saved_redirect_location;
+      }
     }

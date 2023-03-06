@@ -96,7 +96,7 @@ spec:
         - name: regcred
       initContainers:
         - name: secret-init
-          image: docker.io/zevrant/zevrant-ubuntu-base:latest
+          image: docker.io/zevrant/ubuntu-base:latest
           volumeMounts:
             - mountPath: /var/secrets/minio-credentials
               name: minio-credentials
