@@ -73,7 +73,8 @@ spec:
           secret:
             secretName: vault-key
             defaultMode: 0400
-
+      imagePullSecrets:
+        - name: regcred
       initContainers:
         - name: secret-init
           image: docker.io/zevrant/ubuntu-base:latest
@@ -95,7 +96,7 @@ spec:
               chown -R 1000:1000 /opt/secrets
       containers:
         - name: vault-unsealer
-          image: docker.io/zevrant/vault-unsealer:latest
+          image: containers.zevrant-services.com/zevrant/vault-unsealer:latest
           imagePullPolicy: "Always"
           volumeMounts:
             - mountPath: /var/zevrant-services
@@ -124,7 +125,7 @@ spec:
                   key: fingerprint
                   name: ca-fingerprint
         - name: vault
-          image: docker.io/vault:latest
+          image: containers.zevrant-services.com/zevrant/vault:latest
           command:
             - "/bin/sh"
           args:

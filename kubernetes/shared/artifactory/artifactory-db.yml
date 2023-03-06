@@ -72,7 +72,7 @@ spec:
             - cp /var/config/postgres-config/postgresql.conf /opt/postgres/postgresql.conf
       containers:
         - name: artifactory-db
-          image: containers.zevrant-services.com/zevrant/postrges:14
+          image: containers.zevrant-services.com/zevrant/postgres:14
           imagePullPolicy: Always
           volumeMounts:
             - name: artifactory-db

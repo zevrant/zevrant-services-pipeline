@@ -39,7 +39,7 @@ spec:
             claimName: grafana-database
       containers:
         - name: grafana-db
-          image: containers.zevrant-services.com/zevrant/postrges:14
+          image: containers.zevrant-services.com/zevrant/postgres:14
           imagePullPolicy: Always
           volumeMounts:
             - name: database

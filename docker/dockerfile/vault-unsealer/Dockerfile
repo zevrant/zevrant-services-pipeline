@@ -1,4 +1,4 @@
-FROM ubuntu:latest
+FROM containers.zevrant-services.com/zevrant/ubuntu:latest
 
 RUN apt-get update \
     && apt-get update -y \
