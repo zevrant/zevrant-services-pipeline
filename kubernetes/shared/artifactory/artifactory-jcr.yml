@@ -13,7 +13,7 @@ spec:
   duration: 24h
   renewBefore: 13h
   dnsNames:
-    - artifactory-jcr.zevrant-services.com
+    - containers.zevrant-services.com
 
 ---
 
@@ -23,18 +23,44 @@ metadata:
   name: artifactory-jcr
   namespace: shared
 spec:
-  type: LoadBalancer
+  type: NodePort
   ports:
-    - port: 8081
-      targetPort: 8081
-#      nodePort: 30127
-      name: http
-    - port: 8082
-      targetPort: 8082
-#      nodePort: 30123
+    - port: 8443
+      targetPort: 8443
+      nodePort: 30118
       name: ui
   selector:
     app: artifactory-jcr
+
+---
+
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: artifactory-data
+  namespace: shared
+spec:
+  storageClassName: kadalu.shared
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Gi
+
+---
+
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: artifactory-etc
+  namespace: shared
+spec:
+  storageClassName: kadalu.shared
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
 
 ---
 
@@ -61,58 +87,91 @@ spec:
       imagePullSecrets:
         - name: regcred
       volumes:
-        #        - name: keystore-volume
-        #          emptyDir:
-        #            sizeLimit: "1Mi"
-        #            defaultMode: 0400
+        - name: nginx-config
+          configMap:
+            name: nginx-artifactory
         - name: artifactory-config
           configMap:
-            name: artifactory
-        - name: artifactory-keys
+            name: artifactory-jcr
+        - name: artifactory-data
           persistentVolumeClaim:
-            claimName: artifactory-keys
-        - name: artifactory-key
+            claimName: artifactory-data
+        - name: artifactory-etc
           persistentVolumeClaim:
-            claimName: artifactory-key
-            readOnly: false
+            claimName: artifactory-etc
+        - name: artifactory-jcr-cert
+          secret:
+            secretName: artifactory-jcr-tls
+            defaultMode: 0400
       initContainers:
         - name: config-init
           imagePullPolicy: Always
           image: docker.io/zevrant/zevrant-ubuntu-base:latest
           volumeMounts:
-            - name: artifactory-keys
+            - name: artifactory-etc
               mountPath: /var/opt/jfrog/artifactory/etc/
-            - mountPath: /var/config/artifactory-config
-              name: artifactory-config
+            - name: artifactory-config
+              mountPath: /var/config/artifactory-config
+            - name: artifactory-data
+              mountPath: /var/opt/jfrog/artifactory/var/
+
           command:
             - /bin/sh
           args:
             - -c
-            - cp /var/config/artifactory-config/system.yaml /var/opt/jfrog/artifactory/etc/system.yaml
-            - cp /var/config/artifactory-config/binarystore.xml /var/opt/jfrog/artifactory/etc/artifactory/binarystore.xml
+            - |
+              cp /var/config/artifactory-config/system.yaml /var/opt/jfrog/artifactory/etc/system.yaml
+              sed -i "s/<<IP_ADDRESS>>/${JF_SHARED_NODE_IP}/g" /var/opt/jfrog/artifactory/etc/system.yaml
+              chown -R 1030:1030 /var/opt/jfrog/artifactory/etc/system.yaml
+              chown -R 1030:1030 /var/opt/jfrog/artifactory/etc/
+              cp /var/config/artifactory-config/binarystore.xml /var/opt/jfrog/artifactory/etc/artifactory/binarystore.xml
+          env:
+            - name: JF_SHARED_NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
       containers:
         - name: artifactory-container-registry
           volumeMounts:
-            - name: artifactory-keys
+            - name: artifactory-data
+              mountPath: /var/opt/jfrog/artifactory/var/
+            - name: artifactory-etc
               mountPath: /var/opt/jfrog/artifactory/etc/
-            - name: artifactory-key
-              mountPath: /var/opt/jfrog/artifactory/etc/security/
+            - name: artifactory-jcr-cert
+              mountPath: /opt/acme/certs
+              readOnly: true
           image: releases-docker.jfrog.io/jfrog/artifactory-jcr:latest
           imagePullPolicy: Always
+          ports:
+           - containerPort: 8082
+             name: http
           env:
             - name: JF_SHARED_DATABASE_PASSWORD
               valueFrom:
                 secretKeyRef:
                   key: password
-                  name: artifactory-db-password
+                  name: artifactory-jcr-db-password
             - name: JF_SHARED_DATABASE_USERNAME
               value: zevrant
             - name: JFROG_HOME
               value: /var/opt/jfrog
-            - name: HA_HOST_IP
+            - name: JF_SHARED_NODE_IP
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
+        - name: nginx
+          image: docker.io/nginx:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8443
+              name: https
+          volumeMounts:
+            - mountPath: /etc/nginx/nginx.conf
+              name: nginx-config
+              subPath: nginx.conf
+            - name: artifactory-jcr-cert
+              mountPath: /opt/acme/certs
+              readOnly: true
 #          startupProbe:
 #            httpGet:
 #              scheme: HTTPS
@@ -127,3 +186,122 @@ spec:
 #              port: 3000
 #            failureThreshold: 5
 #            periodSeconds: 5
+#          - name: nginx
+#            volumeMounts:
+#
+
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: artifactory-jcr
+  namespace: shared
+data:
+  system.yaml: |
+    configVersion: 1
+    shared:
+      security:
+        joinKeyFile: /var/opt/jfrog/artifactory/etc/security/join.key
+        masterKeyFile: /var/opt/jfrog/artifactory/etc/security/master.key
+      node:
+        haEnabled: false
+        ip: <<IP_ADDRESS>>
+      database:
+        type: postgresql
+        driver: org.postgresql.Driver
+        url: jdbc:postgresql://artifactory-jcr-db:5432/artifactory
+      metrics:
+        enabled: true
+      healthCheck:
+        intervalSecs: 15
+        probes:
+          readiness:
+            failOnLongFailingReadiness:
+              enabled: true
+            failureDurationSecs: 60
+          liveness:
+            failOnLongFailingReadiness:
+              enabled: true
+            failureDurationSecs: 60
+    artifactory:
+      tomcat:
+        httpsConnector:
+          enabled: true
+          port: 8443
+          certificateFile: /opt/acme/certs/tls.cert
+          certificateKeyFile: /opt/acme/certs/tls.key
+  binarystore.xml:
+    <config version="2">
+      <chain template="file-system"/>
+#      <chain>
+#        <provider id="cache-fs" type="cache-fs">
+#          <provider id="s3-storage-v3" type="s3-storage-v3"/>
+#          </provider>
+#      </chain>
+#      <provider id="s3-storage-v3" type="s3-storage-v3">
+#        <endpoint>https://minio.shared.svc.cluster.local/</endpoint>
+#        <bucketName>artifactory</bucketName>
+#        <path></path>
+#        <region>us-east-1</region>
+#        <identity>artifactory</identity>
+#        <credential>a&amp;oV5s9HmR^VS2D#3gc#*%Q3dSZhs7^!9urv5Ckr</credential>
+#      </provider>
+    </config>
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: artifactory-jcr
+  namespace: shared
+data:
+  nginx.conf: |
+    ssl_certificate      /opt/acme/certs/tls.crt;
+    ssl_certificate_key  /opt/acme/certs/tls.key;
+    ssl_session_cache    shared:SSL:1m;
+    
+    server {
+      listen 8443 ssl;
+      server_name containers.zevrant-services.com;
+      if ($http_x_forwarded_proto = '') {
+  
+              set $http_x_forwarded_proto  $scheme;
+  
+      }
+      rewrite ^/$ /ui/ redirect;
+  
+      rewrite ^/ui$ /ui/ redirect;
+  
+      chunked_transfer_encoding on;
+  
+      client_max_body_size 0;
+  
+      location / {
+  
+      proxy_read_timeout  2400s;
+  
+      proxy_pass_header   Server;
+  
+      proxy_cookie_path   ~*^/.* /;
+  
+      proxy_buffer_size 128k;
+  
+      proxy_buffers 40 128k;
+  
+      proxy_busy_buffers_size 128k;
+  
+      proxy_pass          http://localhost:8082;
+  
+      proxy_set_header    X-JFrog-Override-Base-Url $http_x_forwarded_proto://$host:$server_port;
+  
+      proxy_set_header    X-Forwarded-Port  $server_port;
+  
+      proxy_set_header    X-Forwarded-Proto $http_x_forwarded_proto;
+  
+      proxy_set_header    Host              $http_host;
+  
+      proxy_set_header    X-Forwarded-For   $proxy_add_x_forwarded_for;
+    }

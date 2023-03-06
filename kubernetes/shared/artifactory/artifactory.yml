@@ -17,21 +17,6 @@ spec:
 
 ---
 
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  name: artifactory-keys
-  namespace: shared
-spec:
-  storageClassName: kadalu.shared
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 1Gi
-
----
-
 kind: PersistentVolumeClaim #TODO: use vault instead
 apiVersion: v1
 metadata:

@@ -22,6 +22,8 @@ metadata:
   labels:
     app: certificate-authority
 spec:
+  strategy:
+    type: Recreate
   replicas: 1
   selector:
     matchLabels:

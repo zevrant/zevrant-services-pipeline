@@ -86,10 +86,10 @@ spec:
         - name: config-copy
           emptyDir:
             sizeLimit: 1Mi
-#        - name: gitea-cert
-#          secret:
-#            secretName: gitea-tls
-#            defaultMode: 0400
+        - name: gitea-cert
+          secret:
+            secretName: gitea-tls
+            defaultMode: 0400
         - name: gitea-data
           persistentVolumeClaim:
             claimName: gitea-data
@@ -129,9 +129,9 @@ spec:
             - containerPort: 3000
             - containerPort: 2222
           volumeMounts:
-#            - name: gitea-cert
-#              mountPath: /opt/acme/certs
-#              readOnly: true
+            - name: gitea-cert
+              mountPath: /opt/acme/certs
+              readOnly: true
             - name: gitea-data
               mountPath: /var/lib/gitea
             - name: config-copy
@@ -158,14 +158,14 @@ spec:
               value: master
           startupProbe:
             httpGet:
-              scheme: HTTP
+              scheme: HTTPS
               path: /api/healthz
               port: 3000
             failureThreshold: 14
             periodSeconds: 5
           livenessProbe:
             httpGet:
-              scheme: HTTP
+              scheme: HTTPS
               path: /api/healthz
               port: 3000
             failureThreshold: 5
@@ -205,8 +205,10 @@ data:
     HTTP_PORT               = 3000
     REDIRECT_OTHER_PORT	= true
     PORT_TO_REDIRECT	= 3001
-    ROOT_URL                = http://gitea.zevrant-services.com/
+    ROOT_URL                = https://gitea.zevrant-services.com/
     DISABLE_SSH             = false
+    CERT_FILE		= /opt/acme/certs/..data/tls.crt
+    KEY_FILE		= /opt/acme/certs/..data/tls.key
     # SSH_SERVER_CIPHERS      = 3des-cbc aes128-cbc aes192-cbc aes256-cbc aes128-ctr aes192-ctr aes256-ctr aes128-gcm@openssh.com aes256-gcm@openssh.com chacha20-poly1305@openssh.com
     # SSH_SERVER_KEY_EXCHANGES = ssh-ed25519 ssh-ed25519-cert-v01@openssh.com sk-ssh-ed25519@openssh.com sk-ssh-ed25519-cert-v01@openssh.com ssh-rsa ssh-dss ecdsa-sha2-nistp256 ecdsa-sha2-nistp384 ecdsa-sha2-nistp521 sk-ecdsa-sha2-nistp256@openssh.com ssh-rsa-cert-v01@openssh.com ssh-dss-cert-v01@openssh.com ecdsa-sha2-nistp256-cert-v01@openssh.com ecdsa-sha2-nistp384-cert-v01@openssh.com ecdsa-sha2-nistp521-cert-v01@openssh.com sk-ecdsa-sha2-nistp256-cert-v01@openssh.com
     ; In rootless gitea container only internal ssh server is supported
@@ -220,7 +222,7 @@ data:
     LFS_JWT_SECRET          = iNGInu3z1U5DSO-im6vJ_ZIV_EgxPpwqHiHHfG7V2SM
     OFFLINE_MODE            = false
 
-    PROTOCOL		= http
+    PROTOCOL		= https
     # DOMAIN			= gitea.zevrant-services.com
     # ENABLE_ACME		= true
     # ACME_ACCEPTTOS		= true
