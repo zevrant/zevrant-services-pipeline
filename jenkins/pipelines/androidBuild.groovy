@@ -132,7 +132,7 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
                     script {
                         sh 'adb devices'
                         sh 'echo $ANDROID_HOME'
-                        sh 'bash gradlew clean connectedDevelopTest -PtestVariant=developTest'
+                        sh 'bash gradlew clean connectedDevelopTest --info -PtestVariant=developTest'
                     }
                 }
             }

@@ -64,4 +64,4 @@ RUN export LANG="en_US.UTF-8" \
     && echo no | avdmanager create avd -n jenkins-avd --package "system-images;android-${SDK_VERSION};google_apis;x86_64"
 
 ENTRYPOINT adb start-server \
-    && xvfb-run --server-args="-screen 0 1920x1080x24" -a emulator -avd jenkins-avd -no-boot-anim -skin 1080x1920
+    && emulator -avd jenkins-avd -no-window -no-boot-anim -skin 1080x1920
