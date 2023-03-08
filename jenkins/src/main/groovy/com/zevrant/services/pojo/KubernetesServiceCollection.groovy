@@ -24,6 +24,14 @@ class KubernetesServiceCollection {
                             KubernetesEnvironment.SHARED
                     ],
                     url: 'gitea.zevrant-services.com'
+            ]),
+            new KubernetesService([
+                    serviceName: 'artifactory-jcr',
+                    includesDb: true,
+                    environments: [
+                            KubernetesEnvironment.SHARED
+                    ],
+                    url: 'containers.zevrant-services.com'
             ])
     ])
 
