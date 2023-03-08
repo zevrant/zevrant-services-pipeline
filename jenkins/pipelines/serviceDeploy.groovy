@@ -7,7 +7,7 @@ import com.zevrant.services.services.GitService
 KubernetesService service = KubernetesServiceCollection.findServiceByName(SERVICE_NAME as String) as KubernetesService
 GitService gitService = ServiceLoader.load(binding, GitService.class) as GitService
 CertificateService certificateService = ServiceLoader.load(binding, CertificateService.class) as CertificateService
-
+final String serviceType = service.serviceType.name().toLowerCase()
 pipeline {
     agent {
         kubernetes {
@@ -42,8 +42,8 @@ pipeline {
                     script {
                         Map<String, Object> services = [
                                 'Deploy Service': {
-                                    sh "kubectl rollout restart deployment $SERVICE_NAME -n $ENVIRONMENT"
-                                    sh "kubectl rollout status deployments $SERVICE_NAME -n $ENVIRONMENT --timeout=5m"
+                                    sh "kubectl rollout restart ${serviceType} $SERVICE_NAME -n $ENVIRONMENT"
+                                    sh "kubectl rollout status ${serviceType} $SERVICE_NAME -n $ENVIRONMENT --timeout=5m"
                                 }
                         ]
 
