@@ -42,7 +42,7 @@ pipeline {
                                                 url: "https://gitea.zevrant-services.com/zevrant-services/zevrant-services-pipeline/raw/branch/master/docker/dockerfile/spring-microservice-template/Dockerfile"
                                         ).content
                                         String baseImage = ((String[]) dockerfile.split("\n"))[0].split(" ")[1]
-                                        sh 'echo $DOCKER_TOKEN | buildah login -u zevrant --password-stdin docker.io'
+                                        sh 'echo $DOCKER_TOKEN | buildah login -u jenkins --password-stdin containers.zevrant-services.com'
                                         retry(3, {
                                             timeout(time: 5, unit: 'MINUTES') {
                                                 sh "buildah pull $baseImage"
