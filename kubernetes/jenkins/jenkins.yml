@@ -95,7 +95,7 @@ spec:
               openssl pkcs12 -export -inkey /opt/acme/certs/..data/tls.key -in /opt/acme/certs/..data/tls.crt -passout 'file:/opt/secrets/password' -out /opt/keystore/zevrant-services.p12
       containers:
         - name: jenkins
-          image: docker.io/zevrant/jenkins:latest
+          image: containers.zevrant-services.com/zevrant/jenkins:lts-jdk11
           imagePullPolicy: Always
           command:
             - /bin/sh
@@ -103,6 +103,7 @@ spec:
             - -c
             - |
               export JENKINS_OPTS="$JENKINS_OPTS --httpsKeyStorePassword=$(cat /var/zevrant-services/keystore/password)"
+              git config --global --add safe.directory /var/jenkins_home/workspace/*
               /usr/local/bin/jenkins.sh
           startupProbe:
             httpGet:

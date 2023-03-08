@@ -240,6 +240,9 @@ data:
   binarystore.xml:
     <config version="2">
       <chain template="file-system"/>
+      <provider id="file-system" type="file-system">                <!-- Modify the "file-system" binary provider -->
+          <baseDataDir>/var/opt/jfrog/artifactory/var/binaries</baseDataDir>      <!-- Override the <baseDataDir> attribute -->
+      </provider>
     </config>
 
 ---

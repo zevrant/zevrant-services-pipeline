@@ -31,7 +31,7 @@ spec:
         - name: regcred
       containers:
         - name: zevrant-clamav-service
-          image: mkodockx/docker-clamav
+          image: containers.zevrant-services.com/zevrant/mkodockx/docker-clamav
           env:
             - name: CLAMD_CONF_MaxFileSize
               value: 999999M

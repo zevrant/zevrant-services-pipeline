@@ -72,7 +72,7 @@ spec:
             - cp /var/config/postgres-config/postgresql.conf /opt/postgres/postgresql.conf
       containers:
         - name: artifactory-jcr-db
-          image: containers.zevrant-services.com/zevrant/postgres:14
+          image: postgres:14
           imagePullPolicy: Always
           volumeMounts:
             - name: artifactory-jcr-db
@@ -90,7 +90,7 @@ spec:
             - name: POSTGRES_DB
               value: artifactory
             - name: PGCONNECT_TIMEOUT
-              value: '20'
+              value: '40'
           ports:
             - containerPort: 5432
           resources:

@@ -83,7 +83,7 @@ spec:
         - name: regcred
       containers:
         - name: 7dtd
-          image: docker.io/zevrant/7dtd:latest
+          image: containers.zevrant-services.com/zevrant/7dtd:latest
           imagePullPolicy: Always
 #          workingDir: "/home/steam/Steam/steamapps/common/7 Days to Die Dedicated Server/"
           command:

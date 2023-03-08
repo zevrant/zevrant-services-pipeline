@@ -170,7 +170,7 @@ String createMultibranch(String repositoryName, ApplicationType applicationType,
                         serverUrl('https://gitea.zevrant-services.com')
                         repoOwner('zevrant-services')
                         repository(repositoryName)
-                        credentialsId('gitea-access-token')
+                        credentialsId('zevrant-services-jenkins')
                         id(repositoryName)
                         traits {
                             giteaPullRequestDiscovery {
