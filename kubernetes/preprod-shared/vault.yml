@@ -125,7 +125,7 @@ spec:
                   key: fingerprint
                   name: ca-fingerprint
         - name: vault
-          image: containers.zevrant-services.com/zevrant/vault:latest
+          image: containers.zevrant-services.com/docker-remote/vault:latest
           command:
             - "/bin/sh"
           args:
