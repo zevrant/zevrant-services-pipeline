@@ -21,6 +21,6 @@ class GitRepo {
     }
 
     public String getHttpsUri() {
-        return "https://${hostName}/${org}/${repoName}/"
+        return "https://${hostName}/${org}/${repoName}.git"
     }
 }
