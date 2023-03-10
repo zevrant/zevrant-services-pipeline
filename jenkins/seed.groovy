@@ -94,7 +94,10 @@ AndroidCodeUnitCollection.androidApps.each( { androidCodeUnit ->
     createPipeline(androidFolder, androidProdDeployPipeline)
 })
 
-String adminFolder = createMultibranch('jenkins-cac', ApplicationType.ADMIN_UTILITIES, 'jenkins/pipelines/admin/cacUpdate.groovy')
+String adminFolder = createMultibranch(new CodeUnit([
+        name: 'jenkins-cac',
+        applicationType: ApplicationType.JENKINS_CAC
+]))
 
 String createMultibranch(CodeUnit codeUnit) {
     String jobName = ""

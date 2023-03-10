@@ -4,7 +4,7 @@ enum ApplicationType {
     JAVA_LIBRARY('Libraries', 'jenkins/pipelines/java-library-build.groovy'),
     ANDROID('Android', 'jenkins/pipelines/android-build.groovy'),
     SPRING('Spring', 'jenkins/pipelines/spring-build.groovy'),
-    ADMIN_UTILITIES('Admin Utilities', null);
+    JENKINS_CAC('Admin Utilities', 'jenkins/pipelines/admin/cacUpdate.groovy')
 
     private final String value;
     private final String remoteJenkinsfile;
