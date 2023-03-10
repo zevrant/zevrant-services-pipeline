@@ -7,15 +7,18 @@ import com.zevrant.services.pojo.KubernetesServiceCollection
 import com.zevrant.services.pojo.PipelineTrigger
 import com.zevrant.services.pojo.AndroidCodeUnit
 import com.zevrant.services.pojo.LibraryCodeUnit
+import com.zevrant.services.pojo.LibraryCodeUnitCollection
+import com.zevrant.services.pojo.AndroidCodeUnitCollection
+import com.zevrant.services.pojo.SpringCodeUnitCollection
 import com.zevrant.services.pojo.SpringCodeUnit
 import com.zevrant.services.pojo.CodeUnit
 
-((List<LibraryCodeUnit>) libraryCodeUnits).each { LibraryCodeUnit libraryCodeUnit ->
+LibraryCodeUnitCollection.libraries.each { libraryCodeUnit ->
     createMultibranch((CodeUnit) libraryCodeUnit)
 }
 
-(springCodeUnits as List<SpringCodeUnit>).each { springCodeUnit ->
-    String folder = createMultibranch(springCodeUnit)
+SpringCodeUnitCollection.microservices.each { springCodeUnit ->
+    String folder = createMultibranch(springCodeUnit as CodeUnit)
     Pipeline developDeployPipeline = new Pipeline(
             name: "${springCodeUnit.name}-deploy-to-develop",
             parameters: new ArrayList<>([
@@ -60,8 +63,8 @@ import com.zevrant.services.pojo.CodeUnit
     }
 }
 
-(androidCodeUnits as List<AndroidCodeUnit>).each( { androidCodeUnit ->
-    String androidFolder = createMultibranch(androidCodeUnit)
+AndroidCodeUnitCollection.androidApps.each( { androidCodeUnit ->
+    String androidFolder = createMultibranch(androidCodeUnit as CodeUnit)
 
     Pipeline androidDevelopDeployPipeline = new Pipeline(
             name: "Zevrant-Android-App-Release-To-Internal-Testing",
