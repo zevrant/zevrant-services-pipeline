@@ -1,13 +1,17 @@
 package com.zevrant.services.pojo
 
+import com.zevrant.services.enumerations.ApplicationType
+
 class LibraryCodeUnitCollection  {
 
     final static javaLibraries = Collections.unmodifiableList([
             new LibraryCodeUnit(
-                name: 'universal-common'
+                name: 'universal-common',
+                applicationType: ApplicationType.JAVA_LIBRARY
             ),
             new LibraryCodeUnit([
-                    name: 'security-common'
+                    name: 'security-common',
+                    applicationType: ApplicationType.JAVA_LIBRARY
             ])
     ])
 }

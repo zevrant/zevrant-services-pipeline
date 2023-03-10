@@ -1,9 +1,8 @@
 @Library('CommonUtils') _
 
 import com.zevrant.services.services.GitService
-import com.zevrant.services.pojo.KubernetesServiceCollection
-import com.zevrant.services.ServiceLoader
-import com.zevrant.services.pojo.SpringMicroserviceCollection
+import com.zevrant.services.pojo.SpringCodeUnitCollection
+import com.zevrant.services.pojo.LibraryCodeUnitCollection
 
 List<String> libraryRepositories = new ArrayList<>();
 List<String> microserviceRepositories = new ArrayList<>();
@@ -21,7 +20,6 @@ pipeline {
         stage("Process Seed File") {
             steps {
                 script {
-                    sh 'ls -l'
                     jobDsl(
                             targets: 'jenkins/seed.groovy',
                             removedJobAction: 'DELETE',
@@ -32,31 +30,11 @@ pipeline {
                             additionalClasspath: 'jenkins/src/main/groovy/', //only works with
                             additionalParameters: [
                                     libraryRepositories     : LibraryCodeUnitCollection.libraries,
-                                    microserviceRepositories: SpringMicroserviceCollection.microservices
+                                    microserviceRepositories: SpringCodeUnitCollection.microservices
                             ]
                     )
                 }
             }
         }
     }
-}
-
-List<String> getNonArchivedReposMatching(String searchTerm, List repoList) {
-    List<String> matchingRepos = new ArrayList<>();
-
-    repoList.each { repo ->
-        String repoName = (repo['name'] as String).toLowerCase();
-        if ((repoName as String).contains('zevrant')
-                && (repoName as String).contains(searchTerm.toLowerCase())
-                && !(repo['archived'] as Boolean)
-                && (repoName as String) != 'zevrant-services-pipeline') {
-            matchingRepos.add(repoName)
-        }
-    }
-    return matchingRepos;
-}
-
-String getParameterValue(String parameter) {
-    def json = readJSON text: (sh(returnStdout: true, script: "aws ssm get-parameter --name parameter"))
-    return json['Parameter']['Value']
 }

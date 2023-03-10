@@ -6,6 +6,6 @@ class LibraryCodeUnit extends CodeUnit {
 
     LibraryCodeUnit(Map<String, Object> params) {
         super(params)
-        applicationType = ApplicationType.JAVA_LIBRARY
+        applicationType = params.applicationType as ApplicationType
     }
 }
