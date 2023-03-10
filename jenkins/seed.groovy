@@ -8,6 +8,7 @@ import com.zevrant.services.pojo.PipelineTrigger
 import com.zevrant.services.pojo.AndroidCodeUnit
 import com.zevrant.services.pojo.LibraryCodeUnit
 import com.zevrant.services.pojo.SpringCodeUnit
+import com.zevrant.services.pojo.CodeUnit
 
 (libraryCodeUnits as List<LibraryCodeUnit>).each { libraryCodeUnit ->
     createMultibranch(libraryCodeUnit)
