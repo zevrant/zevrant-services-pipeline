@@ -4,7 +4,7 @@ import com.zevrant.services.enumerations.ApplicationType
 
 class LibraryCodeUnitCollection  {
 
-    final static kibraries = Collections.unmodifiableList([
+    final static libraries = Collections.unmodifiableList([
             new LibraryCodeUnit(
                 name: 'universal-common',
                 applicationType: ApplicationType.JAVA_LIBRARY
