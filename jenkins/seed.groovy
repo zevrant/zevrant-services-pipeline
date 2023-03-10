@@ -10,8 +10,8 @@ import com.zevrant.services.pojo.LibraryCodeUnit
 import com.zevrant.services.pojo.SpringCodeUnit
 import com.zevrant.services.pojo.CodeUnit
 
-(libraryCodeUnits as List<LibraryCodeUnit>).each { libraryCodeUnit ->
-    createMultibranch(libraryCodeUnit as CodeUnit)
+((List<LibraryCodeUnit>) libraryCodeUnits).each { LibraryCodeUnit libraryCodeUnit ->
+    createMultibranch((CodeUnit) libraryCodeUnit)
 }
 
 (springCodeUnits as List<SpringCodeUnit>).each { springCodeUnit ->
