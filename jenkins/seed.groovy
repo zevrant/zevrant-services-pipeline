@@ -11,7 +11,7 @@ import com.zevrant.services.pojo.SpringCodeUnit
 import com.zevrant.services.pojo.CodeUnit
 
 (libraryCodeUnits as List<LibraryCodeUnit>).each { libraryCodeUnit ->
-    createMultibranch(libraryCodeUnit)
+    createMultibranch(libraryCodeUnit as CodeUnit)
 }
 
 (springCodeUnits as List<SpringCodeUnit>).each { springCodeUnit ->
