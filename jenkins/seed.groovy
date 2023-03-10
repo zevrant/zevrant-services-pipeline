@@ -5,6 +5,9 @@ import com.zevrant.services.pojo.Pipeline
 import com.zevrant.services.pojo.PipelineCollection
 import com.zevrant.services.pojo.KubernetesServiceCollection
 import com.zevrant.services.pojo.PipelineTrigger
+import com.zevrant.services.pojo.AndroidCodeUnit
+import com.zevrant.services.pojo.LibraryCodeUnit
+import com.zevrant.services.pojo.SpringCodeUnit
 
 (libraryCodeUnits as List<LibraryCodeUnit>).each { libraryCodeUnit ->
     createMultibranch(libraryCodeUnit)
