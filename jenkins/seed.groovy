@@ -118,6 +118,7 @@ String createMultibranch(CodeUnit codeUnit) {
             remoteJenkinsFileWorkflowBranchProjectFactory {
                 localMarker("")
                 matchBranches(false)
+                remoteJenkinsFile codeUnit.applicationType.getRemoteJenkinsfile()
                 remoteJenkinsFileSCM {
                     gitSCM {
                         branches {
