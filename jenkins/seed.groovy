@@ -160,7 +160,7 @@ String createMultibranch(CodeUnit codeUnit) {
             branchSource {
                 source {
                     giteaSCMSource {
-                        serverUrl(codeUnit.repo.getHttpsUri())
+                        serverUrl(codeUnit.repo.hostName)
                         repoOwner(codeUnit.repo.org)
                         repository(codeUnit.name)
                         credentialsId(codeUnit.repo.credentialsId)
