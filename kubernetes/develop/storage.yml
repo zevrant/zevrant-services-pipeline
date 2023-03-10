@@ -27,7 +27,7 @@ spec:
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: develop-ca
+  name: develop-ca2
   namespace: develop
 spec:
   storageClassName: kadalu.develop

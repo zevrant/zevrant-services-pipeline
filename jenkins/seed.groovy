@@ -7,7 +7,7 @@ import com.zevrant.services.pojo.KubernetesServiceCollection
 import com.zevrant.services.pojo.PipelineTrigger
 
 (libraryRepositories as List<String>).each { libraryRepository ->
-    createMultibranch(libraryRepository, ApplicationType.LIBRARY as ApplicationType)
+    createMultibranch(libraryRepository, ApplicationType.JAVA_LIBRARY as ApplicationType)
 }
 
 (microserviceRepositories as List<String>).each { microserviceRepository ->
@@ -115,16 +115,6 @@ String createMultibranch(String repositoryName, ApplicationType applicationType,
                     remoteJenkinsFile applicationType.getRemoteJenkinsfile()
                 }
 
-//                switch (applicationType) {
-//                    case ApplicationType.SPRING:
-//                        remoteJenkinsFile ("jenkins/pipelines/spring-build.groovy")
-//                        break;
-//                    case ApplicationType.LIBRARY:
-//                        remoteJenkinsFile ("jenkins/pipelines/libraryBuild.groovy")
-//                        break;
-//                    case ApplicationType.ANDROID:
-//                        remoteJenkinsFile ("jenkins/pipelines/androidBuild.groovy")
-//                }
                 remoteJenkinsFileSCM {
                     gitSCM {
                         branches {

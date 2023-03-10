@@ -2,6 +2,8 @@ FROM containers.zevrant-services.com/zevrant/gitea/gitea:latest-rootless
 
 USER root
 
+RUN apk update
+
 COPY root_ca.crt /usr/local/share/ca-certificates/zevrant-services.pem
 
 RUN update-ca-certificates

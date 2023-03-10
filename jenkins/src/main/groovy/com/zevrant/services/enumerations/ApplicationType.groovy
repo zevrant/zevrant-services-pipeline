@@ -1,8 +1,8 @@
 package com.zevrant.services.enumerations
 
 enum ApplicationType {
-    LIBRARY('Libraries', 'jenkins/pipelines/libraryBuild.groovy'),
-    ANDROID('Android', 'jenkins/pipelines/androidBuild.groovy'),
+    JAVA_LIBRARY('Libraries', 'jenkins/pipelines/java-library-build.groovy'),
+    ANDROID('Android', 'jenkins/pipelines/android-build.groovy'),
     SPRING('Spring', 'jenkins/pipelines/spring-build.groovy'),
     ADMIN_UTILITIES('Admin Utilities', null);
 

@@ -22,6 +22,8 @@ metadata:
     app: certificate-authority
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: certificate-authority
@@ -43,14 +45,14 @@ spec:
       volumes:
         - name: step-ca
           persistentVolumeClaim:
-            claimName: develop-ca
+            claimName: develop-ca2
         - name: certificate-authority-password
           secret:
             secretName: certificate-authority-password
             defaultMode: 0400
       containers:
         - name: certificate-authority
-          image: containers.zevrant-services.com/zevrant/step-ca:cert-manager
+          image: containers.zevrant-services.com/zevrant/step-ca:latest
 #          command:
 #            - sleep
 #          args:

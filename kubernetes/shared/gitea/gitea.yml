@@ -118,7 +118,7 @@ spec:
             - cp /etc/gitea/app.ini /opt/config-copy/app.ini
       containers:
         - name: gitea
-          image: containers.zevrant-services.com/zevrant/gitea:latest-rootless
+          image: containers.zevrant-services.com/zevrant-services/gitea:latest-rootless
 #          command:
 #            - /bin/sh
 #          args:
