@@ -115,18 +115,6 @@ String createMultibranch(CodeUnit codeUnit) {
             remoteJenkinsFileWorkflowBranchProjectFactory {
                 localMarker("")
                 matchBranches(false)
-                if (codeUnit.applicationType == ApplicationType.ADMIN_UTILITIES
-                        && customPipelineLocation != null
-                        && customPipelineLocation != "") {
-                    remoteJenkinsFile customPipelineLocation
-                } else if (codeUnit.applicationType == ApplicationType.ADMIN_UTILITIES
-                        && customPipelineLocation == ''
-                        || customPipelineLocation == null) {
-                    throw new RuntimeException("Custom pipeline must be specified for Admin application types")
-                } else {
-                    remoteJenkinsFile codeUnit.applicationType.getRemoteJenkinsfile()
-                }
-
                 remoteJenkinsFileSCM {
                     gitSCM {
                         branches {
