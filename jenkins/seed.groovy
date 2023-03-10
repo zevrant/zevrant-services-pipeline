@@ -149,8 +149,8 @@ String createMultibranch(CodeUnit codeUnit) {
         }
         branchSources {
 //            git {
-//                id(repositoryName) // IMPORTANT: use a constant and unique identifier
-//                remote("ssh://git@ssh.gitea.zevrant-services.com:30121/zevrant-services/${repositoryName}.git")
+//                id(codeUnit.name) // IMPORTANT: use a constant and unique identifier
+//                remote("ssh://git@ssh.gitea.zevrant-services.com:30121/zevrant-services/${codeUnit.name}.git")
 //                credentialsId 'jenkins-git-access-token'
 //                checkoutCredentialsId 'jenkins-git'
 //            }
@@ -161,7 +161,7 @@ String createMultibranch(CodeUnit codeUnit) {
                         repoOwner(codeUnit.repo.org)
                         repository(codeUnit.name)
                         credentialsId(codeUnit.repo.credentialsId)
-                        id(repositoryName)
+                        id(codeUnit.name)
                         traits {
                             giteaPullRequestDiscovery {
                                 strategyId(0)
