@@ -14,6 +14,7 @@ class GitRepo {
         this.org = org
         this.hostName = hostName
         this.sshHostName = (sshHostname != null && sshHostName != '')? sshHostname : hostName
+        this.credentialsId = credentialsId
     }
 
     public String getSshUri() {
