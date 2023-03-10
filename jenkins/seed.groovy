@@ -28,7 +28,7 @@ SpringCodeUnitCollection.microservices.each { springCodeUnit ->
             jenkinsfileLocation: 'jenkins/pipelines/kubernetes-deploy.groovy',
             credentialId: 'jenkins-git',
             envs: new HashMap<>([
-                    'REPOSITORY' : microserviceRepository,
+                    'REPOSITORY' : codeUnit.name,
                     'ENVIRONMENT': 'develop'
             ]),
             triggers           : [
