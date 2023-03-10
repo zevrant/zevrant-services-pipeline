@@ -1,7 +1,8 @@
 @Library('CommonUtils') _
 
-import com.zevrant.services.pojo.SpringCodeUnitCollection
+
 import com.zevrant.services.pojo.LibraryCodeUnitCollection
+import com.zevrant.services.pojo.SpringCodeUnitCollection
 
 pipeline {
     agent {
@@ -24,8 +25,8 @@ pipeline {
                             failOnMissingPlugin: true,
                             additionalClasspath: 'jenkins/src/main/groovy/', //only works with
                             additionalParameters: [
-                                    libraryRepositories     : LibraryCodeUnitCollection.libraries,
-                                    microserviceRepositories: SpringCodeUnitCollection.microservices
+                                    libraryCodeUnits: LibraryCodeUnitCollection.libraries,
+                                    springCodeUnits : SpringCodeUnitCollection.microservices
                             ]
                     )
                 }

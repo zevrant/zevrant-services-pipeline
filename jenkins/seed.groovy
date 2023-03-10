@@ -6,18 +6,18 @@ import com.zevrant.services.pojo.PipelineCollection
 import com.zevrant.services.pojo.KubernetesServiceCollection
 import com.zevrant.services.pojo.PipelineTrigger
 
-(libraryRepositories as List<String>).each { libraryRepository ->
-    createMultibranch(libraryRepository, ApplicationType.JAVA_LIBRARY as ApplicationType)
+(libraryCodeUnits as List<LibraryCodeUnit>).each { libraryCodeUnit ->
+    createMultibranch(libraryCodeUnit)
 }
 
-(microserviceRepositories as List<String>).each { microserviceRepository ->
-    String folder = createMultibranch(microserviceRepository, ApplicationType.SPRING as ApplicationType)
+(springCodeUnits as List<SpringCodeUnit>).each { springCodeUnit ->
+    String folder = createMultibranch(springCodeUnit)
     Pipeline developDeployPipeline = new Pipeline(
-            name: "${microserviceRepository}-deploy-to-develop",
+            name: "${springCodeUnit.name}-deploy-to-develop",
             parameters: new ArrayList<>([
                     new PipelineParameter<String>(String.class, "VERSION", "Version to be Deployed", "")
             ]),
-            gitRepo: "ssh://git@ssh.gitea.zevrant-services.com:30121/zevrant-services/zevrant-services-pipeline.git",
+            gitRepo: springCodeUnit.repo.getSshUri(),
             jenkinsfileLocation: 'jenkins/pipelines/kubernetes-deploy.groovy',
             credentialId: 'jenkins-git',
             envs: new HashMap<>([
@@ -32,15 +32,15 @@ import com.zevrant.services.pojo.PipelineTrigger
             ],
     )
     Pipeline prodDeployPipeline = new Pipeline(
-            name: "${microserviceRepository}-deploy-to-prod",
+            name: "${springCodeUnit}-deploy-to-prod",
             parameters: new ArrayList<>([
                     new PipelineParameter<String>(String.class, "VERSION", "Version to be Deployed", "")
             ]),
-            gitRepo: "ssh://git@ssh.gitea.zevrant-services.com:30121/zevrant-services/zevrant-services-pipeline.git",
+            gitRepo: springCodeUnit.repo.getSshUri(),
             jenkinsfileLocation: 'jenkins/pipelines/kubernetes-deploy.groovy',
             credentialId: 'jenkins-git',
             envs: new HashMap<>([
-                    'REPOSITORY' : microserviceRepository,
+                    'REPOSITORY' : springCodeUnit.name,
                     'ENVIRONMENT': 'prod'
             ]),
             triggers           : [
@@ -51,53 +51,58 @@ import com.zevrant.services.pojo.PipelineTrigger
             ],
     )
     createPipeline(folder, developDeployPipeline);
-    createPipeline(folder, prodDeployPipeline);
+    if(springCodeUnit.prodReady) {
+        createPipeline(folder, prodDeployPipeline);
+    }
 }
 
-String androidFolder = createMultibranch('zevrant-android-app', ApplicationType.ANDROID)
+(androidCodeUnits as List<AndroidCodeUnit>).each( { androidCodeUnit ->
+    String androidFolder = createMultibranch(androidCodeUnit)
 
-Pipeline androidDevelopDeployPipeline = new Pipeline(
-        name: "Zevrant-Android-App-Release-To-Internal-Testing",
-        parameters: new ArrayList<>([
-        ]),
-        gitRepo: "ssh://git@ssh.gitea.zevrant-services.com:30121/zevrant-services/zevrant-services-pipeline.git",
-        jenkinsfileLocation: 'jenkins/pipelines/android-deploy.groovy',
-        credentialId: 'jenkins-git',
-        envs: new HashMap<>([
-                'REPOSITORY' : 'zevrant-android-app',
-                'ENVIRONMENT': 'develop'
-        ])
-)
-Pipeline androidProdDeployPipeline = new Pipeline(
-        name: "Zevrant-Android-App-Release-To-Production",
-        parameters: new ArrayList<>([
-        ]),
-        gitRepo: "ssh://git@ssh.gitea.zevrant-services.com:30121/zevrant-services/zevrant-services-pipeline.git",
-        jenkinsfileLocation: 'jenkins/pipelines/android-deploy.groovy',
-        credentialId: 'jenkins-git',
-        envs: new HashMap<>([
-                'REPOSITORY' : 'zevrant-android-app',
-                'ENVIRONMENT': 'prod'
-        ])
-)
-createPipeline(androidFolder, androidDevelopDeployPipeline)
-createPipeline(androidFolder, androidProdDeployPipeline)
+    Pipeline androidDevelopDeployPipeline = new Pipeline(
+            name: "Zevrant-Android-App-Release-To-Internal-Testing",
+            parameters: new ArrayList<>([
+            ]),
+            gitRepo: "ssh://git@ssh.gitea.zevrant-services.com:30121/zevrant-services/zevrant-services-pipeline.git",
+            jenkinsfileLocation: 'jenkins/pipelines/android-deploy.groovy',
+            credentialId: 'jenkins-git',
+            envs: new HashMap<>([
+                    'REPOSITORY' : 'zevrant-android-app',
+                    'ENVIRONMENT': 'develop'
+            ])
+    )
+    Pipeline androidProdDeployPipeline = new Pipeline(
+            name: "Zevrant-Android-App-Release-To-Production",
+            parameters: new ArrayList<>([
+            ]),
+            gitRepo: "ssh://git@ssh.gitea.zevrant-services.com:30121/zevrant-services/zevrant-services-pipeline.git",
+            jenkinsfileLocation: 'jenkins/pipelines/android-deploy.groovy',
+            credentialId: 'jenkins-git',
+            envs: new HashMap<>([
+                    'REPOSITORY' : 'zevrant-android-app',
+                    'ENVIRONMENT': 'prod'
+            ])
+    )
+    createPipeline(androidFolder, androidDevelopDeployPipeline)
+    createPipeline(androidFolder, androidProdDeployPipeline)
+})
+
 String adminFolder = createMultibranch('jenkins-cac', ApplicationType.ADMIN_UTILITIES, 'jenkins/pipelines/admin/cacUpdate.groovy')
 
-String createMultibranch(String repositoryName, ApplicationType applicationType, String customPipelineLocation = "") {
+String createMultibranch(CodeUnit codeUnit) {
     String jobName = ""
-    folder(applicationType.value) {
+    folder(codeUnit.applicationType.value) {
 
     }
-    String folderName = applicationType.value + "/"
-    repositoryName.split("-").each { name -> jobName += name.capitalize() + " " }
+    String folderName = codeUnit.applicationType.value + "/"
+    codeUnit.name.split("-").each { name -> jobName += name.capitalize() + " " }
     jobName = jobName.trim()
     folderName += jobName + "/"
     folder(folderName.substring(0, folderName.length() - 1)) {
 
     }
 
-    multibranchPipelineJob(folderName + repositoryName + "-multibranch") {
+    multibranchPipelineJob(folderName + codeUnit.name + "-multibranch") {
         displayName jobName + " Multibranch"
         factory {
             remoteJenkinsFileWorkflowBranchProjectFactory {
@@ -112,7 +117,7 @@ String createMultibranch(String repositoryName, ApplicationType applicationType,
                         || customPipelineLocation == null) {
                     throw new RuntimeException("Custom pipeline must be specified for Admin application types")
                 } else {
-                    remoteJenkinsFile applicationType.getRemoteJenkinsfile()
+                    remoteJenkinsFile codeUnit.applicationType.getRemoteJenkinsfile()
                 }
 
                 remoteJenkinsFileSCM {
@@ -157,10 +162,10 @@ String createMultibranch(String repositoryName, ApplicationType applicationType,
             branchSource {
                 source {
                     giteaSCMSource {
-                        serverUrl('https://gitea.zevrant-services.com')
-                        repoOwner('zevrant-services')
-                        repository(repositoryName)
-                        credentialsId('zevrant-services-jenkins')
+                        serverUrl(codeUnit.repo.getHttpsUri())
+                        repoOwner(codeUnit.repo.org)
+                        repository(codeUnit.name)
+                        credentialsId(codeUnit.repo.credentialsId)
                         id(repositoryName)
                         traits {
                             giteaPullRequestDiscovery {
