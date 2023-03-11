@@ -186,7 +186,7 @@ pipeline {
     post {
         always {
             script {
-                String appName = "${REPOSITORY.split("-")[1].capitalize()} ${REPOSITORY.split("-")[2].capitalize()}"
+                String appName = "${REPOSITORY.split('-').collect {part -> part.capitalize()}.join(' ')}}"
                 withCredentials([string(credentialsId: 'discord-webhook', variable: 'webhookUrl')]) {
                     discordSend description: "Jenkins Build for ${appName} on branch ${branchName} ${currentBuild.currentResult}", link: env.BUILD_URL, result: currentBuild.currentResult, title: "Spring Build", webhookURL: webhookUrl
                 }
