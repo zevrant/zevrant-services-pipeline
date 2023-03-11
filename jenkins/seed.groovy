@@ -24,7 +24,7 @@ SpringCodeUnitCollection.microservices.each { springCodeUnit ->
             parameters: new ArrayList<>([
                     new PipelineParameter<String>(String.class, "VERSION", "Version to be Deployed", "")
             ]),
-            gitRepo: springCodeUnit.repo.getSshUri(),
+            gitRepo: 'ssh://git@ssh.gitea.zevrant-services.com:30121/zevrant-services/zevrant-services-pipeline.git',
             jenkinsfileLocation: 'jenkins/pipelines/kubernetes-deploy.groovy',
             credentialId: 'jenkins-git',
             envs: new HashMap<>([
@@ -43,7 +43,7 @@ SpringCodeUnitCollection.microservices.each { springCodeUnit ->
             parameters: new ArrayList<>([
                     new PipelineParameter<String>(String.class, "VERSION", "Version to be Deployed", "")
             ]),
-            gitRepo: springCodeUnit.repo.getSshUri(),
+            gitRepo: 'ssh://git@ssh.gitea.zevrant-services.com:30121/zevrant-services/zevrant-services-pipeline.git',
             jenkinsfileLocation: 'jenkins/pipelines/kubernetes-deploy.groovy',
             credentialId: 'jenkins-git',
             envs: new HashMap<>([
