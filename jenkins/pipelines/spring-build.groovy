@@ -175,7 +175,7 @@ pipeline {
                     String versionString = (branchName == "master")
                             ? version.toVersionCodeString()
                             : "${versionString}-${branchName}" as String
-                    build job: "Spring/${repositorySplit[0].capitalize()} ${repositorySplit[1].capitalize()} ${repositorySplit[2].capitalize()}/${REPOSITORY}-deploy-to-develop" as String, parameters: [
+                    build job: "Spring/${repositorySplit.collect {part -> part.capitalize()}.join(' ')}/${REPOSITORY}-deploy-to-develop" as String, parameters: [
                             [$class: 'StringParameterValue', name: 'VERSION', value: versionString],
                     ],
                             wait: false
