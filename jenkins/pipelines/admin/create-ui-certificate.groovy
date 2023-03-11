@@ -17,7 +17,7 @@ if(DOMAIN == null || DOMAIN == '') {
 pipeline {
     agent {
         kubernetes {
-            inheritFrom 'zevrant-certbot'
+            inheritFrom 'certbot'
         }
     }
 
@@ -30,7 +30,7 @@ pipeline {
             }
             steps {
                 script {
-                    container('zevrant-certbot') {
+                    container('certbot') {
                         sh "certbot --test-cert -v certonly --dns-route53 -d ${DOMAIN} --non-interactive --agree-tos -m gdittrick@zevrant-services.com"
                         sh "cp /etc/letsencrypt/live/${DOMAIN}/privkey.pem privkey.pem"
                         sh "cp /etc/letsencrypt/live/${DOMAIN}/fullchain.pem fullchain.pem"

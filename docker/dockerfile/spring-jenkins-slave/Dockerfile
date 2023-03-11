@@ -9,12 +9,12 @@ RUN apt-get update \
     && mkdir -p /var/zevrant-services/vault/ \
     && mkdir -p /opt/acme/certs
 
-RUN useradd -m -d /var/lib/jenkins -G developers jenkins \
+RUN useradd -m -d /var/lib/jenkins -u 10000 -G developers jenkins \
     && mkdir -p /.npmrc \
-    && chown -R 1000:1000 /.npmrc \
-    && chown -R 1000:1000 /var/zevrant-services \
+    && chown -R 10000:10000 /.npmrc \
+    && chown -R 10000:10000 /var/zevrant-services \
     && chmod -R 0700 /var/zevrant-services \
-    && chown -R 1000:1000 /opt/acme \
+    && chown -R 10000:10000 /opt/acme \
     && chmod -R 0700 /opt/acme
 
 

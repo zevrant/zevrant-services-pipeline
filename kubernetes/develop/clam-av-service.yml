@@ -41,6 +41,5 @@ spec:
               value: 999999M
             - name: CLAMD_CONF_StreamMaxLength
               value: 999999M
-
           ports:
             - containerPort: 3310

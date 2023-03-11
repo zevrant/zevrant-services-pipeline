@@ -5,7 +5,8 @@ COPY inbound-agent.sh /usr/local/bin/jenkins-agent
 RUN apt-get update \
     && apt-get full-upgrade -y \
     && apt-get install -y git git-lfs fontconfig zip \
-    && useradd -m -d /home/jenkins -r -u 1000 jenkins \
+    && apt-get clean \
+    && useradd -m -d /home/jenkins -r -u 10000 jenkins \
     && chmod a+rx /usr/local/bin/jenkins-agent \
     && curl 'https://repo.jenkins-ci.org/api/search/versions?g=org.jenkins-ci.main&a=remoting&repos=releases' | jq -r '.[] | map(select(.version))'[0].version > /tmp/version \
     && curl --create-dirs -fsSLo /usr/share/jenkins/agent.jar https://repo.jenkins-ci.org/public/org/jenkins-ci/main/remoting/"$(cat /tmp/version)"/remoting-"$(cat /tmp/version)".jar \
@@ -15,7 +16,7 @@ RUN apt-get update \
     && chown -R jenkins:jenkins /home/jenkins/ \
     && ln -sf /usr/share/jenkins/agent.jar /usr/share/jenkins/slave.jar
 
-USER 1000
+USER 10000
 
 ENV HOME=/home/jenkins
 WORKDIR /home/jenkins
