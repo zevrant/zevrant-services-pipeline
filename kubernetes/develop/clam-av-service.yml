@@ -1,37 +1,39 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: zevrant-clamav-service
+  name: clamav
+  namespace: develop
 spec:
   ports:
     - port: 3310
       targetPort: 3310
+      name: clamav
   selector:
-    app: zevrant-clamav-service
+    app: clamav
 
 ---
 
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: zevrant-clamav-service-deployment
+  name: clamav
   labels:
-    app: zevrant-clamav-service
+    app: clamav
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: zevrant-clamav-service
+      app: clamav
   template:
     metadata:
       labels:
-        app: zevrant-clamav-service
+        app: clamav
     spec:
       imagePullSecrets:
         - name: regcred
       containers:
-        - name: zevrant-clamav-service
-          image: containers.zevrant-services.com/zevrant/mkodockx/docker-clamav
+        - name: clamav
+          image: containers.zevrant-services.com/zevrant/clamav/clamav:latest
           env:
             - name: CLAMD_CONF_MaxFileSize
               value: 999999M
@@ -39,5 +41,6 @@ spec:
               value: 999999M
             - name: CLAMD_CONF_StreamMaxLength
               value: 999999M
+
           ports:
             - containerPort: 3310
