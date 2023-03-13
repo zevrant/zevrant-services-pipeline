@@ -31,7 +31,7 @@ pipeline {
             steps {
                 script {
                     container('certbot') {
-                        sh "certbot --test-cert -v certonly --dns-route53 -d ${DOMAIN} --non-interactive --agree-tos -m gdittrick@zevrant-services.com"
+                        sh "certbot -v certonly --dns-route53 -d ${DOMAIN} --non-interactive --agree-tos -m gdittrick@zevrant-services.com"
                         sh "cp /etc/letsencrypt/live/${DOMAIN}/privkey.pem privkey.pem"
                         sh "cp /etc/letsencrypt/live/${DOMAIN}/fullchain.pem fullchain.pem"
                         sh 'chmod a+r privkey.pem'
