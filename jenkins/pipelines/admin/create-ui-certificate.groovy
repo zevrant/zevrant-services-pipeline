@@ -48,12 +48,12 @@ pipeline {
                 script {
                     container('kubectl') {
                         try {
-                            sh 'kubectl delete secrets zevrant-home-ui-tls'
+                            sh 'kubectl delete secrets ui-core-tls -n $ENVIRONMENT'
                         } catch (Exception ignored) {
                             println 'secret doesnt exist continuing'
                         }
 
-                        sh "kubectl create secret generic zevrant-home-ui-tls -n $ENVIRONMENT --from-file=tls.crt=fullchain.pem --from-file=tls.key=privkey.pem"
+                        sh "kubectl create secret generic ui-core-tls -n $ENVIRONMENT --from-file=tls.crt=fullchain.pem --from-file=tls.key=privkey.pem"
                     }
                 }
             }

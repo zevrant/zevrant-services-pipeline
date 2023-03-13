@@ -27,7 +27,7 @@ services:
       - zevrant-keycloak-service-db
     ports:
       - "9011:8080"
-    image: docker.io/zevrant/keycloak:18.0.2
+    image: containers.zevrant-services.com/zevrant/keycloak:18.0.2
     command:
       - echo $KC_DB_URL_HOST
       - /bin/kc.sh start-dev
@@ -72,7 +72,7 @@ services:
   clam-av:
     ports:
       - "3310:3310"
-    image: docker.io/mkodockx/docker-clamav:latest
+    image: containers.zevrant-services.com/zevrant/clamav/clamav:latest
     pull_policy: always
     environment:
       CLAMD_CONF_MaxFileSize: 999999M
