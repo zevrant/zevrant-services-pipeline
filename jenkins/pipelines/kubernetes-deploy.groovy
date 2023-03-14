@@ -133,7 +133,7 @@ pipeline {
     post {
         always {
             script {
-                String appName = "${REPOSITORY.split("-")[1].capitalize()} ${REPOSITORY.split("-")[2].capitalize()}"
+                String appName = "${REPOSITORY.split('-').collect {part -> part.capitalize()}.join(' ')}"
                 withCredentials([string(credentialsId: 'discord-webhook', variable: 'webhookUrl')]) {
                     if (VERSION != null && VERSION != '') {
                         if(ENVIRONMENT == 'prod') {
