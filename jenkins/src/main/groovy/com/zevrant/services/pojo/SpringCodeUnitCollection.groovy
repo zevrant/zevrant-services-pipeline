@@ -13,7 +13,7 @@ class SpringCodeUnitCollection {
                     name: 'ui-core'
             ]),
             new SpringCodeUnit([
-                    name: 'oauth-service'
+                    name: 'oauth2-service'
             ]),
             new SpringCodeUnit([
                     name: 'notification-service'
