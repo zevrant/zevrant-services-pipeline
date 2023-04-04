@@ -1,10 +1,10 @@
 package com.zevrant.services.services
 
 void checkout(String hostname = 'ssh://git@ssh.gitea.zevrant-services.com:30121',
-        String org = 'zevrant-services',
-        String repository,
-        String branch = 'master',
-        String credentialsId = 'jenkins-git') {
+              String org = 'zevrant-services',
+              String repository,
+              String branch = 'master',
+              String credentialsId = 'jenkins-git') {
     checkout(
             scm: [
                     $class           : 'GitSCM',
@@ -18,4 +18,37 @@ void checkout(String hostname = 'ssh://git@ssh.gitea.zevrant-services.com:30121'
                                         ]]
             ]
     )
+}
+
+oid postBuildPrHook(GitHubRepo gitHubRepo) {
+    GitHubRepo repo = new GitHubRepo(repoSsh)
+    BuildManagement buildManagement = TaskLoader.load(binding, BuildManagement)
+
+    String prNumber = buildManagement.getPrNumber()
+    String credentialsId = gitHubRepo.credentialsId
+
+    if (prNumber) {
+        Map<String, Object> prDetails = getPullRequestDetails(
+                credentialsId,
+                repo.organization,
+                repo.name,
+                prNumber
+        )
+        notifyPrReviewer(prDetails)
+        String color = 'danger'
+        String message = 'Build Failed.'
+
+        if (prDetails.draft) {
+            color = 'warning'
+            message = 'This build was cut short because the pull request is marked as draft. To complete a full ' +
+                    'build, run the Jenkins job again after marking this pull request as ready for review.'
+        }
+        notifyPrBuildResult(
+                prDetails, repo.organization, repo.name,
+                color,
+                message
+        )
+    } else {
+        echo 'Could not find a corresponding PR to notify from'
+    }
 }
