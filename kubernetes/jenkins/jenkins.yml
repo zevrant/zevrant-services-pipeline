@@ -72,7 +72,7 @@ spec:
       initContainers:
         - name: secret-init
           image: docker.io/zevrant/ubuntu-base:latest
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           securityContext:
             runAsUser: 1000
           volumeMounts:
@@ -96,7 +96,7 @@ spec:
       containers:
         - name: jenkins
           image: containers.zevrant-services.com/zevrant/jenkins:lts-jdk11
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           command:
             - /bin/sh
           args:
