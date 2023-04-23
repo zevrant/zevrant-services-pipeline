@@ -33,9 +33,9 @@ RUN mkdir -p /opt/foundry \
     && mkdir -p /home/foundry/.local/share/FoundryVTT \
     && chown -R foundry:foundry /opt/foundry \
     && chown -R foundry:foundry /home/foundry \
-    && echo '172.16.1.10 zevrant-01.zevrant-services.com' >> /etc/hosts \
-    && echo '172.16.1.2 develop.vault.zevrant0-services.com' >> /etc/hosts \
-    && cat /etc/hosts
+    && echo '172.16.1.10 zevrant-01.zevrant-services.com' >> /etc/vmCreationInventory.yml \
+    && echo '172.16.1.2 develop.vault.zevrant0-services.com' >> /etc/vmCreationInventory.yml \
+    && cat /etc/vmCreationInventory.yml
 
 USER foundry
 

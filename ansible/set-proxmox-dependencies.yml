@@ -1,0 +1,28 @@
+##Run as root user
+- name: Install Proxmox Ansible Dependencies
+  hosts: all
+  tasks:
+    - name: update cache and install python3-pip
+      ansible.builtin.apt:
+        pkg:
+          - python3-pip
+        update_cache: true
+        state: latest
+    - name: install proxmoxer python3 package
+      ansible.builtin.pip:
+        name:
+          - proxmoxer
+          - requests
+        state: latest
+    - name: create non root user
+      ansible.builtin.shell: |
+        useradd -m zevrant -u 100001
+        echo 'zevrant ALL=(ALL:ALL) NOPASSWD:ALL' > /etc/sudoers.d/no-password-root
+        echo '\n' >> /etc/sudoers.d/no-password-root
+        chmod 0440 /etc/sudoers.d/no-password-root
+        mkdir /home/zevrant/.ssh/
+        echo 'ecdsa-sha2-nistp384 AAAAE2VjZHNhLXNoYTItbmlzdHAzODQAAAAIbmlzdHAzODQAAABhBKKXyClNSThUnVRq21snovBRgd7SXCkkX7RcEO8B12aqH3aYl+2QYew0cDm5d+2khOxBZRRqebCgEGo11EDOo1T0gmVjThGxFJG9GkOPfG12U9ODOLNDQz8EkrH1fzaqmw== Public key for PIV Authentication' > /home/zevrant/.ssh/authorized_keys
+        chown -R zevrant:zevrant /home/zevrant/.ssh
+        sed -i 's/PermitRootLogin yes/PermitRootLogin no/g' /etc/ssh/sshd_config
+        sed -i 's/#PasswordAuthentication yes/PasswordAuthentication no/g' /etc/ssh/sshd_config
+        systemctl restart sshd

@@ -1,0 +1,7 @@
+all:
+  hosts:
+    proxmox-01.preprod.zevrant-services.com:
+    proxmox-02.preprod.zevrant-services.com:
+    proxmox-04.preprod.zevrant-services.com:
+    proxmox-05.preprod.zevrant-services.com:
+    proxmox-06.preprod.zevrant-services.com:

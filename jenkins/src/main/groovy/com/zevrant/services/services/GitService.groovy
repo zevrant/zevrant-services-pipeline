@@ -52,3 +52,4 @@ oid postBuildPrHook(GitHubRepo gitHubRepo) {
         echo 'Could not find a corresponding PR to notify from'
     }
 }
+

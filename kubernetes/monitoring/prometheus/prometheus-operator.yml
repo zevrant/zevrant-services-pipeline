@@ -7177,7 +7177,7 @@ spec:
                 description: Pods' hostAliases configuration
                 items:
                   description: HostAlias holds the mapping between IP and hostnames
-                    that will be injected as an entry in the pod's hosts file.
+                    that will be injected as an entry in the pod's vmCreationInventory.yml file.
                   properties:
                     hostnames:
                       description: Hostnames for the above IP address.
@@ -12590,7 +12590,7 @@ spec:
                           type: object
                         type: array
                       static:
-                        description: The list of hosts to probe.
+                        description: The list of vmCreationInventory.yml to probe.
                         items:
                           type: string
                         type: array
@@ -15893,7 +15893,7 @@ spec:
                 description: Pods' hostAliases configuration
                 items:
                   description: HostAlias holds the mapping between IP and hostnames
-                    that will be injected as an entry in the pod's hosts file.
+                    that will be injected as an entry in the pod's vmCreationInventory.yml file.
                   properties:
                     hostnames:
                       description: Hostnames for the above IP address.
@@ -22786,7 +22786,7 @@ spec:
                   description: Pods' hostAliases configuration
                   items:
                     description: HostAlias holds the mapping between IP and hostnames
-                      that will be injected as an entry in the pod's hosts file.
+                      that will be injected as an entry in the pod's vmCreationInventory.yml file.
                     properties:
                       hostnames:
                         description: Hostnames for the above IP address.
