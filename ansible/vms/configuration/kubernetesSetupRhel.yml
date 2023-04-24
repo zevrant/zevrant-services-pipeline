@@ -13,9 +13,11 @@
       become_user: root
       ansible.builtin.shell: |
         yum update -y
-        yum install -y yum-utils jq
+        yum install -y yum-utils jq iproute-tc systemd-resolved
         yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-
+        dnf config-manager --set-enabled crb
+        yum install iptables-legacy -y
+        ln -sf /usr/sbin/iptables-legacy /etc/alternatives/iptables
     - name: Add Kubernetes Repository
       become: true
       become_user: root
@@ -117,7 +119,7 @@
       become: true
       become_user: root
       ansible.builtin.command:
-        cmd: systemctl enable containerd kubelet node-exporter
+        cmd: systemctl enable containerd kubelet node-exporter systemd-resolved
     - name: Start Containerd & Node Exporter
       become: true
       become_user: root
