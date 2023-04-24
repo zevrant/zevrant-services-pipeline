@@ -23,6 +23,6 @@
         mkdir /home/zevrant/.ssh/
         echo 'ecdsa-sha2-nistp384 AAAAE2VjZHNhLXNoYTItbmlzdHAzODQAAAAIbmlzdHAzODQAAABhBKKXyClNSThUnVRq21snovBRgd7SXCkkX7RcEO8B12aqH3aYl+2QYew0cDm5d+2khOxBZRRqebCgEGo11EDOo1T0gmVjThGxFJG9GkOPfG12U9ODOLNDQz8EkrH1fzaqmw== Public key for PIV Authentication' > /home/zevrant/.ssh/authorized_keys
         chown -R zevrant:zevrant /home/zevrant/.ssh
-        sed -i 's/PermitRootLogin yes/PermitRootLogin no/g' /etc/ssh/sshd_config
+        sed -i 's~zevrant:x:100001:10001::/home/zevrant:/bin/sh~zevrant:x:100001:10001::/home/zevrant:/bin/bash~g' /etc/passwd
         sed -i 's/#PasswordAuthentication yes/PasswordAuthentication no/g' /etc/ssh/sshd_config
         systemctl restart sshd

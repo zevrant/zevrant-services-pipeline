@@ -1,0 +1,125 @@
+- name: Setup Kubernetes On Host
+  hosts: all
+  tasks:
+    - name: Update Packages
+      become: true
+      become_user: root
+      ansible.builtin.yum:
+        update_cache: true
+        name: '*'
+        state: latest
+    - name: Install Dependencies
+      become: true
+      become_user: root
+      ansible.builtin.shell: |
+        yum update -y
+        yum install -y yum-utils jq
+        yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+
+    - name: Add Kubernetes Repository
+      become: true
+      become_user: root
+      ansible.builtin.copy:
+        content: |
+          [kubernetes]
+          name=Kubernetes
+          baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+          enabled=1
+          gpgcheck=1
+          repo_gpgcheck=1
+          gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+        dest: /etc/yum.repos.d/kubernetes.repo
+    - name: Install Containerd & Kubeadm
+      become: true
+      become_user: root
+      ansible.builtin.yum:
+        update_cache: true
+        name:
+          - containerd.io
+          - kubeadm
+    - name: Create Node Exporter Systemd File
+      become: true
+      become_user: root
+      ansible.builtin.copy:
+        content: |
+          [Unit]
+          Description=Node Exporter
+          Documentation=
+
+          Wants=network.target
+          After=network.target
+
+          [Service]
+          User=node-exporter
+
+          WorkingDirectory=/opt/node-exporter
+          ExecStart=/opt/node-exporter/node_exporter --web.config=/opt/node-exporter/config.yml
+        dest: /etc/systemd/system/node-exporter.service
+    - name: Create Node Exporter User
+      become: true
+      become_user: root
+      ansible.builtin.command:
+        cmd: adduser --system --shel /bin/false --no-create-home node-exporter
+    - name: Create Developers Group
+      become: true
+      become_user: root
+      ansible.builtin.command:
+        cmd: groupadd developers
+    - name: Add Main User to Developers Group
+      become: true
+      become_user: root
+      ansible.builtin.command:
+        cmd: usermod -aG developers zevrant
+    - name: Create Node Exporter Install Folder
+      become: true
+      become_user: root
+      ansible.builtin.file:
+        path: /opt/node-exporter
+        state: directory
+        mode: '0755'
+        owner: node-exporter
+        group: developers
+    - name: Install Node Exporter
+      become_user: root
+      become: true
+      ansible.builtin.shell: |
+        #!/bin/bash
+        curl -L https://github.com/prometheus/node_exporter/releases/download/v1.5.0/node_exporter-1.5.0.linux-amd64.tar.gz -o node-exporter.tar.gz
+        tar xvf node-exporter.tar.gz
+        mv node_exporter-* node-exporter
+        mv node-exporter/* /opt/node-exporter
+        rm -rf node-exporter*
+        chown -R node-exporter:developers /opt/node-exporter
+    - name: Set Max Map Count
+      become_user: root
+      become: true
+      ansible.builtin.command:
+        cmd: echo "vm.max_map_count = 262144" >> /etc/sysctl.conf
+    - name: Reload Sysctl
+      become_user: root
+      become: true
+      ansible.builtin.command:
+        cmd: sysctl -p
+    - name: Reload Systemd Services
+      become: true
+      become_user: root
+      ansible.builtin.command:
+        cmd: systemctl daemon-reload
+    - name: Enable Systemd Cgroups
+      become: true
+      become_user: root
+      ansible.builtin.shell: |
+        #!/bin/bash
+        mkdir -p /etc/containerd/
+        /usr/bin/containerd config default > /etc/containerd/config.toml
+        sed -i 's/SystemdCgroup = false/SystemdCgroup = true/g' /etc/containerd/config.toml
+    - name: Enable Systemd Services
+      become: true
+      become_user: root
+      ansible.builtin.command:
+        cmd: systemctl enable containerd kubelet node-exporter
+    - name: Start Containerd & Node Exporter
+      become: true
+      become_user: root
+      ansible.builtin.command:
+        cmd: systemctl start containerd node-exporter

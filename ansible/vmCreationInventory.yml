@@ -1,0 +1,21 @@
+all:
+  children:
+    preprod:
+      vars:
+        ansible_python_interpreter: /usr/bin/python3
+        apiPassword: 8df6072e-548c-4bcb-83c4-95dec3ca0b8f
+        apiHost: proxmox-04.preprod.zevrant-services.com
+        destHost: proxmox-04
+        ciPassword: testpassword
+        vmId: 140
+        vmNumber: 5
+        linuxVMUrl: https://repo.almalinux.org/almalinux/9/cloud/x86_64/images/AlmaLinux-9-GenericCloud-latest.x86_64.qcow2
+#        linuxVMUrl: https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img
+        sshKey: "ecdsa-sha2-nistp384 AAAAE2VjZHNhLXNoYTItbmlzdHAzODQAAAAIbmlzdHAzODQAAABhBKKXyClNSThUnVRq21snovBRgd7SXCkkX7RcEO8B12aqH3aYl+2QYew0cDm5d+2khOxBZRRqebCgEGo11EDOo1T0gmVjThGxFJG9GkOPfG12U9ODOLNDQz8EkrH1fzaqmw== Public key for PIV Authentication"
+        hostCidr: 172.16.2.
+        ipAddress: 172.16.2.11
+  #
+      hosts:
+#        172.16.1.57:
+        proxmox-04.preprod.zevrant-services.com:
+#      172.16.1.56

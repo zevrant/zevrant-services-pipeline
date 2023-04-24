@@ -1,0 +1,8 @@
+all:
+  vars:
+#    ansible_ssh_common_args: '-o StrictHostKeyChecking=no -o ProxyCommand="ssh -W %h:%p zevrant@proxmox-05.preprod.zevrant-services.com -p 22"'
+    ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
+  hosts:
+    172.16.2.10:
+#    172.16.2.11:
+#    172.16.2.6:
