@@ -1,6 +1,7 @@
 - name: "Create new Ubuntu Linux VM with hookscript and description" #Alma Cloud init image refuses to run :/
   hosts: preprod
-
+  become: true
+  become_user: root
   tasks:
 #    - name: 'Obtain First Available IP In /24 CIDR'
 #      ansible.builtin.shell: |
@@ -45,14 +46,14 @@
 #      register: sshPubKey
 #    - debug:
 #        var: sshPubKey.stdout
-    - name: Create Kubernetes Master VM
+    - name: Create Kubernetes VM
       community.general.proxmox_kvm:
         vmid: "{{ vmId }}"
         node: "{{ destHost }}"
         api_user: zevrant@pve
         api_token_id: test
         api_token_secret: "{{ apiPassword }}"
-        api_host: "{{ apiHost }}"
+        api_host: "{{ destHost }}.{{ hostFqdn }}"
         autostart: true
         balloon: 4096
         bios: seabios
@@ -63,7 +64,7 @@
         localtime: false
         machine: pc
         migrate_speed: 0
-        name: "kubernetes-master-{{ vmNumber }}"
+        name: "kubernetes-worker-{{ vmNumber }}"
         description: "Kubernetes Master {{vmNumber}}"
         cores: 4
         cpu: Westmere
@@ -91,17 +92,17 @@
     - name: Download Cloud Init Image
       ansible.builtin.get_url:
         url: "{{ linuxVMUrl }}"
-        dest: /tmp/ubuntu-jammy.qcow2
+        dest: /tmp/alma9-cloud-init.qcow2
     - name: Import CloudInit Image to VM
       become: true
       become_user: root
       ansible.builtin.command:
-        cmd: qm set "{{ vmId }}" -scsi0 'file=vm-storage:0,import-from=/tmp/ubuntu-jammy.qcow2' -bootdisk scsi0
-    - name: Increate Disk Size By 50GB
+        cmd: qm set "{{ vmId }}" -scsi0 'file=vm-storage:0,import-from=/tmp/alma9-cloud-init.qcow2' -bootdisk scsi0
+    - name: Increate Disk Size By 30GB
       become: true
       become_user: root
       ansible.builtin.command:
-        cmd: qm resize "{{ vmId }}" scsi0 +50G
+        cmd: qm resize "{{ vmId }}" scsi0 +30G
     - name: Power On VM
       community.general.proxmox_kvm:
         vmid: "{{ vmId }}"
@@ -109,7 +110,7 @@
         api_user: zevrant@pve
         api_token_id: test
         api_token_secret: "{{ apiPassword }}"
-        api_host: "{{ apiHost }}"
+        api_host: "{{ destHost }}.{{ hostFqdn }}"
         state: started
         update: true
         timeout: 150
@@ -140,7 +141,7 @@
 #        api_user: zevrant@pve
 #        api_token_id: test
 #        api_token_secret: "{{ apiPassword }}"
-#        api_host: "{{ apiHost }}"
+#        api_host: "{{ destHost }}.{{ hostFqdn }}"
 #        state: stopped
 #        update: true
 #        timeout: 150
@@ -151,7 +152,7 @@
 #        api_user: zevrant@pve
 #        api_token_id: test
 #        api_token_secret: "{{ apiPassword }}"
-#        api_host: "{{ apiHost }}"
+#        api_host: "{{ destHost }}.{{ hostFqdn }}"
 #        state: started
 #        update: true
 #        timeout: 150

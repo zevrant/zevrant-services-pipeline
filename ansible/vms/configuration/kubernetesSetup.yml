@@ -1,33 +1,27 @@
 - name: Setup Kubernetes On Host
   hosts: all
+  become: true
+  become_user: root
   tasks:
 #    - name: Extend Main Partition
 #      become: true
 #      become_user: root
 #      ansible.builtin.command:
 #        cmd: growpart /dev/sda 1
-    - name: Extend File System
-      become: true
-      become_user: root
-      ansible.builtin.command:
-        cmd: resize2fs /dev/sda1
-    - name: Wait For Apt To Become Available
-      become: true
-      become_user: root
-      ansible.builtin.shell: |
-        #!/bin/bash
-        if [[ ! -z "$(fuser /var/lib/dpkg/lock)" || ! -z "$(fuser /var/lib/apt/lists/lock)" || ! -z "$(fuser /var/cache/apt/archives/lock)" ]]; then
-            echo /dev/null > /var/lib/dpkg/lock-frontend
-        fi
+#    - name: Extend File System
+#      ansible.builtin.command:
+#        cmd: resize2fs /dev/sda1
+#    - name: Wait For Apt To Become Available
+#      ansible.builtin.shell: |
+#        #!/bin/bash
+#        if [[ ! -z "$(fuser /var/lib/dpkg/lock)" || ! -z "$(fuser /var/lib/apt/lists/lock)" || ! -z "$(fuser /var/cache/apt/archives/lock)" ]]; then
+#            echo /dev/null > /var/lib/dpkg/lock-frontend
+#        fi
     - name: Update Packages
-      become: true
-      become_user: root
       ansible.builtin.apt:
         update_cache: true
         upgrade: 'dist'
     - name: Install Dependencies
-      become: true
-      become_user: root
       ansible.builtin.apt:
         pkg:
           - apt-transport-https
@@ -35,8 +29,6 @@
           - curl
           - jq
     - name: Create Keyring Directory
-      become: true
-      become_user: root
       ansible.builtin.file:
         path: /etc/apt/keyrings
         state: directory
@@ -46,37 +38,27 @@
 #      ansible.builtin.command:
 #        cmd: mkdir -p /etc/apt/keyrings
     - name: Add Google GPG Key
-      become: true
-      become_user: root
       ansible.builtin.get_url:
         url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
         dest: /etc/apt/keyrings/kubernetes-archive-keyring.gpg
 #      ansible.builtin.command:
 #        cmd: curl -fsSLo /etc/apt/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
     - name: Add Kubernetes Repository
-      become: true
-      become_user: root
       ansible.builtin.copy:
         content: 'deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main'
         dest: /etc/apt/sources.list.d/kubernetes.list
 #      ansible.builtin.command:
 #        cmd: echo "deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | tee /etc/apt/sources.list.d/kubernetes.list
     - name: Update Cache
-      become: true
-      become_user: root
       ansible.builtin.apt:
         update_cache: true
     - name: Install Containerd & Kubeadm
-      become: true
-      become_user: root
       ansible.builtin.apt:
         force_apt_get: true
         pkg:
           - containerd
           - kubeadm
     - name: Create Node Exporter Systemd File
-      become: true
-      become_user: root
       ansible.builtin.copy:
         content: |
           [Unit]
@@ -93,23 +75,15 @@
           ExecStart=/opt/node-exporter/node_exporter --web.config=/opt/node-exporter/config.yml
         dest: /etc/systemd/system/node-exporter.service
     - name: Create Node Exporter User
-      become: true
-      become_user: root
       ansible.builtin.command:
         cmd: adduser --system --shel /bin/false --no-create-home --disabled-login node-exporter
     - name: Create Developers Group
-      become: true
-      become_user: root
       ansible.builtin.command:
         cmd: groupadd developers
     - name: Add Main User to Developers Group
-      become: true
-      become_user: root
       ansible.builtin.command:
         cmd: usermod -aG developers zevrant
     - name: Create Node Exporter Install Folder
-      become: true
-      become_user: root
       ansible.builtin.file:
         path: /opt/node-exporter
         state: directory
@@ -117,8 +91,6 @@
         owner: node-exporter
         group: developers
     - name: Install Node Exporter
-      become_user: root
-      become: true
       ansible.builtin.shell: |
         #!/bin/bash
         url="$(curl -s https://gitea.zevrant-services.com/api/v1/repos/prometheus/node_exporter/releases/latest | jq -r .assets[2].browser_download_url)"
@@ -129,35 +101,23 @@
         rm -r node-exporter*
         chown -R node-exporter:developers /opt/node-exporter
     - name: Set Max Map Count
-      become_user: root
-      become: true
       ansible.builtin.command:
         cmd: echo "vm.max_map_count = 262144" >> /etc/sysctl.conf
     - name: Reload Sysctl
-      become_user: root
-      become: true
       ansible.builtin.command:
         cmd: sysctl -p
     - name: Reload Systemd Services
-      become: true
-      become_user: root
       ansible.builtin.command:
         cmd: systemctl daemon-reload
     - name: Enable Systemd Cgroups
-      become: true
-      become_user: root
       ansible.builtin.shell: |
         #!/bin/bash
         mkdir /etc/containerd/
         /usr/bin/containerd config default > /etc/containerd/config.toml
         sed -i 's/SystemdCgroup = false/SystemdCgroup = true/g' /etc/containerd/config.toml
     - name: Enable Systemd Services
-      become: true
-      become_user: root
       ansible.builtin.command:
         cmd: systemctl enable containerd kubelet node-exporter
     - name: Start Containerd & Node Exporter
-      become: true
-      become_user: root
       ansible.builtin.command:
         cmd: systemctl start containerd node-exporter
