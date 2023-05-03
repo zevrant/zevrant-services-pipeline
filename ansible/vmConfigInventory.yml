@@ -2,7 +2,36 @@ all:
   vars:
 #    ansible_ssh_common_args: '-o StrictHostKeyChecking=no -o ProxyCommand="ssh -W %h:%p zevrant@proxmox-05.preprod.zevrant-services.com -p 22"'
     ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
+    ansible-connection: ssh
+    hosts:
+      - 172.16.2.1
+      - 172.16.2.2
+      - 172.16.2.6
+      - 172.16.2.9
+      - 172.16.2.10
+      - 172.16.2.11
+      - 172.16.2.12
+      - 172.16.2.13
+      - 172.16.2.14
+      - 172.16.2.15
   hosts:
+    172.16.2.1:
+      hostname: kubernetes-master-01
+    172.16.2.2:
+      hostname: kubernetes-master-02
+    172.16.2.6:
+      hostname: kubernetes-master-04
+    172.16.2.9:
+      hostname: kubernetes-master-05
     172.16.2.10:
-#    172.16.2.11:
-#    172.16.2.6:
+      hostname: kubernetes-master-06
+    172.16.2.11:
+      hostname: kubernetes-worker-01
+    172.16.2.12:
+      hostname: kubernetes-worker-02
+    172.16.2.13:
+      hostname: kubernetes-worker-04
+    172.16.2.14:
+      hostname: kubernetes-worker-05
+    172.16.2.15:
+      hostname: kubernetes-worker-06

@@ -1,5 +1,5 @@
 - name: "Create new Ubuntu Linux VM with hookscript and description" #Alma Cloud init image refuses to run :/
-  hosts: preprod
+  hosts: preprodWorkers
   become: true
   become_user: root
   tasks:
@@ -51,7 +51,7 @@
         vmid: "{{ vmId }}"
         node: "{{ destHost }}"
         api_user: zevrant@pve
-        api_token_id: test
+        api_token_id: main
         api_token_secret: "{{ apiPassword }}"
         api_host: "{{ destHost }}.{{ hostFqdn }}"
         autostart: true
@@ -64,11 +64,11 @@
         localtime: false
         machine: pc
         migrate_speed: 0
-        name: "kubernetes-worker-{{ vmNumber }}"
-        description: "Kubernetes Master {{vmNumber}}"
-        cores: 4
+        name: "kubernetes-{{ nodeType }}-{{ vmNumber }}"
+        description: "kubernetes {{nodeType}} {{vmNumber}}"
+        cores: "{{ cpus }}"
         cpu: Westmere
-        memory: 4096
+        memory: "{{ memory }}"
         net:
           net0: "bridge=vmbr0,model=virtio"
         onboot: true
@@ -80,16 +80,21 @@
           - '1.1.1.1'
         ostype: l26
 #        sshkeys: "{{ sshPubKey.stdout }}"
-        sshkeys: "ecdsa-sha2-nistp384 AAAAE2VjZHNhLXNoYTItbmlzdHAzODQAAAAIbmlzdHAzODQAAABhBKKXyClNSThUnVRq21snovBRgd7SXCkkX7RcEO8B12aqH3aYl+2QYew0cDm5d+2khOxBZRRqebCgEGo11EDOo1T0gmVjThGxFJG9GkOPfG12U9ODOLNDQz8EkrH1fzaqmw== Public key for PIV Authentication"
+        sshkeys: "{{ sshKey }}"
         pool: Default
         tags:
           - kubernetes
-          - master
+          - "{{ nodeType }}"
         validate_certs: false
         agent: 'enabled=1'
         ipconfig:
           ipconfig0: "ip={{ ipAddress }}/24,gw=172.16.1.1"
+    - name: register status of image file
+      stat:
+        path: /tmp/alma9-cloud-init.qcow2
+      register: cloudInitImage
     - name: Download Cloud Init Image
+      when: "not cloudInitImage.stat.exists"
       ansible.builtin.get_url:
         url: "{{ linuxVMUrl }}"
         dest: /tmp/alma9-cloud-init.qcow2
@@ -108,7 +113,7 @@
         vmid: "{{ vmId }}"
         node: "{{ destHost }}"
         api_user: zevrant@pve
-        api_token_id: test
+        api_token_id: main
         api_token_secret: "{{ apiPassword }}"
         api_host: "{{ destHost }}.{{ hostFqdn }}"
         state: started
@@ -139,7 +144,7 @@
 #        vmid: "{{ vmId }}"
 #        node: "{{ destHost }}"
 #        api_user: zevrant@pve
-#        api_token_id: test
+#        api_token_id: main
 #        api_token_secret: "{{ apiPassword }}"
 #        api_host: "{{ destHost }}.{{ hostFqdn }}"
 #        state: stopped
@@ -150,7 +155,7 @@
 #        vmid: "{{ vmId }}"
 #        node: "{{ destHost }}"
 #        api_user: zevrant@pve
-#        api_token_id: test
+#        api_token_id: main
 #        api_token_secret: "{{ apiPassword }}"
 #        api_host: "{{ destHost }}.{{ hostFqdn }}"
 #        state: started

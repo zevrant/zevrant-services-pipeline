@@ -5,3 +5,5 @@ all:
     proxmox-04.preprod.zevrant-services.com:
     proxmox-05.preprod.zevrant-services.com:
     proxmox-06.preprod.zevrant-services.com:
+  vars:
+    ansible_user: root

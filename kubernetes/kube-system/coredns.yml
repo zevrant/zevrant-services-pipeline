@@ -3,11 +3,11 @@ data:
   Corefile: |
     preprod.zevrant-services.com:53 {
       log
-      forward . 172.16.1.2:53 172.16.1.10:53
+      forward . 172.16.1.2:53
     }
     zevrant-services.com:53 {
       log
-      forward . 172.16.1.2:53 172.16.1.10:53
+      forward . 172.16.1.2:53
     }
     .:53
     {

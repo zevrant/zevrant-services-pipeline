@@ -21,8 +21,8 @@
         echo '\n' >> /etc/sudoers.d/no-password-root
         chmod 0440 /etc/sudoers.d/no-password-root
         mkdir /home/zevrant/.ssh/
-        echo 'ecdsa-sha2-nistp384 AAAAE2VjZHNhLXNoYTItbmlzdHAzODQAAAAIbmlzdHAzODQAAABhBKKXyClNSThUnVRq21snovBRgd7SXCkkX7RcEO8B12aqH3aYl+2QYew0cDm5d+2khOxBZRRqebCgEGo11EDOo1T0gmVjThGxFJG9GkOPfG12U9ODOLNDQz8EkrH1fzaqmw== Public key for PIV Authentication' > /home/zevrant/.ssh/authorized_keys
+        echo 'ecdsa-sha2-nistp384 AAAAE2VjZHNhLXNoYTItbmlzdHAzODQAAAAIbmlzdHAzODQAAABhBLtOxtriPtNmisKkmfHfCByaTYCHRsDHyzQAi0yL6LUeKybjYExfR6N0xBMcIj6M/b5U3aafjKayX4nMvV7s7/vcrpBfW+WvxOCBWTlhKGNpUmAS9ApFDn51/FTuRgB/YA== Public key for PIV Authentication' > /home/zevrant/.ssh/authorized_keys
+        echo 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEbQRaQyJ6MkFIW9y9ZfK0ukCpQoO5JNuCAw4PMxVFAn zevrant@zevrant' >> /home/zevrant/.ssh/authorized_keys
         chown -R zevrant:zevrant /home/zevrant/.ssh
         sed -i 's~zevrant:x:100001:10001::/home/zevrant:/bin/sh~zevrant:x:100001:10001::/home/zevrant:/bin/bash~g' /etc/passwd
-        sed -i 's/#PasswordAuthentication yes/PasswordAuthentication no/g' /etc/ssh/sshd_config
         systemctl restart sshd
