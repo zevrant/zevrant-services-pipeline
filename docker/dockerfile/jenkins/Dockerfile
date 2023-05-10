@@ -1,4 +1,4 @@
-FROM containers.zevrant-services.com/zevrant/jenkins/jenkins:lts-jdk11
+FROM docker.io/jenkins/jenkins:lts-jdk17
 
 USER root
 

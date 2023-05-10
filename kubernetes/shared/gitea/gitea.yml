@@ -1,22 +1,52 @@
-#apiVersion: cert-manager.io/v1
-#kind: Certificate
-#metadata:
-#  name: gitea
-#spec:
-#  secretName: gitea-tls
-#  issuerRef:
-#    name: acme-issuer
-#  privateKey:
-#    algorithm: ECDSA
-#    size: 256
-#    rotationPolicy: Always
-#  duration: 24h
-#  renewBefore: 13h
-#  dnsNames:
-#    - gitea.zevrant-services.com
-#    - ssh.gitea.zevrant-services.com
-#
-#---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: gitea
+spec:
+  secretName: gitea-tls
+  issuerRef:
+    name: acme-issuer
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+    rotationPolicy: Always
+  duration: 24h
+  renewBefore: 13h
+  dnsNames:
+    - gitea.zevrant-services.com
+    - ssh.gitea.zevrant-services.com
+
+---
+
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: gitea-timezone
+  namespace: shared
+spec:
+  storageClassName: csi-rbd-sc
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 50Gi
+
+---
+
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: gitea-localtime
+  namespace: shared
+spec:
+  storageClassName: csi-rbd-sc
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 50Gi
+
+---
 
 kind: PersistentVolumeClaim
 apiVersion: v1
@@ -24,7 +54,7 @@ metadata:
   name: gitea-data
   namespace: shared
 spec:
-  storageClassName: kadalu.shared
+  storageClassName: csi-rbd-sc
   accessModes:
     - ReadWriteOnce
   resources:
@@ -105,7 +135,7 @@ spec:
       initContainers:
         - name: config-init
           imagePullPolicy: Always
-          image: containers.zevrant-services.com/zevrant/ubuntu-base:latest
+          image: docker.io/zevrant/ubuntu-base:latest
           volumeMounts:
             - name: gitea-config
               mountPath: /etc/gitea
@@ -118,7 +148,7 @@ spec:
             - cp /etc/gitea/app.ini /opt/config-copy/app.ini
       containers:
         - name: gitea
-          image: containers.zevrant-services.com/zevrant-services/gitea:latest-rootless
+          image: docker.io/zevrant/gitea:latest-rootless
 #          command:
 #            - /bin/sh
 #          args:
@@ -156,20 +186,20 @@ spec:
                   name: gitea-db-password
             - name: DEFAULT_BRANCH
               value: master
-          startupProbe:
-            httpGet:
-              scheme: HTTPS
-              path: /api/healthz
-              port: 3000
-            failureThreshold: 14
-            periodSeconds: 5
-          livenessProbe:
-            httpGet:
-              scheme: HTTPS
-              path: /api/healthz
-              port: 3000
-            failureThreshold: 5
-            periodSeconds: 5
+#          startupProbe:
+#            httpGet:
+#              scheme: HTTPS
+#              path: /api/healthz
+#              port: 3000
+#            failureThreshold: 14
+#            periodSeconds: 5
+#          livenessProbe:
+#            httpGet:
+#              scheme: HTTPS
+#              path: /api/healthz
+#              port: 3000
+#            failureThreshold: 5
+#            periodSeconds: 5
 
 ---
 

@@ -40,7 +40,7 @@ metadata:
   name: artifactory-data
   namespace: shared
 spec:
-  storageClassName: kadalu.shared
+  storageClassName: csi-rbd-sc
   accessModes:
     - ReadWriteOnce
   resources:
@@ -55,7 +55,7 @@ metadata:
   name: artifactory-etc
   namespace: shared
 spec:
-  storageClassName: kadalu.shared
+  storageClassName: csi-rbd-sc
   accessModes:
     - ReadWriteOnce
   resources:

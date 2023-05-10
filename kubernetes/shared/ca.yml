@@ -1,87 +1,87 @@
-apiVersion: v1
-kind: Service
-metadata:
-  name: certificate-authority
-  namespace: shared
-spec:
-  type: NodePort
-  ports:
-    - port: 443
-      targetPort: 8443
-      name: https
-  selector:
-    app: certificate-authority
-
----
-
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: certificate-authority
-  namespace: shared
-  labels:
-    app: certificate-authority
-spec:
-  strategy:
-    type: Recreate
-  replicas: 1
-  selector:
-    matchLabels:
-      app: certificate-authority
-  template:
-    metadata:
-      labels:
-        app: certificate-authority
-    spec:
-      securityContext:
-        fsGroup: 1000
-        fsGroupChangePolicy: "Always"
-      imagePullSecrets:
-        - name: regcred
-      volumes:
-        - name: step-ca
-          persistentVolumeClaim:
-            claimName: shared-ca
-        - name: certificate-authority-password
-          secret:
-            secretName: certificate-authority-password
-            defaultMode: 0400
-      dnsPolicy: "None"
-      dnsConfig:
-        nameservers:
-          - 1.1.1.1
-          - 8.8.8.8
-      containers:
-        - name: certificate-authority
-          image: containers.zevrant-services.com/zevrant/step-ca:latest
-          imagePullPolicy: "Always"
-          ports:
-            - containerPort: 8443
-          volumeMounts:
-            - name: step-ca
-              mountPath: /opt/step-ca
-            - mountPath: /var/zevrant-services/ca-password
-              name: certificate-authority-password
-          env:
-            - name: CA_NAME
-              value: 'Zevrant Services Shared'
-            - name: CA_DNS
-              value: certificate-authority
-            - name: CA_DNS_1
-              value: certificate-authority.develop.svc.cluster.local
-            - name: SECRET_FILE_PATH
-              value: /var/zevrant-services/ca-password/password
-#          readinessProbe:
-#            httpGet:
-#              scheme: HTTPS
-#              path: /acme/acme/directory
-#              port: 8443
-#            failureThreshold: 5
-#            periodSeconds: 5
-#          livenessProbe:
-#            httpGet:
-#              scheme: HTTPS
-#              path: /acme/acme/directory
-#              port: 8443
-#            failureThreshold: 5
-#            periodSeconds: 5
+#apiVersion: v1
+#kind: Service
+#metadata:
+#  name: certificate-authority
+#  namespace: shared
+#spec:
+#  type: NodePort
+#  ports:
+#    - port: 443
+#      targetPort: 8443
+#      name: https
+#  selector:
+#    app: certificate-authority
+#
+#---
+#
+#apiVersion: apps/v1
+#kind: Deployment
+#metadata:
+#  name: certificate-authority
+#  namespace: shared
+#  labels:
+#    app: certificate-authority
+#spec:
+#  strategy:
+#    type: Recreate
+#  replicas: 1
+#  selector:
+#    matchLabels:
+#      app: certificate-authority
+#  template:
+#    metadata:
+#      labels:
+#        app: certificate-authority
+#    spec:
+#      securityContext:
+#        fsGroup: 1000
+#        fsGroupChangePolicy: "Always"
+#      imagePullSecrets:
+#        - name: regcred
+#      volumes:
+#        - name: step-ca
+#          persistentVolumeClaim:
+#            claimName: shared-ca
+#        - name: certificate-authority-password
+#          secret:
+#            secretName: certificate-authority-password
+#            defaultMode: 0400
+#      dnsPolicy: "None"
+#      dnsConfig:
+#        nameservers:
+#          - 1.1.1.1
+#          - 8.8.8.8
+#      containers:
+#        - name: certificate-authority
+#          image: containers.zevrant-services.com/zevrant/step-ca:latest
+#          imagePullPolicy: "Always"
+#          ports:
+#            - containerPort: 8443
+#          volumeMounts:
+#            - name: step-ca
+#              mountPath: /opt/step-ca
+#            - mountPath: /var/zevrant-services/ca-password
+#              name: certificate-authority-password
+#          env:
+#            - name: CA_NAME
+#              value: 'Zevrant Services Shared'
+#            - name: CA_DNS
+#              value: certificate-authority
+#            - name: CA_DNS_1
+#              value: certificate-authority.develop.svc.cluster.local
+#            - name: SECRET_FILE_PATH
+#              value: /var/zevrant-services/ca-password/password
+##          readinessProbe:
+##            httpGet:
+##              scheme: HTTPS
+##              path: /acme/acme/directory
+##              port: 8443
+##            failureThreshold: 5
+##            periodSeconds: 5
+##          livenessProbe:
+##            httpGet:
+##              scheme: HTTPS
+##              path: /acme/acme/directory
+##              port: 8443
+##            failureThreshold: 5
+##            periodSeconds: 5

@@ -20,18 +20,18 @@ all:
     172.16.2.2:
       hostname: kubernetes-master-02
     172.16.2.6:
-      hostname: kubernetes-master-04
+      hostname: kubernetes-master-03
     172.16.2.9:
-      hostname: kubernetes-master-05
+      hostname: kubernetes-master-04
     172.16.2.10:
-      hostname: kubernetes-master-06
+      hostname: kubernetes-master-05
     172.16.2.11:
       hostname: kubernetes-worker-01
     172.16.2.12:
       hostname: kubernetes-worker-02
     172.16.2.13:
-      hostname: kubernetes-worker-04
+      hostname: kubernetes-worker-03
     172.16.2.14:
-      hostname: kubernetes-worker-05
+      hostname: kubernetes-worker-04
     172.16.2.15:
-      hostname: kubernetes-worker-06
+      hostname: kubernetes-worker-05

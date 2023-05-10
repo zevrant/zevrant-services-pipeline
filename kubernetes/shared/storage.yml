@@ -1,80 +1,80 @@
-apiVersion: kadalu-operator.storage/v1alpha1
-kind: KadaluStorage
-metadata:
-  name: shared
-  namespace: shared
-spec:
-  type: "Disperse"
-  storage:
-    - node: "zevrant-01"
-      path: "/glusterfs/bricks/kadalu/shared"
-    - node: "zevrant-02"
-      path: "/glusterfs/bricks/kadalu/shared"
-    - node: "zevrant-03"
-      path: "/glusterfs/bricks/kadalu/shared"
-    - node: "zevrant-04"
-      path: "/glusterfs/bricks/kadalu/shared"
-    - node: "zevrant-05"
-      path: "/glusterfs/bricks/kadalu/shared"
-    - node: "zevrant-06"
-      path: "/glusterfs/bricks/kadalu/shared"
-  disperse:
-    data: 4
-    redundancy: 2
-  pvReclaimPolicy: delete
-
----
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  name: shared-ca
-  namespace: shared
-spec:
-  storageClassName: kadalu.shared
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 10Gi
-
-
-
----
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  name: gitea-config
-  namespace: shared
-spec:
-  storageClassName: kadalu.shared
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 1Gi
----
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  name: gitea-timezone
-  namespace: shared
-spec:
-  storageClassName: kadalu.shared
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 1Gi
----
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  name: gitea-localtime
-  namespace: shared
-spec:
-  storageClassName: kadalu.shared
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 1Gi
+#apiVersion: kadalu-operator.storage/v1alpha1
+#kind: KadaluStorage
+#metadata:
+#  name: shared
+#  namespace: shared
+#spec:
+#  type: "Disperse"
+#  storage:
+#    - node: "zevrant-01"
+#      path: "/glusterfs/bricks/kadalu/shared"
+#    - node: "zevrant-02"
+#      path: "/glusterfs/bricks/kadalu/shared"
+#    - node: "zevrant-03"
+#      path: "/glusterfs/bricks/kadalu/shared"
+#    - node: "zevrant-04"
+#      path: "/glusterfs/bricks/kadalu/shared"
+#    - node: "zevrant-05"
+#      path: "/glusterfs/bricks/kadalu/shared"
+#    - node: "zevrant-06"
+#      path: "/glusterfs/bricks/kadalu/shared"
+#  disperse:
+#    data: 4
+#    redundancy: 2
+#  pvReclaimPolicy: delete
+#
+#---
+#kind: PersistentVolumeClaim
+#apiVersion: v1
+#metadata:
+#  name: shared-ca
+#  namespace: shared
+#spec:
+#  storageClassName: csi-rbd-sc
+#  accessModes:
+#    - ReadWriteOnce
+#  resources:
+#    requests:
+#      storage: 10Gi
+#
+#
+#
+#---
+#kind: PersistentVolumeClaim
+#apiVersion: v1
+#metadata:
+#  name: gitea-config
+#  namespace: shared
+#spec:
+#  storageClassName: csi-rbd-sc
+#  accessModes:
+#    - ReadWriteOnce
+#  resources:
+#    requests:
+#      storage: 1Gi
+#---
+#kind: PersistentVolumeClaim
+#apiVersion: v1
+#metadata:
+#  name: gitea-timezone
+#  namespace: shared
+#spec:
+#  storageClassName: csi-rbd-sc
+#  accessModes:
+#    - ReadWriteOnce
+#  resources:
+#    requests:
+#      storage: 1Gi
+#---
+#kind: PersistentVolumeClaim
+#apiVersion: v1
+#metadata:
+#  name: gitea-localtime
+#  namespace: shared
+#spec:
+#  storageClassName: csi-rbd-sc
+#  accessModes:
+#    - ReadWriteOnce
+#  resources:
+#    requests:
+#      storage: 1Gi

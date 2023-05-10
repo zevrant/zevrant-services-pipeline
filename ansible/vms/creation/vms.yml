@@ -60,8 +60,8 @@
         boot: c
         citype: nocloud
         ciuser: zevrant
-        kvm: false
-        localtime: false
+        kvm: true
+        localtime: true
         machine: pc
         migrate_speed: 0
         name: "kubernetes-{{ nodeType }}-{{ vmNumber }}"

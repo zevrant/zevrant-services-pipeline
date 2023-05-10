@@ -23,7 +23,7 @@ metadata:
   name: artifactory-key
   namespace: shared
 spec:
-  storageClassName: kadalu.shared
+  storageClassName: csi-rbd-sc
   accessModes:
     - ReadWriteOnce
   resources:

@@ -10,7 +10,7 @@ spec:
     algorithm: ECDSA
     size: 256
     rotationPolicy: Always
-  duration: 48h
-  renewBefore: 24h
+  duration: 2160h #90d
+  renewBefore: 1440h # 60d
   dnsNames:
     - jenkins.zevrant-services.com

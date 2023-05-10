@@ -18,7 +18,7 @@ metadata:
   name: gitea-db
   namespace: shared
 spec:
-  storageClassName: kadalu.shared
+  storageClassName: csi-rbd-sc
   accessModes:
     - ReadWriteOnce
   resources:
@@ -59,7 +59,7 @@ spec:
       initContainers:
         - name: config-init
           imagePullPolicy: Always
-          image: containers.zevrant-services.com/zevrant/ubuntu-base:latest
+          image: docker.io/zevrant/ubuntu-base:latest
           volumeMounts:
             - name: gitea-db
               mountPath: /opt/postgres/
@@ -72,7 +72,7 @@ spec:
             - cp /var/config/postgres-config/postgresql.conf /opt/postgres/postgresql.conf
       containers:
         - name: gitea-db
-          image: containers.zevrant-services.com/zevrant/postgres:14
+          image: docker.io/postgres:14
           imagePullPolicy: Always
           volumeMounts:
             - name: gitea-db
@@ -90,7 +90,7 @@ spec:
             - name: POSTGRES_DB
               value: gitea
             - name: PGCONNECT_TIMEOUT
-              value: '20'
+              value: '40'
           ports:
             - containerPort: 5432
           resources:
@@ -100,24 +100,23 @@ spec:
             limits:
               memory: 8Gi
               cpu: 5000m
-          startupProbe:
-            exec:
-              command:
-                - bash
-                - -c
-                - psql -U zevrant --dbname gitea -c SELECT 1
-            failureThreshold: 21
-            successThreshold: 1
-            periodSeconds: 5
-          livenessProbe:
-            exec:
-              command:
-                - bash
-                - -c
-                - psql -U zevrant --dbname gitea -c SELECT 1
-            failureThreshold: 3
-            successThreshold: 1
-            periodSeconds: 20
+#          startupProbe:
+#            exec:
+#              command:
+#                - /bin/bash
+#                - -c
+#                - psql -U zevrant --dbname gitea -c SELECT 1
+#            failureThreshold: 21
+#            successThreshold: 1
+#            periodSeconds: 5
+#          livenessProbe:
+#            exec:
+#              command:
+#                - /bin/bash
+#                - psql -U zevrant --dbname gitea -c SELECT 1
+#            failureThreshold: 3
+#            successThreshold: 1
+#            periodSeconds: 20
 
 ---
 

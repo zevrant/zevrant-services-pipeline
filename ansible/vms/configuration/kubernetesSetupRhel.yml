@@ -1,132 +1,144 @@
-- name: import Known Hosts
-  hosts: 127.0.0.1
-  tasks:
-    - name: Import SSH Keys
-      ansible.builtin.command:
-        cmd: ssh-keyscan -H "{{ item }}" >> ~/.ssh/known_hosts
-      loop: "{{ hosts }}"
+#- name: import Known Hosts
+#  hosts: 127.0.0.1
+#  tasks:
+#    - name: Import SSH Keys
+#      ansible.builtin.command:
+#        cmd: ssh-keyscan -H "{{ item }}" >> ~/.ssh/known_hosts
+#      loop: "{{ hosts }}"
 - name: Setup Kubernetes On Host
   hosts: all
   become: true
   become_user: root
   tasks:
-    - name: Update Packages
-      ansible.builtin.yum:
-        use_backend: yum4
-        update_cache: true
-        name: '*'
-        state: latest
-    - name: Install Dependencies
-      ansible.builtin.shell: |
-        yum update -y
-        yum install -y yum-utils jq iproute-tc systemd-resolved
-        yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-        rpm -i -f https://dl.fedoraproject.org/pub/epel/9/Everything/x86_64/Packages/e/epel-release-9-5.el9.noarch.rpm
-        dnf config-manager --set-enabled crb
-        yum install iptables-legacy -y
-        ln -sf /usr/sbin/iptables-legacy /etc/alternatives/iptables
-    - name: Add Kubernetes Repository
+#    - name: Update Packages
+#      ansible.builtin.yum:
+#        use_backend: yum4
+#        update_cache: true
+#        name: '*'
+#        state: latest
+#    - name: Install Dependencies
+#      ansible.builtin.shell: |
+#        yum update -y
+#        yum install -y yum-utils jq iproute-tc systemd-resolved
+#        yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+#        rpm -i -f https://dl.fedoraproject.org/pub/epel/9/Everything/x86_64/Packages/e/epel-release-9-5.el9.noarch.rpm
+#        dnf config-manager --set-enabled crb
+#        yum install iptables-legacy iptables-services -y
+#        ln -sf /usr/sbin/iptables-legacy /etc/alternatives/iptables
+#    - name: Update Packages
+#      ansible.builtin.yum:
+#        use_backend: yum4
+#        update_cache: true
+#        name: 'iptables-services'
+#        state: latest
+#    - name: Add Kubernetes Repository
+#      ansible.builtin.copy:
+#        content: |
+#          [kubernetes]
+#          name=Kubernetes
+#          baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+#          enabled=1
+#          gpgcheck=1
+#          repo_gpgcheck=1
+#          gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+#        dest: /etc/yum.repos.d/kubernetes.repo
+#    - name: Install Containerd & Kubeadm
+#      ansible.builtin.yum:
+#        update_cache: true
+#        name:
+#          - containerd.io
+#          - kubeadm
+#    - name: Create Node Exporter Systemd File
+#      ansible.builtin.copy:
+#        content: |
+#          [Unit]
+#          Description=Node Exporter
+#          Documentation=
+#
+#          Wants=network.target
+#          After=network.target
+#
+#          [Service]
+#          User=node-exporter
+#
+#          WorkingDirectory=/opt/node-exporter
+#          ExecStart=/opt/node-exporter/node_exporter --web.config=/opt/node-exporter/config.yml
+#        dest: /etc/systemd/system/node-exporter.service
+#    - name: Create Node Exporter User
+#      ansible.builtin.command:
+#        cmd: adduser --system --shel /bin/false --no-create-home node-exporter
+#    - name: Create Developers Group
+#      ansible.builtin.command:
+#        cmd: groupadd developers
+#    - name: Add Main User to Developers Group
+#      ansible.builtin.command:
+#        cmd: usermod -aG developers zevrant
+#    - name: Create Node Exporter Install Folder
+#      ansible.builtin.file:
+#        path: /opt/node-exporter
+#        state: directory
+#        mode: '0755'
+#        owner: node-exporter
+#        group: developers
+#    - name: Install Node Exporter
+#      become_user: root
+#      become: true
+#      ansible.builtin.shell: |
+#        #!/bin/bash
+#        curl -L https://github.com/prometheus/node_exporter/releases/download/v1.5.0/node_exporter-1.5.0.linux-amd64.tar.gz -o node-exporter.tar.gz
+#        tar xvf node-exporter.tar.gz
+#        mv node_exporter-* node-exporter
+#        mv node-exporter/* /opt/node-exporter
+#        rm -rf node-exporter*
+#        chown -R node-exporter:developers /opt/node-exporter
+#    - name: Set Max Map Count
+#      become_user: root
+#      become: true
+#      ansible.builtin.command:
+#        cmd: echo "vm.max_map_count = 262144" >> /etc/sysctl.conf
+    - name: Enable ipv4 forwarding & nf call iptables
+      become_user: root
+      become: true
       ansible.builtin.copy:
+        dest: /etc/sysctl.d/99-sysctl.conf
         content: |
-          [kubernetes]
-          name=Kubernetes
-          baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
-          enabled=1
-          gpgcheck=1
-          repo_gpgcheck=1
-          gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
-        dest: /etc/yum.repos.d/kubernetes.repo
-    - name: Install Containerd & Kubeadm
-      ansible.builtin.yum:
-        update_cache: true
-        name:
-          - containerd.io
-          - kubeadm
-    - name: Create Node Exporter Systemd File
-      ansible.builtin.copy:
-        content: |
-          [Unit]
-          Description=Node Exporter
-          Documentation=
-
-          Wants=network.target
-          After=network.target
-
-          [Service]
-          User=node-exporter
-
-          WorkingDirectory=/opt/node-exporter
-          ExecStart=/opt/node-exporter/node_exporter --web.config=/opt/node-exporter/config.yml
-        dest: /etc/systemd/system/node-exporter.service
-    - name: Create Node Exporter User
-      ansible.builtin.command:
-        cmd: adduser --system --shel /bin/false --no-create-home node-exporter
-    - name: Create Developers Group
-      ansible.builtin.command:
-        cmd: groupadd developers
-    - name: Add Main User to Developers Group
-      ansible.builtin.command:
-        cmd: usermod -aG developers zevrant
-    - name: Create Node Exporter Install Folder
-      ansible.builtin.file:
-        path: /opt/node-exporter
-        state: directory
-        mode: '0755'
-        owner: node-exporter
-        group: developers
-    - name: Install Node Exporter
-      become_user: root
-      become: true
-      ansible.builtin.shell: |
-        #!/bin/bash
-        curl -L https://github.com/prometheus/node_exporter/releases/download/v1.5.0/node_exporter-1.5.0.linux-amd64.tar.gz -o node-exporter.tar.gz
-        tar xvf node-exporter.tar.gz
-        mv node_exporter-* node-exporter
-        mv node-exporter/* /opt/node-exporter
-        rm -rf node-exporter*
-        chown -R node-exporter:developers /opt/node-exporter
-    - name: Set Max Map Count
-      become_user: root
-      become: true
-      ansible.builtin.command:
-        cmd: echo "vm.max_map_count = 262144" >> /etc/sysctl.conf
-    - name: Enable ipv4 forwarding
-      become_user: root
-      become: true
-      ansible.builtin.command:
-        cmd: echo "net.ipv4.conf.all.forwarding = 1" >> /etc/sysctl.conf
-    - name: Reload Sysctl
-      become_user: root
-      become: true
-      ansible.builtin.command:
-        cmd: sysctl -p
-    - name: Reload Systemd Services
-      ansible.builtin.command:
-        cmd: systemctl daemon-reload
-    - name: Enable Systemd Cgroups
-      ansible.builtin.shell: |
-        #!/bin/bash
-        mkdir -p /etc/containerd/
-        /usr/bin/containerd config default > /etc/containerd/config.toml
-        sed -i 's/SystemdCgroup = false/SystemdCgroup = true/g' /etc/containerd/config.toml
+          net.bridge.bridge-nf-call-iptables = 1
+          net.ipv4.conf.all.forwarding = 1
+    #    - name: Reload Sysctl
+#      become_user: root
+#      become: true
+#      ansible.builtin.command:
+#        cmd: sysctl -p
+#    - name: Reload Systemd Services
+#      ansible.builtin.command:
+#        cmd: systemctl daemon-reload
+#    - name: Enable Systemd Cgroups
+#      ansible.builtin.shell: |
+#        #!/bin/bash
+#        mkdir -p /etc/containerd/
+#        /usr/bin/containerd config default > /etc/containerd/config.toml
+#        sed -i 's/SystemdCgroup = false/SystemdCgroup = true/g' /etc/containerd/config.toml
     - name: Enable forwarding
       ansible.builtin.shell: |
         #!/bin/bash
         iptables -P FORWARD ACCEPT
         iptables -P FORWARD ACCEPT
         iptables -P OUTPUT ACCEPT
-    - name: Enable Systemd Services
-      ansible.builtin.command:
-        cmd: systemctl enable containerd kubelet node-exporter systemd-resolved
-    - name: Start Containerd & Node Exporter
-      ansible.builtin.command:
-        cmd: systemctl restart containerd node-exporter
-    - name: Set Hostname
-      ansible.builtin.copy:
-        dest: /etc/hostname
-        content: |
-          "{{ hostname }}"
-    - name: reboot
-      ansible.builtin.reboot:
-        reboot_command: reboot
-        test_command: whoami
+        iptables-save -f /etc/sysconfig/iptables
+        modprobe br_netfilter
+        modprobe overlay
+        sysctl -p
+    #    - name: Enable Systemd Services
+#      ansible.builtin.command:
+#        cmd: systemctl enable containerd kubelet node-exporter systemd-resolved iptables
+#    - name: Start Containerd & Node Exporter
+#      ansible.builtin.command:
+#        cmd: systemctl restart containerd node-exporter
+#    - name: Set Hostname
+#      ansible.builtin.copy:
+#        dest: /etc/hostname
+#        content: |
+#          "{{ hostname }}"
+#    - name: reboot
+#      ansible.builtin.reboot:
+#        test_command: whoami

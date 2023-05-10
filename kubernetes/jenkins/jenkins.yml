@@ -28,6 +28,22 @@ spec:
       name: inbound-agent-port
   selector:
     app: jenkins
+
+---
+
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: jenkins-data
+  namespace: jenkins
+spec:
+  storageClassName: csi-rbd-sc
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Gi
+
 ---
 
 apiVersion: apps/v1
@@ -69,6 +85,11 @@ spec:
             defaultMode: 0400
       imagePullSecrets:
         - name: regcred
+      dnsPolicy: "None"
+      dnsConfig:
+        nameservers:
+          - 172.16.1.2
+          - 1.1.1.1
       initContainers:
         - name: secret-init
           image: docker.io/zevrant/ubuntu-base:latest
@@ -95,7 +116,7 @@ spec:
               openssl pkcs12 -export -inkey /opt/acme/certs/..data/tls.key -in /opt/acme/certs/..data/tls.crt -passout 'file:/opt/secrets/password' -out /opt/keystore/zevrant-services.p12
       containers:
         - name: jenkins
-          image: containers.zevrant-services.com/zevrant/jenkins:lts-jdk11
+          image: docker.io/zevrant/jenkins:lts-jdk17
           imagePullPolicy: IfNotPresent
           command:
             - /bin/sh
@@ -111,7 +132,7 @@ spec:
               path: /login
               port: 8443
             periodSeconds: 10
-            failureThreshold: 20
+            failureThreshold: 40
             successThreshold: 1
           livenessProbe:
             httpGet:

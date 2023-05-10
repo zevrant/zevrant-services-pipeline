@@ -1,52 +1,40 @@
-apiVersion: kadalu-operator.storage/v1alpha1
-kind: KadaluStorage
-metadata:
-  name: jenkins
-  namespace: jenkins
-spec:
-  type: "Disperse"
-  storage:
-    - node: "zevrant-01"
-      path: "/glusterfs/bricks/kadalu/jenkins"
-    - node: "zevrant-02"
-      path: "/glusterfs/bricks/kadalu/jenkins"
-    - node: "zevrant-03"
-      path: "/glusterfs/bricks/kadalu/jenkins"
-    - node: "zevrant-04"
-      path: "/glusterfs/bricks/kadalu/jenkins"
-    - node: "zevrant-05"
-      path: "/glusterfs/bricks/kadalu/jenkins"
-    - node: "zevrant-06"
-      path: "/glusterfs/bricks/kadalu/jenkins"
-  disperse:
-    data: 4
-    redundancy: 2
-  pvReclaimPolicy: delete
-
----
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  name: jenkins-data
-  namespace: jenkins
-spec:
-  storageClassName: kadalu.jenkins
-  accessModes:
-    - ReadWriteMany # You can also provide 'ReadWriteMany' here
-  resources:
-    requests:
-      storage: 100Gi
-
----
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  name: ca
-  namespace: jenkins
-spec:
-  storageClassName: kadalu.jenkins
-  accessModes:
-    - ReadWriteOnce # You can also provide 'ReadWriteMany' here
-  resources:
-    requests:
-      storage: 10Gi
+#apiVersion: kadalu-operator.storage/v1alpha1
+#kind: KadaluStorage
+#metadata:
+#  name: jenkins
+#  namespace: jenkins
+#spec:
+#  type: "Disperse"
+#  storage:
+#    - node: "zevrant-01"
+#      path: "/glusterfs/bricks/kadalu/jenkins"
+#    - node: "zevrant-02"
+#      path: "/glusterfs/bricks/kadalu/jenkins"
+#    - node: "zevrant-03"
+#      path: "/glusterfs/bricks/kadalu/jenkins"
+#    - node: "zevrant-04"
+#      path: "/glusterfs/bricks/kadalu/jenkins"
+#    - node: "zevrant-05"
+#      path: "/glusterfs/bricks/kadalu/jenkins"
+#    - node: "zevrant-06"
+#      path: "/glusterfs/bricks/kadalu/jenkins"
+#  disperse:
+#    data: 4
+#    redundancy: 2
+#  pvReclaimPolicy: delete
+#
+#
+#
+#---
+#kind: PersistentVolumeClaim
+#apiVersion: v1
+#metadata:
+#  name: ca
+#  namespace: jenkins
+#spec:
+#  storageClassName: kadalu.jenkins
+#  accessModes:
+#    - ReadWriteOnce # You can also provide 'ReadWriteMany' here
+#  resources:
+#    requests:
+#      storage: 10Gi
