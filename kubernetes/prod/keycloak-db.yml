@@ -40,7 +40,7 @@ spec:
       containers:
         - name: zevrant-keycloak-service-db
 #          command: psql pg_resetwal DATADIR
-          image: containers.zevrant-services.com/zevrant/postgres:14
+          image: docker.io/zevrant/postgres:14
           imagePullPolicy: Always
           volumeMounts:
             - name: database

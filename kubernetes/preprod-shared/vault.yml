@@ -96,7 +96,7 @@ spec:
               chown -R 1000:1000 /opt/secrets
       containers:
         - name: vault-unsealer
-          image: containers.zevrant-services.com/zevrant/vault-unsealer:latest
+          image: docker.io/zevrant/vault-unsealer:latest
           imagePullPolicy: "Always"
           volumeMounts:
             - mountPath: /var/zevrant-services

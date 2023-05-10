@@ -39,7 +39,7 @@ spec:
             claimName: keycloak-database
       containers:
         - name: keycloak-db
-          image: containers.zevrant-services.com/zevrant/postgres:14
+          image: docker.io/zevrant/postgres:14
           imagePullPolicy: Always
           volumeMounts:
             - name: database

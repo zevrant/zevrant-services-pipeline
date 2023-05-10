@@ -52,7 +52,7 @@ spec:
             defaultMode: 0400
       containers:
         - name: certificate-authority
-          image: containers.zevrant-services.com/zevrant/step-ca:latest
+          image: docker.io/zevrant/step-ca:latest
 #          command:
 #            - sleep
 #          args:

@@ -4,12 +4,12 @@ metadata:
   name: jenkins-nodeport
   namespace: jenkins
 spec:
-  type: NodePort
+  type: LoadBalancer
   ports:
     - port: 8443
       targetPort: 8443
       name: http-port
-      nodePort: 30120
+#      nodePort: 30120
   selector:
     app: jenkins
 ---
@@ -43,6 +43,30 @@ spec:
   resources:
     requests:
       storage: 100Gi
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: jenkins
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "https"
+    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+spec:
+  rules:
+    - host: jenkins.zevrant-services.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: jenkins-nodeport
+                port:
+                  name: http-port
+  ingressClassName: nginx
 
 ---
 

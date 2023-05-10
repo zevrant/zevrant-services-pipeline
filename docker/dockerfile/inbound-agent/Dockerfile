@@ -1,4 +1,4 @@
-FROM containers.zevrant-services.com/zevrant/ubuntu-base:latest
+FROM docker.io/zevrant/ubuntu-base:latest
 
 COPY inbound-agent.sh /usr/local/bin/jenkins-agent
 

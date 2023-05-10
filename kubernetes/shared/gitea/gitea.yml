@@ -69,18 +69,53 @@ metadata:
   name: gitea
   namespace: shared
 spec:
-  type: NodePort
+  type: LoadBalancer
   ports:
     - port: 3000
       targetPort: 3000
-      nodePort: 30125
       name: http
+  selector:
+    app: gitea
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: gitea-ssh
+  namespace: shared
+spec:
+  type: NodePort
+  ports:
     - port: 2222
       targetPort: 2222
       nodePort: 30121
       name: ssh
   selector:
     app: gitea
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: gitea
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "https"
+    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+spec:
+  rules:
+    - host: gitea.zevrant-services.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: gitea
+                port:
+                  name: http
+  ingressClassName: nginx
 
 ---
 
@@ -186,20 +221,20 @@ spec:
                   name: gitea-db-password
             - name: DEFAULT_BRANCH
               value: master
-#          startupProbe:
-#            httpGet:
-#              scheme: HTTPS
-#              path: /api/healthz
-#              port: 3000
-#            failureThreshold: 14
-#            periodSeconds: 5
-#          livenessProbe:
-#            httpGet:
-#              scheme: HTTPS
-#              path: /api/healthz
-#              port: 3000
-#            failureThreshold: 5
-#            periodSeconds: 5
+          startupProbe:
+            httpGet:
+              scheme: HTTPS
+              path: /api/healthz
+              port: 3000
+            failureThreshold: 14
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              scheme: HTTPS
+              path: /api/healthz
+              port: 3000
+            failureThreshold: 5
+            periodSeconds: 5
 
 ---
 

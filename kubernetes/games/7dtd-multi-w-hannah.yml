@@ -85,7 +85,7 @@ spec:
         - name: regcred
       containers:
         - name: 7dtd
-          image: containers.zevrant-services.com/zevrant/7dtd:latest
+          image: docker.io/zevrant/7dtd:latest
           imagePullPolicy: Always
           volumeMounts:
 #            - name: 7dtd-cert
