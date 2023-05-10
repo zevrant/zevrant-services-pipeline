@@ -111,6 +111,7 @@ spec:
           args:
             - -c
             - |
+              mkdir -p /var/jenkins_home/casc_configs
               mkdir -p /opt/secrets/keystore
               openssl rand 256 | base64 -w 0 > /opt/secrets/password
               openssl pkcs12 -export -inkey /opt/acme/certs/..data/tls.key -in /opt/acme/certs/..data/tls.crt -passout 'file:/opt/secrets/password' -out /opt/keystore/zevrant-services.p12

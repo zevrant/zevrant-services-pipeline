@@ -15,7 +15,7 @@ Version version = null
 String REPOSITORY = scm.getUserRemoteConfigs()[0].getUrl().tokenize('/').last().split("\\.")[0]
 pipeline {
     agent {
-        label('master-node')
+        label('built-in')
     }
 
     stages {
