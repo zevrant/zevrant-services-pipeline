@@ -24,7 +24,7 @@ pipeline {
                     script {
                         currentBuild.displayName = "Deploying Version $VERSION"
                         git credentialsId: 'jenkins-git', branch: 'master',
-                                url: "ssh://git@ssh.gitea.zevrant-services.com:30121/zevrant-services/${REPOSITORY}.git" as String
+                                url: "ssh://git@gitea.zevrant-services.com:30121/zevrant-services/${REPOSITORY}.git" as String
                     }
                 }
             }

@@ -1,6 +1,6 @@
 package com.zevrant.services.services
 
-void checkout(String hostname = 'ssh://git@ssh.gitea.zevrant-services.com:30121',
+void checkout(String hostname = 'ssh://git@gitea.zevrant-services.com:30121',
               String org = 'zevrant-services',
               String repository,
               String branch = 'master',

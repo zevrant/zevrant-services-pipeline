@@ -16,7 +16,7 @@ pipeline {
             steps {
                 script {
                     gitService.checkout('zevrant-service-pipeline')
-//                    git(url: 'ssh://git@ssh.gitea.zevrant-services.com:30121/zevrant-services/zevrant-services-pipeline.git', credentialsId: 'jenkins-git', branch: 'master')
+//                    git(url: 'ssh://git@gitea.zevrant-services.com:30121/zevrant-services/zevrant-services-pipeline.git', credentialsId: 'jenkins-git', branch: 'master')
                 }
             }
         }

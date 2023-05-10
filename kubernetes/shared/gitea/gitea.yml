@@ -14,7 +14,7 @@ spec:
   renewBefore: 13h
   dnsNames:
     - gitea.zevrant-services.com
-    - ssh.gitea.zevrant-services.com
+    - gitea.zevrant-services.com
 
 ---
 
