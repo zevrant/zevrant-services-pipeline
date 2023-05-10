@@ -11,7 +11,7 @@ int getDeployTimeout(int replicas) {
 
 String getPodName(String label, String environment, PodStatus status = PodStatus.NONE) {
     String withStatus = (status != PodStatus.NONE)? "| grep ${status.statusName}" : ''
-    sh "kubectl -n $environment get pods -l $label $withStatus > pods"
+    sh "kubectl -n $environment get pods --no-headers=true -l $label $withStatus > pods"
     String pod = readFile(file: 'pods').trim()
     println pod
     if(pod.split('\\n').length - 1 > 1) {
@@ -27,11 +27,10 @@ String getPodName(String label, String environment, PodStatus status = PodStatus
 
 List<String> getPodNames(String label, String environment, PodStatus status = PodStatus.NONE) {
     String withStatus = (status != PodStatus.NONE)? "| grep ${status.statusName}" : ''
-    sh "kubectl -n $environment get pods -l $label $withStatus > pods"
+    sh "kubectl -n $environment get pods --no-headers=true -l $label $withStatus > pods"
     String pods = readFile(file: 'pods').trim()
 
     return pods.split('\\n')
-            .findAll({pod -> !pod.contains('NAME                                            READY   STATUS              RESTARTS           AGE')})
             .collect { pod -> pod.split('\\h')[0] }
 }
 
