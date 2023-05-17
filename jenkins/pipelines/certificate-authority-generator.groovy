@@ -155,7 +155,6 @@ pipeline {
                         String caConfig = readFile(file: 'ca.json')
                         caConfig = caConfig.replace('"certificate-authority"', "\"certificate-authority.${ENVIRONMENT}.svc.cluster.local\"")
                         writeFile(file: 'ca.json', text: caConfig)
-                        sh 'cat ca.json'
                         sh "kubectl cp -n $ENVIRONMENT ./ca.json '${pod}:/opt/step-ca/.step/authorities/Zevrant Services ${environmentTitle}/config/ca.json'"
                         sh "kubectl -n $ENVIRONMENT rollout restart deployment certificate-authority"
                         sh "kubectl -n $ENVIRONMENT rollout status deployment certificate-authority"
