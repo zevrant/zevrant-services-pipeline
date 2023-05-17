@@ -35,6 +35,22 @@ spec:
   renewBefore: 23h
   dnsNames:
     - vault.preprod.zevrant-services.com
+
+---
+
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: vault
+  namespace: preprod-shared
+spec:
+  storageClassName: csi-rbd-sc
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+
 ---
 
 apiVersion: apps/v1

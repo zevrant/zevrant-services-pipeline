@@ -50,6 +50,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: jenkins
+  namespace: jenkins
   annotations:
     nginx.ingress.kubernetes.io/backend-protocol: "https"
     nginx.ingress.kubernetes.io/ssl-passthrough: "true"
@@ -109,7 +110,7 @@ spec:
             defaultMode: 0400
       imagePullSecrets:
         - name: regcred
-      dnsPolicy: "None"
+      dnsPolicy: ClusterFirstWithHostNet
       dnsConfig:
         nameservers:
           - 172.16.1.2

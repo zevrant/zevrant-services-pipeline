@@ -23,32 +23,7 @@ spec:
     redundancy: 2
   pvReclaimPolicy: delete
 
----
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  name: vault
-  namespace: preprod-shared
-spec:
-  storageClassName: kadalu.preprod-shared
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 10Gi
----
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  name: preprod-shared-ca
-  namespace: preprod-shared
-spec:
-  storageClassName: kadalu.preprod-shared
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 10Gi
+
 ---
 kind: PersistentVolumeClaim
 apiVersion: v1

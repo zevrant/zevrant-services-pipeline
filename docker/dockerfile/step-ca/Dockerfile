@@ -10,7 +10,7 @@ RUN apt-get update \
 RUN curl -L https://dl.step.sm/gh-release/cli/gh-release-header/v0.20.0/step-cli_0.20.0_amd64.deb -o /tmp/step-cli.deb \
     && ls -l /tmp \
     && dpkg -i /tmp/step-cli.deb \
-    && curl -L https://dl.step.sm/gh-release/certificates/gh-release-header/v0.20.0/step-ca_0.20.0_amd64.deb -o /tmp/step-ca.deb \
+    && curl -L https://dl.step.sm/gh-release/certificates/gh-release-header/v0.23.2/step-ca_0.20.0_amd64.deb -o /tmp/step-ca.deb \
     && dpkg -i /tmp/step-ca.deb \
     && step-ca version \
     && rm /tmp/step-ca.deb /tmp/step-cli.deb

@@ -17,8 +17,8 @@ spec:
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: preprod-shared-ca
-  namespace: preprod-shared
+  name: harbor-ca
+  namespace: harbor
 spec:
   storageClassName: csi-rbd-sc
   accessModes:
@@ -32,7 +32,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: certificate-authority
-  namespace: preprod-shared
+  namespace: harbor
   labels:
     app: certificate-authority
 spec:
@@ -55,7 +55,7 @@ spec:
       volumes:
         - name: step-ca
           persistentVolumeClaim:
-            claimName: preprod-shared-ca
+            claimName: harbor-ca
         - name: certificate-authority-password
           secret:
             secretName: certificate-authority-password
@@ -77,11 +77,11 @@ spec:
               name: certificate-authority-password
           env:
             - name: CA_NAME
-              value: 'Zevrant Services Preprod Shared'
+              value: 'Zevrant Services Harbor'
             - name: CA_DNS
               value: certificate-authority
             - name: CA_DNS_1
-              value: certificate-authority.develop.svc.cluster.local
+              value: certificate-authority.harbor.svc.cluster.local
             - name: SECRET_FILE_PATH
               value: /var/zevrant-services/ca-password/password
 #          readinessProbe:
