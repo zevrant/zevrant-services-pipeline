@@ -3,14 +3,15 @@ import com.zevrant.services.services.GitService
 
 import java.util.List
 
-def imagesToBuild = ["ubuntu-base", 'android-emulator']
-def branchesToBuild = ["develop"]
+//def imagesToBuild = ["ubuntu-base", 'android-emulator']
+//def branchesToBuild = ["develop"]
 Map<String, List<String>> affectedRepos = new HashMap<>();
-branchesToBuild.each({ branch ->
-    affectedRepos.put(branch, []);
-})
+//branchesToBuild.each({ branch ->
+//    affectedRepos.put(branch, []);
+//})
 GitService gitService = ServiceLoader.load(binding, GitService.class) as GitService
 
+List<String> baseImageFolders = []
 
 pipeline {
     agent {
@@ -28,6 +29,30 @@ pipeline {
             }
         }
 
+        stage ("Find Base Images") {
+            steps {
+                script {
+                    dir("docker/dockerfile") {
+                        sh 'ls -l > directory-contents'
+                        String directoryContents = readFile(file: 'directory-contents')
+                        directoryContents.split('\n').each({ line ->
+                            List<String> lineContents = line.split("\\h")
+                            if(lineContents[0].contains('d')) {
+                                dir(lineContents[lineContents.size() - 1]) {
+                                    def buildInfo = readJSON(file: 'buildConfig.json')
+                                    if(buildInfo.baseImage != null) {
+                                        baseImageFolders.add(lineContents[lineContents.size() - 1])
+                                    }
+                                }
+
+                            }
+                        })
+
+                    }
+                }
+            }
+        }
+
         stage("Build & Push Dockerfiles") {
             environment {
                 DOCKER_TOKEN = credentials('jenkins-dockerhub')
@@ -37,14 +62,24 @@ pipeline {
                     container('buildah') {
                         dir("docker/dockerfile") {
                             sh 'echo $DOCKER_TOKEN | buildah login -u zevrant --password-stdin docker.io'
-                            def imageBuilds = [:]
-                            imagesToBuild.each { image ->
-                                imageBuilds[image] = {
-                                    sh "buildah bud -t docker.io/zevrant/${image}:latest -f ${image}.dockerfile --pull ."
-                                    sh "buildah push docker.io/zevrant/${image}:latest"
+//                            def imageBuilds = [:]
+//                            imagesToBuild.each { image ->
+//                                imageBuilds[image] = {
+                            baseImageFolders.each {folder ->
+                                dir(folder) {
+                                    def buildInfo = readJSON(file: 'buildConfig.json')
+                                    if(buildInfo.baseImage.repository == "" || buildInfo.baseImage.repository == null) {
+                                        sh "buildah pull ${buildInfo.baseImage.host}/${buildInfo.baseImage.name}:${buildInfo.baseImage.tag}"
+                                    } else {
+                                        sh "buildah pull ${buildInfo.baseImage.host}/${buildInfo.baseImage.repository}/${buildInfo.baseImage.name}:${buildInfo.baseImage.tag}"
+                                    }
+
+                                    String tag = (buildInfo.useLatest)? latest : buildInfo.version
+
+                                    sh "buildah bud -t harbor.zevrant-services.com/zevrant-services/${buildInfo.name}:${tag} ."
+                                    sh "buildah push harbor.zevrant-services.com/zevrant-services/${buildInfo.name}:${tag}"
                                 }
                             }
-                            parallel imageBuilds
                         }
                     }
                 }
@@ -53,6 +88,7 @@ pipeline {
         }
 
         stage("Get Potential Repos") {
+            when{ expression { false } }
             steps {
                 script {
                     def response = httpRequest authentication: 'jenkins-git-access-token', url: "https://api.github.com/orgs/zevrant/repos?type=all"
@@ -88,6 +124,7 @@ pipeline {
         }
 
         stage("Rebuild Downstream Repos") {
+            when{ expression { false } }
             steps {
                 script {
                     def buildJobs = [:];

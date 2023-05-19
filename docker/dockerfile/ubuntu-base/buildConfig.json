@@ -1,5 +1,11 @@
 {
-  "imageName": "ubuntu-base",
+  "name": "ubuntu-base",
   "version": "0",
-  "baseImage": "docker.io/ubuntu:latest"
+  "useLatest": true,
+  "baseImage": {
+    "name": "ubuntu",
+    "repository": "",
+    "host": "harbor.zevrant-services.com",
+    "tag": "latest"
+  }
 }

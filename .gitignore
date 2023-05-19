@@ -8,3 +8,4 @@
 .env
 
 **/values.yml
+/kubernetes/shared/harbor/harbor/
