@@ -71,7 +71,10 @@ pipeline {
                                 dir(folder) {
                                     if(fileExists(file: 'buildConfig.json')) {
                                         def buildInfo = readJSON(file: 'buildConfig.json')
-                                        println "repository is ${buildInfo.baseImage['repository']}"
+                                        buildInfo.baseImage.each { key, value ->
+                                            println "Contents of base image object for image ${buildInfo.name}"
+                                            println "Key: ${key}, Value: ${value}"
+                                        }
                                         if (buildInfo.baseImage['repository'] == null || buildInfo.baseImage['repository'] == "") {
                                             sh "buildah pull ${buildInfo.baseImage.host}/${buildInfo.baseImage.name}:${buildInfo.baseImage.tag}"
                                         } else {
