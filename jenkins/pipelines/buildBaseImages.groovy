@@ -1,3 +1,6 @@
+import com.zevrant.services.ServiceLoader
+import com.zevrant.services.services.GitService
+
 import java.util.List
 
 def imagesToBuild = ["ubuntu-base", 'android-emulator']
@@ -6,6 +9,9 @@ Map<String, List<String>> affectedRepos = new HashMap<>();
 branchesToBuild.each({ branch ->
     affectedRepos.put(branch, []);
 })
+GitService gitService = ServiceLoader.load(binding, GitService.class) as GitService
+
+
 pipeline {
     agent {
         kubernetes {
@@ -17,7 +23,7 @@ pipeline {
         stage("Git Checkout") {
             steps {
                 script {
-                    git(url: 'git@github.com:zevrant/zevrant-services-pipeline.git', credentialsId: 'jenkins-git', branch: 'master')
+                    gitService.checkout('zevrant-services-pipeline')
                 }
             }
         }
