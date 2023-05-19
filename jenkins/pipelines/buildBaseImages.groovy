@@ -39,9 +39,11 @@ pipeline {
                             List<String> lineContents = line.split("\\h")
                             if(lineContents[0].contains('d')) {
                                 dir(lineContents[lineContents.size() - 1]) {
-                                    def buildInfo = readJSON(file: 'buildConfig.json')
-                                    if(buildInfo.baseImage != null) {
-                                        baseImageFolders.add(lineContents[lineContents.size() - 1])
+                                    if(fileExists(file: 'buildConfig.json')) {
+                                        def buildInfo = readJSON(file: 'buildConfig.json')
+                                        if (buildInfo.baseImage != null) {
+                                            baseImageFolders.add(lineContents[lineContents.size() - 1])
+                                        }
                                     }
                                 }
 
@@ -61,23 +63,26 @@ pipeline {
                 script {
                     container('buildah') {
                         dir("docker/dockerfile") {
-                            sh 'echo $DOCKER_TOKEN | buildah login -u zevrant --password-stdin docker.io'
+                            sh 'echo $DOCKER_TOKEN | buildah login -u \'robot$jenkins\' --password-stdin harbor.zevrant-services.com'
 //                            def imageBuilds = [:]
 //                            imagesToBuild.each { image ->
 //                                imageBuilds[image] = {
                             baseImageFolders.each {folder ->
                                 dir(folder) {
-                                    def buildInfo = readJSON(file: 'buildConfig.json')
-                                    if(buildInfo.baseImage.repository == "" || buildInfo.baseImage.repository == null) {
-                                        sh "buildah pull ${buildInfo.baseImage.host}/${buildInfo.baseImage.name}:${buildInfo.baseImage.tag}"
-                                    } else {
-                                        sh "buildah pull ${buildInfo.baseImage.host}/${buildInfo.baseImage.repository}/${buildInfo.baseImage.name}:${buildInfo.baseImage.tag}"
+                                    if(fileExists(file: 'buildConfig.json')) {
+                                        def buildInfo = readJSON(file: 'buildConfig.json')
+                                        println "repository is ${buildInfo.baseImage['repository']}"
+                                        if (buildInfo.baseImage['repository'] == null || buildInfo.baseImage['repository'] == "") {
+                                            sh "buildah pull ${buildInfo.baseImage.host}/${buildInfo.baseImage.name}:${buildInfo.baseImage.tag}"
+                                        } else {
+                                            sh "buildah pull ${buildInfo.baseImage.host}/${buildInfo.baseImage.repository}/${buildInfo.baseImage.name}:${buildInfo.baseImage.tag}"
+                                        }
+
+                                        String tag = (buildInfo.useLatest) ? "latest" : buildInfo.version
+
+                                        sh "buildah bud -t harbor.zevrant-services.com/zevrant-services/${buildInfo.name}:${tag} ."
+                                        sh "buildah push harbor.zevrant-services.com/zevrant-services/${buildInfo.name}:${tag}"
                                     }
-
-                                    String tag = (buildInfo.useLatest)? latest : buildInfo.version
-
-                                    sh "buildah bud -t harbor.zevrant-services.com/zevrant-services/${buildInfo.name}:${tag} ."
-                                    sh "buildah push harbor.zevrant-services.com/zevrant-services/${buildInfo.name}:${tag}"
                                 }
                             }
                         }
