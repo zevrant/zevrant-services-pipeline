@@ -1,18 +1,46 @@
-apiVersion: v1
-kind: Service
+apiVersion: networking.k8s.io/v1
+kind: Ingress
 metadata:
+  name: minio-operator
   namespace: minio-operator
-  name: minio
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "https"
+    #    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+#    nginx.ingress.kubernetes.io/rewrite-target: https://minio.zevrant-services.com/api/v1/buckets/$1
 spec:
-  type: NodePort
-  ports:
-    - port: 9090
-      targetPort: 9090
-      nodePort: 30140
-      name: http
-    - port: 9433
-      targetPort: 9433
-      nodePort: 30141
-      name: https
-  selector:
-    app: console
+  rules:
+    - host: minio-operator.zevrant-services.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: console
+                port:
+                  name: https
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - minio-operator.zevrant-services.com
+      secretName: minio-operator-tls
+
+---
+
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: minio-shared
+spec:
+  secretName: minio-operator-tls
+  issuerRef:
+    name: acme-issuer
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+    rotationPolicy: Always
+  duration: 24h
+  renewBefore: 13h
+  dnsNames:
+    - minio-operator.zevrant-services.com

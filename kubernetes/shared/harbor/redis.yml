@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: redis
-  namespace: harbor
+  namespace: shared
 spec:
   ports:
     - port: 443
@@ -17,7 +17,7 @@ kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
   name: redis
-  namespace: harbor
+  namespace: shared
 spec:
   storageClassName: csi-rbd-sc
   accessModes:
@@ -31,7 +31,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: redis
-  namespace: harbor
+  namespace: shared
   labels:
     app: redis
 spec:
@@ -57,7 +57,7 @@ spec:
             claimName: redis
         - name: redis-password
           secret:
-            secretName: redis-password
+            secretName: harbor-redis-password
             defaultMode: 0400
         - name: redis-config
           configMap:
@@ -65,26 +65,58 @@ spec:
             items:
               - key: redis.conf
                 path: redis.conf
-      dnsPolicy: "None"
+        - name: redis-users
+          configMap:
+            name: redis-config
+        - name: parsed-redis-acl
+          emptyDir:
+            sizeLimit: 1Gi
+      dnsPolicy: "ClusterFirst"
       dnsConfig:
         nameservers:
-          - 1.1.1.1
+          - 172.16.1.2
           - 8.8.8.8
+      initContainers:
+        - name: user-setup
+          image: docker.io/ubuntu:latest
+          imagePullPolicy: Always
+          volumeMounts:
+            - mountPath: /opt/redis/
+              name: redis-users
+            - mountPath: /var/redis/
+              name: parsed-redis-acl
+            - mountPath: /var/zevrant-services/redis-password
+              name: redis-password
+          command:
+            - /bin/bash
+          args:
+            - -c
+            - |
+              HARBOR_PASSWORD="$(cat /var/zevrant-services/redis-password/..data/REDIS_PASSWORD)"
+              ADMIN_PASSWORD="$(cat /var/zevrant-services/redis-password/..data/admin-password)"
+              DEFAULT_PASSWORD="$(openssl rand 256 | base64 -w 0)"
+              ls -l /var/zevrant-services/redis-password/..data/password /opt/redis/..data/redis-users.acl
+              cp /opt/redis/..data/redis-users.acl /tmp/redis-users.acl
+              sed -i "s/ADMIN_PASSWORD/$ADMIN_PASSWORD/g" /tmp/redis-users.acl 
+              sed -i "s/HARBOR_PASSWORD/$HARBOR_PASSWORD/g" /tmp/redis-users.acl 
+              sed -i "s/DEFAULT_PASSWORD/$DEFAULT_PASSWORD/g" /tmp/redis-users.acl 
+              cp /tmp/redis-users.acl /var/redis/users.acl
+              cp /opt/redis/..data/redis.conf /var/redis/redis.conf
       containers:
         - name: redis
           image: docker.io/redis:latest
+          imagePullPolicy: Always
+          command:
+            - /usr/local/bin/redis-server
+          args:
+            - /var/redis/redis.conf
           ports:
             - containerPort: 8443
           volumeMounts:
             - name: redis
               mountPath: /data
-            - mountPath: /var/zevrant-services/redis-password
-              name: redis-password
-            - name: redis-config
-              mountPath: /usr/local/etc/redis/redis.conf
-          env:
-            - name: SECRET_FILE_PATH
-              value: /var/zevrant-services/ca-password/password
+            - name: parsed-redis-acl
+              mountPath: /var/redis/
           resources:
             requests:
               memory: 2Gi
@@ -114,7 +146,12 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: redis-config
+  namespace: shared
 data:
+  redis-users.acl: |
+    user admin on +@all >ADMIN_PASSWORD
+    user harbor on +@read +@write +@set +@list +@string +@bitmap +@connection +@transaction +evalsha +eval ~* >HARBOR_PASSWORD
+    user default on +auth +ping >DEFAULT_PASSWORD
   redis.conf: |
     # Redis configuration file example.
     #
@@ -202,7 +239,7 @@ data:
     # You will also need to set a password unless you explicitly disable protected
     # mode.
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    bind 127.0.0.1 -::1
+    #bind 127.0.0.1 -::1
 
     # By default, outgoing connections (from replica to master, from Sentinel to
     # instances, cluster bus, etc.) are not bound to a specific local address. In
@@ -316,7 +353,7 @@ data:
     # server to connected clients, masters or cluster peers.  These files should be
     # PEM formatted.
     #
-    # tls-cert-file redis.crt
+    # tls-cert-file /varredis.crt
     # tls-key-file redis.key
     #
     # If the key file is encrypted using a passphrase, it can be included here
@@ -530,7 +567,7 @@ data:
     # Set the local environment which is used for string comparison operations, and 
     # also affect the performance of Lua scripts. Empty String indicates the locale 
     # is derived from the environment variables.
-    locale-collate ""
+    #locale-collate "en_US.UTF-8"
 
     ################################ SNAPSHOTTING  ################################
 
@@ -1147,7 +1184,7 @@ data:
     # The format of the external ACL user file is exactly the same as the
     # format that is used inside redis.conf to describe users.
     #
-    # aclfile /etc/redis/users.acl
+    aclfile /var/redis/users.acl
 
     # IMPORTANT NOTE: starting with Redis 6 "requirepass" is just a compatibility
     # layer on top of the new ACL system. The option effect will be just setting
@@ -1158,7 +1195,7 @@ data:
     # The requirepass is not compatible with aclfile option and the ACL LOAD
     # command, these will cause requirepass to be ignored.
     #
-    # requirepass foobared
+    #requirepass foobared
 
     # New users are initialized with restrictive permissions by default, via the
     # equivalent of this ACL rule 'off resetkeys -@all'. Starting with Redis 6.2, it
@@ -2080,14 +2117,14 @@ data:
     # data structure when they have a small number of entries, and the biggest entry
     # does not exceed a given threshold. These thresholds can be configured using
     # the following directives.
-    set-max-listpack-entries 128
-    set-max-listpack-value 64
+    #set-max-listpack-entries 128
+    #set-max-listpack-value 64
 
     # Similarly to hashes and lists, sorted sets are also specially encoded in
     # order to save a lot of space. This encoding is only used when the length and
     # elements of a sorted set are below the following limits:
-    zset-max-listpack-entries 128
-    zset-max-listpack-value 64
+    #zset-max-listpack-entries 128
+    #zset-max-listpack-value 64
 
     # HyperLogLog sparse representation bytes limit. The limit includes the
     # 16 bytes header. When a HyperLogLog using the sparse representation crosses

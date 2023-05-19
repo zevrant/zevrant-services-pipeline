@@ -1,0 +1,57 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: harbor
+  namespace: shared
+spec:
+  secretName: harbor-tls
+  issuerRef:
+    name: acme-issuer
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+    rotationPolicy: Always
+  duration: 2160h
+  renewBefore: 2000h
+  dnsNames:
+    - harbor.zevrant-services.com
+
+---
+
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: harbor-notary
+  namespace: shared
+spec:
+  secretName: harbor-notary-tls
+  issuerRef:
+    name: acme-issuer
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+    rotationPolicy: Always
+  duration: 2160h
+  renewBefore: 2000h
+  dnsNames:
+    - harbor-notary.zevrant-services.com
+
+---
+
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: harbor-notary-signer
+  namespace: shared
+spec:
+  secretName: harbor-notary-signer-tls
+  issuerRef:
+    name: acme-issuer
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+    rotationPolicy: Always
+  duration: 2160h
+  renewBefore: 2000h
+  dnsNames:
+    - harbor-notary.zevrant-services.com
