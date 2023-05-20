@@ -1,5 +1,5 @@
 {
-  "imageName": "step-ca",
+  "name": "step-ca",
   "version": "0",
   "baseImage": "docker.io/zevrant/ubuntu-base:latest"
 }

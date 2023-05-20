@@ -1,5 +1,5 @@
 {
-  "imageName": "step-cli",
+  "name": "step-cli",
   "version": "0",
   "baseImage": "docker.io/ubuntu:latest"
 }

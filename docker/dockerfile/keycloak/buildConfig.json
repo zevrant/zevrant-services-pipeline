@@ -1,5 +1,5 @@
 {
-  "imageName": "keycloak",
+  "name": "keycloak",
   "version": "0",
   "baseImage": "quay.io/keycloak/keycloak:18.0.2"
 }
