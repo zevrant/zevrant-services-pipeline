@@ -1,7 +1,7 @@
 {
-  "name": "ubuntu-base",
-  "version": "0",
-  "useLatest": true,
+  "name": "cert-manager",
+  "version": "7.3.83",
+  "useLatest": false,
   "baseImage": {
     "name": "ubuntu",
     "repository": "dockerhub",

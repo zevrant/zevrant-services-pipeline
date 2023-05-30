@@ -209,7 +209,7 @@ spec:
             - name: GITEA__database__DB_TYPE
               value: postgres
             - name: GITEA__database__HOST
-              value: gitea-db:5432
+              value: gitea-postgres.zevrant-services.com:5432
             - name: GITEA__database__NAME
               value: gitea
             - name: GITEA__database__USER
@@ -218,7 +218,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   key: password
-                  name: gitea-db-password
+                  name: gitea-postgres-credentials
             - name: DEFAULT_BRANCH
               value: master
           startupProbe:

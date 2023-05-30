@@ -9,3 +9,7 @@
 
 **/values.yml
 /kubernetes/shared/harbor/harbor/
+/kubernetes/shared/harbor/postgresql/
+/kubernetes/shared/harbor/postgresql-ha/
+/kubernetes/shared/gitea/postgresql-ha/
+/kubernetes/shared/harbor/redis-cluster/

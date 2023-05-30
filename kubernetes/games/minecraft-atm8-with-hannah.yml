@@ -1,0 +1,202 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: minecraft-atm8-with-hannah
+  namespace: games
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 25565
+      targetPort: 25565
+      protocol: TCP
+      name: tcp
+  selector:
+    app: minecraft-atm8-with-hannah
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: minecraft-atm8-with-hannah
+  namespace: games
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "https"
+    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+spec:
+  rules:
+    - host: minecraft.zevrant-services.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: minecraft-atm8-with-hannah
+                port:
+                  name: tcp
+  ingressClassName: nginx
+
+---
+
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: minecraft-atm8-with-hannah
+  namespace: games
+spec:
+  storageClassName: csi-rbd-sc
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 30Gi
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: minecraft-atm8-with-hannah
+  namespace: games
+  labels:
+    app: minecraft-atm8-with-hannah
+spec:
+  strategy:
+    type: Recreate
+  replicas: 1
+  selector:
+    matchLabels:
+      app: minecraft-atm8-with-hannah
+  template:
+    metadata:
+      labels:
+        app: minecraft-atm8-with-hannah
+    spec:
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: DoNotSchedule
+      securityContext:
+        fsGroup: 10001
+        fsGroupChangePolicy: "Always"
+      volumes:
+        - name: minecraft-server
+          persistentVolumeClaim:
+            claimName: minecraft-atm8-with-hannah
+        - name: minecraft-config
+          configMap:
+            name: minecraft-atm8-with-hannah-config
+        - name: 7dtd-saves
+
+      imagePullSecrets:
+        - name: regcred
+      initContainers:
+        - name: init
+          image: harbor.zevrant-services.com/zevrant-services/minecraft-atm8:latest
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: minecraft-config
+              mountPath: /var/minecraft
+            - name: minecraft-server
+              mountPath: /opt/minecraft-live
+          command:
+            - /bin/bash
+          args:
+            - -c
+            - |
+              if [[ ! -f /opt/minecraft-live/startserver.sh ]]; then
+                cp -r /opt/minecraft/* /opt/minecraft-live/
+              fi
+              cp /var/minecraft/..data/server.properties /opt/minecraft/server.properties
+      containers:
+        - name: minecraft
+          image: harbor.zevrant-services.com/zevrant-services/minecraft-atm8:latest
+          imagePullPolicy: Always
+          workingDir: /opt/minecraft
+          command:
+            - /bin/bash
+          args:
+            - -c
+            - |
+              /opt/minecraft/startserver.sh
+          volumeMounts:
+            - name: minecraft-config
+              mountPath: /var/minecraft
+          ports:
+            - containerPort: 25565
+              name: tcp
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 2000m
+              memory: 5Gi
+            limits:
+              cpu: 6000m
+              memory: 12Gi
+
+---
+
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: minecraft-atm8-with-hannah-config
+  namespace: games
+data:
+  server.properties: |
+    allow-flight=true
+    allow-nether=true
+    broadcast-console-to-ops=true
+    broadcast-rcon-to-ops=true
+    difficulty=easy
+    enable-command-block=false
+    enable-jmx-monitoring=false
+    enable-query=false
+    enable-rcon=false
+    enable-status=true
+    enforce-secure-profile=true
+    enforce-whitelist=false
+    entity-broadcast-range-percentage=100
+    force-gamemode=false
+    function-permission-level=2
+    gamemode=survival
+    generate-structures=true
+    generator-settings={}
+    hardcore=false
+    hide-online-players=false
+    level-name=Multi-with-hannah
+    level-seed=
+    level-type=minecraft\:normal
+    max-chained-neighbor-updates=1000000
+    max-players=20
+    max-tick-time=180000
+    max-world-size=29999984
+    motd=Hi there deary :*
+    network-compression-threshold=256
+    online-mode=true
+    op-permission-level=4
+    player-idle-timeout=0
+    prevent-proxy-connections=false
+    previews-chat=false
+    pvp=false
+    query.port=25565
+    rate-limit=0
+    rcon.password=
+    rcon.port=25575
+    require-resource-pack=false
+    resource-pack=
+    resource-pack-prompt=
+    resource-pack-sha1=
+    server-ip=
+    server-port=25565
+    simulation-distance=10
+    spawn-animals=true
+    spawn-monsters=true
+    spawn-npcs=true
+    spawn-protection=16
+    sync-chunk-writes=true
+    text-filtering-config=
+    use-native-transport=true
+    view-distance=10
+    white-list=false
