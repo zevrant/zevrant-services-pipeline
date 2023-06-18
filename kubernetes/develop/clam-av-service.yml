@@ -30,10 +30,10 @@ spec:
         app: clamav
     spec:
       imagePullSecrets:
-        - name: regcred
+        - name: harbor-ro
       containers:
         - name: clamav
-          image: docker.io/zevrant/clamav/clamav:latest
+          image: harbor.zevrant-services.com/dockerhub/clamav/clamav:latest
           env:
             - name: CLAMD_CONF_MaxFileSize
               value: 999999M
