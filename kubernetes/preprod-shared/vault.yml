@@ -4,28 +4,48 @@ metadata:
   namespace: preprod-shared
   name: vault
 spec:
-  type: NodePort
+  type: ClusterIP
   ports:
-    - port: 8443
-      targetPort: 8443
-      nodePort: 30129
-      name: https-nodeport
-    - port: 80
-      targetPort: 80
-      name: http
-      nodePort: 30626
+#    - port: 80
+#      targetPort: 80
+#      name: http
+#      nodePort: 30626
     - port: 443
       targetPort: 8443
       name: https
   selector:
     app: vault
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: vault
+  namespace: preprod-shared
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "https"
+    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+spec:
+  rules:
+    - host: vault.preprod.zevrant-services.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: vault
+                port:
+                  name: https
+  ingressClassName: nginx
 
 ---
 
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: vault
+  name: vault2
   namespace: preprod-shared
 spec:
   secretName: vault-tls
@@ -90,14 +110,14 @@ spec:
             secretName: vault-key
             defaultMode: 0400
       imagePullSecrets:
-        - name: regcred
+        - name: harbor-ro
       initContainers:
         - name: secret-init
-          image: docker.io/zevrant/ubuntu-base:latest
+          image: harbor.zevrant-services.com/zevrant-services/ubuntu-base:latest
           imagePullPolicy: Always
           volumeMounts:
-#            - name: vault-data
-#              mountPath: /vault
+            - name: vault-data
+              mountPath: /vault
             - mountPath: /opt/secrets
               name: password-volume
             - mountPath: /var/zevrant-services/vault-keys
@@ -112,7 +132,7 @@ spec:
               chown -R 1000:1000 /opt/secrets
       containers:
         - name: vault-unsealer
-          image: docker.io/zevrant/vault-unsealer:latest
+          image: harbor.zevrant-services.com/zevrant-services/vault-unsealer:latest
           imagePullPolicy: "Always"
           volumeMounts:
             - mountPath: /var/zevrant-services
@@ -141,12 +161,12 @@ spec:
                   key: fingerprint
                   name: ca-fingerprint
         - name: vault
-          image: containers.zevrant-services.com/docker-remote/vault:latest
+          image: harbor.zevrant-services.com/dockerhub/vault:latest
           command:
             - "/bin/sh"
           args:
             - "-c"
-            - "ls -l /opt/acme/certs; ls -l /opt/acme/certs/..data/; docker-entrypoint.sh server"
+            - "mkdir -p /vault/config; ls -l /opt/acme/certs; ls -l /opt/acme/certs/..data/; docker-entrypoint.sh server"
           securityContext:
             capabilities:
               add:

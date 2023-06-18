@@ -1,0 +1,39 @@
+---
+
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: thanos
+  namespace: monitoring
+spec:
+  secretName: thanos-tls
+  issuerRef:
+    name: acme-issuer
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+    rotationPolicy: Always
+  duration: 2160h
+  renewBefore: 2000h
+  dnsNames:
+    - thanos.preprod.zevrant-services.com
+
+---
+
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: prometheus
+  namespace: monitoring
+spec:
+  secretName: prometheus-tls
+  issuerRef:
+    name: acme-issuer
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+    rotationPolicy: Always
+  duration: 2160h
+  renewBefore: 2000h
+  dnsNames:
+    - prometheus.zevrant-services.com

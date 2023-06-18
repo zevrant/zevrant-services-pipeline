@@ -2,7 +2,7 @@ apiVersion: kadalu-operator.storage/v1alpha1
 kind: KadaluStorage
 metadata:
   name: monitoring
-  namespace: monitoring2
+  namespace: monitoring
 spec:
   type: "Disperse"
   storage:
@@ -28,7 +28,7 @@ kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
   name: monitoring-ca
-  namespace: monitoring2
+  namespace: monitoring
 spec:
   storageClassName: kadalu.monitoring
   accessModes:
@@ -44,7 +44,7 @@ kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
   name: grafana-database
-  namespace: monitoring2
+  namespace: monitoring
 spec:
   storageClassName: kadalu.monitoring
   accessModes:
@@ -54,24 +54,6 @@ spec:
       storage: 10Gi
   volumeName: "pvc-03ac932f-0647-475b-9364-ab454eee179d"
 
----
-
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: metrics-database
-  labels:
-    app.kubernetes.io/name: metrics-database
-  namespace: monitoring2
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 100Gi
-  storageClassName: kadalu.monitoring
-  volumeMode: Filesystem
-  volumeName: pvc-430015b1-ced8-4bb5-ae07-531b4696f39b
 
 ---
 
@@ -81,7 +63,7 @@ metadata:
   name: loki-cache
   labels:
     app.kubernetes.io/name: loki-cache
-  namespace: monitoring2
+  namespace: monitoring
 spec:
   accessModes:
     - ReadWriteOnce

@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: certificate-authority
-  namespace: monitoring2
+  namespace: monitoring
 spec:
   type: NodePort
   ports:
@@ -18,7 +18,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: certificate-authority
-  namespace: monitoring2
+  namespace: monitoring
   labels:
     app: certificate-authority
 spec:
@@ -63,11 +63,11 @@ spec:
               name: certificate-authority-password
           env:
             - name: CA_NAME
-              value: 'Zevrant Services Monitoring2'
+              value: 'Zevrant Services monitoring'
             - name: CA_DNS
               value: certificate-authority
             - name: CA_DNS_1
-              value: certificate-authority.monitoring2.svc.cluster.local
+              value: certificate-authority.monitoring.svc.cluster.local
             - name: SECRET_FILE_PATH
               value: /var/zevrant-services/ca-password/password
 #          readinessProbe:

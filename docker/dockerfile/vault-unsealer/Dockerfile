@@ -1,4 +1,4 @@
-FROM docker.io/zevrant/ubuntu:latest
+FROM harbor.zevrant-services.com/dockerhub/ubuntu:latest
 
 RUN apt-get update \
     && apt-get update -y \

@@ -14,7 +14,7 @@ spec:
   jobLabel: node-exporter
   namespaceSelector:
     matchNames:
-      - monitoring2
+      - monitoring
   selector:
     matchLabels:
       app: node-exporter

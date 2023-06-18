@@ -107,7 +107,7 @@ spec:
 #            name: 7dtd
       imagePullSecrets:
         - name: regcred
-        - name: harbor-cred
+        - name: harbor-ro
       dnsPolicy: "ClusterFirst"
       dnsConfig:
         nameservers:

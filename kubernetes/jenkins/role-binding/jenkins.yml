@@ -24,7 +24,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: monitoring-read-only
-  namespace: monitoring2
+  namespace: monitoring
 subjects:
   # You can specify more than one "subject"
   - kind: ServiceAccount
@@ -223,7 +223,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: jenkins-create-deployments-monitoring
-  namespace: monitoring2
+  namespace: monitoring
 subjects:
   # You can specify more than one "subject"
   - kind: ServiceAccount
@@ -338,7 +338,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: jenkins-exec-pods-monitoring
-  namespace: monitoring2
+  namespace: monitoring
 subjects:
   # You can specify more than one "subject"
   - kind: ServiceAccount
@@ -471,7 +471,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: jenkins-create-secrets-monitoring
-  namespace: monitoring2
+  namespace: monitoring
 subjects:
   # You can specify more than one "subject"
   - kind: ServiceAccount

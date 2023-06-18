@@ -4,18 +4,39 @@ metadata:
   name: keycloak
   namespace: preprod-shared
 spec:
-  type: NodePort
+  type: ClusterIP
   ports:
     - port: 443
       targetPort: 8443
-      nodePort: 30133
       name: https
-    - port: 80
-      targetPort: 80
-      nodePort: 30137
-      name: http
   selector:
     app: keycloak
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: keycloak
+  namespace: preprod-shared
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "https"
+    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+spec:
+  rules:
+    - host: keycloak.preprod.zevrant-services.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: keycloak
+                port:
+                  name: https
+  ingressClassName: nginx
+
 ---
 
 apiVersion: cert-manager.io/v1
@@ -46,7 +67,7 @@ metadata:
     app: keycloak
 spec:
   #  Additional config is needed to switch to HA mode
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: keycloak
@@ -63,10 +84,10 @@ spec:
           secret:
             secretName: keycloak-tls
       imagePullSecrets:
-        - name: regcred
+        - name: harbor-ro
       containers:
         - name: keycloak
-          image: docker.io/zevrant/keycloak:18.0.2
+          image: harbor.zevrant-services.com/quay/keycloak/keycloak:latest
           imagePullPolicy: Always
           command:
             - /bin/sh
@@ -95,10 +116,10 @@ spec:
             failureThreshold: 3
             successThreshold: 1
           env:
-            - name: DB_VENDOR
-              value: POSTGRES
+            - name: KC_DB
+              value: postgres
             - name: KC_DB_URL_HOST
-              value: keycloak-db
+              value: keycloak-postgres.preprod.zevrant-services.com
             - name: KC_DB_URL_PORT
               value: '5432'
             - name: KC_DB_URL_DATABASE
@@ -106,10 +127,12 @@ spec:
             - name: KC_DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: keycloak-db-password
+                  name: keycloak-postgres-credentials
                   key: password
             - name: KC_DB_USERNAME
               value: zevrant
+            - name: KC_DB_SCHEMA
+              value: public
 #            - name: KC_DB_URL_PROPERTIES
 #              value: 'connectionTimeout=30000'
             - name: KC_PROXY
@@ -127,11 +150,17 @@ spec:
               value: /opt/acme/certs/tls.crt
             - name: KC_HTTPS_CERTIFICATE_KEY_FILE
               value: /opt/acme/certs/tls.key
-            - name: KC_HOSTNAME
-              value: keycloak.preprod.zevrant-services.com
+            - name: KC_HOSTNAME_URL
+              value: https://keycloak.preprod.zevrant-services.com
+            - name: KC_TRANSACTION_XA_ENABLED
+              value: 'true'
             - name: KC_HOSTNAME_STRICT_HTTPS
               value: 'true'
             - name: KC_HTTP_ENABLED
               value: 'false'
-            - name: PROXY_ADDRESS_FORWARDING
+            - name: KC_LOG_LEVEL
+              value: info
+            - name: KC_HEALTH_ENABLED
+              value: 'true'
+            - name: KC_METRICS_ENABLED
               value: 'true'

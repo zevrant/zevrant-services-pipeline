@@ -1,38 +1,51 @@
 apiVersion: v1
 kind: Service
 metadata:
-  namespace: monitoring2
+  namespace: monitoring
   name: prometheus
 spec:
-  type: NodePort
+  type: ClusterIP
   ports:
     - port: 9090
-      targetPort: 9090
-      nodePort: 30627
+#      nodePort: 30627
       name: https
     - port: 80
-      targetPort: 80
       name: http
   selector:
-    app.kubernetes.io/name: prometheus
+    app: prometheus
 
-#---
-#
-#apiVersion: cert-manager.io/v1
-#kind: Certificate
-#metadata:
-#  name: prometheus
-#  namespace: monitoring2
-#spec:
-#  secretName: prometheus-tls
-#  issuerRef:
-#    name: acme-issuer
-#  privateKey:
-#    rotationPolicy: Always
-#  duration: 48h
-#  renewBefore: 24h
-#  dnsNames:
-#    - prometheus.preprod.zevrant-services.com
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: monitoring
+  name: prometheus-thanos
+spec:
+  ports:
+    - port: 10902
+      targetPort: 10902
+      name: http
+  selector:
+    app: prometheus
+
+---
+
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: prometheus
+  namespace: monitoring
+spec:
+  secretName: prometheus-monitoring-tls
+  issuerRef:
+    name: acme-issuer
+  privateKey:
+    rotationPolicy: Always
+  duration: 48h
+  renewBefore: 24h
+  dnsNames:
+    - prometheus-monitoring.preprod.zevrant-services.com
 #
 ---
 
@@ -40,7 +53,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: prometheus
-  namespace: monitoring2
+  namespace: monitoring
 automountServiceAccountToken: true
 imagePullSecrets:
   - name: regcred
@@ -55,7 +68,7 @@ subjects:
   # You can specify more than one "subject"
   - kind: ServiceAccount
     name: prometheus # "name" is case-sensitive
-    namespace: monitoring2
+    namespace: monitoring
     apiGroup: ""
 roleRef:
   # "roleRef" specifies the binding to a Role / ClusterRole
@@ -72,7 +85,7 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: prometheus
-    namespace: monitoring2
+    namespace: monitoring
     apiGroup: ""
 roleRef:
   kind: ClusterRole
@@ -81,243 +94,250 @@ roleRef:
 
 ---
 
-apiVersion: monitoring.coreos.com/v1
-kind: Prometheus
-metadata:
-  name: prometheus
-spec:
-  serviceAccountName: prometheus
-  serviceMonitorSelector: {}
-#    matchLabels:
-#      component: main
-  resources:
-    requests:
-      memory: 400Mi
-  enableAdminAPI: false
-  storage:
-    volumeClaimTemplate:
-      spec:
-        volumeName: pvc-430015b1-ced8-4bb5-ae07-531b4696f39b
-#        accessMode: ["ReadWriteOnce"]
-        storageClassName: kadalu.monitoring
-        resources:
-          requests:
-            storage: 100Gi
----
-
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  finalizers:
-    - kubernetes.io/pvc-protection
+  name: metrics-database
   labels:
-    app.kubernetes.io/instance: prometheus
-    app.kubernetes.io/managed-by: prometheus-operator
-    app.kubernetes.io/name: prometheus
-    operator.prometheus.io/name: prometheus
-    operator.prometheus.io/shard: "0"
-    prometheus: prometheus
-  name: prometheus-prometheus-db-prometheus-prometheus-0
-  namespace: monitoring2
+    app.kubernetes.io/name: metrics-database
+  namespace: monitoring
 spec:
   accessModes:
     - ReadWriteOnce
-  storageClassName: kadalu.monitoring
   resources:
     requests:
       storage: 100Gi
+  storageClassName: csi-rbd-sc
   volumeMode: Filesystem
 
+
 ---
-#
-#apiVersion: apps/v1
-#kind: Deployment
-#metadata:
-#  name: prometheus
-#  namespace: monitoring2
-#  labels:
-#    app: prometheus
-#spec:
-#  strategy:
-#    type: Recreate
-#  replicas: 1
-#  selector:
-#    matchLabels:
-#      app: prometheus
-#  template:
-#    metadata:
-#      labels:
-#        app: prometheus
-#    spec:
-#      securityContext:
-#        fsGroup: 1000
-#        fsGroupChangePolicy: "Always"
-#      serviceAccountName: prometheus
-#      volumes:
-#        - name: prometheus-data
-#          persistentVolumeClaim:
-#            claimName: metrics-database
-#        - name: prometheus-cert
-#          secret:
-#            secretName: prometheus-tls
-#        - name: password-volume
-#          emptyDir:
-#            sizeLimit: "1Mi"
-#        - name: prometheus-config
-#          configMap:
-#            name: prometheus-config
-#      imagePullSecrets:
-#        - name: regcred
-#      containers:
-#        - name: prometheus
-#          image: docker.io/prom/prometheus:latest
-#          securityContext:
-#            capabilities:
-#              add:
-#                - IPC_LOCK
-#          imagePullPolicy: Always
-#          volumeMounts:
-#            - name: prometheus-config
-#              mountPath: /etc/prometheus/
-#            - name: prometheus-data
-#              mountPath: /prometheus
-#          env:
-#            - name: prometheus_API_ADDR
-#              value: https://prometheus.preprod.zevrant-services.com
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus
+  namespace: monitoring
+  labels:
+    app: prometheus
+spec:
+  strategy:
+    type: Recreate
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus
+  template:
+    metadata:
+      labels:
+        app: prometheus
+    spec:
+      securityContext:
+        fsGroup: 1000
+        fsGroupChangePolicy: "Always"
+      serviceAccountName: prometheus
+      volumes:
+        - name: prometheus-data
+          persistentVolumeClaim:
+            claimName: metrics-database
+        - name: prometheus-cert
+          secret:
+            secretName: prometheus-monitoring-tls
+        - name: password-volume
+          emptyDir:
+            sizeLimit: "1Mi"
+        - name: prometheus-config
+          configMap:
+            name: prometheus-config
+        - name: objstore-config
+          secret:
+            secretName: thanos-objstore-config
+      containers:
+        - name: prometheus
+          image: docker.io/prom/prometheus:latest
+          args:
+            - --storage.tsdb.min-block-duration=5m
+            - --storage.tsdb.max-block-duration=5m
+            - --config.file=/etc/prometheus/..data/prometheus.yml
+          securityContext:
+            capabilities:
+              add:
+                - IPC_LOCK
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: prometheus-config
+              mountPath: /etc/prometheus/
+            - name: prometheus-data
+              mountPath: /prometheus
+          env:
+            - name: prometheus_API_ADDR
+              value: https://prometheus-monitoring.preprod.zevrant-services.com
+          ports:
+            - containerPort: 9090
+          resources:
+            requests:
+              memory: 8Gi
+              cpu: 2000m
+            limits:
+              memory: 8Gi
+              cpu: 2000m
+          startupProbe:
+            httpGet:
+              scheme: HTTP
+              path: /
+              port: 9090
+            failureThreshold: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              scheme: HTTP
+              path: /
+              port: 9090
+            failureThreshold: 3
+            periodSeconds: 5
+#        - name: thanos-sidecar
+#          image: docker.io/bitnami/thanos:0.31.0
 #          ports:
-#            - containerPort: 9090
-#          resources:
-#            requests:
-#              memory: 8Gi
-#              cpu: 2000m
-#            limits:
-#              memory: 8Gi
-#              cpu: 2000m
-#          startupProbe:
-#            httpGet:
-#              scheme: HTTP
-#              path: /
-#              port: 9090
-#            failureThreshold: 5
-#            periodSeconds: 5
-#          livenessProbe:
-#            httpGet:
-#              scheme: HTTP
-#              path: /
-#              port: 9090
-#            failureThreshold: 3
-#            periodSeconds: 5
-#
-#---
-#
-#apiVersion: v1
-#kind: ConfigMap
-#metadata:
-#  name: prometheus-config
-#  namespace: monitoring2
-#data:
-#  prometheus.yml: |
-#    global:
-#      scrape_interval: 10s
-#    scrape_configs:
-#      - job_name: node-exporter
-#        static_configs:
-#          - targets:
-#              - zevrant-01.zevrant-services.com:9100
-#              - zevrant-02.zevrant-services.com:9100
-#              - zevrant-03.zevrant-services.com:9100
-#              - zevrant-04.zevrant-services.com:9100
-#              - zevrant-05.zevrant-services.com:9100
-#              - zevrant-06.zevrant-services.com:9100
-#      - job_name: kube-state-metrics
-#        metrics_path: /metrics
-#        static_configs:
-#          - targets:
-#            - kube-state-metrics.kube-system.svc.cluster.local:8080
-#      - job_name: 'kubernetes-apiservers'
-#        kubernetes_sd_configs:
-#        - role: endpoints
-#        scheme: https
-#        tls_config:
-#          ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-#        bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
-#        relabel_configs:
-#          - source_labels: [ __meta_kubernetes_namespace, __meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name ]
-#            action: keep
-#            regex: default;kubernetes;https
-#      - job_name: 'kubernetes-nodes'
-#        scheme: https
-#        tls_config:
-#          ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-#        bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
-#        kubernetes_sd_configs:
-#          - role: node
-#        relabel_configs:
-#          - action: labelmap
-#            regex: __meta_kubernetes_node_label_(.+)
-#          - target_label: __address__
-#            replacement: kubernetes.default.svc:443
-#          - source_labels: [ __meta_kubernetes_node_name ]
-#            regex: (.+)
-#            target_label: __metrics_path__
-#            replacement: /api/v1/nodes/${1}/proxy/metrics
-#      - job_name: 'kubernetes-pods'
-#        kubernetes_sd_configs:
-#          - role: pod
-#        relabel_configs:
-#          - source_labels: [ __meta_kubernetes_pod_annotation_prometheus_io_scrape ]
-#            action: keep
-#            regex: true
-#          - source_labels: [ __meta_kubernetes_pod_annotation_prometheus_io_path ]
-#            action: replace
-#            target_label: __metrics_path__
-#            regex: (.+)
-#          - source_labels: [ __address__, __meta_kubernetes_pod_annotation_prometheus_io_port ]
-#            action: replace
-#            regex: ([^:]+)(?::\d+)?;(\d+)
-#            replacement: $1:$2
-#            target_label: __address__
-#          - action: labelmap
-#            regex: __meta_kubernetes_pod_label_(.+)
-#          - source_labels: [ __meta_kubernetes_namespace ]
-#            action: replace
-#            target_label: kubernetes_namespace
-#          - source_labels: [ __meta_kubernetes_pod_name ]
-#            action: replace
-#            target_label: kubernetes_pod_name
-#      - job_name: 'kubernetes-service-endpoints'
-#        kubernetes_sd_configs:
-#          - role: endpoints
-#        relabel_configs:
-#          - source_labels: [ __meta_kubernetes_service_annotation_prometheus_io_scrape ]
-#            action: keep
-#            regex: true
-#          - source_labels: [ __meta_kubernetes_service_annotation_prometheus_io_scheme ]
-#            action: replace
-#            target_label: __scheme__
-#            regex: (https?)
-#          - source_labels: [ __meta_kubernetes_service_annotation_prometheus_io_path ]
-#            action: replace
-#            target_label: __metrics_path__
-#            regex: (.+)
-#          - source_labels: [ __address__, __meta_kubernetes_service_annotation_prometheus_io_port ]
-#            action: replace
-#            target_label: __address__
-#            regex: ([^:]+)(?::\d+)?;(\d+)
-#            replacement: $1:$2
-#          - action: labelmap
-#            regex: __meta_kubernetes_service_label_(.+)
-#          - source_labels: [ __meta_kubernetes_namespace ]
-#            action: replace
-#            target_label: kubernetes_namespace
-#          - source_labels: [ __meta_kubernetes_service_name ]
-#            action: replace
-#            target_label: kubernetes_name
-#      - job_name: 'cadvisor'
-#        kubernetes_sd_configs:
-#          - role: node
-#        scheme: https
-#        bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
-#        tls_config:
-#          ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-#        metrics_path: /metrics/cadvisor
+#            - containerPort: 10902
+#          args:
+#            - sidecar
+#            - --tsdb.path=/prometheus
+#            - --prometheus.url=http://localhost:9090
+#            - --hash-func=SHA256
+#            - --objstore.config-file=/var/zevrant-services/objstoreconfig/..data/objstore.yml
+#            - --grpc-address=0.0.0.0:10901
+#            - --http-address=0.0.0.0:10902
+#          volumeMounts:
+#            - mountPath: /prometheus
+#              name: prometheus-data
+#            - mountPath: /var/zevrant-services/objstoreconfig
+#              name: objstore-config
+
+
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+  namespace: monitoring
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 10s
+      external_labels:
+        replica: 0
+        cluster: preprod
+        env: monitoring
+        region: us-east-1
+    remote_write: 
+      - url: https://thanos-receive.preprod.zevrant-services.com/api/v1/receive
+      
+    scrape_configs:
+      - job_name: node-exporter
+        static_configs:
+          - targets:
+              - kubernetes-master-01.preprod.zevrant-services.com:9100
+              - kubernetes-master-02.preprod.zevrant-services.com:9100
+              - kubernetes-master-03.preprod.zevrant-services.com:9100
+              - kubernetes-master-04.preprod.zevrant-services.com:9100
+              - kubernetes-master-05.preprod.zevrant-services.com:9100
+              - kubernetes-worker-01.preprod.zevrant-services.com:9100
+              - kubernetes-worker-02.preprod.zevrant-services.com:9100
+              - kubernetes-worker-03.preprod.zevrant-services.com:9100
+              - kubernetes-worker-04.preprod.zevrant-services.com:9100
+              - kubernetes-worker-05.preprod.zevrant-services.com:9100
+      - job_name: kube-state-metrics
+        metrics_path: /metrics
+        static_configs:
+          - targets:
+            - kube-state-metrics.kube-system.svc.cluster.local:8080
+      - job_name: 'kubernetes-apiservers'
+        kubernetes_sd_configs:
+        - role: endpoints
+        scheme: https
+        tls_config:
+          ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+        bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+        relabel_configs:
+          - source_labels: [ __meta_kubernetes_namespace, __meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name ]
+            action: keep
+            regex: default;kubernetes;https
+      - job_name: 'kubernetes-nodes'
+        scheme: https
+        tls_config:
+          ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+        bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+        kubernetes_sd_configs:
+          - role: node
+        relabel_configs:
+          - action: labelmap
+            regex: __meta_kubernetes_node_label_(.+)
+          - target_label: __address__
+            replacement: kubernetes.default.svc:443
+          - source_labels: [ __meta_kubernetes_node_name ]
+            regex: (.+)
+            target_label: __metrics_path__
+            replacement: /api/v1/nodes/${1}/proxy/metrics
+      - job_name: 'kubernetes-pods'
+        kubernetes_sd_configs:
+          - role: pod
+        relabel_configs:
+          - source_labels: [ __meta_kubernetes_pod_annotation_prometheus_io_scrape ]
+            action: keep
+            regex: true
+          - source_labels: [ __meta_kubernetes_pod_annotation_prometheus_io_path ]
+            action: replace
+            target_label: __metrics_path__
+            regex: (.+)
+          - source_labels: [ __address__, __meta_kubernetes_pod_annotation_prometheus_io_port ]
+            action: replace
+            regex: ([^:]+)(?::\d+)?;(\d+)
+            replacement: $1:$2
+            target_label: __address__
+          - action: labelmap
+            regex: __meta_kubernetes_pod_label_(.+)
+          - source_labels: [ __meta_kubernetes_namespace ]
+            action: replace
+            target_label: kubernetes_namespace
+          - source_labels: [ __meta_kubernetes_pod_name ]
+            action: replace
+            target_label: kubernetes_pod_name
+      - job_name: 'kubernetes-service-endpoints'
+        kubernetes_sd_configs:
+          - role: endpoints
+        relabel_configs:
+          - source_labels: [ __meta_kubernetes_service_annotation_prometheus_io_scrape ]
+            action: keep
+            regex: true
+          - source_labels: [ __meta_kubernetes_service_annotation_prometheus_io_scheme ]
+            action: replace
+            target_label: __scheme__
+            regex: (https?)
+          - source_labels: [ __meta_kubernetes_service_annotation_prometheus_io_path ]
+            action: replace
+            target_label: __metrics_path__
+            regex: (.+)
+          - source_labels: [ __address__, __meta_kubernetes_service_annotation_prometheus_io_port ]
+            action: replace
+            target_label: __address__
+            regex: ([^:]+)(?::\d+)?;(\d+)
+            replacement: $1:$2
+          - action: labelmap
+            regex: __meta_kubernetes_service_label_(.+)
+          - source_labels: [ __meta_kubernetes_namespace ]
+            action: replace
+            target_label: kubernetes_namespace
+          - source_labels: [ __meta_kubernetes_service_name ]
+            action: replace
+            target_label: kubernetes_name
+      - job_name: 'cadvisor'
+        kubernetes_sd_configs:
+          - role: node
+        scheme: https
+        bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+        tls_config:
+          ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+          insecure_skip_verify: true
+        metrics_path: /metrics/cadvisor

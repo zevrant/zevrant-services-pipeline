@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: promtail
-  namespace: monitoring2
+  namespace: monitoring
 spec:
   ports:
     - port: 9080
@@ -16,7 +16,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  namespace: monitoring2
+  namespace: monitoring
   name: promtail
 spec:
   type: NodePort
@@ -33,7 +33,7 @@ spec:
 #kind: Certificate
 #metadata:
 #  name: promtail
-#  namespace: monitoring2
+#  namespace: monitoring
 #spec:
 #  secretName: promtail-tls
 #  issuerRef:
@@ -48,7 +48,7 @@ apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: promtail
-  namespace: monitoring2
+  namespace: monitoring
   labels:
     app: promtail
 spec:
@@ -151,7 +151,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: promtail
-  namespace: monitoring2
+  namespace: monitoring
 data:
   config.yml: |
     server:

@@ -1,7 +1,7 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  namespace: monitoring2
+  namespace: monitoring
   name: kubelet
   labels:
     app: prometheus
@@ -27,7 +27,7 @@ spec:
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  namespace: monitoring2
+  namespace: monitoring
   name: metrics-server
   labels:
     app: prometheus
@@ -54,7 +54,7 @@ spec:
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  namespace: monitoring2
+  namespace: monitoring
   name: kube-state-metrics
   labels:
     app: prometheus

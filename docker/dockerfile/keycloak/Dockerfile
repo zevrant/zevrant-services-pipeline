@@ -1,5 +1,7 @@
-FROM docker.io/zevrant/keycloak/keycloak:18.0.2
+FROM harbor.zevrant-services.com/quay/keycloak/keycloak:latest
 
-RUN /opt/keycloak/bin/kc.sh build --db=postgres --health-enabled=true --metrics-enabled=true
+ENV KC_DB=postgres
+
+RUN /opt/keycloak/bin/kc.sh build --health-enabled=true --metrics-enabled=true
 
 ENTRYPOINT /opt/keycloak/bin/kc.sh start

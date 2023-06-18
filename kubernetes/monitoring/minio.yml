@@ -1,18 +1,59 @@
-apiVersion: v1
-kind: Service
+apiVersion: networking.k8s.io/v1
+kind: Ingress
 metadata:
-  namespace: monitoring2
-  name: minio-console
+  name: minio-monitoring
+  namespace: monitoring
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "https"
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
 spec:
-  type: NodePort
-  ports:
-    - port: 9090
-      targetPort: 9090
-      nodePort: 30142
-      name: http
-    - port: 9433
-      targetPort: 9433
-      nodePort: 30143
-      name: https
-  selector:
-    app: console
+  rules:
+    - host: minio-monitoring.preprod.zevrant-services.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: minio-monitoring-console
+                port:
+                  name: https-console
+    - host: api.minio-monitoring.preprod.zevrant-services.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: minio
+                port:
+                  name: https-minio
+  ingressClassName: nginx
+  tls:
+    - hosts:
+      - minio-monitoring.preprod.zevrant-services.com
+      - api.minio-monitoring.preprod.zevrant-services.com
+      secretName: minio-monitoring-tls
+
+---
+
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: minio-monitoring
+  namespace: monitoring
+spec:
+  secretName: minio-monitoring-tls
+  issuerRef:
+    name: acme-issuer
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+    rotationPolicy: Always
+  duration: 24h
+  renewBefore: 13h
+  dnsNames:
+    - minio-monitoring.preprod.zevrant-services.com
+    - api.minio-monitoring.preprod.zevrant-services.com
+

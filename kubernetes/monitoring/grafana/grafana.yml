@@ -2,40 +2,28 @@ apiVersion: v1
 kind: Service
 metadata:
   name: grafana
-  namespace: monitoring2
-spec:
-  type: NodePort
-  ports:
-    - port: 443
-      targetPort: 3000
-      nodePort: 30138
-      name: https
-  selector:
-    app: grafana
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: grafana-alerting
-  namespace: monitoring2
+  namespace: monitoring
   labels:
     app.kubernetes.io/name: grafana-alerting
     app.kubernetes.io/part-of: grafana
 spec:
   type: ClusterIP
-  clusterIP: 'None'
+#  clusterIP: 'None'
   ports:
     - port: 9094
+      name: alerting
+    - port: 3000
+      name: https
   selector:
     app: grafana
+
 ---
 
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: grafana
-  namespace: monitoring2
+  namespace: monitoring
 spec:
   secretName: grafana-tls
   issuerRef:
@@ -44,13 +32,41 @@ spec:
   renewBefore: 23h
   dnsNames:
     - grafana.preprod.zevrant-services.com
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: grafana
+  namespace: monitoring
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "https"
+    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+#    nginx.ingress.kubernetes.io/rewrite-target: https://minio.zevrant-services.com/api/v1/buckets/$1
+spec:
+  rules:
+    - host: grafana.preprod.zevrant-services.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: grafana
+                port:
+                  name: https
+  ingressClassName: nginx
+
+
 ---
 
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: grafana
-  namespace: monitoring2
+  namespace: monitoring
   labels:
     app: grafana
 spec:
@@ -78,10 +94,10 @@ spec:
           configMap:
             name: grafana
       imagePullSecrets:
-        - name: regcred
+        - name: harbor-ro
       containers:
         - name: grafana
-          image: grafana/grafana-oss:latest
+          image: harbor.zevrant-services.com/dockerhub/grafana/grafana-oss:latest
           imagePullPolicy: Always
           volumeMounts:
             - name: grafana-cert
@@ -99,7 +115,7 @@ spec:
               path: /api/health
               port: 3000
             periodSeconds: 5
-            failureThreshold: 4 
+            failureThreshold: 4
             successThreshold: 1
           livenessProbe:
             httpGet:
@@ -121,7 +137,7 @@ spec:
                 fieldRef:
                   fieldPath: status.podIP
             - name: POSTGRES_HOST
-              value: grafana-db:5432
+              value: grafana-postgres.preprod.zevrant-services.com:5432
             - name: POSTGRES_DATABASE_NAME
               value: grafana
             - name: POSTGRES_USER
@@ -129,7 +145,7 @@ spec:
             - name: POSTGTRES_DATABASE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: grafana-db-password
+                  name: grafana-postgres-credentials
                   key: password
 
 ---
@@ -138,7 +154,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: grafana
-  namespace: monitoring2
+  namespace: monitoring
 data:
   grafana.ini: |
     [database]
@@ -151,7 +167,7 @@ data:
     [unified_alerting]
     enabled = true
     ha_listen_address = "${POD_IP}:9094"
-    ha_peers = "grafana-alerting:9094"
+    ha_peers = "grafana:9094"
     ha_advertise_address = "${POD_IP}:9094"
     
     [server]

@@ -15,7 +15,7 @@ items:
       v1.min.io/pool: pool-0
       v1.min.io/tenant: loki
     name: data0-loki-pool-0-0
-    namespace: monitoring2
+    namespace: monitoring
   spec:
     storageClassName: kadalu.monitoring
     accessModes:
@@ -47,7 +47,7 @@ items:
       v1.min.io/pool: pool-0
       v1.min.io/tenant: loki
     name: data0-loki-pool-0-1
-    namespace: monitoring2
+    namespace: monitoring
   spec:
     accessModes:
     - ReadWriteOnce
@@ -73,7 +73,7 @@ items:
       v1.min.io/pool: pool-0
       v1.min.io/tenant: loki
     name: data0-loki-pool-0-2
-    namespace: monitoring2
+    namespace: monitoring
   spec:
     accessModes:
     - ReadWriteOnce
@@ -98,7 +98,7 @@ items:
       v1.min.io/pool: pool-0
       v1.min.io/tenant: loki
     name: data0-loki-pool-0-3
-    namespace: monitoring2
+    namespace: monitoring
   spec:
     accessModes:
     - ReadWriteOnce
@@ -113,7 +113,7 @@ items:
   metadata:
     annotations:
       kubectl.kubernetes.io/last-applied-configuration: |
-        {"apiVersion":"v1","kind":"PersistentVolumeClaim","metadata":{"annotations":{},"name":"grafana-database","namespace":"monitoring2"},"spec":{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"10Gi"}},"storageClassName":"kadalu.monitoring"}}
+        {"apiVersion":"v1","kind":"PersistentVolumeClaim","metadata":{"annotations":{},"name":"grafana-database","namespace":"monitoring"},"spec":{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"10Gi"}},"storageClassName":"kadalu.monitoring"}}
       pv.kubernetes.io/bind-completed: "yes"
       pv.kubernetes.io/bound-by-controller: "yes"
       volume.beta.kubernetes.io/storage-provisioner: kadalu
@@ -121,7 +121,7 @@ items:
     finalizers:
     - kubernetes.io/pvc-protection
     name: grafana-database
-    namespace: monitoring2
+    namespace: monitoring
   spec:
     accessModes:
     - ReadWriteOnce
@@ -136,7 +136,7 @@ items:
   metadata:
     annotations:
       kubectl.kubernetes.io/last-applied-configuration: |
-        {"apiVersion":"v1","kind":"PersistentVolumeClaim","metadata":{"annotations":{},"labels":{"v1.min.io/log-pg":"loki-log"},"name":"loki-log-loki-log-0","namespace":"monitoring2"},"spec":{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"5368709120"}},"storageClassName":"kadalu.monitoring","volumeMode":"Filesystem"}}
+        {"apiVersion":"v1","kind":"PersistentVolumeClaim","metadata":{"annotations":{},"labels":{"v1.min.io/log-pg":"loki-log"},"name":"loki-log-loki-log-0","namespace":"monitoring"},"spec":{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"5368709120"}},"storageClassName":"kadalu.monitoring","volumeMode":"Filesystem"}}
       pv.kubernetes.io/bind-completed: "yes"
       pv.kubernetes.io/bound-by-controller: "yes"
       volume.beta.kubernetes.io/storage-provisioner: kadalu
@@ -146,7 +146,7 @@ items:
     labels:
       v1.min.io/log-pg: loki-log
     name: loki-log-loki-log-0
-    namespace: monitoring2
+    namespace: monitoring
   spec:
     accessModes:
     - ReadWriteOnce
@@ -164,7 +164,7 @@ items:
     labels:
       v1.min.io/prometheus: loki-prometheus
     name: loki-prometheus-loki-prometheus-0
-    namespace: monitoring2
+    namespace: monitoring
   spec:
     storageClassName: kadalu.monitoring
     accessModes:
@@ -178,7 +178,7 @@ items:
   metadata:
     annotations:
       kubectl.kubernetes.io/last-applied-configuration: |
-        {"apiVersion":"v1","kind":"PersistentVolumeClaim","metadata":{"annotations":{},"name":"metrics-database","namespace":"monitoring2"},"spec":{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"10Gi"}},"storageClassName":"kadalu.monitoring"}}
+        {"apiVersion":"v1","kind":"PersistentVolumeClaim","metadata":{"annotations":{},"name":"metrics-database","namespace":"monitoring"},"spec":{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"10Gi"}},"storageClassName":"kadalu.monitoring"}}
       pv.kubernetes.io/bind-completed: "yes"
       pv.kubernetes.io/bound-by-controller: "yes"
       volume.beta.kubernetes.io/storage-provisioner: kadalu
@@ -186,7 +186,7 @@ items:
     finalizers:
     - kubernetes.io/pvc-protection
     name: metrics-database
-    namespace: monitoring2
+    namespace: monitoring
   spec:
     accessModes:
     - ReadWriteOnce
@@ -201,7 +201,7 @@ items:
   metadata:
     annotations:
       kubectl.kubernetes.io/last-applied-configuration: |
-        {"apiVersion":"v1","kind":"PersistentVolumeClaim","metadata":{"annotations":{},"name":"monitoring-ca","namespace":"monitoring2"},"spec":{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"10Gi"}},"storageClassName":"kadalu.monitoring"}}
+        {"apiVersion":"v1","kind":"PersistentVolumeClaim","metadata":{"annotations":{},"name":"monitoring-ca","namespace":"monitoring"},"spec":{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"10Gi"}},"storageClassName":"kadalu.monitoring"}}
       pv.kubernetes.io/bind-completed: "yes"
       pv.kubernetes.io/bound-by-controller: "yes"
       volume.beta.kubernetes.io/storage-provisioner: kadalu
@@ -209,7 +209,7 @@ items:
     finalizers:
     - kubernetes.io/pvc-protection
     name: monitoring-ca
-    namespace: monitoring2
+    namespace: monitoring
   spec:
     accessModes:
     - ReadWriteOnce
