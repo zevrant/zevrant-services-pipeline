@@ -159,7 +159,7 @@ pipeline {
                             def appYaml = readYaml(file: 'src/main/resources/application.yml')
                             String containerPort = appYaml.server.port
                             sh 'echo $DOCKER_TOKEN | buildah login -u \'robot$jenkins\' --password-stdin harbor.zevrant-services.com'
-                            sh "buildah bud --build-arg serviceName=$REPOSITORY --build-arg containerPort=$containerPort -t docker.io/zevrant/$REPOSITORY:${versionString} ."
+                            sh "buildah bud --build-arg serviceName=$REPOSITORY --build-arg containerPort=$containerPort -t harbor.zevrant-services.com/zevrant-services/$REPOSITORY:${versionString} ."
                             sh "buildah push harbor.zevrant-services.com/zevrant-services/$REPOSITORY:${versionString}"
                         }
                     }
