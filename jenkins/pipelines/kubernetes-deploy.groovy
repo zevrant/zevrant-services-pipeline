@@ -1,14 +1,23 @@
 import com.zevrant.services.ServiceLoader
+import com.zevrant.services.pojo.SpringCodeUnit
+import com.zevrant.services.pojo.SpringCodeUnitCollection
 import com.zevrant.services.services.CertificateService
 import com.zevrant.services.services.KubernetesService
+import com.zevrant.services.services.PostgresYamlConfigurer
 
 CertificateService certificateService = ServiceLoader.load(binding, CertificateService.class) as CertificateService
 KubernetesService kubernetesService = ServiceLoader.load(binding, KubernetesService.class) as KubernetesService
-
+PostgresYamlConfigurer postgresYamlConfigurer = ServiceLoader.load(binding, PostgresYamlConfigurer.class) as PostgresYamlConfigurer
 LinkedHashMap<String, Serializable> serviceNameOverrides = [
         'develop-zevrant-home-ui'     : '172.16.1.10',
         'develop-zevrant-home-ui-port': 30124
 ] as LinkedHashMap<String, Serializable>
+
+SpringCodeUnit codeUnit = SpringCodeUnitCollection.microservices.find { unit -> unit.repo.repoName == REPOSITORY }
+
+if (codeUnit == null) {
+    throw new RuntimeException("Failed to find Spring Code Unit for repository $REPOSITORY")
+}
 
 pipeline {
     agent {
@@ -30,24 +39,21 @@ pipeline {
             }
         }
         stage("Deploy Database") {
-            when { expression { fileExists('database.yml') && VERSION != null && VERSION != '' } }
+            when { expression { c } }
             steps {
                 container('kubectl') {
                     script {
-                        sh "sed -i 's/\$ENVIRONMENT/$ENVIRONMENT/g' ./database.yml"
-                        sh "kubectl apply -n $ENVIRONMENT -f ./database.yml"
-                        try {
-                            sh "kubectl get deployment $REPOSITORY-db -n $ENVIRONMENT "
-                        } catch (Exception ignored) {
-                            throw new RuntimeException("Failed to retrieve deployment for repository ${REPOSITORY}-db in $ENVIRONMENT")
+                        String ipAddress = kubernetesService.getServiceIp()
+                        String yaml = postgresYamlConfigurer.configurePostgresHelmChart(codeUnit.name, ipAddress)
+                        writeFile(file: 'postgres-values.yml', yaml)
+                        sh "helm list -n $ENVIRONMENT | grep ${codeUnit.name}-postgres > deployments"
+                        String deployment = readFile(file: 'deployments').trim()
+                        if(deployment == null || deployment == '') {
+                            sh "helm install ${codeUnit.name}-postgres -f postgres-values.yml oci://registry-1.docker.io/bitnamicharts/postgresql-ha"
+                        } else {
+                            sh "help update ${codeUnit.name}-postgres -f postgres-values.yml oci://registry-1.docker.io/bitnamicharts/postgresql-ha"
                         }
-
-//                        try {
-                            sh "kubectl rollout status deployments ${REPOSITORY}-db -n $ENVIRONMENT --timeout=5m"
-//                        } catch (Exception ignored) {
-//                            sh "kubectl rollout undo deploy ${REPOSITORY}-db -n $ENVIRONMENT"
-//                            throw new RuntimeException("Deployment for ${REPOSITORY}-db in Environment $ENVIRONMENT failed and was rolled back")
-//                        }
+                        sh "kubectl rollout status deployments ${codeUnit.name}-postgres-postgresql-ha-pgpool -n $ENVIRONMENT --timeout=5m"
                     }
                 }
             }

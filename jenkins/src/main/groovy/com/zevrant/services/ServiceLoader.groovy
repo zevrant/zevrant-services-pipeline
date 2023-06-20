@@ -1,6 +1,8 @@
 package com.zevrant.services
 
 import com.zevrant.services.services.GitService
+import com.zevrant.services.services.KubernetesService
+import com.zevrant.services.services.PostgresYamlConfigurer
 import com.zevrant.services.services.VersionService
 //import com.zevrant.services.services.GooglePlayService
 class ServiceLoader {
@@ -8,7 +10,9 @@ class ServiceLoader {
         [
                 // NOTE: New tasks must be added here
                 VersionService,
-                GitService
+                GitService,
+                KubernetesService,
+                PostgresYamlConfigurer
 //                GooglePlayService
         ]
     }
