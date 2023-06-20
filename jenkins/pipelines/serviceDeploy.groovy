@@ -1,8 +1,11 @@
+import com.lesfurets.jenkins.unit.global.lib.Library
 import com.zevrant.services.ServiceLoader
 import com.zevrant.services.pojo.KubernetesService
 import com.zevrant.services.pojo.KubernetesServiceCollection
 import com.zevrant.services.services.CertificateService
 import com.zevrant.services.services.GitService
+
+@Library("CommonUtils")
 
 KubernetesService service = KubernetesServiceCollection.findServiceByName(SERVICE_NAME as String) as KubernetesService
 GitService gitService = ServiceLoader.load(binding, GitService.class) as GitService
