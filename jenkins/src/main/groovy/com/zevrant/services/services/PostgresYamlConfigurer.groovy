@@ -51,3 +51,4 @@ String configurePostgresHelmChart(String appName, String ipAddress) {
     values.service.clusterIP = ipAddress
     return writeYaml(returnText: true, data: values)
 }
+

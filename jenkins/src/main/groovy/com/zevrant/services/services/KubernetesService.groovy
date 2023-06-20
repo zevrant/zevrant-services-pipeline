@@ -3,6 +3,7 @@ package com.zevrant.services.services
 import com.zevrant.services.pojo.PodStatus
 
 import java.nio.charset.StandardCharsets
+import java.time.LocalDateTime
 
 int getDeployTimeout(int replicas) {
     int timeout = replicas * 360
@@ -84,4 +85,50 @@ String getServiceIp() {
         }
     }
     throw new RuntimeException("Failed to get available ip address within cidr block 10.96.0.0/24")
+}
+
+bool requestCertificate(String certName, String environment, List<String> dnsNames) {
+    String getCertCommand = "kubectl get certs -n ${environment} ${certName} --no-headers | awk '{print \$2}' | grep True"
+    int status = sh returnStatus: true, script: getCertCommand
+    if (status == 0) {
+        println("Cert $certName already exists and is valid no action needed")
+        return true
+    }
+    Map<String, Object> certificateRequest = [
+            apiVersion: "cert-manager.io/v1",
+            kind: "Certificate",
+            metadata: [
+                    name: certName,
+                    namespace: environment,
+            ],
+            spec: [
+                    secretName: "${certName}-tls",
+                    issuerRef: [
+                            name: "acme-isser"
+                    ],
+                    privateKey: [
+                            algorithm: "ECDSA",
+                            size: 256,
+                            rotationPolicy: Always
+                    ],
+                    duration: "24h",
+                    renewBefore: "11h",
+                    dnsNames: dnsNames
+            ]
+    ]
+
+    writeYaml(file: 'certificateRequest.yml', data: certificateRequest)
+    sh 'kubectl apply -f certificateRequest.yml'
+    LocalDateTime start = LocalDateTime.now()
+    status = sh returnStatus: true, script: getCertCommand
+    while(status != 0 && LocalDateTime.now().isBefore(start)) {
+        sleep 1
+        status = sh returnStatus: true, script: getCertCommand
+    }
+
+    if (status != 0) {
+        sh "kubectl describe cert $certName"
+        throw new RuntimeException("Failed to obtain certificate $certName for requested service")
+    }
+    return true
 }
