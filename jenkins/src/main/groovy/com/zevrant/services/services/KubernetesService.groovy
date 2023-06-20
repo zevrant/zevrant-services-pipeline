@@ -119,9 +119,9 @@ boolean requestCertificate(String certName, String environment, List<String> dns
 
     writeYaml(file: 'certificateRequest.yml', data: certificateRequest)
     sh 'kubectl apply -f certificateRequest.yml'
-    LocalDateTime start = LocalDateTime.now()
+    LocalDateTime end = LocalDateTime.now().plusMinutes(2)
     status = sh returnStatus: true, script: getCertCommand
-    while(status != 0 && LocalDateTime.now().isBefore(start)) {
+    while(status != 0 && LocalDateTime.now().isBefore(end)) {
         sleep 1
         status = sh returnStatus: true, script: getCertCommand
     }
