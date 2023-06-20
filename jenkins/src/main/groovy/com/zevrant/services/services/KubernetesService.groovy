@@ -87,7 +87,7 @@ String getServiceIp() {
     throw new RuntimeException("Failed to get available ip address within cidr block 10.96.0.0/24")
 }
 
-bool requestCertificate(String certName, String environment, List<String> dnsNames) {
+boolean requestCertificate(String certName, String environment, List<String> dnsNames) {
     String getCertCommand = "kubectl get certs -n ${environment} ${certName} --no-headers | awk '{print \$2}' | grep True"
     int status = sh returnStatus: true, script: getCertCommand
     if (status == 0) {
