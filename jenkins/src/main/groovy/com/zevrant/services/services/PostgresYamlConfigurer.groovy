@@ -49,5 +49,5 @@ String configurePostgresHelmChart(String appName, String ipAddress) {
     values.persistence.storageClass = 'csi-rbd-sc'
     values.persistence.size = '50Gi'
     values.service.clusterIP = ipAddress
-    writeYaml(file: 'default.yml', data: values)
+    return writeYaml(returnText: true, data: values)
 }
