@@ -14,4 +14,3 @@
 /kubernetes/shared/gitea/postgresql-ha/
 /kubernetes/shared/harbor/redis-cluster/
 /kubernetes/monitoring/prometheus/thanos/
-**/postgresql-ha/

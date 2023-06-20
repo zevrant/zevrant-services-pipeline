@@ -4,7 +4,8 @@ class SpringCodeUnitCollection {
 
     static final List<SpringCodeUnit> microservices = Collections.unmodifiableList([
             new SpringCodeUnit([
-                    name: 'backup-service'
+                    name: 'backup-service',
+                    postgresDatabase: true
             ]),
             new SpringCodeUnit([
                     name: 'acra-backend'

@@ -5,10 +5,12 @@ import com.zevrant.services.enumerations.ApplicationType
 class SpringCodeUnit extends CodeUnit {
 
     private final boolean prodReady
+    private final boolean postgresDatabase
 
     SpringCodeUnit(Map<String, Object> params) {
         super(params)
-        prodReady = params.prodReady ?: false
         applicationType = ApplicationType.SPRING
+        prodReady = params.prodReady ?: false
+        postgresDatabase = params.postgresDatabase ?: false
     }
 }
