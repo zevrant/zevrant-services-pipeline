@@ -48,7 +48,7 @@ pipeline {
                         writeFile(file: 'postgres-values.yml', text: yaml)
                         int status = sh returnStatus: true, script: "helm list -n $ENVIRONMENT | grep ${codeUnit.name}-postgres > /dev/null"
                         sh 'helm fetch --untar oci://registry-1.docker.io/bitnamicharts/postgresql-ha'
-                        sh 'rm postgresql-ha/values.yml'
+                        sh 'rm postgresql-ha/values.yaml'
                         if(status == 1) {
                             sh "helm install ${codeUnit.name}-postgres postgresql-ha -f postgres-values.yml -n ${ENVIRONMENT}"
                         } else {
