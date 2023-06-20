@@ -109,7 +109,7 @@ boolean requestCertificate(String certName, String environment, List<String> dns
                     privateKey: [
                             algorithm: "ECDSA",
                             size: 256,
-                            rotationPolicy: Always
+                            rotationPolicy: "Always"
                     ],
                     duration: "24h",
                     renewBefore: "11h",
