@@ -47,10 +47,12 @@ pipeline {
                         String yaml = postgresYamlConfigurer.configurePostgresHelmChart(codeUnit.name, ipAddress)
                         writeFile(file: 'postgres-values.yml', text: yaml)
                         int status = sh returnStatus: true, script: "helm list -n $ENVIRONMENT | grep ${codeUnit.name}-postgres > /dev/null"
+                        sh 'helm fetch --untar oci://registry-1.docker.io/bitnamicharts/postgresql-ha'
+                        sh 'rm postgresql-ha/values'
                         if(status == 1) {
-                            sh "helm install ${codeUnit.name}-postgres oci://registry-1.docker.io/bitnamicharts/postgresql-ha -f postgres-values.yml"
+                            sh "helm install ${codeUnit.name}-postgres postgresql-ha -f postgres-values.yml -n ${ENVIRONMENT}"
                         } else {
-                            sh "help update ${codeUnit.name}-postgres oci://registry-1.docker.io/bitnamicharts/postgresql-ha -f postgres-values.yml"
+                            sh "help update ${codeUnit.name}-postgres postgresql -f postgres-values.yml -n ${ENVIRONMENT}"
                         }
                         sh "kubectl rollout status deployments ${codeUnit.name}-postgres-postgresql-ha-pgpool -n $ENVIRONMENT --timeout=5m"
                     }
