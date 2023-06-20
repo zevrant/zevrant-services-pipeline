@@ -46,9 +46,8 @@ pipeline {
                         String ipAddress = kubernetesService.getServiceIp()
                         String yaml = postgresYamlConfigurer.configurePostgresHelmChart(codeUnit.name, ipAddress)
                         writeFile(file: 'postgres-values.yml', text: yaml)
-                        sh "helm list -n $ENVIRONMENT | grep ${codeUnit.name}-postgres > deployments"
-                        String deployment = readFile(file: 'deployments').trim()
-                        if(deployment == null || deployment == '') {
+                        int status = sh returnStatus: true, script: "helm list -n $ENVIRONMENT | grep ${codeUnit.name}-postgres > /dev/null"
+                        if(status == 1) {
                             sh "helm install ${codeUnit.name}-postgres -f postgres-values.yml oci://registry-1.docker.io/bitnamicharts/postgresql-ha"
                         } else {
                             sh "help update ${codeUnit.name}-postgres -f postgres-values.yml oci://registry-1.docker.io/bitnamicharts/postgresql-ha"
