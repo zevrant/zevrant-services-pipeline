@@ -43,7 +43,7 @@ pipeline {
             steps {
                 container('kubectl') {
                     script {
-                        kubernetesService.requestCertificate("${codeUnit.name}-postgres-tls", ENVIRONMENT, ["${codeUnit.name.toLowerCase()}.${ENVIRONMENT.toLowerCase()}.zevrant-services.com"])
+                        kubernetesService.requestCertificate("${codeUnit.name}-postgres", ENVIRONMENT, ["${codeUnit.name.toLowerCase()}.${ENVIRONMENT.toLowerCase()}.zevrant-services.com"])
                         String ipAddress = kubernetesService.getServiceIp()
                         String yaml = postgresYamlConfigurer.configurePostgresHelmChart(codeUnit.name, ipAddress)
                         writeFile(file: 'postgres-values.yml', text: yaml)

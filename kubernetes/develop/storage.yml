@@ -23,16 +23,4 @@ spec:
     redundancy: 2
   pvReclaimPolicy: delete
 
----
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  name: develop-ca2
-  namespace: develop
-spec:
-  storageClassName: kadalu.develop
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 10Gi
+

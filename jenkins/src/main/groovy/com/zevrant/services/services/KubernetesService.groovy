@@ -118,6 +118,7 @@ boolean requestCertificate(String certName, String environment, List<String> dns
     ]
 
     writeYaml(file: 'certificateRequest.yml', data: certificateRequest)
+    println(writeYaml(returnText: true, data: certificateRequest))
     sh 'kubectl apply -f certificateRequest.yml'
     LocalDateTime end = LocalDateTime.now().plusMinutes(2)
     status = sh returnStatus: true, script: getCertCommand

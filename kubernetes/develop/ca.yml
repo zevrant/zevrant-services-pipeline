@@ -13,6 +13,21 @@ spec:
 
 ---
 
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: develop-ca
+  namespace: develop
+spec:
+  storageClassName: csi-rbd-sc
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+
+---
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -45,7 +60,7 @@ spec:
       volumes:
         - name: step-ca
           persistentVolumeClaim:
-            claimName: develop-ca2
+            claimName: develop-ca
         - name: certificate-authority-password
           secret:
             secretName: certificate-authority-password
