@@ -14,9 +14,13 @@ RUN curl https://baltocdn.com/helm/signing.asc | gpg --dearmor -o /usr/share/key
     && apt-get install helm -y \
     && apt-get clean
 
-RUN useradd -m -d /var/lib/jenkins -G developers jenkins
+RUN useradd -m -d /var/lib/jenkins -u 10000 -G developers jenkins \
+    && chown -R jenkins:jenkins /var/lib/jenkins
 
 USER jenkins
 
-RUN kubectl \
+ENV HOME /var/lib/jenkins
+
+RUN mkdir -p /var/lib/jenkins/.cache/helm \
+    && kubectl \
     && helm

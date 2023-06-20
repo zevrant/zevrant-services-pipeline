@@ -13,4 +13,12 @@ class SpringCodeUnit extends CodeUnit {
         prodReady = params.prodReady ?: false
         postgresDatabase = params.postgresDatabase ?: false
     }
+
+    boolean getPostgresDatabase() {
+        return postgresDatabase
+    }
+
+    boolean getProdReady() {
+        return prodReady
+    }
 }

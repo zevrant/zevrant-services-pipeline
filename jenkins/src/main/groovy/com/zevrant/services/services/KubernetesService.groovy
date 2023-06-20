@@ -77,7 +77,7 @@ String getServiceIp() {
     sh 'kubectl get services --all-namespaces --no-headers | awk \'{ print $4 }\' | grep 10 > serviceIps'
     List<String> serviceIps = readFile(file: 'serviceIps').split("\n")
     String ipAddressPartial = "10.96.0."
-    for (int i = 0; i <= 255; i++) {
+    for (int i = 1; i <= 255; i++) {
         String ipAddress = ipAddressPartial + "$i"
         if (!serviceIps.contains(ipAddress)) {
             return ipAddress

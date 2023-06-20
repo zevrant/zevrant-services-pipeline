@@ -39,7 +39,7 @@ pipeline {
             }
         }
         stage("Deploy Database") {
-            when { expression { codeUnit.postgresDatabase } }
+            when { expression { codeUnit.getPostgresDatabase() } }
             steps {
                 container('kubectl') {
                     script {
