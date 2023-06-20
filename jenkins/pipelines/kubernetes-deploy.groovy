@@ -45,7 +45,7 @@ pipeline {
                     script {
                         String ipAddress = kubernetesService.getServiceIp()
                         String yaml = postgresYamlConfigurer.configurePostgresHelmChart(codeUnit.name, ipAddress)
-                        writeFile(file: 'postgres-values.yml', yaml)
+                        writeFile(file: 'postgres-values.yml', text: yaml)
                         sh "helm list -n $ENVIRONMENT | grep ${codeUnit.name}-postgres > deployments"
                         String deployment = readFile(file: 'deployments').trim()
                         if(deployment == null || deployment == '') {
