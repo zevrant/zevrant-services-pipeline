@@ -164,7 +164,7 @@ postgresql:
   extraInitContainers: []
   repmgrConfiguration: ''
   configuration: ''
-  pgHbaConfiguration:
+  pgHbaConfiguration: ''
   configurationCM: ''
   extendedConf: ''
   extendedConfCM: ''
@@ -295,7 +295,7 @@ pgpool:
     digest: ''
     pullPolicy: IfNotPresent
     pullSecrets: []
-    debug: true
+    debug: false
   customUsers: {}
   usernames: ''
   passwords: ''
@@ -440,7 +440,7 @@ metrics:
     digest: ''
     pullPolicy: IfNotPresent
     pullSecrets: []
-    debug: true
+    debug: false
   podSecurityContext:
     enabled: true
     runAsUser: 1001
@@ -511,7 +511,7 @@ volumePermissions:
     tag: 11-debian-11-r118
     digest: ''
     pullPolicy: IfNotPresent
-    pullSecrets: ['harbor-ro']
+    pullSecrets: []
   podSecurityContext:
     runAsUser: 0
   resources:
