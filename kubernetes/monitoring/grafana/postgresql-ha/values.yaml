@@ -296,9 +296,9 @@ pgpool:
     pullPolicy: IfNotPresent
     pullSecrets: []
     debug: false
-  customUsers: {}
-  usernames: ''
-  passwords: ''
+  customUsers:
+    usernames: ''
+    passwords: ''
   hostAliases: [ ]
   customUsersSecret: 'grafana-postgres-users'
   existingSecret: 'grafana-postgres-admin-user'
