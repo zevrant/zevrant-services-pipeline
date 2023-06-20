@@ -48,9 +48,9 @@ pipeline {
                         writeFile(file: 'postgres-values.yml', text: yaml)
                         int status = sh returnStatus: true, script: "helm list -n $ENVIRONMENT | grep ${codeUnit.name}-postgres > /dev/null"
                         if(status == 1) {
-                            sh "helm install ${codeUnit.name}-postgres -f postgres-values.yml oci://registry-1.docker.io/bitnamicharts/postgresql-ha"
+                            sh "helm install ${codeUnit.name}-postgres oci://registry-1.docker.io/bitnamicharts/postgresql-ha -f postgres-values.yml"
                         } else {
-                            sh "help update ${codeUnit.name}-postgres -f postgres-values.yml oci://registry-1.docker.io/bitnamicharts/postgresql-ha"
+                            sh "help update ${codeUnit.name}-postgres oci://registry-1.docker.io/bitnamicharts/postgresql-ha -f postgres-values.yml"
                         }
                         sh "kubectl rollout status deployments ${codeUnit.name}-postgres-postgresql-ha-pgpool -n $ENVIRONMENT --timeout=5m"
                     }
