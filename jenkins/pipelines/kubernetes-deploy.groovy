@@ -46,14 +46,15 @@ pipeline {
                         kubernetesService.requestCertificate("${codeUnit.name}-postgres", ENVIRONMENT, ["${codeUnit.name.toLowerCase()}.${ENVIRONMENT.toLowerCase()}.zevrant-services.com"])
                         String ipAddress = kubernetesService.getServiceIp()
                         String yaml = postgresYamlConfigurer.configurePostgresHelmChart(codeUnit.name, ipAddress)
-                        writeFile(file: 'postgres-values.yml', text: yaml)
+                        String valuesFileName = 'postgres-values.yml'
+                        writeFile(file: valuesFileName, text: yaml)
                         int status = sh returnStatus: true, script: "helm list -n $ENVIRONMENT | grep ${codeUnit.name}-postgres > /dev/null"
                         sh 'helm fetch --untar oci://registry-1.docker.io/bitnamicharts/postgresql-ha'
-                        sh 'rm postgresql-ha/values.yaml'
+                        sh "rm postgresql-ha/values.yaml && mv $valuesFileName postgresql-ha/values.yaml"
                         if(status == 1) {
-                            sh "helm install ${codeUnit.name}-postgres postgresql-ha -f postgres-values.yml -n ${ENVIRONMENT}"
+                            sh "helm install ${codeUnit.name}-postgres postgresql-ha -n ${ENVIRONMENT}"
                         } else {
-                            sh "help update ${codeUnit.name}-postgres postgresql -f postgres-values.yml -n ${ENVIRONMENT}"
+                            sh "help update ${codeUnit.name}-postgres postgresql -n ${ENVIRONMENT}"
                         }
                         sh "kubectl rollout status deployments ${codeUnit.name}-postgres-postgresql-ha-pgpool -n $ENVIRONMENT --timeout=5m"
                     }
