@@ -48,7 +48,7 @@ pipeline {
                         Map<String, Object> services = [
                                 'Deploy Service': {
                                     sh "kubectl rollout restart ${serviceType} $SERVICE_NAME -n $ENVIRONMENT"
-                                    sh "kubectl rollout status ${serviceType} $SERVICE_NAME -n $ENVIRONMENT --timeout=5m"
+                                    sh "kubectl rollout status ${serviceType} $SERVICE_NAME -n $ENVIRONMENT --timeout=10m"
                                 }
                         ]
 
