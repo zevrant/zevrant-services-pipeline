@@ -52,7 +52,7 @@ spec:
         fsGroupChangePolicy: "Always"
       imagePullSecrets:
         - name: regcred
-      dnsPolicy: "ClusterFirst"
+      dnsPolicy: "None"
       dnsConfig:
         nameservers:
           - 1.1.1.1

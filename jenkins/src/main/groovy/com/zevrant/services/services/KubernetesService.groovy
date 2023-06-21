@@ -104,7 +104,7 @@ boolean requestCertificate(String certName, String environment, List<String> dns
             spec: [
                     secretName: "${certName}-tls",
                     issuerRef: [
-                            name: "acme-isser"
+                            name: "acme-issuer"
                     ],
                     privateKey: [
                             algorithm: "ECDSA",
