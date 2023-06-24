@@ -2,6 +2,7 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: gitea
+  namespace: shared
 spec:
   secretName: gitea-tls
   issuerRef:
@@ -69,7 +70,7 @@ metadata:
   name: gitea
   namespace: shared
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   ports:
     - port: 3000
       targetPort: 3000
@@ -99,8 +100,9 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: gitea
+  namespace: shared
   annotations:
-    nginx.ingress.kubernetes.io/backend-protocol: "https"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
     nginx.ingress.kubernetes.io/ssl-passthrough: "true"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
 spec:
@@ -144,6 +146,11 @@ spec:
         fsGroupChangePolicy: "Always"
       imagePullSecrets:
         - name: regcred
+      dnsPolicy: ClusterFirst
+      dnsConfig:
+        nameservers:
+          - 172.16.1.2
+          - 1.1.1.1
       volumes:
         - name: keystore-volume
           emptyDir:

@@ -3,12 +3,7 @@ kind: Service
 metadata:
   name: grafana
   namespace: monitoring
-  labels:
-    app.kubernetes.io/name: grafana-alerting
-    app.kubernetes.io/part-of: grafana
 spec:
-  type: ClusterIP
-#  clusterIP: 'None'
   ports:
     - port: 9094
       name: alerting
@@ -44,6 +39,7 @@ metadata:
     nginx.ingress.kubernetes.io/backend-protocol: "https"
     nginx.ingress.kubernetes.io/ssl-passthrough: "true"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    ingress.kubernetes.io/ssl-passthrough: "true"
 #    nginx.ingress.kubernetes.io/rewrite-target: https://minio.zevrant-services.com/api/v1/buckets/$1
 spec:
   rules:
@@ -106,6 +102,7 @@ spec:
               mountPath: /etc/grafana
           ports:
             - containerPort: 3000
+              name: https
             - containerPort: 9094
               name: grafana-alert
               protocol: TCP

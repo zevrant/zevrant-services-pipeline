@@ -1,21 +1,6 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: jenkins-nodeport
-  namespace: jenkins
-spec:
-  type: LoadBalancer
-  ports:
-    - port: 8443
-      targetPort: 8443
-      name: http-port
-#      nodePort: 30120
-  selector:
-    app: jenkins
----
-apiVersion: v1
-kind: Service
-metadata:
   name: jenkins
   namespace: jenkins
 spec:
@@ -23,9 +8,12 @@ spec:
     - port: 50000
       targetPort: 50000
       name: agent-port
+    - port: 8443
+      targetPort: 8443
+      name: https
     - port: 8080
       targetPort: 8080
-      name: inbound-agent-port
+      name: http
   selector:
     app: jenkins
 
@@ -52,6 +40,7 @@ metadata:
   name: jenkins
   namespace: jenkins
   annotations:
+    kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/backend-protocol: "https"
     nginx.ingress.kubernetes.io/ssl-passthrough: "true"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
@@ -64,9 +53,9 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: jenkins-nodeport
+                name: jenkins
                 port:
-                  name: http-port
+                  name: https
   ingressClassName: nginx
 
 ---
@@ -110,11 +99,11 @@ spec:
             defaultMode: 0400
       imagePullSecrets:
         - name: regcred
-      dnsPolicy: ClusterFirstWithHostNet
-      dnsConfig:
-        nameservers:
-          - 172.16.1.2
-          - 1.1.1.1
+#      dnsPolicy: ClusterFirst
+#      dnsConfig:
+#        nameservers:
+#          - 172.16.1.2
+#          - 1.1.1.1
       initContainers:
         - name: secret-init
           image: docker.io/zevrant/ubuntu-base:latest
@@ -176,8 +165,6 @@ spec:
             - mountPath: /opt/acme/certs/
               name: keystore-volume
           ports:
-            - containerPort: 8080
-              name: http-port
             - containerPort: 8443
               name: https-port
             - containerPort: 5000
