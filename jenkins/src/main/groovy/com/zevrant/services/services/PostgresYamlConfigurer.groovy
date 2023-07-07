@@ -8,15 +8,16 @@ String configurePostgresHelmChart(String appName, String ipAddress) {
     def values = readYaml(text: response.content)
 
     values.global.imagePullSecrets = ['harbor-ro']
+    values.global.postgresql.username = 'zevrant'
+    values.global.postgresql.database = appName
+    values.global.postgresql.repmgrDatabase = appName
+    values.global.postgresql.existingSecret = "${appName}-postgres-credentials"
     values.postgresql.image.registry = "harbor.zevrant-services.com"
     values.postgresql.image.repository = "dockerhub/bitnami/postgresql-repmgr"
     values.postgresql.resources.limits.cpu = 2
     values.postgresql.resources.limits.memory = "4Gi"
     values.postgresql.resources.requests.cpu = '1000m'
     values.postgresql.resources.requests.memory = '2Gi'
-    values.postgresql.username = 'zevrant'
-    values.postgresql.database = "${appName}"
-    values.postgresql.existingSecret = "${appName}-postgres-credentials"
     values.postgresql.syncReplicationMode = 'ANY'
     values.postgresql.syncReplication = true
     values.postgresql.tls.enabled = true
@@ -26,9 +27,6 @@ String configurePostgresHelmChart(String appName, String ipAddress) {
     values.postgresql.tls.certKeyFilename = 'tls.key'
     values.pgpool.image.registry = 'harbor.zevrant-services.com'
     values.pgpool.image.repository = 'dockerhub/bitnami/pgpool'
-    values.pgpool.customUsersSecret = "${appName}-postgres-users"
-    values.pgpool.existingSecret = "${appName}-postgres-admin-user"
-    values.pgpool.srCheckDatabase = "${appName}"
     values.pgpool.replicaCount = 3
     values.pgpool.resources.limits.cpu = '500m'
     values.pgpool.resources.limits.memory = '512Mi'
