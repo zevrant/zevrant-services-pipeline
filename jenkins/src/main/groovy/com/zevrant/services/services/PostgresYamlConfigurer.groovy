@@ -7,12 +7,12 @@ String configurePostgresHelmChart(String appName, String ipAddress) {
     
     def values = readYaml(text: response.content)
 
-    values.global.imagePullSecrets = ['harbor-ro']
+//    values.global.imagePullSecrets = ['harbor-ro']
     values.global.storageClass = 'csi-rbd-sc'
     values.global.postgresql.username = 'zevrant'
-    values.global.postgresql.database = appName
-    values.global.postgresql.repmgrDatabase = appName
-    values.global.postgresql.existingSecret = "${appName}-postgres-credentials"
+    values.global.postgresql.database = "backup"
+    values.global.postgresql.repmgrDatabase = "backup"
+    values.global.postgresql.existingSecret = "backup-service-postgres-credentials"
 //    values.postgresql.image.registry = "harbor.zevrant-services.com"
 //    values.postgresql.image.repository = "dockerhub/bitnami/postgresql-repmgr"
 //    values.postgresql.resources.limits.cpu = 2
