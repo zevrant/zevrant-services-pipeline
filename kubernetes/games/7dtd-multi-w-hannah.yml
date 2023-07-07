@@ -252,7 +252,7 @@ data:
         <property name="GameMode" value="GameModeSurvival"/>    <!-- GameModeSurvival -->
         
         <!-- Difficulty -->
-        <property name="GameDifficulty" value="3"/>                    <!-- 0 - 5, 0=easiest, 5=hardest -->
+        <property name="GameDifficulty" value="4"/>                    <!-- 0 - 5, 0=easiest, 5=hardest -->
         <property name="BlockDamagePlayer"
                   value="100"/>                <!-- How much damage do players to blocks (percentage in whole numbers) -->
         <property name="BlockDamageAI"
@@ -307,12 +307,12 @@ data:
                   value="16"/>                <!-- This is the number of zombies that can be alive (spawned at the same time) at any time PER PLAYER during a blood moon horde, however, MaxSpawnedZombies overrides this number in multiplayer games. Also note that your game stage sets the max number of zombies PER PARTY. Low game stage values can result in lower number of zombies than the BloodMoonEnemyCount setting. Changing this setting has a huge impact on performance. -->
         
         <!-- Loot -->
-        <property name="LootAbundance" value="400"/>                <!-- percentage in whole numbers -->
-        <property name="LootRespawnDays" value="3"/>                <!-- days in whole numbers -->
+        <property name="LootAbundance" value="1000"/>                <!-- percentage in whole numbers -->
+        <property name="LootRespawnDays" value="2"/>                <!-- days in whole numbers -->
         <property name="AirDropFrequency"
                   value="24"/>                <!-- How often airdrop occur in game-hours, 0 == never -->
         <property name="AirDropMarker"
-                  value="false"/>                <!-- Sets if a marker is added to map/compass for air drops. -->
+                  value="true"/>                <!-- Sets if a marker is added to map/compass for air drops. -->
         
         <!-- Multiplayer -->
         <property name="PartySharedKillRange"

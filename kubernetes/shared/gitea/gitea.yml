@@ -146,11 +146,11 @@ spec:
         fsGroupChangePolicy: "Always"
       imagePullSecrets:
         - name: regcred
-      dnsPolicy: ClusterFirst
-      dnsConfig:
-        nameservers:
-          - 172.16.1.2
-          - 1.1.1.1
+#      dnsPolicy: ClusterFirst
+#      dnsConfig:
+#        nameservers:
+#          - 172.16.1.2
+#          - 1.1.1.1
       volumes:
         - name: keystore-volume
           emptyDir:

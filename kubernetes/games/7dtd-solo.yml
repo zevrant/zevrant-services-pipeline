@@ -115,7 +115,7 @@ spec:
           - 1.1.1.1
       containers:
         - name: 7dtd
-          image: harbor.zevrant-services.com/dockerhub/zevrant/7dtd:latest
+          image: docker.io/zevrant/7dtd:a21.0
           imagePullPolicy: Always
 #          workingDir: "/home/steam/Steam/steamapps/common/7 Days to Die Dedicated Server/"
           command:
@@ -318,7 +318,7 @@ data:
         <property name="AirDropFrequency"
                   value="24"/>                <!-- How often airdrop occur in game-hours, 0 == never -->
         <property name="AirDropMarker"
-                  value="false"/>                <!-- Sets if a marker is added to map/compass for air drops. -->
+                  value="true"/>                <!-- Sets if a marker is added to map/compass for air drops. -->
         
         <!-- Multiplayer -->
         <property name="PartySharedKillRange"
