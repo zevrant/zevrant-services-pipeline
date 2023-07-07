@@ -8,6 +8,7 @@ String configurePostgresHelmChart(String appName, String ipAddress) {
     def values = readYaml(text: response.content)
 
     values.global.imagePullSecrets = ['harbor-ro']
+    values.global.storageClass = 'csi-rbd-sc'
     values.global.postgresql.username = 'zevrant'
     values.global.postgresql.database = appName
     values.global.postgresql.repmgrDatabase = appName
