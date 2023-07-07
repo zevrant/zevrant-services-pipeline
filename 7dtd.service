@@ -1,0 +1,14 @@
+[Unit]
+Description=7 Days to Die
+After=network-online.target
+
+Wants=network-online.target
+
+[Service]
+User=steam
+
+WorkingDirectory=/home/steam/Steam/steamapps/common/7 Days to Die Dedicated Server
+ExecStart=/home/steam/Steam/steamapps/common/7\ Days\ to\ Die\ Dedicated\ Server/startserver.sh -configfile=/home/steam/Steam/steamapps/common/7\ Days\ to\ Die\ Dedicated\ Server/serverconfig.xml
+
+[Install]
+WantedBy=multi-user.target
