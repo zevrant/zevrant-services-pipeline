@@ -9,10 +9,10 @@ String configurePostgresHelmChart(String appName, String ipAddress) {
 
 //    values.global.imagePullSecrets = ['harbor-ro']
     values.global.storageClass = 'csi-rbd-sc'
-    values.global.postgresql.username = 'zevrant'
-    values.global.postgresql.password = 'password'
-    values.global.postgresql.database = "backup"
-    values.global.postgresql.repmgrDatabase = "backup"
+//    values.global.postgresql.username = 'zevrant'
+//    values.global.postgresql.password = 'password'
+//    values.global.postgresql.database = "backup"
+//    values.global.postgresql.repmgrDatabase = "backup"
 //    values.global.postgresql.existingSecret = "backup-service-postgres-credentials"
 //    values.postgresql.image.registry = "harbor.zevrant-services.com"
 //    values.postgresql.image.repository = "dockerhub/bitnami/postgresql-repmgr"
