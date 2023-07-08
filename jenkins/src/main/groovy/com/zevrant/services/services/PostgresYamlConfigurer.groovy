@@ -9,7 +9,7 @@ String configurePostgresHelmChart(String appName, String ipAddress) {
 
 //    values.global.imagePullSecrets = ['harbor-ro']
     values.global.storageClass = 'csi-rbd-sc'
-    values.global.postgresql.username = 'zevrant'
+//    values.global.postgresql.username = 'zevrant'
 //    values.global.postgresql.database = "backup"
 //    values.global.postgresql.repmgrDatabase = "backup"
     values.global.postgresql.existingSecret = "backup-service-postgres-credentials"
