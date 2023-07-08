@@ -51,7 +51,7 @@ pipeline {
                         writeFile(file: valuesFileName, text: yaml)
                         int status = sh returnStatus: true, script: "helm list -n $ENVIRONMENT | grep ${codeUnit.name}-postgres > /dev/null"
                         if(status == 1) {
-                            sh "helm install ${codeUnit.name} oci://registry-1.docker.io/bitnamicharts/postgresql-ha -f ${valuesFileName} -n ${ENVIRONMENT}"
+                            sh "helm install ${codeUnit.name}-postgres oci://registry-1.docker.io/bitnamicharts/postgresql-ha -f ${valuesFileName} -n ${ENVIRONMENT}"
                             sh "kubectl get secret -n $ENVIRONMENT -o yaml ${codeUnit.name}-postgresql-ha-postgresql > credentials.yml"
                             sh "kubectl get secret -n $ENVIRONMENT -o yaml ${codeUnit.name}-postgres-credentials > user-credentials.yml"
                             def credentials = readYaml(file: 'credentials.yml')
