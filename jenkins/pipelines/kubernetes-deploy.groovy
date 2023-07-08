@@ -50,7 +50,7 @@ pipeline {
                         String valuesFileName = 'postgres-values.yml'
                         writeFile(file: valuesFileName, text: yaml)
                         int status = sh returnStatus: true, script: "helm list -n $ENVIRONMENT | grep ${codeUnit.name}-postgres > /dev/null"
-                        sh "helm install ${codeUnit.name} oci://registry-1.docker.io/bitnamicharts/postgresql-ha -f ${valuesFileName}"
+                        sh "helm install -f ${valuesFileName} ${codeUnit.name} oci://registry-1.docker.io/bitnamicharts/postgresql-ha "
                         if(status == 1) {
                             sh "helm install ${codeUnit.name}-postgres postgresql-ha -n ${ENVIRONMENT}"
                             sh "kubectl get secret -o yaml ${codeUnit.name}-postgres-postgresql-ha-postgresql > credentials.yml"
