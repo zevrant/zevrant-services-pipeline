@@ -50,6 +50,7 @@ pipeline {
                         String valuesFileName = 'postgres-values.yml'
                         writeFile(file: valuesFileName, text: yaml)
                         int status = sh returnStatus: true, script: "helm list -n $ENVIRONMENT | grep ${codeUnit.name}-postgres > /dev/null"
+                        sh 'ls -l'
                         if(status == 1) {
                             sh "helm install ${codeUnit.name}-postgres oci://registry-1.docker.io/bitnamicharts/postgresql-ha -f ${valuesFileName} -n ${ENVIRONMENT}"
                             sh "kubectl get secret -n $ENVIRONMENT -o yaml ${codeUnit.name}-postgres-postgresql-ha-postgresql > credentials.yml"
@@ -61,6 +62,11 @@ pipeline {
                             String liquibasePostgresPassword = userCredentials.data.liquibasePassword
                             container ("psql") {
                                 dir('sql') {
+                                    withCredentials([usernamePassword(credentialsId: 'gitea-access-token', passwordVariable: 'password', usernameVariable: 'username')]) {
+                                        withEnv(['USERNAME=' + username, 'PASSWORD=' + password]) {
+                                            sh ' curl -L -u "${USERNAME}:${PASSWORD}" https://gitea.zevrant-services.com/zevrant-services/zevrant-services-pipeline/raw/commit/7b219b787ef2630bf713a8106d656d68d3f874a3/sql/database-setup.sql -o database-setup.sql'
+                                        }
+                                    }
                                     String databaseSetupScript = readFile('database-setup.sql')
                                         .replace('$APP_NAME', codeUnit.name)
                                         .replace('$APP_USER', codeUnit.name)
