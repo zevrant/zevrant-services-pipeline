@@ -46,6 +46,7 @@ pipeline {
                         kubernetesService.requestCertificate("${codeUnit.name}-postgres", ENVIRONMENT, ["${codeUnit.name.toLowerCase()}.${ENVIRONMENT.toLowerCase()}.zevrant-services.com"])
                         String ipAddress = kubernetesService.getServiceIp()
                         String yaml = postgresYamlConfigurer.configurePostgresHelmChart(codeUnit.name, ipAddress)
+                        println yaml
                         String valuesFileName = 'postgres-values.yml'
                         writeFile(file: valuesFileName, text: yaml)
                         int status = sh returnStatus: true, script: "helm list -n $ENVIRONMENT | grep ${codeUnit.name}-postgres > /dev/null"
