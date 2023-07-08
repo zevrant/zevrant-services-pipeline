@@ -50,10 +50,29 @@ pipeline {
                         String valuesFileName = 'postgres-values.yml'
                         writeFile(file: valuesFileName, text: yaml)
                         int status = sh returnStatus: true, script: "helm list -n $ENVIRONMENT | grep ${codeUnit.name}-postgres > /dev/null"
-                        sh 'helm fetch --untar oci://registry-1.docker.io/bitnamicharts/postgresql-ha'
-                        sh "rm postgresql-ha/values.yaml && mv $valuesFileName postgresql-ha/values.yaml"
+                        sh "helm install ${codeUnit.name} oci://registry-1.docker.io/bitnamicharts/postgresql-ha -f ${valuesFileName}"
                         if(status == 1) {
                             sh "helm install ${codeUnit.name}-postgres postgresql-ha -n ${ENVIRONMENT}"
+                            sh "kubectl get secret -o yaml ${codeUnit.name}-postgres-postgresql-ha-postgresql > credentials.yml"
+                            sh "kubectl get secret -o yaml ${codeUnit.name}-postgres-credentials > user-credentials.yml"
+                            def credentials = readYaml(file: 'credentials.yml')
+                            def userCredentials = readYaml(file: 'user-credentials.yml')
+                            String postgresPassword = credentials.data.password
+                            String userPostgresPassword = userCredentials.data.password
+                            String liquibasePostgresPassword = userCredentials.data.liquibasePassword
+                            container ("psql") {
+                                dir('sql') {
+                                    String databaseSetupScript = readFile('database-setup.sql')
+                                        .replace('$APP_NAME', codeUnit.name)
+                                        .replace('$APP_USER', codeUnit.name)
+                                        .replace('$USER_PASSWORD', userPostgresPassword)
+                                        .replace('$LIQUIBASE_PASSWORD', liquibasePostgresPassword)
+                                    writeFile(file: "${codeUnit.name}-setup.sql", text: databaseSetupScript)
+                                    withEnv(['PGPASSWORD=' + postgresPassword]) {
+                                        sh "psql -h ${codeUnit.name}-postgres-postgresql-ha-pgpool < ${codeUnit.name}-setup.sql"
+                                    }
+                                }
+                            }
                         } else {
                             sh "help update ${codeUnit.name}-postgres postgresql -n ${ENVIRONMENT}"
                         }
