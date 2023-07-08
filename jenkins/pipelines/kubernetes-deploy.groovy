@@ -52,8 +52,8 @@ pipeline {
                         int status = sh returnStatus: true, script: "helm list -n $ENVIRONMENT | grep ${codeUnit.name}-postgres > /dev/null"
                         if(status == 1) {
                             sh "helm install ${codeUnit.name} oci://registry-1.docker.io/bitnamicharts/postgresql-ha -f ${valuesFileName} -n ${ENVIRONMENT}"
-                            sh "kubectl get secret -o yaml ${codeUnit.name}-postgres-postgresql-ha-postgresql > credentials.yml"
-                            sh "kubectl get secret -o yaml ${codeUnit.name}-postgres-credentials > user-credentials.yml"
+                            sh "kubectl get secret -n $ENVIRONMENT -o yaml ${codeUnit.name}-postgresql-ha-postgresql > credentials.yml"
+                            sh "kubectl get secret -n $ENVIRONMENT -o yaml ${codeUnit.name}-postgres-credentials > user-credentials.yml"
                             def credentials = readYaml(file: 'credentials.yml')
                             def userCredentials = readYaml(file: 'user-credentials.yml')
                             String postgresPassword = credentials.data.password
@@ -68,7 +68,7 @@ pipeline {
                                         .replace('$LIQUIBASE_PASSWORD', liquibasePostgresPassword)
                                     writeFile(file: "${codeUnit.name}-setup.sql", text: databaseSetupScript)
                                     withEnv(['PGPASSWORD=' + postgresPassword]) {
-                                        sh "psql -h ${codeUnit.name}-postgres-postgresql-ha-pgpool < ${codeUnit.name}-setup.sql"
+                                        sh "psql -h ${codeUnit.name}-postgres-postgresql-ha-pgpool.${ENVIRONMENT}.svc.cluster.local < ${codeUnit.name}-setup.sql"
                                     }
                                 }
                             }
