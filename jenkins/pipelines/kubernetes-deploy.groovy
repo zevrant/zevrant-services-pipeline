@@ -2,11 +2,15 @@ import com.zevrant.services.ServiceLoader
 import com.zevrant.services.pojo.SpringCodeUnit
 import com.zevrant.services.pojo.SpringCodeUnitCollection
 import com.zevrant.services.services.CertificateService
+import com.zevrant.services.services.GitService
 import com.zevrant.services.services.KubernetesService
 import com.zevrant.services.services.PostgresYamlConfigurer
 
+import java.nio.charset.StandardCharsets
+
 CertificateService certificateService = ServiceLoader.load(binding, CertificateService.class) as CertificateService
 KubernetesService kubernetesService = ServiceLoader.load(binding, KubernetesService.class) as KubernetesService
+GitService gitService = ServiceLoader.load(binding, GitService.class) as GitService
 PostgresYamlConfigurer postgresYamlConfigurer = ServiceLoader.load(binding, PostgresYamlConfigurer.class) as PostgresYamlConfigurer
 LinkedHashMap<String, Serializable> serviceNameOverrides = [
         'develop-zevrant-home-ui'     : '172.16.1.10',
@@ -51,30 +55,27 @@ pipeline {
                         writeFile(file: valuesFileName, text: yaml)
                         int status = sh returnStatus: true, script: "helm list -n $ENVIRONMENT | grep ${codeUnit.name}-postgres > /dev/null"
                         sh 'ls -l'
-                        if(status == 1) {
+                        if (status == 1) {
                             sh "helm install ${codeUnit.name}-postgres oci://registry-1.docker.io/bitnamicharts/postgresql-ha -f ${valuesFileName} -n ${ENVIRONMENT}"
                             sh "kubectl get secret -n $ENVIRONMENT -o yaml ${codeUnit.name}-postgres-postgresql-ha-postgresql > credentials.yml"
                             sh "kubectl get secret -n $ENVIRONMENT -o yaml ${codeUnit.name}-postgres-credentials > user-credentials.yml"
                             def credentials = readYaml(file: 'credentials.yml')
                             def userCredentials = readYaml(file: 'user-credentials.yml')
-                            String postgresPassword = credentials.data.password
-                            String userPostgresPassword = userCredentials.data.password
-                            String liquibasePostgresPassword = userCredentials.data.liquibasePassword
-                            container ("psql") {
+                            String postgresPassword = new String(Base64.decoder.decode(credentials.data.password), StandardCharsets.UTF_8)
+                            String userPostgresPassword = new String(Base64.decoder.decode(userCredentials.data.password), StandardCharsets.UTF_8)
+                            String liquibasePostgresPassword = new String(Base64.decoder.decode(userCredentials.data.liquibasePassword), StandardCharsets.UTF_8)
+                            container("psql") {
+                                gitService.checkout('zevrant-services-pipeline')
                                 dir('sql') {
-                                    withCredentials([usernamePassword(credentialsId: 'gitea-access-token', passwordVariable: 'password', usernameVariable: 'username')]) {
-                                        withEnv(['USERNAME=' + username, 'PASSWORD=' + password]) {
-                                            sh ' curl -L -u "${USERNAME}:${PASSWORD}" https://gitea.zevrant-services.com/zevrant-services/zevrant-services-pipeline/raw/commit/7b219b787ef2630bf713a8106d656d68d3f874a3/sql/database-setup.sql -o database-setup.sql'
-                                        }
-                                    }
+
                                     String databaseSetupScript = readFile('database-setup.sql')
-                                        .replace('$APP_NAME', codeUnit.name)
-                                        .replace('$APP_USER', codeUnit.name)
-                                        .replace('$USER_PASSWORD', userPostgresPassword)
-                                        .replace('$LIQUIBASE_PASSWORD', liquibasePostgresPassword)
+                                    databaseSetupScript.replace('$APP_NAME', codeUnit.name)
+                                            .replace('$APP_USER', codeUnit.name)
+                                            .replace('$USER_PASSWORD', userPostgresPassword)
+                                            .replace('$LIQUIBASE_PASSWORD', liquibasePostgresPassword)
                                     writeFile(file: "${codeUnit.name}-setup.sql", text: databaseSetupScript)
                                     withEnv(['PGPASSWORD=' + postgresPassword]) {
-                                        sh "psql -h ${codeUnit.name}-postgres-postgresql-ha-pgpool.${ENVIRONMENT}.svc.cluster.local < ${codeUnit.name}-setup.sql"
+                                        sh "psql -U postgres -h ${codeUnit.name}-postgres-postgresql-ha-pgpool.${ENVIRONMENT} -f ${codeUnit.name}-setup.sql"
                                     }
                                 }
                             }
@@ -87,7 +88,7 @@ pipeline {
             }
         }
 
-        stage ("Configure Service") {
+        stage("Configure Service") {
             when { expression { fileExists("service-${ENVIRONMENT}.yml") } }
             steps {
                 script {
@@ -117,7 +118,7 @@ pipeline {
                             throw new RuntimeException("Failed to retrieve deployment for repository $REPOSITORY in $ENVIRONMENT")
                         }
 //                        try {
-                            sh "kubectl rollout status deployments $REPOSITORY -n $ENVIRONMENT --timeout=${timeout}s"
+                        sh "kubectl rollout status deployments $REPOSITORY -n $ENVIRONMENT --timeout=${timeout}s"
 //                        } catch (Exception ignored) {
 //                            sh "kubectl rollout undo deploy $REPOSITORY -n $ENVIRONMENT"
 //                            throw new RuntimeException("Deployment for $REPOSITORY in Environment $ENVIRONMENT failed and was rolled back")
@@ -141,14 +142,14 @@ pipeline {
                             sh "kubectl rollout restart deployments $REPOSITORY -n $ENVIRONMENT"
                             int timeout = kubernetesService.getDeployTimeout(ENVIRONMENT == 'prod' ? 2 : 1)
 //                            try {
-                                sh "kubectl rollout status deployments $REPOSITORY -n $ENVIRONMENT --timeout=${timeout}s"
+                            sh "kubectl rollout status deployments $REPOSITORY -n $ENVIRONMENT --timeout=${timeout}s"
 //                            } catch (Exception ignored) {
 //                                sh "kubectl rollout undo deploy $REPOSITORY -n $ENVIRONMENT"
 //                                throw new RuntimeException("Deployment for $REPOSITORY in Environment $ENVIRONMENT failed and was rolled back")
 //                            }
                             boolean isCertValid = false
                             String serviceKey = "${ENVIRONMENT}-${REPOSITORY}"
-                            if(serviceNameOverrides.containsKey(serviceKey)) {
+                            if (serviceNameOverrides.containsKey(serviceKey)) {
 
                                 isCertValid = certificateService.isCertificateValid(serviceNameOverrides.get(serviceKey) as String, 30124)
                             } else {
@@ -167,14 +168,14 @@ pipeline {
     post {
         always {
             script {
-                String appName = "${REPOSITORY.split('-').collect {part -> part.capitalize()}.join(' ')}"
+                String appName = "${REPOSITORY.split('-').collect { part -> part.capitalize() }.join(' ')}"
                 withCredentials([string(credentialsId: 'discord-webhook', variable: 'webhookUrl')]) {
                     if (VERSION != null && VERSION != '') {
-                        if(ENVIRONMENT == 'prod') {
+                        if (ENVIRONMENT == 'prod') {
                             return
                         }
                         discordSend description: "Jenkins Push to ${ENVIRONMENT.toLowerCase().capitalize()} for ${appName} with version ${VERSION}: ${currentBuild.currentResult}", link: env.BUILD_URL, result: currentBuild.currentResult, title: "Kubernetes Deploy", webhookURL: webhookUrl
-                    } else if(currentBuild.currentResult != 'SUCCESS' && ENVIRONMENT.toLowerCase() == 'develop') {
+                    } else if (currentBuild.currentResult != 'SUCCESS' && ENVIRONMENT.toLowerCase() == 'develop') {
                         discordSend description: "Jenkins Certificate Rotation to ${ENVIRONMENT.toLowerCase().capitalize()} for ${appName}: ${currentBuild.currentResult}", link: env.BUILD_URL, result: currentBuild.currentResult, title: "Certificate Rotation", webhookURL: webhookUrl
                     }
                 }
