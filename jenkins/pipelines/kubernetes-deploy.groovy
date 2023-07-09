@@ -74,7 +74,7 @@ pipeline {
                                 dir('sql') {
 
                                     String databaseSetupScript = readFile('database-setup.sql')
-                                    databaseSetupScript.replace('$APP_NAME', codeUnit.name)
+                                    databaseSetupScript = databaseSetupScript.replace('$APP_NAME', codeUnit.name)
                                             .replace('$APP_USER', codeUnit.name)
                                             .replace('$USER_PASSWORD', userPostgresPassword)
                                             .replace('$LIQUIBASE_PASSWORD', liquibasePostgresPassword)
