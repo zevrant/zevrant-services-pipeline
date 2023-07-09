@@ -64,6 +64,7 @@ pipeline {
                             String postgresPassword = new String(Base64.decoder.decode(credentials.data.password), StandardCharsets.UTF_8)
                             String userPostgresPassword = new String(Base64.decoder.decode(userCredentials.data.password), StandardCharsets.UTF_8)
                             String liquibasePostgresPassword = new String(Base64.decoder.decode(userCredentials.data.liquibasePassword), StandardCharsets.UTF_8)
+                            sh "kubectl rollout status deploy ${codeUnit.name}-postgres-postgresql-ha-pgpool --timeout 5m"
                             container("psql") {
                                 gitService.checkout('zevrant-services-pipeline')
                                 dir('sql') {
