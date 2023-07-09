@@ -76,6 +76,7 @@ pipeline {
                                             .replace('$APP_USER', codeUnit.name)
                                             .replace('$USER_PASSWORD', userPostgresPassword)
                                             .replace('$LIQUIBASE_PASSWORD', liquibasePostgresPassword)
+                                    println databaseSetupScript
                                     writeFile(file: "${codeUnit.name}-setup.sql", text: databaseSetupScript)
                                     withEnv(['PGPASSWORD=' + postgresPassword]) {
                                         sh "psql -U postgres -h ${codeUnit.name}-postgres-postgresql-ha-pgpool.${ENVIRONMENT} -f ${codeUnit.name}-setup.sql"
