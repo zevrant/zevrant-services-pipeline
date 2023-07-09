@@ -57,6 +57,7 @@ pipeline {
                         sh 'ls -l'
                         if (status == 1) {
                             sh "helm install ${codeUnit.name}-postgres oci://registry-1.docker.io/bitnamicharts/postgresql-ha -f ${valuesFileName} -n ${ENVIRONMENT}"
+                            sleep 5
                             sh "kubectl get secret -n $ENVIRONMENT -o yaml ${codeUnit.name}-postgres-postgresql-ha-postgresql > credentials.yml"
                             sh "kubectl get secret -n $ENVIRONMENT -o yaml ${codeUnit.name}-postgres-credentials > user-credentials.yml"
                             def credentials = readYaml(file: 'credentials.yml')
