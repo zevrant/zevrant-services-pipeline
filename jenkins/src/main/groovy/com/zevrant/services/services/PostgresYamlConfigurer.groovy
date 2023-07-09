@@ -30,6 +30,9 @@ String configurePostgresHelmChart(String appName, String ipAddress) {
 //    values.pgpool.image.registry = 'harbor.zevrant-services.com'
 //    values.pgpool.image.repository = 'dockerhub/bitnami/pgpool'
     values.pgpool.replicaCount = 3
+    values.pgpool.podLabels = [
+            app: "${appName}-pgpool"
+    ]
     values.pgpool.resources.limits.cpu = '500m'
     values.pgpool.resources.limits.memory = '512Mi'
     values.pgpool.resources.requests.cpu = '250m'

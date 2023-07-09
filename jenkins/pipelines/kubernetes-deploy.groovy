@@ -57,7 +57,6 @@ pipeline {
                         sh 'ls -l'
                         if (status == 1) {
                             sh "helm install ${codeUnit.name}-postgres oci://registry-1.docker.io/bitnamicharts/postgresql-ha -f ${valuesFileName} -n ${ENVIRONMENT}"
-                            sleep 5
                             sh "kubectl get secret -n $ENVIRONMENT -o yaml ${codeUnit.name}-postgres-postgresql-ha-postgresql > credentials.yml"
                             sh "kubectl get secret -n $ENVIRONMENT -o yaml ${codeUnit.name}-postgres-credentials > user-credentials.yml"
                             def credentials = readYaml(file: 'credentials.yml')
@@ -67,6 +66,7 @@ pipeline {
                             String liquibasePostgresPassword = new String(Base64.decoder.decode(userCredentials.data.liquibasePassword), StandardCharsets.UTF_8)
                             sh "kubectl rollout status statefulset ${codeUnit.name}-postgres-postgresql-ha-postgresql --timeout 5m -n $ENVIRONMENT"
                             sh "kubectl rollout status deploy ${codeUnit.name}-postgres-postgresql-ha-pgpool --timeout 5m -n $ENVIRONMENT"
+                            sleep 15
                             sh "kubectl rollout restart deploy ${codeUnit.name}-postgres-postgresql-ha-pgpool -n $ENVIRONMENT"
                             sh "kubectl rollout status deploy ${codeUnit.name}-postgres-postgresql-ha-pgpool --timeout 5m -n $ENVIRONMENT"
                             container("psql") {
