@@ -73,8 +73,6 @@ pipeline {
                             String repmgrPassword = new String(Base64.decoder.decode(userCredentials.data.get('repmgr-password')), StandardCharsets.UTF_8)
                             sh "kubectl rollout status statefulset ${codeUnit.name}-postgres-postgresql-ha-postgresql --timeout 5m -n $ENVIRONMENT"
                             sh "kubectl rollout status deploy ${codeUnit.name}-postgres-postgresql-ha-pgpool --timeout 5m -n $ENVIRONMENT"
-                            sh "kubectl rollout restart deploy ${codeUnit.name}-postgres-postgresql-ha-pgpool -n $ENVIRONMENT"
-                            sh "kubectl rollout status deploy ${codeUnit.name}-postgres-postgresql-ha-pgpool --timeout 5m -n $ENVIRONMENT"
                             container("psql") {
                                 gitService.checkout('zevrant-services-pipeline')
                                 dir('sql') {
@@ -82,7 +80,7 @@ pipeline {
                                     String databaseSetupScript = readFile('database-setup.sql')
                                     databaseSetupScript = databaseSetupScript
                                             .replace('$DATABASE_NAME', codeUnit.getDatabaseName())
-                                            .replace('$APP_NAME', codeUnit.name.replace('-','_'))
+                                            .replace('$APP_NAME', codeUnit.name.replace('-', '_'))
                                             .replace('$APP_USER', codeUnit.getDatabaseUser())
                                             .replace('$USER_PASSWORD', userPostgresPassword)
                                             .replace('$LIQUIBASE_PASSWORD', liquibasePostgresPassword)
@@ -92,9 +90,7 @@ pipeline {
                                     println databaseSetupScript
                                     writeFile(file: "${codeUnit.name}-setup.sql", text: databaseSetupScript)
                                     withEnv(['PGPASSWORD=' + postgresPassword]) {
-                                        retry(5, {
-                                            sh "psql -U postgres -h ${codeUnit.name}-postgres-postgresql-ha-pgpool.${ENVIRONMENT} -f ${codeUnit.name}-setup.sql"
-                                        })
+                                        sh "psql -U postgres -h ${codeUnit.name}-postgres-postgresql-ha-pgpool.${ENVIRONMENT} -f ${codeUnit.name}-setup.sql"
                                     }
                                 }
                             }
@@ -112,7 +108,7 @@ pipeline {
 //                            sh "kubectl rollout restart deploy ${codeUnit.name}-postgres-postgresql-ha-pgpool -n $ENVIRONMENT"
 //                            sh "kubectl rollout status deploy ${codeUnit.name}-postgres-postgresql-ha-pgpool --timeout 5m -n $ENVIRONMENT"
                         } else {
-                            sh "help upgrade ${codeUnit.name}-postgres postgresql -n ${ENVIRONMENT}"
+                            sh "helm upgrade ${codeUnit.name}-postgres postgresql -n ${ENVIRONMENT}"
                         }
                         sh "kubectl rollout status deployments ${codeUnit.name}-postgres-postgresql-ha-pgpool -n $ENVIRONMENT --timeout=5m"
                     }
