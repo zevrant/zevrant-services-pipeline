@@ -1,14 +1,14 @@
-REVOKE ALL ON SCHEMA public FROM public;
 create database $DATABASE_NAME;
 \connect $DATABASE_NAME;
-create role app_user NOCREATEROLE NOCREATEDB NOSUPERUSER;
-create role change_management;
-REVOKE ALL ON SCHEMA public FROM app_user;
-REVOKE ALL ON SCHEMA public FROM change_management;
-grant SELECT, UPDATE, INSERT to app_user;
-grant update, insert to change_management;
-grant create to change_management
+create role $APP_NAME_app_user;
+create role $APP_NAME_change_management;
+REVOKE ALL ON SCHEMA backup FROM $APP_NAME_app_user;
+REVOKE ALL ON SCHEMA backup FROM $APP_NAME_change_management;
+grant SELECT, UPDATE, INSERT ON ALL TABLES IN SCHEMA public $APP_NAME_app_user;
+grant update, insert ON ALL TABLES IN SCHEMA public $APP_NAME_change_management;
+grant create, connect on DATABASE $DATABASE_NAME ON ALL TABLES IN SCHEMA public $APP_NAME_change_management;
+grant connect on DATABASE $DATABASE_NAME to $APP_NAME_app_user;
 create user $APP_USER with password $USER_PASSWORD;
 create user liquibase with password $LIQUIBASE_PASSWORD;
-grant app_user to $APP_USER;
-grant change_management to liquibase;
+grant $APP_NAME_app_user to $APP_USER;
+grant $APP_NAME_change_management to liquibase;
