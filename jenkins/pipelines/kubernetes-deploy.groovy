@@ -110,8 +110,9 @@ pipeline {
                             sh "kubectl rollout status statefulset ${codeUnit.name}-postgres-postgresql-ha-postgresql --timeout 5m -n $ENVIRONMENT"
                             sh "kubectl rollout restart deploy ${codeUnit.name}-postgres-postgresql-ha-pgpool -n $ENVIRONMENT"
                             sh "kubectl rollout status deploy ${codeUnit.name}-postgres-postgresql-ha-pgpool --timeout 5m -n $ENVIRONMENT"
+                            sh "help upgrade ${codeUnit.name}-postgres postgresql oci://registry-1.docker.io/bitnamicharts/postgresql-ha -n ${ENVIRONMENT} -f values.yml"
                         } else {
-                            sh "help update ${codeUnit.name}-postgres postgresql -n ${ENVIRONMENT}"
+                            sh "help upgrade ${codeUnit.name}-postgres postgresql -n ${ENVIRONMENT}"
                         }
                         sh "kubectl rollout status deployments ${codeUnit.name}-postgres-postgresql-ha-pgpool -n $ENVIRONMENT --timeout=5m"
                     }

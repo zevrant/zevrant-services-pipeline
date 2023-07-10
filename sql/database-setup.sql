@@ -14,3 +14,4 @@ grant $APP_NAME_app_user to $APP_USER;
 grant $APP_NAME_change_management to liquibase;
 alter user postgres password '$ADMIN_PASSWORD';
 alter user repmgr password '$REPMGR_PASSWORD';
+commit;
