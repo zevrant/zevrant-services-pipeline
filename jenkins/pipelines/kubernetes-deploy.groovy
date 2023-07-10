@@ -104,7 +104,7 @@ pipeline {
                             writeYaml(file: 'admin-credentials.yml', data: adminCreds)
                             sh "kubectl apply -n $ENVIRONMENT -f credentials.yml"
                             sh "kubectl apply -n $ENVIRONMENT -f admin-credentials.yml"
-                            sh "helm upgrade ${codeUnit.name}-postgres postgresql oci://registry-1.docker.io/bitnamicharts/postgresql-ha -n ${ENVIRONMENT} -f ${valuesFileName}"
+                            sh "helm upgrade ${codeUnit.name}-postgres oci://registry-1.docker.io/bitnamicharts/postgresql-ha -n ${ENVIRONMENT} -f ${valuesFileName}"
 //                            sh "kubectl rollout restart statefulset ${codeUnit.name}-postgres-postgresql-ha-postgresql -n $ENVIRONMENT"
 //                            sh "kubectl rollout status statefulset ${codeUnit.name}-postgres-postgresql-ha-postgresql --timeout 5m -n $ENVIRONMENT"
 //                            sh "kubectl rollout restart deploy ${codeUnit.name}-postgres-postgresql-ha-pgpool -n $ENVIRONMENT"
