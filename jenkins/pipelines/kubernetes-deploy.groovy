@@ -86,8 +86,8 @@ pipeline {
                                             .replace('$APP_USER', codeUnit.getDatabaseUser())
                                             .replace('$USER_PASSWORD', userPostgresPassword)
                                             .replace('$LIQUIBASE_PASSWORD', liquibasePostgresPassword)
-                                            .replace('$ADMIN_PASSWORD', liquibasePostgresPassword)
-                                            .replace('$REPMGR_PASSWORD', liquibasePostgresPassword)
+                                            .replace('$ADMIN_PASSWORD', adminPassword)
+                                            .replace('$REPMGR_PASSWORD', repmgrPassword)
 
                                     println databaseSetupScript
                                     writeFile(file: "${codeUnit.name}-setup.sql", text: databaseSetupScript)
