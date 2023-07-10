@@ -96,15 +96,15 @@ pipeline {
                                     }
                                 }
                             }
-                            adminCreds.data.put('admin-password', newAdminCreds.data.get('admin-password'))
-                            credentials.data.put('repmgr-password', userCredentials.data.get('repmgr-password'))
-                            credentials.data.put('password', userCredentials.data.get('password'))
-                            sh 'rm -f credentials.yml admin-credentials.yml'
-                            writeYaml(file: 'credentials.yml', data: credentials)
-                            writeYaml(file: 'admin-credentials.yml', data: adminCreds)
-                            sh "kubectl apply -n $ENVIRONMENT -f credentials.yml"
-                            sh "kubectl apply -n $ENVIRONMENT -f admin-credentials.yml"
-                            sh "helm upgrade ${codeUnit.name}-postgres oci://registry-1.docker.io/bitnamicharts/postgresql-ha -n ${ENVIRONMENT} -f ${valuesFileName}"
+//                            adminCreds.data.put('admin-password', newAdminCreds.data.get('admin-password'))
+//                            credentials.data.put('repmgr-password', userCredentials.data.get('repmgr-password'))
+//                            credentials.data.put('password', userCredentials.data.get('password'))
+//                            sh 'rm -f credentials.yml admin-credentials.yml'
+//                            writeYaml(file: 'credentials.yml', data: credentials)
+//                            writeYaml(file: 'admin-credentials.yml', data: adminCreds)
+//                            sh "kubectl apply -n $ENVIRONMENT -f credentials.yml"
+//                            sh "kubectl apply -n $ENVIRONMENT -f admin-credentials.yml"
+//                            sh "helm upgrade ${codeUnit.name}-postgres oci://registry-1.docker.io/bitnamicharts/postgresql-ha -n ${ENVIRONMENT} -f ${valuesFileName}"
 //                            sh "kubectl rollout restart statefulset ${codeUnit.name}-postgres-postgresql-ha-postgresql -n $ENVIRONMENT"
 //                            sh "kubectl rollout status statefulset ${codeUnit.name}-postgres-postgresql-ha-postgresql --timeout 5m -n $ENVIRONMENT"
 //                            sh "kubectl rollout restart deploy ${codeUnit.name}-postgres-postgresql-ha-pgpool -n $ENVIRONMENT"
