@@ -83,9 +83,9 @@ pipeline {
                                     println databaseSetupScript
                                     writeFile(file: "${codeUnit.name}-setup.sql", text: databaseSetupScript)
                                     withEnv(['PGPASSWORD=' + postgresPassword]) {
-                                        retry 5 {
+                                        retry(5, {
                                             sh "psql -U postgres -h ${codeUnit.name}-postgres-postgresql-ha-pgpool.${ENVIRONMENT} -f ${codeUnit.name}-setup.sql"
-                                        }
+                                        })
                                     }
                                 }
                             }
