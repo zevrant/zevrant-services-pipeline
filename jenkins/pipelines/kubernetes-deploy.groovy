@@ -98,8 +98,8 @@ pipeline {
                                     }
                                 }
                             }
-                            adminCreds.data.set('admin-password', newAdminCreds.data.get('admin-password'))
-                            credentials.data.set('repmgr-password', userCredentials.data.get('repmgr-password'))
+                            adminCreds.data.put('admin-password', newAdminCreds.data.get('admin-password'))
+                            credentials.data.put('repmgr-password', userCredentials.data.get('repmgr-password'))
                             writeYaml(file: 'credentials.yml', data: credentials)
                             writeYaml(file: 'admin-credentials.yml', data: adminCreds)
                             sh "kubectl apply -n $ENVIRONMENT -f credentials.yml"
