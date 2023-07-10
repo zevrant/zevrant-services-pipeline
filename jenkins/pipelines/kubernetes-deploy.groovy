@@ -73,6 +73,8 @@ pipeline {
                             String repmgrPassword = new String(Base64.decoder.decode(userCredentials.data.get('repmgr-password')), StandardCharsets.UTF_8)
                             sh "kubectl rollout status statefulset ${codeUnit.name}-postgres-postgresql-ha-postgresql --timeout 5m -n $ENVIRONMENT"
                             sh "kubectl rollout status deploy ${codeUnit.name}-postgres-postgresql-ha-pgpool --timeout 5m -n $ENVIRONMENT"
+                            sh "kubectl rollout restart deploy ${codeUnit.name}-postgres-postgresql-ha-pgpool -n $ENVIRONMENT"
+                            sh "kubectl rollout status deploy ${codeUnit.name}-postgres-postgresql-ha-pgpool --timeout 5m -n $ENVIRONMENT"
                             container("psql") {
                                 gitService.checkout('zevrant-services-pipeline')
                                 dir('sql') {
@@ -102,13 +104,13 @@ pipeline {
                             writeYaml(file: 'admin-credentials.yml', data: adminCreds)
                             sh "kubectl apply -n $ENVIRONMENT -f credentials.yml"
                             sh "kubectl apply -n $ENVIRONMENT -f admin-credentials.yml"
-                            sh "help upgrade ${codeUnit.name}-postgres postgresql oci://registry-1.docker.io/bitnamicharts/postgresql-ha -n ${ENVIRONMENT} -f ${valuesFileName}"
+                            sh "helm upgrade ${codeUnit.name}-postgres postgresql oci://registry-1.docker.io/bitnamicharts/postgresql-ha -n ${ENVIRONMENT} -f ${valuesFileName}"
 //                            sh "kubectl rollout restart statefulset ${codeUnit.name}-postgres-postgresql-ha-postgresql -n $ENVIRONMENT"
 //                            sh "kubectl rollout status statefulset ${codeUnit.name}-postgres-postgresql-ha-postgresql --timeout 5m -n $ENVIRONMENT"
 //                            sh "kubectl rollout restart deploy ${codeUnit.name}-postgres-postgresql-ha-pgpool -n $ENVIRONMENT"
 //                            sh "kubectl rollout status deploy ${codeUnit.name}-postgres-postgresql-ha-pgpool --timeout 5m -n $ENVIRONMENT"
                         } else {
-                            sh "helm upgrade ${codeUnit.name}-postgres postgresql -n ${ENVIRONMENT}"
+                            sh "help upgrade ${codeUnit.name}-postgres postgresql -n ${ENVIRONMENT}"
                         }
                         sh "kubectl rollout status deployments ${codeUnit.name}-postgres-postgresql-ha-pgpool -n $ENVIRONMENT --timeout=5m"
                     }
