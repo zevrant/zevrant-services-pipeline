@@ -29,7 +29,7 @@ String configurePostgresHelmChart(String appName, String ipAddress) {
 //    values.postgresql.tls.certKeyFilename = 'tls.key'
 //    values.pgpool.image.registry = 'harbor.zevrant-services.com'
 //    values.pgpool.image.repository = 'dockerhub/bitnami/pgpool'
-    values.pgpool.replicaCount = 3
+    values.pgpool.replicaCount = 1
     values.pgpool.podLabels = [
             app: "${appName}-pgpool"
     ]
