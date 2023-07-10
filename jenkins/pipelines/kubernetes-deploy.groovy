@@ -91,9 +91,9 @@ pipeline {
 
                                     println databaseSetupScript
                                     writeFile(file: "${codeUnit.name}-setup.sql", text: databaseSetupScript)
-                                    withEnv(['PGPASSWORD=' + postgresPassword]) {
-                                        sh "psql -U postgres -h ${codeUnit.name}-postgres-postgresql-ha-pgpool.${ENVIRONMENT} -f ${codeUnit.name}-setup.sql"
-                                    }
+//                                    withEnv(['PGPASSWORD=' + postgresPassword]) {
+//                                        sh "psql -U postgres -h ${codeUnit.name}-postgres-postgresql-ha-pgpool.${ENVIRONMENT} -f ${codeUnit.name}-setup.sql"
+//                                    }
                                 }
                             }
 //                            adminCreds.data.put('admin-password', newAdminCreds.data.get('admin-password'))
