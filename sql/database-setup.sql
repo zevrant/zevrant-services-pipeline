@@ -8,7 +8,7 @@ grant SELECT, UPDATE, INSERT ON ALL TABLES IN SCHEMA public to $APP_NAME_app_use
 grant update, insert ON ALL TABLES IN SCHEMA public to $APP_NAME_change_management;
 grant create, connect on DATABASE $DATABASE_NAME to $APP_NAME_change_management;
 grant connect on DATABASE $DATABASE_NAME to $APP_NAME_app_user;
-create user $APP_USER with password $USER_PASSWORD;
-create user liquibase with password $LIQUIBASE_PASSWORD;
+create user $APP_USER with password '$USER_PASSWORD';
+create user liquibase with password '$LIQUIBASE_PASSWORD';
 grant $APP_NAME_app_user to $APP_USER;
 grant $APP_NAME_change_management to liquibase;
