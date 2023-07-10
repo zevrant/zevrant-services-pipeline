@@ -6,7 +6,7 @@ class SpringCodeUnitCollection {
             new SpringCodeUnit([
                     name: 'backup-service',
                     postgresDatabase: true,
-                    databaseName: 'backup'
+                    databaseName: 'backup',
             ]),
             new SpringCodeUnit([
                     name: 'acra-backend'

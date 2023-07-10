@@ -7,6 +7,7 @@ class SpringCodeUnit extends CodeUnit {
     private final boolean prodReady
     private final boolean postgresDatabase
     private final String databaseName
+    private final String databaseUser
 
     SpringCodeUnit(Map<String, Object> params) {
         super(params)
@@ -14,6 +15,7 @@ class SpringCodeUnit extends CodeUnit {
         prodReady = params.prodReady ?: false
         postgresDatabase = params.postgresDatabase ?: false
         databaseName = params.databaseName
+        databaseUser = params.databaseUser ?: 'zevrant'
     }
 
     boolean getPostgresDatabase() {
@@ -26,5 +28,9 @@ class SpringCodeUnit extends CodeUnit {
 
     String getDatabaseName() {
         return databaseName
+    }
+
+    String getDatabaseUser() {
+        return databaseUser
     }
 }
