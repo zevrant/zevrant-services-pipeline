@@ -13,6 +13,7 @@ class SpringCodeUnit extends CodeUnit {
         applicationType = ApplicationType.SPRING
         prodReady = params.prodReady ?: false
         postgresDatabase = params.postgresDatabase ?: false
+        databaseName = params.databaseName
     }
 
     boolean getPostgresDatabase() {
