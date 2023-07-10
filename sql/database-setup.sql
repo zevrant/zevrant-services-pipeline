@@ -12,5 +12,5 @@ create user $APP_USER with password '$USER_PASSWORD';
 create user liquibase with password '$LIQUIBASE_PASSWORD';
 grant $APP_NAME_app_user to $APP_USER;
 grant $APP_NAME_change_management to liquibase;
-alter user postgres with password '$ADMIN_PASSWORD';
-alter user repmgr with password '$REPMGR_PASSWORD';
+alter user postgres password '$ADMIN_PASSWORD';
+alter user repmgr password '$REPMGR_PASSWORD';
