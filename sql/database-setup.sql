@@ -1,6 +1,6 @@
 REVOKE ALL ON SCHEMA public FROM public;
 create database $DATABASE_NAME;
-\connect to $DATABASE_NAME;
+\connect $DATABASE_NAME;
 create role app_user NOCREATEROLE NOCREATEDB NOSUPERUSER;
 create role liquibase;
 REVOKE ALL ON SCHEMA public FROM user_role;
