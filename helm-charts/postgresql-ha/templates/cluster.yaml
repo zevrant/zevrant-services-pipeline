@@ -1,0 +1,68 @@
+apiVersion: postgres-operator.crunchydata.com/v1beta1
+kind: PostgresCluster
+metadata:
+  name: {{ .Release.Name }}-{{ .Chart.Name}}
+  namespace: {{ quote .Release.Namespace }}
+  annotations:
+    managed-by: helm
+    chart-version: {{ quote .Chart.Version }}
+spec:
+  users:
+    {{- range .Values.users }}
+    - name: {{ .name | quote }}
+      databases:
+        {{- range .databases }}
+        - {{ . | quote }}
+        {{- end }}
+      options: {{ .options }}
+    {{- end }}
+  backups:
+    pgbackrest:
+      image: {{ .Values.pgbackrest.image | quote }}
+      repos:
+        {{- range .Values.pgbackrest.repos }}
+        - name: {{ .name | quote }}
+          volume:
+            volumeClaimSpec:
+              accessModes:
+                {{- range .accessModes }}
+                - {{ . | quote }}
+                {{- end }}
+              storageClassName: {{ .storageClassName }}
+              resources:
+                requests:
+                  storage: {{ .requestedStorage }}
+                limits:
+                  storage: {{ .storageLimit }}
+        {{- end }}
+  image: {{ .Values.postgresImage }}
+  imagePullPolicy: {{ .Values.imagePullPolicy }}
+  {{- with .Values.patroni }}
+  patroni:
+    switchover:
+      enabled: {{ .switchover.enabled }}
+      type: {{ .switchover.type}}
+    dynamicConfiguration:
+      synchronous_mode: {{ .dynamicConfiguration.synchronous_mode }}
+      postgresql:
+        parameters:
+          synchronous_commit: {{ .dynamicConfiguration.postgresql.parameters.synchronous_commit }}
+          synchronous_mode_strict: {{ .dynamicConfiguration.postgresql.parameters.synchronous_mode_strict }}
+  {{- end}}
+  postgresVersion: {{ .Values.postgresVersion }}
+  instances:
+    {{- range .Values.instances }}
+    - name: {{ .name | quote }}
+      replicas: {{ .replicas }}
+      dataVolumeClaimSpec:
+        accessModes:
+          {{- range .dataVolumeClaimSpec.accessModes }}
+          - {{ . | quote }}
+          {{- end }}
+        storageClassName: {{ .dataVolumeClaimSpec.storageClassName }}
+        resources:
+          requests:
+            storage: {{ .dataVolumeClaimSpec.resources.requests.storage }}
+          limits:
+            storage: {{ .dataVolumeClaimSpec.resources.limits.storage }}
+    {{- end }}
