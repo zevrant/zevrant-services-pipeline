@@ -104,7 +104,7 @@
         content: |
           net.bridge.bridge-nf-call-iptables = 1
           net.ipv4.conf.all.forwarding = 1
-        - name: Reload Sysctl
+    - name: Reload Sysctl
       become_user: root
       become: true
       ansible.builtin.command:
@@ -128,7 +128,7 @@
         modprobe br_netfilter
         modprobe overlay
         sysctl -p
-        - name: Enable Systemd Services
+    - name: Enable Systemd Services
       ansible.builtin.command:
         cmd: systemctl enable containerd kubelet node-exporter systemd-resolved iptables
     - name: Start Containerd & Node Exporter

@@ -16,7 +16,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: minio-shared-console
+                name: shared-console
                 port:
                   name: https-console
     - host: api.minio.zevrant-services.com

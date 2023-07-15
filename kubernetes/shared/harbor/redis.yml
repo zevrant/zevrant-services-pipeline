@@ -5,7 +5,7 @@ metadata:
   namespace: shared
 spec:
   ports:
-    - port: 443
+    - port: 6379
       targetPort: 6379
       name: https
   selector:
@@ -75,7 +75,7 @@ spec:
       dnsConfig:
         nameservers:
           - 172.16.1.2
-          - 8.8.8.8
+          - 1.1.1.1
       initContainers:
         - name: user-setup
           image: docker.io/ubuntu:latest

@@ -30,7 +30,7 @@ spec:
         app: solaris-foundry
     spec:
       imagePullSecrets:
-        - name: regcred
+        - name: harbor-ro
       volumes:
         - name: solaris-foundry
           nfs:

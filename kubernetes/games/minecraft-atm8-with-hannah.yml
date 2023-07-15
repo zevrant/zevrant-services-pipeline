@@ -91,7 +91,7 @@ spec:
         - name: 7dtd-saves
 
       imagePullSecrets:
-        - name: regcred
+        - name: harbor-ro
       initContainers:
         - name: init
           image: harbor.zevrant-services.com/zevrant-services/minecraft-atm8:latest

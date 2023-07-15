@@ -15,7 +15,6 @@ spec:
   renewBefore: 13h
   dnsNames:
     - gitea.zevrant-services.com
-    - gitea.zevrant-services.com
 
 ---
 
@@ -102,7 +101,7 @@ metadata:
   name: gitea
   namespace: shared
   annotations:
-    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    nginx.ingress.kubernetes.io/backend-protocol: "https"
     nginx.ingress.kubernetes.io/ssl-passthrough: "true"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
 spec:
@@ -145,7 +144,7 @@ spec:
         fsGroup: 1000
         fsGroupChangePolicy: "Always"
       imagePullSecrets:
-        - name: regcred
+        - name: harbor-ro
 #      dnsPolicy: ClusterFirst
 #      dnsConfig:
 #        nameservers:
@@ -216,16 +215,18 @@ spec:
             - name: GITEA__database__DB_TYPE
               value: postgres
             - name: GITEA__database__HOST
-              value: gitea-postgres.zevrant-services.com:5432
+              value: gitea-postgres-postgresql-ha-primary:5432
             - name: GITEA__database__NAME
               value: gitea
             - name: GITEA__database__USER
-              value: zevrant
+              value: gitea
+            - name: GITEA__DATABASE__SSL_MODE
+              value: require
             - name: GITEA__database__PASSWD
               valueFrom:
                 secretKeyRef:
                   key: password
-                  name: gitea-postgres-credentials
+                  name: gitea-postgres-postgresql-ha-pguser-gitea
             - name: DEFAULT_BRANCH
               value: master
           startupProbe:

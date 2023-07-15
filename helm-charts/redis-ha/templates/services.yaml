@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $.Release.Name }}-{{ $.Chart.Name }}-primary
+spec:
+  clusterIP: None
+  selector:
+    app: {{ $.Release.Name }}-{{ $.Chart.Name }}
+    statefulset.kubernetes.io/pod-name: {{ $.Release.Name }}-{{ $.Chart.Name }}-0
+  ports:
+    - port: 6379
+
+---
+
+{{- range until (.Values.replicas | int) }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $.Release.Name }}-{{ $.Chart.Name }}-{{ . }}
+spec:
+  clusterIP: None
+  selector:
+    app: {{ $.Release.Name }}-{{ $.Chart.Name }}
+    statefulset.kubernetes.io/pod-name: {{ $.Release.Name }}-{{ $.Chart.Name }}-{{ . }}
+  ports:
+    - port: 6379
+{{- end}}
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name}}-sentinel-{{ .Chart.Name }}
+spec:
+  selector:
+    app: {{ .Release.Name}}-sentinel-{{ .Chart.Name }}
+  ports:
+    - port: 26379
+      targetPort: 26379
+      name: sentinel
+    - port: 6379
+      targetPort: 6379
+      name: redis-redirect

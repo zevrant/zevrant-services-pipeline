@@ -1,0 +1,18 @@
+name: "redis-test"
+imagePullSecrets: []
+storageClassName: "csi-rbd-sc"
+storageSize: 1Gi
+storageSizeLimit: 1Ti
+replicas: 2
+redisMasterPasswordSecret: "redis-password" #requires key redis-replication-password
+quorumCount: 1
+failoverTimeout: 10000
+downAfterMillis: 5000
+sentinelReplicas: 3
+sentinelImage: docker.io/zevrant/redis-sentinel:latest
+redisImage: docker.io/redis:7.2-rc3
+additionalUsers:
+  - username: redis
+    passwordSecret: redis-user-password
+    passwordSecretKey: "" #default is password i.e. --from-literal password='some password here'
+    permissions: [] #i.e +@all -@connect, etc

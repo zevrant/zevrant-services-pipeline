@@ -37,7 +37,7 @@
 #            server: nfs-controller.zevrant-services.com
 #            path: /jenkins/gradle
 #      imagePullSecrets:
-#        - name: regcred
+#        - name: harbor-ro
 #      containers:
 #        - name: zevrant-gradle-cache-service
 #          image: gradle/build-cache-node:9.11

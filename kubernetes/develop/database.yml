@@ -1,0 +1,52 @@
+apiVersion: postgres-operator.crunchydata.com/v1beta1
+kind: PostgresCluster
+metadata:
+  name: backup-service
+  namespace: develop
+spec:
+#  users:
+#    - name: zevrant
+#      databases:
+#        - backup
+#      options: 'SUPERUSER'
+  backups:
+    pgbackrest:
+      image: registry.developers.crunchydata.com/crunchydata/crunchy-pgbackrest:ubi8-2.45-0
+      repos:
+        - name: repo1
+          volume:
+            volumeClaimSpec:
+              accessModes:
+                - "ReadWriteOnce"
+              storageClassName: 'csi-rbd-sc'
+              resources:
+                requests:
+                  storage: 100Gi
+                limits:
+                  storage: 1Ti
+  image: registry.developers.crunchydata.com/crunchydata/crunchy-postgres:ubi8-15.3-0
+  imagePullPolicy: Always
+#  patroni:
+#    switchover:
+#      enabled: true
+#      type: Switchover
+#    dynamicConfiguration:
+#      synchronous_mode: true
+#      postgresql:
+#        parameters:
+#          synchronous_commit: "on"
+#          synchronous_mode_strict: true
+  postgresVersion: 15
+  instances:
+      - name: instance1
+        replicas: 2
+        dataVolumeClaimSpec:
+          accessModes:
+            - "ReadWriteOnce"
+          storageClassName: 'csi-rbd-sc'
+          resources:
+            requests:
+              storage: 50Gi
+  proxy:
+    pgBouncer:
+      image: registry.developers.crunchydata.com/crunchydata/crunchy-pgbouncer:ubi8-1.19-0

@@ -1,0 +1,1 @@
+kubectl create secret docker-registry harbor-ro --docker-server="$SERVER_URL" --docker-username="$USERNAME" --docker-password="$PASSWORD" --docker-email="$EMAIL_ADDRESS"

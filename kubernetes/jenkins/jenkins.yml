@@ -98,7 +98,7 @@ spec:
             secretName: jenkins-tls
             defaultMode: 0400
       imagePullSecrets:
-        - name: regcred
+        - name: harbor-ro
 #      dnsPolicy: ClusterFirst
 #      dnsConfig:
 #        nameservers:

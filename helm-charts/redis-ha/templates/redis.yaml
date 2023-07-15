@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Release.Name }}-{{ .Chart.Name }}
+spec:
+  replicas: {{ .Values.replicas }}
+  serviceName: {{ .Release.Name}}-{{ .Chart.Name }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-{{ .Chart.Name }}
+  volumeClaimTemplates:
+    - metadata:
+        name: {{ .Release.Name }}-{{ .Chart.Name }}
+      spec:
+        accessModes: ["ReadWriteOnce" ]
+        storageClassName: {{ .Values.storageClassName }}
+        resources:
+          requests:
+            storage: {{ .Values.storageSize }}
+          limits:
+            storage: {{ .Values.storageSizeLimit }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-{{ .Chart.Name }}
+
+    spec:
+      imagePullSecrets:
+        {{- range .Values.imagePullSecrets }}
+        - name: {{.}}
+        {{- end }}
+      securityContext:
+        fsGroup: 1000
+        fsGroupChangePolicy: "Always"
+      volumes:
+        - name: stored-redis-master-config
+          secret:
+            secretName: {{.Release.Name}}-{{.Chart.Name}}-master-config
+        - name: stored-redis-replica-config
+          secret:
+            secretName: {{.Release.Name}}-{{.Chart.Name}}-replica-config
+        - name: redis-config
+          emptyDir:
+            sizeLimit: 1Gi
+      initContainers:
+        - name: config-setup
+          image: docker.io/ubuntu:latest
+          volumeMounts:
+            - mountPath: /var/zevrant-services/master-config
+              name: stored-redis-master-config
+            - mountPath: /var/zevrant-services/replica-config
+              name: stored-redis-replica-config
+            - mountPath: /opt/redis/
+              name: redis-config
+          command:
+            - /bin/bash
+          args:
+            - -c
+            - |
+              #!/bin/bash
+              if [[ "$HOSTNAME" == *"redis-ha-0"* ]]; then
+                cp /var/zevrant-services/master-config/..data/redis.conf /opt/redis/redis.conf
+              else
+                cp /var/zevrant-services/replica-config/..data/redis.conf /opt/redis/redis.conf
+              fi
+      containers:
+        - name: redis
+          image: {{.Values.redisImage}}
+          imagePullPolicy: Always
+          volumeMounts:
+            - mountPath: /opt/redis/
+              name: redis-config
+            - name: {{ .Release.Name }}-{{ .Chart.Name }}
+              mountPath: /data
+          ports:
+            - containerPort: 6379
+          command:
+            - /usr/local/bin/redis-server
+          args:
+            - /opt/redis/redis.conf
+            - --sentinel

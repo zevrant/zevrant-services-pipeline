@@ -27,7 +27,7 @@ spec:
   dnsPolicy: ClusterFirst
   enableServiceLinks: true
   imagePullSecrets:
-    - name: regcred
+    - name: harbor-ro
   nodeName: zevrant-03
   preemptionPolicy: PreemptLowerPriority
   priority: 0

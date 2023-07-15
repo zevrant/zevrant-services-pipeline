@@ -32,7 +32,7 @@ spec:
         app: keycloak-db
     spec:
       imagePullSecrets:
-        - name: regcred
+        - name: harbor-ro
       volumes:
         - name: database
           persistentVolumeClaim:

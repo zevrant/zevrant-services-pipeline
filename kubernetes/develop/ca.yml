@@ -51,7 +51,7 @@ spec:
         fsGroup: 1000
         fsGroupChangePolicy: "Always"
       imagePullSecrets:
-        - name: regcred
+        - name: harbor-ro
       dnsPolicy: "None"
       dnsConfig:
         nameservers:

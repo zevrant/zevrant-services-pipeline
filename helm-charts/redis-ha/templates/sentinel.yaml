@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name}}-sentinel-{{ .Chart.Name }}
+  labels:
+    app: {{ .Release.Name}}-sentinel-{{ .Chart.Name }}
+spec:
+  selector:
+    matchLabels:
+      app: {{.Release.Name}}-sentinel-{{ .Chart.Name }}
+  replicas: {{ .Values.sentinelReplicas }}
+  template:
+    metadata:
+      labels:
+        app: {{.Release.Name}}-sentinel-{{ .Chart.Name }}
+    spec:
+      imagePullSecrets:
+        {{- range .Values.imagePullSecrets }}
+        - name: {{.}}
+        {{- end }}
+      securityContext:
+        runAsUser: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: "Always"
+      volumes:
+        - name: stored-sentinel-conf
+          secret:
+            secretName: {{.Release.Name}}-{{.Chart.Name}}-sentinel-config
+        - name: sentinel-conf
+          emptyDir:
+            sizeLimit: 1Gi
+      initContainers:
+        - name: config-init
+          image: docker.io/ubuntu:latest
+          volumeMounts:
+            - mountPath: /var/zevrant-services/sentinel-conf
+              name: stored-sentinel-conf
+            - mountPath: /opt/redis/
+              name: sentinel-conf
+          command:
+            - /bin/bash
+          args:
+            - -c
+            - |
+              cp /var/zevrant-services/sentinel-conf/..data/sentinel.conf /opt/redis/sentinel.conf
+      containers:
+        - name: redis-sentinel
+          image: {{ .Values.sentinelImage }}
+          volumeMounts:
+            - mountPath: /opt/redis
+              name: sentinel-conf
+          ports:
+            - containerPort: 26379
+          command:
+            - /bin/bash
+          args:
+            - -c
+            - |
+              redis-sentinel /opt/redis/sentinel.conf

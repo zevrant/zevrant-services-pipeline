@@ -105,7 +105,7 @@ spec:
           configMap:
             name: 7dtd-hannah-config
       imagePullSecrets:
-        - name: regcred
+        - name: harbor-ro
         - name: harbor-ro
       containers:
         - name: 7dtd

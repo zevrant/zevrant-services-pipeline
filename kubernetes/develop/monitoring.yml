@@ -47,7 +47,7 @@ spec:
         app: zevrant-grafana-service
     spec:
       imagePullSecrets:
-        - name: regcred
+        - name: harbor-ro
       volumes:
         - name: database
           nfs:
@@ -97,7 +97,7 @@ spec:
     spec:
 
       imagePullSecrets:
-        - name: regcred
+        - name: harbor-ro
       containers:
         - name: zevrant-prometheus-service
           imagePullPolicy: Always

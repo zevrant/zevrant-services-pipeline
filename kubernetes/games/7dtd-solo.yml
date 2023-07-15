@@ -106,7 +106,7 @@ spec:
 #          configMap:
 #            name: 7dtd
       imagePullSecrets:
-        - name: regcred
+        - name: harbor-ro
         - name: harbor-ro
       dnsPolicy: "ClusterFirst"
       dnsConfig:

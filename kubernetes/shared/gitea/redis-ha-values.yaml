@@ -1,0 +1,19 @@
+name: "gitea-redis"
+imagePullSecrets:
+  - "harbor-ro"
+storageClassName: "csi-rbd-sc"
+storageSize: 1Gi
+storageSizeLimit: 1Ti
+replicas: 2
+redisMasterPasswordSecret: "gitea-redis-credentials"
+quorumCount: 1
+failoverTimeout: 10000
+downAfterMillis: 5000
+sentinelReplicas: 3
+sentinelImage: harbor.zevrant-services.com/zevrant-services/redis-sentinel:latest
+redisImage: harbor.zevrant-services.com/dockerhub/redis:7.2-rc3
+additionalUsers:
+  - username: gitea
+    passwordSecret: gitea-redis-password
+    passwordSecretKey: "" #default is password i.e. --from-literal password='some password here'
+    permissions: [] #i.e +@all -@connect, etc

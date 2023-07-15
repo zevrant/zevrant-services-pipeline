@@ -28,7 +28,7 @@ spec:
         app: zevrant-clamav-service
     spec:
       imagePullSecrets:
-        - name: regcred
+        - name: harbor-ro
 
       containers:
         - name: zevrant-clamav-service
