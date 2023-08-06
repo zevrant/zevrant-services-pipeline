@@ -36,7 +36,7 @@ pipeline {
                 container('kubectl') {
                     script {
                         currentBuild.displayName = "Deploying Version $VERSION"
-                        git credentialsId: 'jenkins-git', branch: 'master',
+                        git credentialsId: 'jenkins-git', branch: 'main',
                                 url: "ssh://git@gitea.zevrant-services.com:30121/zevrant-services/${REPOSITORY}.git" as String
                     }
                 }

@@ -90,6 +90,10 @@ spec:
       targetPort: 2222
       nodePort: 30121
       name: ssh
+    - port: 3000
+      targetPort: 3000
+      nodePort: 30122
+      name: http
   selector:
     app: gitea
 
@@ -102,8 +106,8 @@ metadata:
   namespace: shared
   annotations:
     nginx.ingress.kubernetes.io/backend-protocol: "https"
-    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+#    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+#    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
 spec:
   rules:
     - host: gitea.zevrant-services.com
@@ -117,6 +121,10 @@ spec:
                 port:
                   name: http
   ingressClassName: nginx
+  tls:
+    - hosts:
+        - gitea.zevrant-services.com
+      secretName: gitea-tls
 
 ---
 
@@ -228,7 +236,7 @@ spec:
                   key: password
                   name: gitea-postgres-postgresql-ha-pguser-gitea
             - name: DEFAULT_BRANCH
-              value: master
+              value: main
           startupProbe:
             httpGet:
               scheme: HTTPS

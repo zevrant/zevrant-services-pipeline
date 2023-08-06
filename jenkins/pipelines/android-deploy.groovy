@@ -16,7 +16,7 @@ import com.lesfurets.jenkins.unit.global.lib.Library
                     script {
                         String artifactJob = (ENVIRONMENT == 'prod')
                                 ? 'Android/Zevrant Android App/Zevrant-Android-App-Release-To-Internal-Testing'
-                                : 'Android/Zevrant Android App/zevrant-android-app-multibranch/master'
+                                : 'Android/Zevrant Android App/zevrant-android-app-multibranch/main'
                         copyArtifacts(
                                 projectName: artifactJob,
                                 selector: lastSuccessful()

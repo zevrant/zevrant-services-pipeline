@@ -32,7 +32,7 @@ pipeline {
             }
         }
         stage('Deploy') {
-            when { expression { BRANCH_NAME == 'master' } }
+            when { expression { BRANCH_NAME == 'main' } }
             steps {
                 script {
                     sh 'ls -l /var/jenkins_home/casc_configs'
@@ -46,7 +46,7 @@ pipeline {
             }
         }
         stage('Reload Config') {
-            when { expression { BRANCH_NAME == 'master' } }
+            when { expression { BRANCH_NAME == 'main' } }
             steps {
                 script {
                     ConfigurationAsCode.get().configure()

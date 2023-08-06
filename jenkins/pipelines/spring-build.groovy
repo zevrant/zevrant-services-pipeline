@@ -39,7 +39,7 @@ pipeline {
                                     container("buildah") {
                                         String dockerfile = httpRequest(
                                                 authentication: 'gitea-access-token',
-                                                url: "https://gitea.zevrant-services.com/zevrant-services/zevrant-services-pipeline/raw/branch/master/docker/dockerfile/spring-microservice-template/Dockerfile"
+                                                url: "https://gitea.zevrant-services.com/zevrant-services/zevrant-services-pipeline/raw/branch/main/docker/dockerfile/spring-microservice-template/Dockerfile"
                                         ).content
                                         String baseImage = ((String[]) dockerfile.split("\n"))[0].split(" ")[1]
                                         sh 'echo $DOCKER_TOKEN | buildah login -u \'robot$jenkins\' --password-stdin harbor.zevrant-services.com'
@@ -126,7 +126,7 @@ pipeline {
         }
 
         stage("Version Update") {
-            when { expression { branchName == "master" } }
+            when { expression { branchName == "main" } }
             environment {
                 AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
                 AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
@@ -153,7 +153,7 @@ pipeline {
                 script {
                     timeout(time: 20, unit: 'MINUTES') {
                         container('buildah') {
-                            String versionString = (branchName == "master")
+                            String versionString = (branchName == "main")
                                     ? version.toVersionCodeString()
                                     : "${version.toVersionCodeString()}-${branchName}" as String
                             def appYaml = readYaml(file: 'src/main/resources/application.yml')
@@ -168,11 +168,11 @@ pipeline {
         }
 
         stage("Trigger Deploy") {
-            when { expression { branchName == "master" } }
+            when { expression { branchName == "main" } }
             steps {
                 script {
                     String[] repositorySplit = REPOSITORY.split("-")
-                    String versionString = (branchName == "master")
+                    String versionString = (branchName == "main")
                             ? version.toVersionCodeString()
                             : "${versionString}-${branchName}" as String
                     build job: "Spring/${repositorySplit.collect {part -> part.capitalize()}.join(' ')}/${REPOSITORY}-deploy-to-develop" as String, parameters: [

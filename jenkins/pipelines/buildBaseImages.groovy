@@ -111,7 +111,7 @@ pipeline {
                                     def dockerfileResponse = httpRequest(authentication: 'jenkins-git-access-token',
                                             contentType: "TEXT_PLAIN",
                                             validResponseCodes: "200:404",
-                                            url: "https://raw.githubusercontent.com/zevrant/${repo['name'] as String}/master/Dockerfile")
+                                            url: "https://raw.githubusercontent.com/zevrant/${repo['name'] as String}/main/Dockerfile")
                                     if (dockerfileResponse.status < 400) {
                                         for (image in imagesToBuild) {
                                             if (dockerfileResponse.content.contains(image)) {
@@ -142,8 +142,8 @@ pipeline {
                             String[] repoBits = repo.split("-")
                             String jenkinsAppName = "${repoBits[0].capitalize()} ${repoBits[1].capitalize()} ${repoBits[2].capitalize()}"
                             buildJobs["Build $branch for $repo"] = {
-                                build job: "Spring/${jenkinsAppName}/${repo}-multibranch/master", parameters: [
-                                        [$class: 'StringParameterValue', name: 'BRANCH_NAME', value: "refs/heads/master"]
+                                build job: "Spring/${jenkinsAppName}/${repo}-multibranch/main", parameters: [
+                                        [$class: 'StringParameterValue', name: 'BRANCH_NAME', value: "refs/heads/main"]
                                 ]
                             }
                         }

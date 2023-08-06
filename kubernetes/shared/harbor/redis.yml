@@ -151,7 +151,7 @@ data:
   redis-users.acl: |
     user admin on +@all >ADMIN_PASSWORD
     user harbor on +@read +@write +@set +@list +@string +@bitmap +@connection +@transaction +evalsha +eval ~* >HARBOR_PASSWORD
-    user default on +auth +ping >DEFAULT_PASSWORD
+    user default on nopass -@all +@connection
   redis.conf: |
     # Redis configuration file example.
     #
@@ -263,7 +263,7 @@ data:
     # By default protected mode is enabled. You should disable it only if
     # you are sure you want clients from other hosts to connect to Redis
     # even if no authentication is configured.
-    protected-mode yes
+    protected-mode no
 
     # Redis uses default hardened security configuration directives to reduce the
     # attack surface on innocent users. Therefore, several sensitive configuration
@@ -299,7 +299,7 @@ data:
     # will silently truncate it to the value of /proc/sys/net/core/somaxconn so
     # make sure to raise both the value of somaxconn and tcp_max_syn_backlog
     # in order to get the desired effect.
-    tcp-backlog 511
+    tcp-backlog 5111
 
     # Unix socket.
     #
@@ -1251,7 +1251,7 @@ data:
     # connections, one incoming and another outgoing. It is important to size the
     # limit accordingly in case of very large clusters.
     #
-    # maxclients 10000
+    maxclients 100000
 
     ############################## MEMORY MANAGEMENT ################################
 

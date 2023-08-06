@@ -39,7 +39,7 @@ pipeline {
                                     container("buildah") {
                                         String dockerfile = httpRequest(
                                                 authentication: 'gitea-access-token',
-                                                url: "https://gitea.zevrant-services.com/zevrant-services/zevrant-services-pipeline/raw/branch/master/docker/dockerfile/spring-microservice-template/Dockerfile"
+                                                url: "https://gitea.zevrant-services.com/zevrant-services/zevrant-services-pipeline/raw/branch/main/docker/dockerfile/spring-microservice-template/Dockerfile"
                                         ).content
                                         String baseImage = ((String[]) dockerfile.split("\n"))[0].split(" ")[1]
                                         sh 'echo $DOCKER_TOKEN | buildah login -u jenkins --password-stdin harbor.zevrant-services.com'

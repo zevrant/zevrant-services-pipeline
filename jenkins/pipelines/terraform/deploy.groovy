@@ -12,10 +12,10 @@ if (envName != 'stage' && envName != 'prod') {
         throw new RuntimeException('No Source Job Provided')
     }
     println "Is PR? ${((String) versionSourceJob).matches('PR-\\d+')}"
-    println "Is master? ${versionSourceJob == 'multibranch/master'}"
+    println "Is main? ${versionSourceJob == 'multibranch/main'}"
     println "Is main? ${versionSourceJob == 'multibranch/main'}"
     if (!((String) versionSourceJob).matches('PR-\\d+')
-        && !(versionSourceJob == 'multibranch/master' || versionSourceJob == 'multibranch/main')) {
+        && !(versionSourceJob == 'multibranch/main' || versionSourceJob == 'multibranch/main')) {
         throw new RuntimeException("Invalid Source Job Provided ${versionSourceJob}")
     }
 }

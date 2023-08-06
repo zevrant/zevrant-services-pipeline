@@ -14,7 +14,7 @@ ENV NVM_DIR /usr/local/nvm
 #ENV NODE_VERSION 10.18.0
 
 # Install nvm with node and npm
-RUN curl https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash \
+RUN curl https://raw.githubusercontent.com/nvm-sh/nvm/main/install.sh | bash \
     && . $NVM_DIR/nvm.sh \
     && echo '. $NVM_DIR/nvm.sh' >> ~/.bashrc \
     && nvm install --lts \
@@ -48,7 +48,7 @@ RUN echo '. $NVM_DIR/nvm.sh' >> ~/.bashrc \
     && node -v \
     && npm -v
 
-RUN curl https://raw.githubusercontent.com/zevrant/zevrant-services-pipeline/master/bash/openssl.conf > ~/openssl.conf
+RUN curl https://raw.githubusercontent.com/zevrant/zevrant-services-pipeline/main/bash/openssl.conf > ~/openssl.conf
 
 COPY ./foundry /opt/foundry/
 COPY zevrant-services-start.sh /home/foundry/startup.sh

@@ -123,7 +123,7 @@ String createMultibranch(CodeUnit codeUnit) {
                     gitSCM {
                         branches {
                             branchSpec {
-                                name('master')
+                                name('main')
                             }
                         }
                         extensions {
@@ -141,7 +141,7 @@ String createMultibranch(CodeUnit codeUnit) {
                                 name("Zevrant Services Pipeline") //Custom Repository Name or ID
                                 url("ssh://git@gitea.zevrant-services.com:30121/zevrant-services/zevrant-services-pipeline.git")
                                 //URL for the repository
-                                refspec("master") // Branch spec
+                                refspec("main") // Branch spec
                                 credentialsId("jenkins-git") // Credential ID. Leave blank if not required
                             }
                             browser {} // Leave blank for default Git Browser
@@ -171,7 +171,7 @@ String createMultibranch(CodeUnit codeUnit) {
                                 strategyId(0)
                             }
                             headWildcardFilter {
-                                includes('master PR-*')
+                                includes('main PR-*')
                                 excludes('')
                             }
                             giteaBranchDiscovery {
@@ -328,7 +328,7 @@ void createPipeline(String folder, Pipeline pipeline) {
                             url(pipeline.gitRepo)
                         }
 
-                        branch('master')
+                        branch('main')
 
                         browser {
                             gitWeb("https://github.com:zevrant/zevrant-services-pipeline")

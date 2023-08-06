@@ -5,11 +5,11 @@ package terraform
 String REPOSITORY = scm.getUserRemoteConfigs()[0].getUrl().tokenize('/').last().split("\\.")[0]
 String branchName = (BRANCH_NAME.startsWith('PR-')) ? CHANGE_BRANCH : BRANCH_NAME
 
-if((branchName == 'master' || branchName == 'main') && (REPOSITORY.toLowerCase() == 'gcp-infrastructure-as-code' || REPOSITORY.toLowerCase() == 'kafka-terraform')) {
+if((branchName == 'main' || branchName == 'main') && (REPOSITORY.toLowerCase() == 'gcp-infrastructure-as-code' || REPOSITORY.toLowerCase() == 'kafka-terraform')) {
     environments = ['dev': commonGcpProject, 'qa': commonGcpProject, 'stage': commonGcpProject, 'prod': commonGcpProject]
 } else if(REPOSITORY.toLowerCase() == 'gcp-infrastructure-as-code') {
     environments = ['sandbox': commonGcpProject]
-} else if ((branchName == 'master' || branchName == 'main')) {
+} else if ((branchName == 'main' || branchName == 'main')) {
     environments =  [
         'dev'  : GcpProjectCollection.findByDisplayName('dev', true),
         'qa'   : GcpProjectCollection.findByDisplayName('qa', true),

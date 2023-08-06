@@ -13,7 +13,7 @@ BRANCH_NAME = BRANCH_NAME[BRANCH_NAME.size() - 1];
 String REPOSITORY = scm.getUserRemoteConfigs()[0].getUrl().tokenize('/').last().split("\\.")[0]
 currentBuild.displayName = "$REPOSITORY merging to $BRANCH_NAME"
 Version version = null
-String variant = (BRANCH_NAME == "master") ? "release" : 'develop'
+String variant = (BRANCH_NAME == "main") ? "release" : 'develop'
 String avdName = "jenkins-android-test-$BUILD_ID"
 VersionService versionTasks = ServiceLoader.load(binding, VersionService) as VersionService
 byte[] b = new byte[2000];

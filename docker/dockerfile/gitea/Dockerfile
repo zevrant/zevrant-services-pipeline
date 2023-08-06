@@ -1,4 +1,4 @@
-FROM docker.io/zevrant/gitea/gitea:latest-rootless
+FROM docker.io/zevrant/gitea:latest-rootless
 
 USER root
 

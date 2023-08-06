@@ -161,7 +161,7 @@ contributor(ctx) {
 def envVars = context(ctype: 'org.jenkinsci.plugins.workflow.cps.EnvActionImpl.Binder')
 
 contributor(envVars) {
-    property(name: 'BRANCH_NAME', type: 'String', doc: 'For a multibranch project, this will be set to the name of the branch being built, for example in case you wish to deploy to production from master but not from feature branches; if corresponding to some kind of change request, the name is generally arbitrary (refer to CHANGE_ID and CHANGE_TARGET).')
+    property(name: 'BRANCH_NAME', type: 'String', doc: 'For a multibranch project, this will be set to the name of the branch being built, for example in case you wish to deploy to production from main but not from feature branches; if corresponding to some kind of change request, the name is generally arbitrary (refer to CHANGE_ID and CHANGE_TARGET).')
     property(name: 'CHANGE_ID', type: 'String', doc: 'For a multibranch project corresponding to some kind of change request, this will be set to the change ID, such as a pull request number, if supported; else unset.')
     property(name: 'CHANGE_URL', type: 'Strig', doc: 'For a multibranch project corresponding to some kind of change request, this will be set to the change URL, if supported; else unset.')
     property(name: 'CHANGE_TITLE', type: 'String', doc: 'For a multibranch project corresponding to some kind of change request, this will be set to the title of the change, if supported; else unset.')
@@ -176,7 +176,7 @@ contributor(envVars) {
     property(name: 'JOB_BASE_NAME', type: 'String', doc: 'Short Name of the project of this build stripping off folder paths, such as "foo" for "bar/foo".')
     property(name: 'BUILD_TAG', type: 'String', doc: 'String of "jenkins-${JOB_NAME}-${BUILD_NUMBER}". All forward slashes (/) in the JOB_NAME are replaced with dashes (-). Convenient to put into a resource file, a jar file, etc for easier identification.')
     property(name: 'EXECUTOR_NUMBER', type: 'String', doc: 'The unique number that identifies the current executor (among executors of the same machine) that’s carrying out this build. This is the number you see in the "build executor status", except that the number starts from 0, not 1.')
-    property(name: 'NODE_NAME', type: 'String', doc: 'Name of the agent if the build is on an agent, or "master" if run on master')
+    property(name: 'NODE_NAME', type: 'String', doc: 'Name of the agent if the build is on an agent, or "main" if run on master')
     property(name: 'NODE_LABELS', type: 'String', doc: 'Whitespace-separated list of labels that the node is assigned.')
     property(name: 'WORKSPACE', type: 'String', doc: 'The absolute path of the directory assigned to the build as a workspace.')
     property(name: 'JENKINS_HOME', type: 'String', doc: 'The absolute path of the directory assigned on the master node for Jenkins to store data.')
