@@ -38,7 +38,7 @@ pipeline {
             }
             steps {
                 script {
-                    imageBuildService.registryLogin('robot$jenkins', DOCKER_TOKEN)
+                    imageBuildService.registryLogin('robot\\$jenkins', DOCKER_TOKEN)
                     imageBuildService.buildImagesInParallel(images)
                 }
             }
