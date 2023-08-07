@@ -14,7 +14,7 @@ class ImageBuildService extends Service {
             def imageConfig = pipelineContext.readJSON(file: file.path as String)
             def baseImageConfig = imageConfig.baseImage
             pipelineContext.println("Parsing image ${file.path}")
-            if (imageConfig.baseImage == 'quay') { return }
+            if (imageConfig.baseImage.contains('quay')) { return }
             Image baseImage = new Image(baseImageConfig.name, baseImageConfig.tag, false, null, baseImageConfig.host, baseImageConfig.repository, null)
             List<String> pathParts = file.path.split('/')
             return new Image(imageConfig.name, imageConfig.version, imageConfig.useLatest, baseImage, "harbor.zevrant-services.com", "zevrant-services", pathParts.subList(0, pathParts.size() -1).join('/'), imageConfig.args)
