@@ -84,7 +84,7 @@ class ImageBuildService extends Service {
         return status == 0
     }
 
-    static boolean isImageInBuildQueue(Image image, List<Image> images) {
+    boolean isImageInBuildQueue(Image image, List<Image> images) {
         return images.find {foundImage ->
             pipelineContext.println("image.host == foundImage.host (${image.host == foundImage.host})\n" +
                     "                    && image.repository == foundImage.repository (${image.repository == foundImage.repository})\n" +
