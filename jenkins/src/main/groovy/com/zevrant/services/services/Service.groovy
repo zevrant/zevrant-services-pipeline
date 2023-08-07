@@ -2,7 +2,7 @@ package com.zevrant.services.services
 
 class Service {
 
-    Object pipelineContext
+    protected def pipelineContext
 
     Service(def pipelineContext) {
         this.pipelineContext = pipelineContext
