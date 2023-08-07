@@ -11,9 +11,7 @@ List<Image> images = null
 
 pipeline {
     agent {
-        kubernetes {
-            inheritFrom 'spring-build'
-        }
+        label 'container-builder'
     }
 
     stages {
