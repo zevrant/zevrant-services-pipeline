@@ -1,6 +1,6 @@
 import com.zevrant.services.ServiceLoader
-import com.zevrant.services.pojo.SpringCodeUnit
-import com.zevrant.services.pojo.SpringCodeUnitCollection
+import com.zevrant.services.pojo.codeunit.SpringCodeUnit
+import com.zevrant.services.pojo.codeunit.SpringCodeUnitCollection
 import com.zevrant.services.services.CertificateService
 import com.zevrant.services.services.GitService
 import com.zevrant.services.services.KubernetesService
@@ -10,7 +10,7 @@ import java.nio.charset.StandardCharsets
 
 CertificateService certificateService = ServiceLoader.load(binding, CertificateService.class) as CertificateService
 KubernetesService kubernetesService = ServiceLoader.load(binding, KubernetesService.class) as KubernetesService
-GitService gitService = ServiceLoader.load(binding, GitService.class) as GitService
+GitService gitService = new GitService(this)
 PostgresYamlConfigurer postgresYamlConfigurer = ServiceLoader.load(binding, PostgresYamlConfigurer.class) as PostgresYamlConfigurer
 LinkedHashMap<String, Serializable> serviceNameOverrides = [
         'develop-zevrant-home-ui'     : '172.16.1.10',

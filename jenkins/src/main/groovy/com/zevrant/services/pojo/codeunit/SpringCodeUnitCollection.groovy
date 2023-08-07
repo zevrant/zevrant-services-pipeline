@@ -1,4 +1,4 @@
-package com.zevrant.services.pojo
+package com.zevrant.services.pojo.codeunit
 
 class SpringCodeUnitCollection {
 

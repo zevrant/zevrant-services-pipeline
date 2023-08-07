@@ -10,7 +10,7 @@ import com.zevrant.services.services.GitService
 
 
 KubernetesService service = KubernetesServiceCollection.findServiceByName(SERVICE_NAME as String) as KubernetesService
-GitService gitService = ServiceLoader.load(binding, GitService.class) as GitService
+GitService gitService = new GitService(this)
 CertificateService certificateService = ServiceLoader.load(binding, CertificateService.class) as CertificateService
 final String serviceType = service.serviceType.name().toLowerCase()
 pipeline {

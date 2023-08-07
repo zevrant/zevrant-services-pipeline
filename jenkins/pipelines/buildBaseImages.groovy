@@ -9,7 +9,7 @@ Map<String, List<String>> affectedRepos = new HashMap<>();
 //branchesToBuild.each({ branch ->
 //    affectedRepos.put(branch, []);
 //})
-GitService gitService = ServiceLoader.load(binding, GitService.class) as GitService
+GitService gitService = new GitService(this)
 
 List<String> baseImageFolders = []
 

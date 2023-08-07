@@ -170,10 +170,11 @@ data:
   grafana.ini: |
     [database]
     type = postgres
-    host = ${POSTGRES_HOST}:${POSTGRES_PORT}
+    host = ${POSTGRES_HOST}
     name = ${POSTGRES_DATABASE_NAME}
     user = ${POSTGRES_USER}
     password = ${POSTGTRES_DATABASE_PASSWORD}
+    ssl_mode = require
     
     [unified_alerting]
     enabled = true

@@ -1,6 +1,7 @@
-package com.zevrant.services.pojo
+package com.zevrant.services.pojo.codeunit
 
 import com.zevrant.services.enumerations.ApplicationType
+import com.zevrant.services.pojo.GitRepo
 
 class CodeUnit {
 

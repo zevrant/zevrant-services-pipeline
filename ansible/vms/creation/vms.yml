@@ -64,7 +64,8 @@
         localtime: true
         machine: pc
         migrate_speed: 0
-        name: "kubernetes-{{ nodeType }}-{{ vmNumber }}"
+        name: "jenkins-container-builder"
+#        name: "kubernetes-{{ nodeType }}-{{ vmNumber }}"
         description: "kubernetes {{nodeType}} {{vmNumber}}"
         cores: "{{ cpus }}"
         cpu: Westmere
@@ -83,8 +84,7 @@
         sshkeys: "{{ sshKey }}"
         pool: Default
         tags:
-          - kubernetes
-          - "{{ nodeType }}"
+          - jenkins
         validate_certs: false
         agent: 'enabled=1'
         ipconfig:
