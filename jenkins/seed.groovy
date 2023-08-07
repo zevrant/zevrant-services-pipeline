@@ -31,12 +31,6 @@ SpringCodeUnitCollection.microservices.each { springCodeUnit ->
                     'REPOSITORY' : springCodeUnit.name,
                     'ENVIRONMENT': 'develop'
             ]),
-            triggers           : [
-                    new PipelineTrigger([
-                            type : PipelineTriggerType.CRON,
-                            value: "H */11 * * *"
-                    ])
-            ],
     )
     Pipeline prodDeployPipeline = new Pipeline(
             name: "${springCodeUnit}-deploy-to-prod",
@@ -50,12 +44,6 @@ SpringCodeUnitCollection.microservices.each { springCodeUnit ->
                     'REPOSITORY' : springCodeUnit.name,
                     'ENVIRONMENT': 'prod'
             ]),
-            triggers           : [
-                    new PipelineTrigger([
-                            type : PipelineTriggerType.CRON,
-                            value: "H */11 * * *"
-                    ])
-            ],
     )
     createPipeline(folder, developDeployPipeline);
     if(springCodeUnit.prodReady) {
@@ -200,13 +188,6 @@ folder(kubernetesServicesFolder) {
 KubernetesServiceCollection.services.each { kubernetesService ->
     kubernetesService.environments.each { environment ->
         Pipeline pipeline = new Pipeline([
-                name               : kubernetesService.serviceName.capitalize(),
-                triggers           : [
-                        new PipelineTrigger([
-                                type : PipelineTriggerType.CRON,
-                                value: "H */11 * * *"
-                        ])
-                ],
                 envs               : [
                         ENVIRONMENT : environment.getNamespaceName(),
                         SERVICE_NAME: kubernetesService.serviceName
