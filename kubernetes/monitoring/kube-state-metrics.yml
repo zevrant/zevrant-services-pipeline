@@ -3,7 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: kube-state-metrics
-  namespace: monitoring
+  namespace: kube-system
 spec:
   selector:
     matchLabels:
@@ -18,24 +18,72 @@ spec:
         - maxSkew: 1
           topologyKey: kubernetes.io/hostname
           whenUnsatisfiable: DoNotSchedule
-      serviceAccountName: prometheus
+      serviceAccountName: kube-state-metrics
       containers:
         - name: kube-state-metrics
           image: quay.io/coreos/kube-state-metrics:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080
-              name: monitoring
+              name: kube-system              
+
 ---
+
 kind: Service
 apiVersion: v1
 metadata:
   name: kube-state-metrics
-  namespace: monitoring
+  namespace: kube-system
 spec:
   selector:
     app: kube-state-metrics
-  type: LoadBalancer
+  type: ClusterIP
   ports:
     - protocol: TCP
       port: 8080
       targetPort: 8080
+      
+---
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: kube-state-metrics
+  namespace: kube-system
+automountServiceAccountToken: true
+imagePullSecrets:
+  - name: harbor-ro
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: kube-state-metrics-read-only
+subjects:
+  # You can specify more than one "subject"
+  - kind: ServiceAccount
+    name: kube-state-metrics # "name" is case-sensitive
+    namespace: kube-system
+    apiGroup: ""
+roleRef:
+  # "roleRef" specifies the binding to a Role / ClusterRole
+  kind: ClusterRole #this must be Role or ClusterRole
+  name: readOnly # this must match the name of the Role or ClusterRole you wish to bind to
+  apiGroup: rbac.authorization.k8s.io
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: kube-state-metrics-metrics-read
+subjects:
+  - kind: ServiceAccount
+    name: kube-state-metrics
+    namespace: kube-system
+    apiGroup: ""
+roleRef:
+  kind: ClusterRole
+  name: view-metrics
+  apiGroup: rbac.authorization.k8s.io

@@ -13,23 +13,9 @@ spec:
     solvers:
       - selector:
           dnsZones:
-            - 'preprod.zevrant-services.com'
-        dns01:
-          route53:
-            region: us-east-1
-            accessKeyID: AKIA2RW3K76J3UBZ3SYO
-            hostedZoneID: Z0811917POV9YNOM5LQ5
-            secretAccessKeySecretRef:
-              name: prod-route53-credentials-secret
-              key: secret-access-key
-      - selector:
-          dnsZones:
             - 'zevrant-services.com'
         dns01:
-          route53:
-            region: us-east-1
-            accessKeyID: AKIA2RW3K76J3UBZ3SYO
-            hostedZoneID: Z0678247YFW6DPTMSZE9
-            secretAccessKeySecretRef:
+          cloudflare:
+            apiTokenSecretRef:
               name: prod-route53-credentials-secret
               key: secret-access-key

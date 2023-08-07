@@ -96,10 +96,11 @@
         url="$(curl -s https://gitea.zevrant-services.com/api/v1/repos/prometheus/node_exporter/releases/latest | jq -r .assets[2].browser_download_url)"
         curl -L "$url" -o node-exporter.tar.gz
         tar xvf node-exporter.tar.gz
+        mkdir -p /opt/node-exporter
         mv node_exporter-* node-exporter
         mv node-exporter/* /opt/node-exporter
         rm -r node-exporter*
-        chown -R node-exporter:developers /opt/node-exporter
+        chown -R node-exporter:node-exporter /opt/node-exporter
     - name: Set Max Map Count
       ansible.builtin.command:
         cmd: echo "vm.max_map_count = 262144" >> /etc/sysctl.conf

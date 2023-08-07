@@ -50,8 +50,8 @@ spec:
     algorithm: ECDSA
     size: 256
     rotationPolicy: Always
-  duration: 24h
-  renewBefore: 13h
+  duration: 2160h
+  renewBefore: 2000h
   dnsNames:
     - minio.zevrant-services.com
     - api.minio.zevrant-services.com

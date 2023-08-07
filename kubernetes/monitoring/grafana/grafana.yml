@@ -134,15 +134,29 @@ spec:
                 fieldRef:
                   fieldPath: status.podIP
             - name: POSTGRES_HOST
-              value: grafana-postgres.preprod.zevrant-services.com:5432
+              valueFrom:
+                secretKeyRef:
+                  key: host
+                  name: grafana-postgres-postgresql-ha-pguser-grafana
+            - name: POSTGRES_PORT
+              valueFrom:
+                secretKeyRef:
+                  key: port
+                  name: grafana-postgres-postgresql-ha-pguser-grafana
             - name: POSTGRES_DATABASE_NAME
-              value: grafana
+              valueFrom:
+                secretKeyRef:
+                  key: dbname
+                  name: grafana-postgres-postgresql-ha-pguser-grafana
             - name: POSTGRES_USER
-              value: zevrant
+              valueFrom:
+                secretKeyRef:
+                  key: user
+                  name: grafana-postgres-postgresql-ha-pguser-grafana
             - name: POSTGTRES_DATABASE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: grafana-postgres-credentials
+                  name: grafana-postgres-postgresql-ha-pguser-grafana
                   key: password
 
 ---
@@ -156,7 +170,7 @@ data:
   grafana.ini: |
     [database]
     type = postgres
-    host = ${POSTGRES_HOST}
+    host = ${POSTGRES_HOST}:${POSTGRES_PORT}
     name = ${POSTGRES_DATABASE_NAME}
     user = ${POSTGRES_USER}
     password = ${POSTGTRES_DATABASE_PASSWORD}

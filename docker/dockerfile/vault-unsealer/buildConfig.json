@@ -1,5 +1,0 @@
-{
-  "name": "vault-unsealer",
-  "version": "0",
-  "baseImage": "docker.io/ubuntu:latest"
-}

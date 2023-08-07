@@ -24,6 +24,17 @@ rules:
       - watch
   - apiGroups:
       - ""
+      - "storage.k8s.io"
+      - "certificates.k8s.io"
+      - "policy"
+      - "ingresses.networking.k8s.io"
+      - "apps"
+      - "storage.k8s.io"
+      - "autoscaling"
+      - "admissionregistration.k8s.io"
+      - "networking.k8s.io"
+      - "coordination.k8s.io"
+      - "batch"
     resources:
       - nodes/metrics
       - nodes/stats
@@ -33,6 +44,7 @@ rules:
       - nodes
       - pods
       - services
+      - statefulsets
       - resourcequotas
       - replicationcontrollers
       - limitranges
@@ -40,6 +52,19 @@ rules:
       - persistentvolumes
       - namespaces
       - endpoints
+      - storageclasses
+      - certificatesigningrequests
+      - poddisruptionbudgets
+      - ingresses
+      - leases
+      - replicasets
+      - horizontalpodautoscalers
+      - validatingwebhookconfigurations
+      - volumeattachments
+      - mutatingwebhookconfigurations
+      - networkpolicies
+      - jobs
+      - cronjobs
     verbs:
       - get
       - list

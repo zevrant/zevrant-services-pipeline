@@ -6,7 +6,7 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/backend-protocol: "https"
     nginx.ingress.kubernetes.io/proxy-body-size: "0"
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+#    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
 spec:
   rules:
     - host: minio-monitoring.preprod.zevrant-services.com
@@ -16,7 +16,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: minio-monitoring-console
+                name: monitoring-console
                 port:
                   name: https-console
     - host: api.minio-monitoring.preprod.zevrant-services.com
