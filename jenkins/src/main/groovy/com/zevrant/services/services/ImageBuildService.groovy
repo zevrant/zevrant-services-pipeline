@@ -86,10 +86,10 @@ class ImageBuildService extends Service {
 
     boolean isImageInBuildQueue(Image image, List<Image> images) {
         return images.find {foundImage ->
-            pipelineContext.println("image.host == foundImage.host (${image.host == foundImage.host})\n" +
-                    "                    && image.repository == foundImage.repository (${image.repository == foundImage.repository})\n" +
-                    "                    && image.name == foundImage.name (${image.name == foundImage.name})\n" +
-                    "                    && (image.version == image.version || image.version == \"latest\") (${image.version == image.version || image.version == "latest"})")
+            pipelineContext.println("${image.host} == $foundImage.host (${image.host == foundImage.host})\n" +
+                    "                    && $image.repository == $foundImage.repository (${image.repository == foundImage.repository})\n" +
+                    "                    && $image.name == $foundImage.name (${image.name == foundImage.name})\n" +
+                    "                    && ($image.version == $image.version || $image.version == \"latest\") (${image.version == image.version || image.version == "latest"})")
 
             return (image.host == foundImage.host
                     && image.repository == foundImage.repository
