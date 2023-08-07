@@ -20,7 +20,7 @@ class ImageBuildService extends Service {
         return images
     }
 
-    void registryLogin(String username, String token, String registry = 'docker.io') {
+    void registryLogin(String username, String token, String registry = 'harbor.zevrant-services.com') {
         pipelineContext.withEnv(['DOCKER_TOKEN=' + token]) {
             pipelineContext.sh 'echo $DOCKER_TOKEN | buildah login -u ' + username + ' --password-stdin ' + registry //this is very deliberate and intended to prevent secret spillage due to groovy string interpolation DO NOT ALTER WITHOUT KNOWING THE IMPLICATIONS AND DISCUSSING WITH THE TEAM
         }

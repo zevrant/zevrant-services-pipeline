@@ -47,21 +47,6 @@ pipeline {
 
         }
 
-        stage("Build & Push Dockerfiles") {
-            environment {
-                DOCKER_TOKEN = credentials('jenkins-dockerhub')
-            }
-            environment {
-                DOCKER_TOKEN = credentials('jenkins-dockerhub')
-            }
-            steps {
-                script {
-                    imageBuildService.registryLogin('cgdevops', DOCKER_TOKEN)
-                    imageBuildService.buildImagesInParallel(images)
-                }
-            }
-        }
-
 //        stage("Get Potential Repos") {
 //            steps {
 //                script {
