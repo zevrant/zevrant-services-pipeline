@@ -13,6 +13,7 @@ class ImageBuildService extends Service {
         List<Image> images = files.collect({ file ->
             def imageConfig = pipelineContext.readJSON(file: file.path as String)
             def baseImageConfig = imageConfig.baseImage
+            pipelineContext.println("Parsing image ${file.path}")
             Image baseImage = new Image(baseImageConfig.name, baseImageConfig.tag, false, null, baseImageConfig.host, baseImageConfig.repository, null)
             List<String> pathParts = file.path.split('/')
             return new Image(imageConfig.name, imageConfig.version, imageConfig.useLatest, baseImage, "docker.io", "cgdevops", pathParts.subList(0, pathParts.size() -1).join('/'), imageConfig.args)
