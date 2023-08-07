@@ -83,6 +83,7 @@ spec:
         fsGroup: 1000
         fsGroupChangePolicy: "Always"
       serviceAccountName: jenkins
+      dnsPolicy: ClusterFirstWithHostNet
       volumes:
         - name: jenkins
           persistentVolumeClaim:
@@ -125,7 +126,7 @@ spec:
           args:
             - -c
             - |
-              mkdir -p /var/jenkins_home/casc_configs
+              
               mkdir -p /opt/secrets/keystore
               openssl rand 256 | base64 -w 0 > /opt/secrets/password
               openssl pkcs12 -export -inkey /opt/acme/certs/..data/tls.key -in /opt/acme/certs/..data/tls.crt -passout 'file:/opt/secrets/password' -out /opt/keystore/zevrant-services.p12
@@ -138,6 +139,7 @@ spec:
           args:
             - -c
             - |
+              mkdir -p /var/jenkins_home/casc_configs
               export JENKINS_OPTS="$JENKINS_OPTS --httpsKeyStorePassword=$(cat /var/zevrant-services/keystore/password)"
               git config --global --add safe.directory /var/jenkins_home/workspace/*
               /usr/local/bin/jenkins.sh
