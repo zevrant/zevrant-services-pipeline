@@ -31,7 +31,7 @@ class KubernetesServiceCollection {
                     environments: [
                             KubernetesEnvironment.SHARED
                     ],
-                    url: 'containers.zevrant-services.com',
+                    url: 'docker.io',
                     serviceType: ServiceType.STATEFULSET
             ])
     ])
