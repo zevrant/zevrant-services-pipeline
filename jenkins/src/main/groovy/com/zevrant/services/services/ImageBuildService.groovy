@@ -19,7 +19,7 @@ class ImageBuildService extends Service {
             List<String> pathParts = file.path.split('/')
             return new Image(imageConfig.name, imageConfig.version, imageConfig.useLatest, baseImage, "harbor.zevrant-services.com", "zevrant-services", pathParts.subList(0, pathParts.size() -1).join('/'), imageConfig.args)
         })
-        return images.collect ({ image -> image != null })
+        return images.findAll ({ image -> image != null })
     }
 
     void registryLogin(String username, String token, String registry = 'docker.io') {
