@@ -17,7 +17,8 @@ class ImageBuildService extends Service {
             if (baseImageConfig.repository.contains('quay')) { return }
             Image baseImage = new Image(baseImageConfig.name, baseImageConfig.tag, false, null, baseImageConfig.host, baseImageConfig.repository, null)
             List<String> pathParts = file.path.split('/')
-            return new Image(imageConfig.name, imageConfig.version, imageConfig.useLatest, baseImage, "harbor.zevrant-services.com", "zevrant-services", pathParts.subList(0, pathParts.size() -1).join('/'), imageConfig.args)
+            return new Image(imageConfig.name, imageConfig.version, imageConfig.useLatest, baseImage, "docker.io", "zevrant" +
+                    "", pathParts.subList(0, pathParts.size() -1).join('/'), imageConfig.args)
         })
         return images.findAll ({ image -> image != null })
     }

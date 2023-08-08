@@ -42,7 +42,7 @@ pipeline {
                                                 url: "https://gitea.zevrant-services.com/zevrant-services/zevrant-services-pipeline/raw/branch/main/docker/dockerfile/spring-microservice-template/Dockerfile"
                                         ).content
                                         String baseImage = ((String[]) dockerfile.split("\n"))[0].split(" ")[1]
-                                        sh 'echo $DOCKER_TOKEN | buildah login -u jenkins --password-stdin harbor.zevrant-services.com'
+                                        sh 'echo $DOCKER_TOKEN | buildah login -u jenkins --password-stdin docker.io'
                                         retry(3, {
                                             timeout(time: 5, unit: 'MINUTES') {
                                                 sh "buildah pull $baseImage"
@@ -158,7 +158,7 @@ pipeline {
                                     : "${version.toVersionCodeString()}-${branchName}" as String
                             def appYaml = readYaml(file: 'src/main/resources/application.yml')
                             String containerPort = appYaml.server.port
-                            sh 'echo $DOCKER_TOKEN | buildah login -u \'robot$jenkins\' --password-stdin harbor.zevrant-services.com'
+                            sh 'echo $DOCKER_TOKEN | buildah login -u \'robot$jenkins\' --password-stdin docker.io'
                             sh "buildah bud --build-arg serviceName=$REPOSITORY --build-arg containerPort=$containerPort -t docker.io/zevrant/$REPOSITORY:${versionString} ."
                             sh "buildah push docker.io/zevrant/$REPOSITORY:${versionString}"
                         }

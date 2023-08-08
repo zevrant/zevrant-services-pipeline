@@ -94,7 +94,7 @@ spec:
         - name: harbor-ro
       initContainers:
         - name: init
-          image: harbor.zevrant-services.com/zevrant-services/minecraft-atm8:latest
+          image: docker.io/zevrant/minecraft-atm8:latest
           imagePullPolicy: Always
           volumeMounts:
             - name: minecraft-config
@@ -112,7 +112,7 @@ spec:
               cp /var/minecraft/..data/server.properties /opt/minecraft/server.properties
       containers:
         - name: minecraft
-          image: harbor.zevrant-services.com/zevrant-services/minecraft-atm8:latest
+          image: docker.io/zevrant/minecraft-atm8:latest
           imagePullPolicy: Always
           workingDir: /opt/minecraft
           command:

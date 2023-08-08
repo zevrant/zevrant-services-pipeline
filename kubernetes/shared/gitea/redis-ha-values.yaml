@@ -10,8 +10,8 @@ quorumCount: 1
 failoverTimeout: 10000
 downAfterMillis: 5000
 sentinelReplicas: 3
-sentinelImage: harbor.zevrant-services.com/zevrant-services/redis-sentinel:latest
-redisImage: harbor.zevrant-services.com/dockerhub/redis:7.2-rc3
+sentinelImage: docker.io/zevrant/redis-sentinel:latest
+redisImage: docker.io/redis:7.2-rc3
 additionalUsers:
   - username: gitea
     passwordSecret: gitea-redis-password

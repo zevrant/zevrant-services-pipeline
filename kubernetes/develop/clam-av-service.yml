@@ -33,7 +33,7 @@ spec:
         - name: harbor-ro
       containers:
         - name: clamav
-          image: harbor.zevrant-services.com/dockerhub/clamav/clamav:latest
+          image: docker.io/clamav/clamav:latest
           env:
             - name: CLAMD_CONF_MaxFileSize
               value: 999999M

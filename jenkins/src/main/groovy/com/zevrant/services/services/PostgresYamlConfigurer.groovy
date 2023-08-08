@@ -14,8 +14,8 @@ String configurePostgresHelmChart(String appName, String ipAddress) {
 //    values.global.postgresql.database = "backup"
 //    values.global.postgresql.repmgrDatabase = "backup"
 //    values.global.postgresql.existingSecret = "backup-service-postgres-credentials"
-//    values.postgresql.image.registry = "harbor.zevrant-services.com"
-//    values.postgresql.image.repository = "dockerhub/bitnami/postgresql-repmgr"
+//    values.postgresql.image.registry = "docker.io"
+//    values.postgresql.image.repository = "bitnami/postgresql-repmgr"
 //    values.postgresql.resources.limits.cpu = 2
 //    values.postgresql.resources.limits.memory = "4Gi"
 //    values.postgresql.resources.requests.cpu = '1000m'
@@ -27,8 +27,8 @@ String configurePostgresHelmChart(String appName, String ipAddress) {
 //    values.postgresql.tls.certificatesSecret = "${appName}-postgres-tls"
 //    values.postgresql.tls.certFilename = 'tls.crt'
 //    values.postgresql.tls.certKeyFilename = 'tls.key'
-//    values.pgpool.image.registry = 'harbor.zevrant-services.com'
-//    values.pgpool.image.repository = 'dockerhub/bitnami/pgpool'
+//    values.pgpool.image.registry = 'docker.io'
+//    values.pgpool.image.repository = 'bitnami/pgpool'
 //    values.pgpool.replicaCount = 1
 //    values.pgpool.podLabels = [
 //            app: "${appName}-pgpool"
@@ -44,10 +44,10 @@ String configurePostgresHelmChart(String appName, String ipAddress) {
 //    values.pgpool.tls.certificatesSecret = "${appName}-postgres-tls"
 //    values.pgpool.tls.certFilename = 'tls.crt'
 //    values.pgpool.tls.certKeyFilename = 'tls.key'
-//    values.metrics.image.registry = 'harbor.zevrant-services.com'
-//    values.metrics.image.repository = 'dockerhub/bitnami/postgres-exporter'
-//    values.volumePermissions.image.registry = 'harbor.zevrant-services.com'
-//    values.volumePermissions.image.repository = 'dockerhub/bitnami/bitnami-shell'
+//    values.metrics.image.registry = 'docker.io'
+//    values.metrics.image.repository = 'bitnami/postgres-exporter'
+//    values.volumePermissions.image.registry = 'docker.io'
+//    values.volumePermissions.image.repository = 'bitnami/bitnami-shell'
     values.persistence.storageClass = 'csi-rbd-sc'
     values.persistence.size = '50Gi'
     values.service.clusterIP = ipAddress

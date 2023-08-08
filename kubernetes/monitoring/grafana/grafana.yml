@@ -93,7 +93,7 @@ spec:
         - name: harbor-ro
       containers:
         - name: grafana
-          image: harbor.zevrant-services.com/dockerhub/grafana/grafana-oss:latest
+          image: docker.io/grafana/grafana-oss:latest
           imagePullPolicy: Always
           volumeMounts:
             - name: grafana-cert
@@ -106,22 +106,22 @@ spec:
             - containerPort: 9094
               name: grafana-alert
               protocol: TCP
-          startupProbe:
-            httpGet:
-              scheme: HTTPS
-              path: /api/health
-              port: 3000
-            periodSeconds: 5
-            failureThreshold: 4
-            successThreshold: 1
-          livenessProbe:
-            httpGet:
-              scheme: HTTPS
-              path: /api/health
-              port: 3000
-            periodSeconds: 5
-            failureThreshold: 3
-            successThreshold: 1
+#          startupProbe:
+#            httpGet:
+#              scheme: HTTPS
+#              path: /api/health
+#              port: 3000
+#            periodSeconds: 5
+#            failureThreshold: 4
+#            successThreshold: 1
+#          livenessProbe:
+#            httpGet:
+#              scheme: HTTPS
+#              path: /api/health
+#              port: 3000
+#            periodSeconds: 5
+#            failureThreshold: 3
+#            successThreshold: 1
           env:
             - name: GF_SERVER_PROTOCOL
               value: https

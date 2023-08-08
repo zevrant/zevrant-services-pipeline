@@ -113,7 +113,7 @@ spec:
         - name: harbor-ro
       initContainers:
         - name: secret-init
-          image: harbor.zevrant-services.com/zevrant-services/ubuntu-base:latest
+          image: docker.io/zevrant/ubuntu-base:latest
           imagePullPolicy: Always
           volumeMounts:
             - name: vault-data
@@ -132,7 +132,7 @@ spec:
               chown -R 1000:1000 /opt/secrets
       containers:
         - name: vault-unsealer
-          image: harbor.zevrant-services.com/zevrant-services/vault-unsealer:latest
+          image: docker.io/zevrant/vault-unsealer:latest
           imagePullPolicy: "Always"
           volumeMounts:
             - mountPath: /var/zevrant-services
@@ -161,7 +161,7 @@ spec:
                   key: fingerprint
                   name: ca-fingerprint
         - name: vault
-          image: harbor.zevrant-services.com/dockerhub/vault:latest
+          image: docker.io/vault:latest
           command:
             - "/bin/sh"
           args:

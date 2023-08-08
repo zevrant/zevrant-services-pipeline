@@ -63,7 +63,7 @@ pipeline {
                 script {
                     container('buildah') {
                         dir("docker/dockerfile") {
-                            sh 'echo $DOCKER_TOKEN | buildah login -u \'robot$jenkins\' --password-stdin harbor.zevrant-services.com'
+                            sh 'echo $DOCKER_TOKEN | buildah login -u \'robot$jenkins\' --password-stdin docker.io'
 //                            def imageBuilds = [:]
 //                            imagesToBuild.each { image ->
 //                                imageBuilds[image] = {
@@ -83,8 +83,8 @@ pipeline {
 
                                         String tag = (buildInfo.useLatest) ? "latest" : buildInfo.version
 
-                                        sh "buildah bud -t harbor.zevrant-services.com/zevrant-services/${buildInfo.name}:${tag} ."
-                                        sh "buildah push harbor.zevrant-services.com/zevrant-services/${buildInfo.name}:${tag}"
+                                        sh "buildah bud -t docker.io/zevrant/${buildInfo.name}:${tag} ."
+                                        sh "buildah push docker.io/zevrant/${buildInfo.name}:${tag}"
                                     }
                                 }
                             }

@@ -109,7 +109,7 @@ spec:
         - name: harbor-ro
       containers:
         - name: 7dtd
-          image: harbor.zevrant-services.com/dockerhub/zevrant/7dtd:latest
+          image: docker.io/zevrant/7dtd:latest
           imagePullPolicy: Always
           command:
             - /bin/bash
