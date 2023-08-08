@@ -77,7 +77,7 @@ class ImageBuildService extends Service {
     }
 
     boolean doesImageExistLocally(Image image) {
-        int status = pipelineContext.sh(returnStatus: true, script: "'buildah images ${image.getName()}")
+        int status = pipelineContext.sh(returnStatus: true, script: "buildah images ${image.getName()}")
         return status == 0
     }
 
