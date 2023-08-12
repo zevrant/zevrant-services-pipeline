@@ -38,7 +38,7 @@ pipeline {
             }
             steps {
                 script {
-                    imageBuildService.registryLogin('zevrant', DOCKER_TOKEN, 'harbor.zevrant-services.com')
+                    imageBuildService.registryLogin(DOCKER_TOKEN_USR, DOCKER_TOKEN_PSW, 'harbor.zevrant-services.com')
                     imageBuildService.buildImagesInParallel(images, 'harbor.zevrant-services.com')
                 }
             }
