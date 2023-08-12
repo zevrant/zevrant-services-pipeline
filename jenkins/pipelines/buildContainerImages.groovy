@@ -101,4 +101,9 @@ pipeline {
 //            }
 //        }
     }
+    post {
+        always {
+            sh 'buildah rm --all'
+        }
+    }
 }
