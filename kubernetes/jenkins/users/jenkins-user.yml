@@ -5,7 +5,7 @@ metadata:
   namespace: jenkins
 automountServiceAccountToken: true
 imagePullSecrets:
-  - name: harbor-ro
+  - name: regcred
 
 ---
 
@@ -107,7 +107,7 @@ metadata:
   namespace: jenkins
 automountServiceAccountToken: true
 imagePullSecrets:
-  - name: harbor-ro
+  - name: regcred
 ---
 
 apiVersion: v1

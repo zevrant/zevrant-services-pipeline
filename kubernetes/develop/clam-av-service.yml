@@ -30,7 +30,7 @@ spec:
         app: clamav
     spec:
       imagePullSecrets:
-        - name: harbor-ro
+        - name: regcred
       containers:
         - name: clamav
           image: docker.io/clamav/clamav:latest

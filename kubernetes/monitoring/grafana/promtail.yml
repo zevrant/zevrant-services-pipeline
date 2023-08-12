@@ -75,7 +75,7 @@ spec:
           hostPath:
             path: /var/log
       imagePullSecrets:
-        - name: harbor-ro
+        - name: regcred
       containers:
         - name: promtail
           image: grafana/promtail:latest

@@ -21,10 +21,6 @@
         yum update -y
         yum install -y yum-utils jq iproute-tc systemd-resolved
         yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-        rpm -i -f https://dl.fedoraproject.org/pub/epel/9/Everything/x86_64/Packages/e/epel-release-9-5.el9.noarch.rpm
-        dnf config-manager --set-enabled crb
-        yum install iptables-legacy iptables-services -y
-        ln -sf /usr/sbin/iptables-legacy /etc/alternatives/iptables
     - name: Update Packages
       ansible.builtin.yum:
         use_backend: yum4
@@ -41,6 +37,7 @@
           gpgcheck=1
           repo_gpgcheck=1
           gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+          exclude=kubelet-1.1*.**-0.x86_64
         dest: /etc/yum.repos.d/kubernetes.repo
     - name: Install Containerd & Kubeadm
       ansible.builtin.yum:
@@ -62,7 +59,7 @@
           User=node-exporter
 
           WorkingDirectory=/opt/node-exporter
-          ExecStart=/opt/node-exporter/node_exporter --web.config=/opt/node-exporter/config.yml
+          ExecStart=/opt/node-exporter/node_exporter
         dest: /etc/systemd/system/node-exporter.service
     - name: Create Node Exporter User
       ansible.builtin.command:
@@ -90,7 +87,12 @@
         mv node_exporter-* node-exporter
         mv node-exporter/* /opt/node-exporter
         rm -rf node-exporter*
-        chown -R node-exporter:developers /opt/node-exporter
+        chown -R node-exporter:node-exporter /opt/node-exporter
+        ausearch -c '(exporter)' --raw | audit2allow -M my-exporter
+        semodule -X 300 -i my-exporter.pp
+        restorecon -R /opt/node-exporter
+        systemctl daemon-reload
+        systemctl enable node-exporter --now
     - name: Set Max Map Count
       become_user: root
       become: true
@@ -102,8 +104,10 @@
       ansible.builtin.copy:
         dest: /etc/sysctl.d/99-sysctl.conf
         content: |
+          vm.max_map_count = 262144
           net.bridge.bridge-nf-call-iptables = 1
           net.ipv4.conf.all.forwarding = 1
+          net.ipv4.ip_forward = 1
     - name: Reload Sysctl
       become_user: root
       become: true
@@ -181,3 +185,15 @@
     - name: Load Certificate
       ansible.builtin.command:
         cmd: update-ca-trust extract && openssl verify /etc/pki/ca-trust/source/anchors/zevrant-services.crt
+
+
+
+
+  echo '
+  vm.max_map_count = 262144
+  net.bridge.bridge-nf-call-iptables = 1
+  net.ipv4.conf.all.forwarding = 1
+  net.ipv4.ip_forward = 1' >> /etc/sysctl.conf
+  echo br_netfilter >> /etc/modules
+  modprobe br_netfilter
+  sysctl -p

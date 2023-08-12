@@ -90,7 +90,7 @@ spec:
           configMap:
             name: grafana
       imagePullSecrets:
-        - name: harbor-ro
+        - name: regcred
       containers:
         - name: grafana
           image: docker.io/grafana/grafana-oss:latest

@@ -52,7 +52,7 @@
 #        app: zevrant-kafka-zookeeper-service
 #    spec:
 #      imagePullSecrets:
-#        - name: harbor-ro
+#        - name: regcred
 #      containers:
 #        - name: zevrant-kafka-zookeeper-service
 #          image: bitnami/zookeeper:3.7.0
@@ -86,7 +86,7 @@
 #          hostPath:
 #            path: /opt/kafka/dev/
 #      imagePullSecrets:
-#        - name: harbor-ro
+#        - name: regcred
 #      containers:
 #        - name: zevrant-kafka-broker-service
 #          image: bitnami/kafka:2.8.0

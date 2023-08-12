@@ -30,7 +30,7 @@ spec:
         app: zevrant-keycloak-service-db
     spec:
       imagePullSecrets:
-        - name: harbor-ro
+        - name: regcred
       volumes:
         - name: database
           nfs:

@@ -52,7 +52,7 @@ metadata:
   namespace: kube-system
 automountServiceAccountToken: true
 imagePullSecrets:
-  - name: harbor-ro
+  - name: regcred
 
 ---
 

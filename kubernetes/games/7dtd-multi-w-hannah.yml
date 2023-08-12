@@ -105,8 +105,8 @@ spec:
           configMap:
             name: 7dtd-hannah-config
       imagePullSecrets:
-        - name: harbor-ro
-        - name: harbor-ro
+        - name: regcred
+        - name: regcred
       containers:
         - name: 7dtd
           image: docker.io/zevrant/7dtd:latest

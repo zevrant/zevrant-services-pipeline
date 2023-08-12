@@ -84,57 +84,70 @@ spec:
           secret:
             secretName: keycloak-tls
       imagePullSecrets:
-        - name: harbor-ro
+        - name: regcred
       containers:
         - name: keycloak
-          image: harbor.zevrant-services.com/quay/keycloak/keycloak:latest
+          image: quay.io/keycloak/keycloak:latest
           imagePullPolicy: Always
           command:
             - /bin/sh
           args:
             - -c
+#            - sleep infinity
             - /opt/keycloak/bin/kc.sh start
           volumeMounts:
             - name: keycloak-cert
               mountPath: /opt/acme/certs/
           ports:
             - containerPort: 8443
-          startupProbe:
-            httpGet:
-              scheme: HTTPS
-              path: /health/ready
-              port: 8443
-            periodSeconds: 5
-            failureThreshold: 32 #max of 160 seconds
-            successThreshold: 1
-          livenessProbe:
-            httpGet:
-              scheme: HTTPS
-              path: /health/live
-              port: 8443
-            periodSeconds: 5
-            failureThreshold: 3
-            successThreshold: 1
+#          startupProbe:
+#            httpGet:
+#              scheme: HTTPS
+#              path: /health/ready
+#              port: 8443
+#            periodSeconds: 5
+#            failureThreshold: 32 #max of 160 seconds
+#            successThreshold: 1
+#          livenessProbe:
+#            httpGet:
+#              scheme: HTTPS
+#              path: /health/live
+#              port: 8443
+#            periodSeconds: 5
+#            failureThreshold: 3
+#            successThreshold: 1
           env:
             - name: KC_DB
               value: postgres
             - name: KC_DB_URL_HOST
-              value: keycloak-postgres.preprod.zevrant-services.com
+              valueFrom:
+                secretKeyRef:
+                  key: host
+                  name: keycloak-postgres-postgresql-ha-pguser-keycloak
             - name: KC_DB_URL_PORT
-              value: '5432'
+              valueFrom:
+                secretKeyRef:
+                  key: port
+                  name: keycloak-postgres-postgresql-ha-pguser-keycloak
             - name: KC_DB_URL_DATABASE
-              value: keycloak
+              valueFrom:
+                secretKeyRef:
+                  key: dbname
+                  name: keycloak-postgres-postgresql-ha-pguser-keycloak
             - name: KC_DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: keycloak-postgres-credentials
+                  name: keycloak-postgres-postgresql-ha-pguser-keycloak
                   key: password
             - name: KC_DB_USERNAME
-              value: zevrant
+              valueFrom:
+                secretKeyRef:
+                  key: user
+                  name: keycloak-postgres-postgresql-ha-pguser-keycloak
             - name: KC_DB_SCHEMA
               value: public
 #            - name: KC_DB_URL_PROPERTIES
-#              value: 'connectionTimeout=30000'
+#              value: 'connectionTimeout=30000&useSSL=false&allowPublicKeyRetrieval=true'
             - name: KC_PROXY
               value: "passthrough"
             - name: KEYCLOAK_ADMIN
@@ -164,3 +177,7 @@ spec:
               value: 'true'
             - name: KC_METRICS_ENABLED
               value: 'true'
+
+
+
+

@@ -12,7 +12,7 @@
 #        spec:
 #          serviceAccountName: jenkins-restart
 #          imagePullSecrets:
-#            - name: harbor-ro
+#            - name: regcred
 #          containers:
 #            - name: kubectl
 #              image: docker.io/zevrant/kubectl:latest

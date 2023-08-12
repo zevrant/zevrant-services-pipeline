@@ -37,7 +37,7 @@ spec:
         fsGroup: 1000
         fsGroupChangePolicy: "Always"
       imagePullSecrets:
-        - name: harbor-ro
+        - name: regcred
       volumes:
         - name: step-ca
           persistentVolumeClaim:

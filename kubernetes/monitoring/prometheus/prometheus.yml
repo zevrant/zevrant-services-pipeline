@@ -56,7 +56,7 @@ metadata:
   namespace: monitoring
 automountServiceAccountToken: true
 imagePullSecrets:
-  - name: harbor-ro
+  - name: regcred
 
 ---
 

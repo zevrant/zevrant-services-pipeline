@@ -91,7 +91,7 @@ spec:
         - name: 7dtd-saves
 
       imagePullSecrets:
-        - name: harbor-ro
+        - name: regcred
       initContainers:
         - name: init
           image: docker.io/zevrant/minecraft-atm8:latest

@@ -110,7 +110,7 @@ spec:
             secretName: vault-key
             defaultMode: 0400
       imagePullSecrets:
-        - name: harbor-ro
+        - name: regcred
       initContainers:
         - name: secret-init
           image: docker.io/zevrant/ubuntu-base:latest
@@ -155,13 +155,8 @@ spec:
                 secretKeyRef:
                   name: vault-key
                   key: vault-key-3
-            - name: CA_FINGERPRINT
-              valueFrom:
-                secretKeyRef:
-                  key: fingerprint
-                  name: ca-fingerprint
         - name: vault
-          image: docker.io/vault:latest
+          image: docker.io/vault:1.13.3
           command:
             - "/bin/sh"
           args:

@@ -93,7 +93,7 @@ spec:
           configMap:
             name: loki
       imagePullSecrets:
-        - name: harbor-ro
+        - name: regcred
       initContainers:
         - name: secret-init
           image: docker.io/zevrant/ubuntu-base:latest

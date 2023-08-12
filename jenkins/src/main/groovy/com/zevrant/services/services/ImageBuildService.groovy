@@ -9,15 +9,15 @@ class ImageBuildService extends Service {
         super(pipelineContext)
     }
 
-    List<Image> parseAvailableImages(List<FileWrapper> files) {
+    List<Image> parseAvailableImages(List<FileWrapper> files, String registry, String project) {
         List<Image> images = files.collect({ file ->
             def imageConfig = pipelineContext.readJSON(file: file.path as String)
             def baseImageConfig = imageConfig.baseImage
             pipelineContext.println("Parsing image ${file.path}")
             Image baseImage = new Image(baseImageConfig.name, baseImageConfig.tag, false, null, baseImageConfig.host, baseImageConfig.repository, null)
             List<String> pathParts = file.path.split('/')
-            return new Image(imageConfig.name, imageConfig.version, imageConfig.useLatest, baseImage, "docker.io", "zevrant" +
-                    "", pathParts.subList(0, pathParts.size() -1).join('/'), imageConfig.args)
+            return new Image(imageConfig.name, imageConfig.version, imageConfig.useLatest, baseImage, registry, project,
+                    pathParts.subList(0, pathParts.size() -1).join('/'), imageConfig.args)
         })
         return images.findAll ({ image -> image != null })
     }
@@ -47,7 +47,7 @@ class ImageBuildService extends Service {
         }
     }
 
-    void buildImagesInParallel(List<Image> images) {
+    void buildImagesInParallel(List<Image> images, String registry) {
         if ( images.size() == 0) {
             return
         }

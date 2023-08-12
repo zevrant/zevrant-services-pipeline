@@ -31,7 +31,7 @@ spec:
         app: zevrant-keycloak-service
     spec:
       imagePullSecrets:
-        - name: harbor-ro
+        - name: regcred
 
       containers:
         - name: zevrant-keycloak-service

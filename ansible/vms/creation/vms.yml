@@ -1,5 +1,5 @@
 - name: "Create new Ubuntu Linux VM with hookscript and description" #Alma Cloud init image refuses to run :/
-  hosts: preprodMasters
+  hosts: all
   become: true
   become_user: root
   tasks:
@@ -64,8 +64,7 @@
         localtime: true
         machine: pc
         migrate_speed: 0
-        name: "jenkins-container-builder"
-#        name: "kubernetes-{{ nodeType }}-{{ vmNumber }}"
+        name: "kubernetes-{{ nodeType }}-{{ vmNumber }}"
         description: "kubernetes {{nodeType}} {{vmNumber}}"
         cores: "{{ cpus }}"
         cpu: Westmere
@@ -84,7 +83,8 @@
         sshkeys: "{{ sshKey }}"
         pool: Default
         tags:
-          - jenkins
+          - kubernetes
+          - "{{ nodeType }}"
         validate_certs: false
         agent: 'enabled=1'
         ipconfig:

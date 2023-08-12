@@ -1,6 +1,6 @@
 name: "gitea-redis"
 imagePullSecrets:
-  - "harbor-ro"
+  - "regcred"
 storageClassName: "csi-rbd-sc"
 storageSize: 1Gi
 storageSizeLimit: 1Ti

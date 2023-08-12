@@ -20,26 +20,26 @@ all:
           vmId: 100
           vmNumber: 1
           ipAddress: 172.16.2.1
-        proxmox-02:
-          destHost: proxmox-02
-          vmId: 110
-          vmNumber: 2
-          ipAddress: 172.16.2.2
-        proxmox-04:
-          destHost: proxmox-04
-          vmId: 120
-          vmNumber: 3
-          ipAddress: 172.16.2.6
-        proxmox-05:
-          destHost: proxmox-05
-          vmId: 130
-          vmNumber: 4
-          ipAddress: 172.16.2.9
-        proxmox-06:
-          destHost: proxmox-06
-          vmId: 140
-          vmNumber: 5
-          ipAddress: 172.16.2.10
+#        proxmox-02:
+#          destHost: proxmox-02
+#          vmId: 110
+#          vmNumber: 2
+#          ipAddress: 172.16.2.2
+#        proxmox-04:
+#          destHost: proxmox-04
+#          vmId: 120
+#          vmNumber: 3
+#          ipAddress: 172.16.2.6
+#        proxmox-05:
+#          destHost: proxmox-05
+#          vmId: 130
+#          vmNumber: 4
+#          ipAddress: 172.16.2.9
+#        proxmox-06:
+#          destHost: proxmox-06
+#          vmId: 140
+#          vmNumber: 5
+#          ipAddress: 172.16.2.10
     preprodWorkers:
       vars:
         cpus: 18
@@ -51,24 +51,24 @@ all:
           vmId: 150
           vmNumber: 1
           ipAddress: 172.16.2.11
-        proxmox-02.preprod.zevrant-services.com:
-          destHost: proxmox-02
-          vmId: 160
-          vmNumber: 2
-          ipAddress: 172.16.2.12
-        proxmox-04.preprod.zevrant-services.com:
-          destHost: proxmox-04
-          vmId: 170
-          vmNumber: 3
-          ipAddress: 172.16.2.13
-        proxmox-05.preprod.zevrant-services.com:
-          destHost: proxmox-05
-          vmId: 180
-          vmNumber: 4
-          ipAddress: 172.16.2.14
-        proxmox-06.preprod.zevrant-services.com:
-          destHost: proxmox-06
-          vmId: 190
-          vmNumber: 5
-          ipAddress: 172.16.2.15
-          cpus: 8
+#        proxmox-02.preprod.zevrant-services.com:
+#          destHost: proxmox-02
+#          vmId: 160
+#          vmNumber: 2
+#          ipAddress: 172.16.2.12
+#        proxmox-04.preprod.zevrant-services.com:
+#          destHost: proxmox-04
+#          vmId: 170
+#          vmNumber: 3
+#          ipAddress: 172.16.2.13
+#        proxmox-05.preprod.zevrant-services.com:
+#          destHost: proxmox-05
+#          vmId: 180
+#          vmNumber: 4
+#          ipAddress: 172.16.2.14
+#        proxmox-06.preprod.zevrant-services.com:
+#          destHost: proxmox-06
+#          vmId: 190
+#          vmNumber: 5
+#          ipAddress: 172.16.2.15
+#          cpus: 8

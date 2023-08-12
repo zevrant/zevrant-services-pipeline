@@ -27,19 +27,19 @@ pipeline {
             steps {
                 script {
                     List<FileWrapper> files = findFiles(glob: '*/*/buildConfig.json')
-                    images = imageBuildService.parseAvailableImages(files)
+                    images = imageBuildService.parseAvailableImages(files, 'harbor.zevrant-services.com', 'zevrant-services')
                 }
             }
         }
 
         stage("Build & Push Dockerfiles") {
             environment {
-                DOCKER_TOKEN = credentials('jenkins-dockerhub')
+                DOCKER_TOKEN = credentials('jenkins-harbor')
             }
             steps {
                 script {
-                    imageBuildService.registryLogin('zevrant', DOCKER_TOKEN)
-                    imageBuildService.buildImagesInParallel(images)
+                    imageBuildService.registryLogin('zevrant', DOCKER_TOKEN, 'harbor.zevrant-services.com')
+                    imageBuildService.buildImagesInParallel(images, 'harbor.zevrant-services.com')
                 }
             }
 
