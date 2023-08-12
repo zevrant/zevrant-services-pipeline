@@ -23,8 +23,8 @@ class ImageBuildService extends Service {
     }
 
     void registryLogin(String username, String token, String registry = 'docker.io') {
-        pipelineContext.withEnv(['DOCKER_TOKEN=' + token]) {
-            pipelineContext.sh 'echo $DOCKER_TOKEN | buildah login -u ' + username + ' --password-stdin ' + registry //this is very deliberate and intended to prevent secret spillage due to groovy string interpolation DO NOT ALTER WITHOUT KNOWING THE IMPLICATIONS AND DISCUSSING WITH THE TEAM
+        pipelineContext.withEnv(['DOCKER_TOKEN=' + token, 'DOCKER_USERNAME=' + username]) {
+            pipelineContext.sh 'echo $DOCKER_TOKEN | buildah login -u "$DOCKER_USERNAME" --password-stdin ' + registry //this is very deliberate and intended to prevent secret spillage due to groovy string interpolation DO NOT ALTER WITHOUT KNOWING THE IMPLICATIONS AND DISCUSSING WITH THE TEAM
         }
     }
 
