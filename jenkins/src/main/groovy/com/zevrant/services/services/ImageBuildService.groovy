@@ -64,7 +64,11 @@ class ImageBuildService extends Service {
             } else {
                 imageBuilds[image.toString()] = {
                     buildImage(image)
-                    pushImage(image)
+                    pipelineContext.retry(3, {
+                        pipelineContext.timeout(5) {
+                            pushImage(image)
+                        }
+                    })
                 }
             }
         }
