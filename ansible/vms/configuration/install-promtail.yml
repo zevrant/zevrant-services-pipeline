@@ -1,0 +1,96 @@
+- name: Setup Promtail on Proxmox
+  hosts: all
+  become: true
+  become_user: root
+  tasks:
+    - name: Create Node Exporter User
+      ansible.builtin.command:
+        cmd: adduser --system --no-create-home promtail
+    - name: Create Promtail Group
+      ansible.builtin.command:
+        cmd: groupadd promtail --force
+    - name: Grant Promtail Ceph Group Access
+      ansible.builtin.command:
+        cmd: usermod -aG ceph promtail
+    - name: Install unzip
+      ansible.builtin.apt:
+        update_cache: true
+        name: 'unzip'
+        state: latest
+    - name: Create Promtail Install Folder
+      ansible.builtin.file:
+        path: /opt/promtail
+        state: directory
+        mode: '0750'
+        owner: promtail
+        group: promtail
+    - name: Add Promtail Config
+      ansible.builtin.copy:
+        content: |
+          server:
+            http_listen_port: 9080
+            grpc_listen_port: 0
+
+          positions:
+            filename: /tmp/positions.yaml
+
+          clients:
+            - url: https://loki.preprod.zevrant-services.com/loki/api/v1/push
+              tenant_id: "zevrant-services"
+
+          scrape_configs:
+            - job_name: system
+              static_configs:
+                - targets:
+                    - localhost
+                  labels:
+                    job: ceph
+                    hostname: ${HOSTNAME}
+                    __path__: /var/log/ceph/ceph-*.log
+        dest: /opt/promtail/config.yml
+        group: promtail
+        owner: promtail
+    - name: Add Systemd Service
+      ansible.builtin.copy:
+        dest: /usr/lib/systemd/system/promtail.service
+        content: |
+          [Unit]
+          Description=Promtail service
+          After=network.target
+
+          [Service]
+          Type=simple
+          User=promtail
+          ExecStart=/opt/promtail/promtail-linux-amd64 -config.expand-env=true -config.file /opt/promtail/config.yml
+
+          [Install]
+          WantedBy=multi-user.target
+#    - name: Download Promtail
+#      ansible.builtin.get_url:
+#        url: https://github.com/grafana/loki/releases/download/v2.8.4/promtail-linux-amd64.zip
+#        dest: /opt/promtail/promtail-linux-amd64.zip
+#    - name: Unzip Promtail
+#      ansible.builtin.unarchive:
+#        src: /opt/promtail/promtail-linux-amd64.zip
+#        dest: /opt/promtail/
+#        remote_src: yes
+    - name: Change file ownership, group and permissions
+      ansible.builtin.file:
+        path: /opt/promtail/promtail-linux-amd64
+        owner: promtail
+        group: promtail
+        mode: '0700'
+#    - name: Remove file (delete file)
+#      ansible.builtin.file:
+#        path: /opt/promtail/promtail-linux-amd64.zip
+#        state: absent
+    - name: Start promtail
+      ansible.builtin.systemd:
+        daemon_reload: true
+        state: restarted
+        name: promtail
+    - name: Enable Promtail
+      ansible.builtin.systemd:
+        name: promtail
+        enabled: true
+        masked: no

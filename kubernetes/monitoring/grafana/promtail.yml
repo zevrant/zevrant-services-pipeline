@@ -1,6 +1,24 @@
 apiVersion: v1
 kind: Service
 metadata:
+  name: promtail-syslog-receiver
+  namespace: monitoring
+spec:
+  type: NodePort
+  ports:
+    - port: 1514
+      targetPort: 1514
+      nodePort: 30123
+      name: syslog-receiver
+      protocol: TCP
+  selector:
+    app: promtail
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
   name: promtail
   namespace: monitoring
 spec:
@@ -91,8 +109,10 @@ spec:
               mountPath: /mnt/config
           ports:
             - containerPort: 9080
-              #            - containerPort: 9094
               name: promtail-alert
+              protocol: TCP
+            - containerPort: 1514
+              name: syslog-receiver
               protocol: TCP
           env:
             - name: HOSTNAME
@@ -122,28 +142,6 @@ spec:
             limits:
               memory: 4Gi
               cpu: 1000m
-#          env:
-#            - name: GF_SERVER_PROTOCOL
-#              value: https
-#            - name: GF_SERVER_CERT_FILE
-#              value: /opt/acme/certs/tls.crt
-#            - name: GF_SERVER_CERT_KEY
-#              value: /opt/acme/certs/tls.key
-#            - name: POD_IP
-#              valueFrom:
-#                fieldRef:
-#                  fieldPath: status.podIP
-#            - name: POSTGRES_HOST
-#              value: grafana-db:5432
-#            - name: POSTGRES_DATABASE_NAME
-#              value: grafana
-#            - name: POSTGRES_USER
-#              value: zevrant
-#            - name: POSTGTRES_DATABASE_PASSWORD
-#              valueFrom:
-#                secretKeyRef:
-#                  name: grafana-db-password
-#                  key: password
 
 ---
 
@@ -162,9 +160,21 @@ data:
       filename: /tmp/positions.yaml
     
     clients:
-      - url: http://loki:3100/loki/api/v1/push
+      - url: http://loki-write:3100/loki/api/v1/push
+        tenant_id: "zevrant-services"
     
     scrape_configs:
+      - job_name: syslog
+        syslog:
+          listen_address: 0.0.0.0:1514
+          listen_protocol: tcp
+          idle_timeout: 60s
+          label_structured_data: yes
+          labels:
+            job: "syslog"
+        relabel_configs:
+          - source_labels: ['__syslog_message_hostname']
+            target_label: 'host'
       - job_name: node-logs
         static_configs:
           - targets:
@@ -209,26 +219,7 @@ data:
               - __meta_kubernetes_pod_uid
               - __meta_kubernetes_pod_container_name
             target_label: __path__
-#      - job_name: 'kubernetes-pods'
-#        kubernetes_sd_configs:
-#          - role: pod
-#
-#            api_server: loadbalancer.zevrant-services.com:6443
-#            tls_config:
-#              ca_file: /run/secrets/kubernetes.io/serviceaccount/ca.crt
-#            authorization:
-#              credentials_file: /run/secrets/kubernetes.io/serviceaccount/token
-#        relabel_configs:
-#          - source_labels: [ '__meta_kubernetes_namespace' ]
-#    #        action: replace
-#            target_label: 'kubernetes_pod_namespace'
-#          - source_labels: ['__meta_kubernetes_pod_node_name']
-#            target_label: '__host__'
-#            action: replace
-#          - source_labels:
-#              - __meta_kubernetes_pod_name
-#            target_label: pod_name
-#            action: replace
+
         
               
         
