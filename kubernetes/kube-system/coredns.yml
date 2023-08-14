@@ -16,6 +16,7 @@ data:
         forward . /etc/resolv.conf {
            max_concurrent 1000
         }
+        forward . 172.16.1.2
         cache 30
         loop
         reload

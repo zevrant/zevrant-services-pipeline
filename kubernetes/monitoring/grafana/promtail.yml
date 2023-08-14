@@ -78,6 +78,9 @@ spec:
       labels:
         app: promtail
     spec:
+      tolerations:
+        - effect: NoSchedule
+          operator: Exists
       serviceAccountName: prometheus
       securityContext:
         fsGroup: 1000
@@ -92,11 +95,38 @@ spec:
         - name: host-logs
           hostPath:
             path: /var/log
+        - name: host-journal
+          hostPath:
+            path: /run/log/journal/
+        - name: config-mount
+          emptyDir:
+            sizeLimit: 1Gi
       imagePullSecrets:
-        - name: regcred
+        - name: harbor-ro
+      initContainers:
+        - name: init
+          image: harbor.zevrant-services.com/dockerhub/ubuntu:latest
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: config-mount
+              mountPath: /opt/promtail/
+            - name: promtail-config
+              mountPath: /mnt/config
+          command:
+            - /bin/bash
+          args:
+            - -c
+            - |
+              cp /mnt/config/config.yml /opt/promtail/config.yml
+              sed -i "s/\${HOSTNAME}/$HOSTNAME/g" /opt/promtail/config.yml
+          env:
+            - name: HOSTNAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
       containers:
         - name: promtail
-          image: grafana/promtail:latest
+          image: harbor.zevrant-services.com/dockerhub/grafana/promtail:latest
           imagePullPolicy: Always
           args:
             - -config.file=/mnt/config/config.yml
@@ -105,7 +135,9 @@ spec:
             #              mountPath: /opt/acme/certs/
             - name: host-logs
               mountPath: /opt/host
-            - name: promtail-config
+            - name: host-journal
+              mountPath: /opt/journal
+            - name: config-mount
               mountPath: /mnt/config
           ports:
             - containerPort: 9080
@@ -114,11 +146,6 @@ spec:
             - containerPort: 1514
               name: syslog-receiver
               protocol: TCP
-          env:
-            - name: HOSTNAME
-              valueFrom:
-                fieldRef:
-                  fieldPath: spec.nodeName
           startupProbe:
             httpGet:
               scheme: HTTP
@@ -164,6 +191,24 @@ data:
         tenant_id: "zevrant-services"
     
     scrape_configs:
+      - job_name: journal
+        journal:
+          json: false
+          max_age: 12h
+          path: /opt/journal
+          matches: _TRANSPORT=kernel
+          labels:
+            job: systemd-journal
+            hostname: "${HOSTNAME}"
+        relabel_configs:
+          - source_labels: [__journal__systemd_unit]
+            target_label: systemd_unit
+          - source_labels: [__journal_unit]
+            target_label: systemd_unit
+          - source_labels: [__journal_syslog_identifier]
+            target_label: syslog_identifier
+          - source_labels: [__journal__comm]
+            target_label: command
       - job_name: syslog
         syslog:
           listen_address: 0.0.0.0:1514
@@ -174,7 +219,7 @@ data:
             job: "syslog"
         relabel_configs:
           - source_labels: ['__syslog_message_hostname']
-            target_label: 'host'
+            target_label: 'hostname'
       - job_name: node-logs
         static_configs:
           - targets:
@@ -219,7 +264,7 @@ data:
               - __meta_kubernetes_pod_uid
               - __meta_kubernetes_pod_container_name
             target_label: __path__
-
+        
         
               
         

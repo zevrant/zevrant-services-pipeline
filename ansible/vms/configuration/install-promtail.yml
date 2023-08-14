@@ -12,6 +12,9 @@
     - name: Grant Promtail Ceph Group Access
       ansible.builtin.command:
         cmd: usermod -aG ceph promtail
+    - name: Grant Promtail Systemd Journal Group Access
+      ansible.builtin.command:
+        cmd: usermod -aG systemd-journal promtail
     - name: Install unzip
       ansible.builtin.apt:
         update_cache: true
@@ -39,6 +42,22 @@
               tenant_id: "zevrant-services"
 
           scrape_configs:
+            - job_name: journal
+              journal:
+                json: false
+                max_age: 12h
+                path: /var/log/journal
+                matches: _TRANSPORT=kernel
+                labels:
+                  job: systemd-journal
+                  hostname: "${HOSTNAME}"
+              relabel_configs:
+                - source_labels: [__journal_unit]
+                  target_label: systemd_unit
+                - source_labels: [__journal_syslog_identifier]
+                  target_label: syslog_identifier
+                - source_labels: [__journal__comm]
+                  target_label: command
             - job_name: system
               static_configs:
                 - targets:
@@ -61,6 +80,7 @@
           [Service]
           Type=simple
           User=promtail
+          Environment="HOSTNAME=%H"
           ExecStart=/opt/promtail/promtail-linux-amd64 -config.expand-env=true -config.file /opt/promtail/config.yml
 
           [Install]
