@@ -1,18 +1,17 @@
 ##Run as root user
 - name: Install Proxmox Ansible Dependencies
   hosts: all
+  remote_user: root
   tasks:
     - name: update cache and install python3-pip
       ansible.builtin.apt:
         pkg:
           - python3-pip
-        update_cache: true
-        state: latest
-    - name: install proxmoxer python3 package
-      ansible.builtin.pip:
-        name:
-          - proxmoxer
-          - requests
+          - python3
+          - python3-full
+          - python3-proxmoxer
+          - python3-requests
+        update_cache: false
         state: latest
     - name: create non root user
       ansible.builtin.shell: |

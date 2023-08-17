@@ -61,15 +61,15 @@
           WorkingDirectory=/opt/node-exporter
           ExecStart=/opt/node-exporter/node_exporter
         dest: /etc/systemd/system/node-exporter.service
-    - name: Create Node Exporter User
-      ansible.builtin.command:
-        cmd: adduser --system --shel /bin/false --no-create-home node-exporter
-    - name: Create Developers Group
-      ansible.builtin.command:
-        cmd: groupadd developers
-    - name: Add Main User to Developers Group
-      ansible.builtin.command:
-        cmd: usermod -aG developers zevrant
+#    - name: Create Node Exporter User
+#      ansible.builtin.command:
+#        cmd: adduser --system --shel /bin/false --no-create-home node-exporter
+#    - name: Create Developers Group
+#      ansible.builtin.command:
+#        cmd: groupadd developers
+#    - name: Add Main User to Developers Group
+#      ansible.builtin.command:
+#        cmd: usermod -aG developers zevrant
     - name: Create Node Exporter Install Folder
       ansible.builtin.file:
         path: /opt/node-exporter
@@ -93,11 +93,6 @@
         restorecon -R /opt/node-exporter
         systemctl daemon-reload
         systemctl enable node-exporter --now
-    - name: Set Max Map Count
-      become_user: root
-      become: true
-      ansible.builtin.command:
-        cmd: echo "vm.max_map_count = 262144" >> /etc/sysctl.conf
     - name: Enable ipv4 forwarding & nf call iptables
       become_user: root
       become: true
@@ -108,11 +103,23 @@
           net.bridge.bridge-nf-call-iptables = 1
           net.ipv4.conf.all.forwarding = 1
           net.ipv4.ip_forward = 1
+    - name: Enable kernel modules
+      become_user: root
+      become: true
+      ansible.builtin.copy:
+        dest: /etc/modules-load.d/br_netfilter.conf
+        content: |
+          br_netfilter
+    - name: Enable br netfilter
+      become_user: root
+      become: true
+      ansible.builtin.command:
+        cmd: modprobe br_netfilter
     - name: Reload Sysctl
       become_user: root
       become: true
       ansible.builtin.command:
-        cmd: sysctl -p
+        cmd: sysctl -p /etc/sysctl.d/99-sysctl.conf
     - name: Reload Systemd Services
       ansible.builtin.command:
         cmd: systemctl daemon-reload
@@ -185,15 +192,5 @@
     - name: Load Certificate
       ansible.builtin.command:
         cmd: update-ca-trust extract && openssl verify /etc/pki/ca-trust/source/anchors/zevrant-services.crt
-
-
-
-
-  echo '
-  vm.max_map_count = 262144
-  net.bridge.bridge-nf-call-iptables = 1
-  net.ipv4.conf.all.forwarding = 1
-  net.ipv4.ip_forward = 1' >> /etc/sysctl.conf
-  echo br_netfilter >> /etc/modules
-  modprobe br_netfilter
-  sysctl -p
+    - name: Reload Machine
+      ansible.builtin.reboot:

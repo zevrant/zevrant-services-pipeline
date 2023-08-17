@@ -1,12 +1,14 @@
 all:
   vars:
     ansible_python_interpreter: /usr/bin/python3
-    ciPassword: testpassword
-    apiPassword: 1aeee472-900f-474d-86d7-d04436928ee6
-    hostFqdn: preprod.zevrant-services.com
+#    ciPassword:
+    apiPassword: b59522fb-7d8e-432a-a1cc-8cf2caef4a31
+    hostFqdn: preprod.zevrant-services.internal
     linuxVMUrl: https://repo.almalinux.org/almalinux/9/cloud/x86_64/images/AlmaLinux-9-GenericCloud-latest.x86_64.qcow2
 #    sshKey: "ecdsa-sha2-nistp384 AAAAE2VjZHNhLXNoYTItbmlzdHAzODQAAAAIbmlzdHAzODQAAABhBLtOxtriPtNmisKkmfHfCByaTYCHRsDHyzQAi0yL6LUeKybjYExfR6N0xBMcIj6M/b5U3aafjKayX4nMvV7s7/vcrpBfW+WvxOCBWTlhKGNpUmAS9ApFDn51/FTuRgB/YA== Public key for PIV Authentication"
     sshKey: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEbQRaQyJ6MkFIW9y9ZfK0ukCpQoO5JNuCAw4PMxVFAn zevrant@zevrant"
+    ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
+    ansible-connection: ssh
     hostCidr: 172.16.2.
   children:
     preprodMasters:
@@ -20,55 +22,55 @@ all:
           vmId: 100
           vmNumber: 1
           ipAddress: 172.16.2.1
-#        proxmox-02:
-#          destHost: proxmox-02
-#          vmId: 110
-#          vmNumber: 2
-#          ipAddress: 172.16.2.2
-#        proxmox-04:
-#          destHost: proxmox-04
-#          vmId: 120
-#          vmNumber: 3
-#          ipAddress: 172.16.2.6
-#        proxmox-05:
-#          destHost: proxmox-05
-#          vmId: 130
-#          vmNumber: 4
-#          ipAddress: 172.16.2.9
-#        proxmox-06:
-#          destHost: proxmox-06
-#          vmId: 140
-#          vmNumber: 5
-#          ipAddress: 172.16.2.10
+        proxmox-02:
+          destHost: proxmox-02
+          vmId: 110
+          vmNumber: 2
+          ipAddress: 172.16.2.2
+        proxmox-04:
+          destHost: proxmox-04
+          vmId: 120
+          vmNumber: 3
+          ipAddress: 172.16.2.6
+        proxmox-05:
+          destHost: proxmox-05
+          vmId: 130
+          vmNumber: 4
+          ipAddress: 172.16.2.9
+        proxmox-06:
+          destHost: proxmox-06
+          vmId: 140
+          vmNumber: 5
+          ipAddress: 172.16.2.10
     preprodWorkers:
       vars:
         cpus: 18
         memory: 86016
         nodeType: worker
       hosts:
-        proxmox-01.preprod.zevrant-services.com:
+        proxmox-01.preprod.zevrant-services.internal:
           destHost: proxmox-01
           vmId: 150
           vmNumber: 1
           ipAddress: 172.16.2.11
-#        proxmox-02.preprod.zevrant-services.com:
-#          destHost: proxmox-02
-#          vmId: 160
-#          vmNumber: 2
-#          ipAddress: 172.16.2.12
-#        proxmox-04.preprod.zevrant-services.com:
-#          destHost: proxmox-04
-#          vmId: 170
-#          vmNumber: 3
-#          ipAddress: 172.16.2.13
-#        proxmox-05.preprod.zevrant-services.com:
-#          destHost: proxmox-05
-#          vmId: 180
-#          vmNumber: 4
-#          ipAddress: 172.16.2.14
-#        proxmox-06.preprod.zevrant-services.com:
-#          destHost: proxmox-06
-#          vmId: 190
-#          vmNumber: 5
-#          ipAddress: 172.16.2.15
-#          cpus: 8
+        proxmox-02.preprod.zevrant-services.internal:
+          destHost: proxmox-02
+          vmId: 160
+          vmNumber: 2
+          ipAddress: 172.16.2.12
+        proxmox-04.preprod.zevrant-services.internal:
+          destHost: proxmox-04
+          vmId: 170
+          vmNumber: 3
+          ipAddress: 172.16.2.13
+        proxmox-05.preprod.zevrant-services.internal:
+          destHost: proxmox-05
+          vmId: 180
+          vmNumber: 4
+          ipAddress: 172.16.2.14
+        proxmox-06.preprod.zevrant-services.internal:
+          destHost: proxmox-06
+          vmId: 190
+          vmNumber: 5
+          ipAddress: 172.16.2.15
+          cpus: 8

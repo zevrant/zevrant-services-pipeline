@@ -1,5 +1,6 @@
 - name: "Create new Ubuntu Linux VM with hookscript and description" #Alma Cloud init image refuses to run :/
   hosts: all
+  remote_user: root
   become: true
   become_user: root
   tasks:
@@ -50,8 +51,8 @@
       community.general.proxmox_kvm:
         vmid: "{{ vmId }}"
         node: "{{ destHost }}"
-        api_user: zevrant@pve
-        api_token_id: main
+        api_user: root@pam
+        api_token_id: token
         api_token_secret: "{{ apiPassword }}"
         api_host: "{{ destHost }}.{{ hostFqdn }}"
         autostart: true
@@ -112,8 +113,8 @@
       community.general.proxmox_kvm:
         vmid: "{{ vmId }}"
         node: "{{ destHost }}"
-        api_user: zevrant@pve
-        api_token_id: main
+        api_user: root@pam
+        api_token_id: token
         api_token_secret: "{{ apiPassword }}"
         api_host: "{{ destHost }}.{{ hostFqdn }}"
         state: started
