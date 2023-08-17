@@ -61,15 +61,15 @@
           WorkingDirectory=/opt/node-exporter
           ExecStart=/opt/node-exporter/node_exporter
         dest: /etc/systemd/system/node-exporter.service
-#    - name: Create Node Exporter User
-#      ansible.builtin.command:
-#        cmd: adduser --system --shel /bin/false --no-create-home node-exporter
-#    - name: Create Developers Group
-#      ansible.builtin.command:
-#        cmd: groupadd developers
-#    - name: Add Main User to Developers Group
-#      ansible.builtin.command:
-#        cmd: usermod -aG developers zevrant
+    - name: Create Node Exporter User
+      ansible.builtin.command:
+        cmd: adduser --system --shel /bin/false --no-create-home node-exporter
+    - name: Create Developers Group
+      ansible.builtin.command:
+        cmd: groupadd developers
+    - name: Add Main User to Developers Group
+      ansible.builtin.command:
+        cmd: usermod -aG developers zevrant
     - name: Create Node Exporter Install Folder
       ansible.builtin.file:
         path: /opt/node-exporter
