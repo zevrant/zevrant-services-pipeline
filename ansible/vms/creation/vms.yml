@@ -90,6 +90,7 @@
         agent: 'enabled=1'
         ipconfig:
           ipconfig0: "ip={{ ipAddress }}/24,gw=172.16.1.1"
+          ipconfig1: "ip={{ ipAddress2 }}/24,gw=172.16.1.1"
     - name: register status of image file
       stat:
         path: /tmp/alma9-cloud-init.qcow2

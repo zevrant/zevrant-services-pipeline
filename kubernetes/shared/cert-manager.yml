@@ -13,9 +13,20 @@ spec:
     solvers:
       - selector:
           dnsZones:
+            - 'zevrant-services.internal'
+        dns01:
+          rfc2136:
+            nameserver: 172.16.1.2:53
+            tsigKeyName: rndc-key
+            tsigAlgorithm: HMACMD5
+            tsigSecretSecretRef:
+              name: dns-update-secret
+              key: secret
+      - selector:
+          dnsZones:
             - 'zevrant-services.com'
         dns01:
           cloudflare:
             apiTokenSecretRef:
-              name: prod-route53-credentials-secret
+              name: cloudflare-token
               key: secret-access-key

@@ -106,8 +106,8 @@ metadata:
   namespace: shared
   annotations:
     nginx.ingress.kubernetes.io/backend-protocol: "https"
-#    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
-#    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
 spec:
   rules:
     - host: gitea.zevrant-services.com
@@ -120,11 +120,17 @@ spec:
                 name: gitea
                 port:
                   name: http
+    - host: gitea.zevrant-services.internal
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: gitea
+                port:
+                  name: http
   ingressClassName: nginx
-  tls:
-    - hosts:
-        - gitea.zevrant-services.com
-      secretName: gitea-tls
 
 ---
 

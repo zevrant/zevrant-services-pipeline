@@ -1,6 +1,6 @@
 #!/bin/bash
 
-nodes="$(kubectl get nodes --no-headers=true | grep worker | awk '{ print $1}')"
+nodes="$(kubectl get nodes --no-headers=true | awk '{ print $1}')"
 
 readarray array <<<"$nodes"
 

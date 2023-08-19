@@ -13,7 +13,7 @@ all:
       - 172.16.2.12
       - 172.16.2.13
       - 172.16.2.14
-      - 172.16.2.15
+#      - 172.16.2.15
   hosts:
     172.16.2.1:
       hostname: kubernetes-master-01
@@ -33,5 +33,5 @@ all:
       hostname: kubernetes-worker-03
     172.16.2.14:
       hostname: kubernetes-worker-04
-    172.16.2.15:
-      hostname: kubernetes-worker-05
+#    172.16.2.15:
+#      hostname: kubernetes-worker-05

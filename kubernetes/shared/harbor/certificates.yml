@@ -14,7 +14,7 @@ spec:
   duration: 2160h
   renewBefore: 2000h
   dnsNames:
-    - harbor.zevrant-services.com
+    - harbor.zevrant-services.internal
 
 ---
 
@@ -34,7 +34,7 @@ spec:
   duration: 2160h
   renewBefore: 2000h
   dnsNames:
-    - harbor-notary.zevrant-services.com
+    - harbor-notary.zevrant-services.internal
 
 ---
 
@@ -54,7 +54,7 @@ spec:
   duration: 2160h
   renewBefore: 2000h
   dnsNames:
-    - harbor-notary.zevrant-services.com
+    - harbor-notary.zevrant-services.internal
 
 ---
 
@@ -76,4 +76,4 @@ spec:
   duration: 2160h
   renewBefore: 2000h
   dnsNames:
-    - harbor-postgres.zevrant-services.com
+    - harbor-postgres.zevrant-services.internal

@@ -4,18 +4,20 @@ data:
   config.json: |-
     [
       {
-        "clusterID": "ced1a5f3-dd0d-4761-9d7a-dd8fca262ba5",
+        "clusterID": "86137ef7-01fe-451a-aac5-d1d469af8126",
         "monitors": [
-          "172.16.1.8:6789",
-          "172.16.1.5:6789",
-          "172.16.1.7:6789",
-          "172.16.1.4:6789"
+          "172.16.1.3:6789",
+          "172.16.1.21:6789",
+          "172.16.1.23:6789",
+          "172.16.1.58:6789",
+          "172.16.1.57:6789"
         ]
       }
     ]
 metadata:
   name: ceph-csi-config
-  namespace: ceph
+  namespace: ceph-csi
+
 
 ---
 
@@ -26,7 +28,7 @@ data:
     {}
 metadata:
   name: ceph-csi-encryption-kms-config
-  namespace: ceph
+  namespace: ceph-csi
 
 ---
 
@@ -42,4 +44,4 @@ data:
   keyring: |
 metadata:
   name: ceph-config
-  namespace: ceph
+  namespace: ceph-csi

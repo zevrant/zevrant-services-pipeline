@@ -56,6 +56,16 @@ spec:
                 name: jenkins
                 port:
                   name: https
+    - host: jenkins.zevrant-services.internal
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: jenkins
+                port:
+                  name: https
   ingressClassName: nginx
 
 ---
@@ -83,7 +93,6 @@ spec:
         fsGroup: 1000
         fsGroupChangePolicy: "Always"
       serviceAccountName: jenkins
-      dnsPolicy: ClusterFirstWithHostNet
       volumes:
         - name: jenkins
           persistentVolumeClaim:
@@ -100,11 +109,6 @@ spec:
             defaultMode: 0400
       imagePullSecrets:
         - name: regcred
-#      dnsPolicy: ClusterFirst
-#      dnsConfig:
-#        nameservers:
-#          - 172.16.1.2
-#          - 1.1.1.1
       initContainers:
         - name: secret-init
           image: docker.io/zevrant/ubuntu-base:latest
@@ -148,8 +152,8 @@ spec:
               scheme: HTTPS
               path: /login
               port: 8443
-            periodSeconds: 10
-            failureThreshold: 40
+            periodSeconds: 5
+            failureThreshold: 80
             successThreshold: 1
           livenessProbe:
             httpGet:

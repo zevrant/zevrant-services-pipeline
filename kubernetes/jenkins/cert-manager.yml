@@ -17,5 +17,5 @@ spec:
         dns01:
           cloudflare:
             apiTokenSecretRef:
-              name: prod-route53-credentials-secret
+              name: cloudflare-token
               key: secret-access-key
