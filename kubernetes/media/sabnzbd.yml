@@ -1,0 +1,253 @@
+#apiVersion: cert-manager.io/v1
+#kind: Certificate
+#metadata:
+#  name: sabnzbd
+#  namespace: media
+#spec:
+#  secretName: sabnzbd-tls
+#  issuerRef:
+#    name: acme-issuer
+#  duration: 24h
+#  renewBefore: 23h
+#  dnsNames:
+#    - sabnzbd.preprod.zevrant-services.internal
+
+#---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: sabnzbd
+  namespace: media
+#  annotations:
+#    nginx.ingress.kubernetes.io/backend-protocol: "https"
+#    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+#    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+#    ingress.kubernetes.io/ssl-passthrough: "true"
+#    nginx.ingress.kubernetes.io/rewrite-target: https://minio.zevrant-services.internal/api/v1/buckets/$1
+spec:
+  rules:
+    - host: sabnzbd.preprod.zevrant-services.internal
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: sabnzbd
+                port:
+                  name: sabnzbd
+    - host: sonarr.preprod.zevrant-services.internal
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: sabnzbd
+                port:
+                  name: sonarr
+    - host: radarr.preprod.zevrant-services.internal
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: sabnzbd
+                port:
+                  name: radarr
+  ingressClassName: nginx
+  tls:
+    - secretName: sabnzbd-tls
+      hosts:
+        - sabnzbd.preprod.zevrant-services.internal
+    - secretName: sonarr-tls
+      hosts:
+        - sonarr.preprod.zevrant-services.internal
+    - secretName: radarr-tls
+      hosts:
+        - radarr.preprod.zevrant-services.internal
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: sabnzbd
+  namespace: media
+spec:
+  ports:
+    - port: 8080
+      targetPort: 8080
+      name: sabnzbd
+    - port: 8989
+      targetPort: 8989
+      name: sonarr
+    - port: 7878
+      targetPort: 7878
+      name: radarr
+  selector:
+    app: sabnzbd
+
+---
+
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: radarr-config
+  namespace: media
+spec:
+  storageClassName: csi-rbd-sc
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: sabnzbd
+  namespace: media
+spec:
+  replicas: 1
+  serviceName: sabnzbd
+  selector:
+    matchLabels:
+      app: sabnzbd
+  volumeClaimTemplates:
+      - metadata:
+          name: downloads
+        spec:
+          accessModes: ["ReadWriteOnce" ]
+          storageClassName: 'csi-rbd-sc'
+          resources:
+            requests:
+              storage: 1Ti
+      - metadata:
+          name: config
+        spec:
+          accessModes: [ "ReadWriteOnce" ]
+          storageClassName: 'csi-rbd-sc'
+          resources:
+            requests:
+              storage: 10Gi
+      - metadata:
+          name: sonar-config
+        spec:
+          accessModes: [ "ReadWriteOnce" ]
+          storageClassName: 'csi-rbd-sc'
+          resources:
+            requests:
+              storage: 10Gi
+  template:
+    metadata:
+      labels:
+        app: sabnzbd
+    spec:
+      imagePullSecrets:
+        - name: harbor-ro
+      securityContext:
+        fsGroup: 1000
+        fsGroupChangePolicy: "Always"
+      volumes:
+        - name: media-storage
+          persistentVolumeClaim:
+            claimName: downloads-sabnzbd-0
+        - name: configmap
+          configMap:
+            name: sabnzbd
+        - name: sonar-config
+          persistentVolumeClaim:
+            claimName: sonar-config
+        - name: radarr-config
+          persistentVolumeClaim:
+            claimName: radarr-config
+      containers:
+        - name: sabnzbd
+          image: docker.io/linuxserver/sabnzbd:latest
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: media-storage
+              mountPath: /downloads
+            - name: config
+              mountPath: /config/
+          ports:
+            - containerPort: 8080
+          env:
+            - name: TX
+              value: America/Detroit
+            - name: PUID
+              value: '1000'
+            - name: PGID
+              value: '1000'
+          livenessProbe:
+            failureThreshold: 3
+            successThreshold: 1
+            periodSeconds: 5
+            httpGet:
+              port: 8080
+              path: /
+          startupProbe:
+            successThreshold: 1
+            failureThreshold: 3
+            periodSeconds: 5
+            httpGet:
+              port: 8080
+              path: /
+        - name: sonarr
+          image: ghcr.io/hotio/sonarr:release
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: media-storage
+              mountPath: /downloads
+            - name: sonar-config
+              mountPath: /config
+          ports:
+            - containerPort: 8989
+          env:
+            - name: TZ
+              value: America/Detroit
+          livenessProbe:
+            failureThreshold: 3
+            successThreshold: 1
+            periodSeconds: 5
+            httpGet:
+              port: 8989
+              path: /
+          startupProbe:
+            successThreshold: 1
+            failureThreshold: 5
+            periodSeconds: 5
+            httpGet:
+              port: 8989
+              path: /
+        - name: radarr
+          image: ghcr.io/hotio/radarr:release
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: media-storage
+              mountPath: /downloads
+            - name: radarr-config
+              mountPath: /config
+          ports:
+            - containerPort: 7878
+          env:
+            - name: TZ
+              value: America/Detroit
+          livenessProbe:
+            failureThreshold: 3
+            successThreshold: 1
+            periodSeconds: 5
+            httpGet:
+              port: 7878
+              path: /
+          startupProbe:
+            successThreshold: 1
+            failureThreshold: 5
+            periodSeconds: 5
+            httpGet:
+              port: 7878
+              path: /

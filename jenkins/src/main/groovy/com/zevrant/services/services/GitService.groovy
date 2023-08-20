@@ -7,7 +7,7 @@ class GitService extends Service {
         super(pipelineContext)
     }
 
-    void checkout(String hostname = 'ssh://git@gitea.zevrant-services.com:30121',
+    void checkout(String hostname = 'ssh://git@gitea.zevrant-services.internal:30121',
                   String org = 'zevrant-services',
                   String repository,
                   String branch = 'main',

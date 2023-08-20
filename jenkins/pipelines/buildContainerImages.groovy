@@ -48,7 +48,7 @@ pipeline {
 //        stage("Get Potential Repos") {
 //            steps {
 //                script {
-//                    def response = httpRequest authentication: 'jenkins-git-access-token', url: "https://gitea.zevrant-services.com/api/v1/orgs/zevrant/repos?type=all"
+//                    def response = httpRequest authentication: 'jenkins-git-access-token', url: "https://gitea.zevrant-services.internal/api/v1/orgs/zevrant/repos?type=all"
 //                    List jsonResponse = readJSON text: response.content
 //                    def parralelSteps = [:]
 //                    jsonResponse.each { repo ->

@@ -14,7 +14,7 @@ spec:
   duration: 24h
   renewBefore: 13h
   dnsNames:
-    - gitea.zevrant-services.com
+    - gitea.zevrant-services.internal
 
 ---
 
@@ -110,7 +110,7 @@ metadata:
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
 spec:
   rules:
-    - host: gitea.zevrant-services.com
+    - host: gitea.zevrant-services.internal
       http:
         paths:
           - path: /
@@ -288,11 +288,11 @@ data:
 
     [server]
     APP_DATA_PATH           = /var/lib/gitea
-    SSH_DOMAIN              = gitea.zevrant-services.com
+    SSH_DOMAIN              = gitea.zevrant-services.internal
     HTTP_PORT               = 3000
     REDIRECT_OTHER_PORT	= true
     PORT_TO_REDIRECT	= 3001
-    ROOT_URL                = https://gitea.zevrant-services.com/
+    ROOT_URL                = https://gitea.zevrant-services.internal/
     DISABLE_SSH             = false
     CERT_FILE		= /opt/acme/certs/..data/tls.crt
     KEY_FILE		= /opt/acme/certs/..data/tls.key
@@ -305,12 +305,12 @@ data:
     BUILTIN_SSH_SERVER_USER = git
     LFS_START_SERVER        = true
     LFS_CONTENT_PATH        = /var/lib/gitea/git/lfs
-    DOMAIN                  = gitea.zevrant-services.com
+    DOMAIN                  = gitea.zevrant-services.internal
     LFS_JWT_SECRET          = iNGInu3z1U5DSO-im6vJ_ZIV_EgxPpwqHiHHfG7V2SM
     OFFLINE_MODE            = false
 
     PROTOCOL		= https
-    # DOMAIN			= gitea.zevrant-services.com
+    # DOMAIN			= gitea.zevrant-services.internal
     # ENABLE_ACME		= true
     # ACME_ACCEPTTOS		= true
     # ACME_EMAIL		= gerethd@gmail.com

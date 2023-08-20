@@ -1,0 +1,32 @@
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: acme-issuer
+  namespace: media
+spec:
+  acme:
+    email: gdittrick@zevrant-services.com
+    privateKeySecretRef:
+      name: ca-private-key
+      key: privateKey
+    server: https://acme-v02.api.letsencrypt.org/directory
+    solvers:
+      - selector:
+          dnsZones:
+            - 'zevrant-services.internal'
+        dns01:
+          rfc2136:
+            nameserver: 172.16.1.2:53
+            tsigKeyName: rndc-key
+            tsigAlgorithm: HMACMD5
+            tsigSecretSecretRef:
+              name: dns-update-secret
+              key: secret
+      - selector:
+          dnsZones:
+            - 'zevrant-services.com'
+        dns01:
+          cloudflare:
+            apiTokenSecretRef:
+              name: cloudflare-token
+              key: secret-access-key

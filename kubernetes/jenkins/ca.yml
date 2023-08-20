@@ -1,0 +1,92 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: certificate-authority
+  namespace: jenkins
+spec:
+  type: NodePort
+  ports:
+    - port: 443
+      targetPort: 8443
+      name: https
+  selector:
+    app: certificate-authority
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: certificate-authority
+  namespace: jenkins
+spec:
+  volumeMode: Filesystem
+  accessModes:
+    - "ReadWriteOnce"
+  storageClassName: "csi-rbd-sc"
+  resources:
+    requests:
+      storage: 10Gi
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: certificate-authority
+  namespace: jenkins
+  labels:
+    app: certificate-authority
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: certificate-authority
+  template:
+    metadata:
+      labels:
+        app: certificate-authority
+    spec:
+      securityContext:
+        fsGroup: 1000
+        fsGroupChangePolicy: "Always"
+      imagePullSecrets:
+        - name: regcred
+      volumes:
+        - name: step-ca
+          persistentVolumeClaim:
+            claimName: certificate-authority
+        - name: ca-password
+          secret:
+            secretName: certificate-authority-password
+      containers:
+        - name: certificate-authority
+          image: docker.io/zevrant/step-ca:latest
+          ports:
+            - containerPort: 8443
+          volumeMounts:
+            - name: step-ca
+              mountPath: /opt/step-ca
+            - name: ca-password
+              mountPath: /var/run/zevrant-services/ca-password
+          env:
+            - name: CA_NAME
+              value: 'Zevrant Services Jenkins'
+            - name: CA_DNS
+              value: certificate-authority
+            - name: SECRET_FILE_PATH
+              value: /var/run/zevrant-services/ca-password/password
+          readinessProbe:
+            httpGet:
+              scheme: HTTPS
+              path: /acme/acme/directory
+              port: 8443
+            failureThreshold: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              scheme: HTTPS
+              path: /acme/acme/directory
+              port: 8443
+            failureThreshold: 5
+            periodSeconds: 5

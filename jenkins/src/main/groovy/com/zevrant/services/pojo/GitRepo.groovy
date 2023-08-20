@@ -8,7 +8,7 @@ class GitRepo {
     public final String sshHostName
     public final String credentialsId
 
-    public GitRepo(String hostName = 'gitea.zevrant-services.com', String sshHostname = 'git@gitea.zevrant-services.com:30121',
+    public GitRepo(String hostName = 'gitea.zevrant-services.internal', String sshHostname = 'git@gitea.zevrant-services.internal:30121',
                    String org = 'zevrant-services', String repoName, String credentialsId = 'zevrant-services-jenkins') {
         this.repoName = repoName
         this.org = org

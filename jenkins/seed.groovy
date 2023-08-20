@@ -20,7 +20,7 @@ SpringCodeUnitCollection.microservices.each { springCodeUnit ->
             parameters: new ArrayList<>([
                     new PipelineParameter<String>(String.class, "VERSION", "Version to be Deployed", "")
             ]),
-            gitRepo: 'ssh://git@gitea.zevrant-services.com:30121/zevrant-services/zevrant-services-pipeline.git',
+            gitRepo: 'ssh://git@gitea.zevrant-services.internal:30121/zevrant-services/zevrant-services-pipeline.git',
             jenkinsfileLocation: 'jenkins/pipelines/kubernetes-deploy.groovy',
             credentialId: 'jenkins-git',
             envs: new HashMap<>([
@@ -33,7 +33,7 @@ SpringCodeUnitCollection.microservices.each { springCodeUnit ->
             parameters: new ArrayList<>([
                     new PipelineParameter<String>(String.class, "VERSION", "Version to be Deployed", "")
             ]),
-            gitRepo: 'ssh://git@gitea.zevrant-services.com:30121/zevrant-services/zevrant-services-pipeline.git',
+            gitRepo: 'ssh://git@gitea.zevrant-services.internal:30121/zevrant-services/zevrant-services-pipeline.git',
             jenkinsfileLocation: 'jenkins/pipelines/kubernetes-deploy.groovy',
             credentialId: 'jenkins-git',
             envs: new HashMap<>([
@@ -54,7 +54,7 @@ AndroidCodeUnitCollection.androidApps.each( { androidCodeUnit ->
             name: "Zevrant-Android-App-Release-To-Internal-Testing",
             parameters: new ArrayList<>([
             ]),
-            gitRepo: "ssh://git@gitea.zevrant-services.com:30121/zevrant-services/zevrant-services-pipeline.git",
+            gitRepo: "ssh://git@gitea.zevrant-services.internal:30121/zevrant-services/zevrant-services-pipeline.git",
             jenkinsfileLocation: 'jenkins/pipelines/android-deploy.groovy',
             credentialId: 'jenkins-git',
             envs: new HashMap<>([
@@ -66,7 +66,7 @@ AndroidCodeUnitCollection.androidApps.each( { androidCodeUnit ->
             name: "Zevrant-Android-App-Release-To-Production",
             parameters: new ArrayList<>([
             ]),
-            gitRepo: "ssh://git@gitea.zevrant-services.com:30121/zevrant-services/zevrant-services-pipeline.git",
+            gitRepo: "ssh://git@gitea.zevrant-services.internal:30121/zevrant-services/zevrant-services-pipeline.git",
             jenkinsfileLocation: 'jenkins/pipelines/android-deploy.groovy',
             credentialId: 'jenkins-git',
             envs: new HashMap<>([
@@ -123,7 +123,7 @@ String createMultibranch(CodeUnit codeUnit) {
                         userRemoteConfigs {
                             userRemoteConfig {
                                 name("Zevrant Services Pipeline") //Custom Repository Name or ID
-                                url("ssh://git@gitea.zevrant-services.com:30121/zevrant-services/zevrant-services-pipeline.git")
+                                url("ssh://git@gitea.zevrant-services.internal:30121/zevrant-services/zevrant-services-pipeline.git")
                                 //URL for the repository
                                 refspec("main") // Branch spec
                                 credentialsId("jenkins-git") // Credential ID. Leave blank if not required
@@ -138,7 +138,7 @@ String createMultibranch(CodeUnit codeUnit) {
         branchSources {
 //            git {
 //                id(codeUnit.name) // IMPORTANT: use a constant and unique identifier
-//                remote("ssh://git@gitea.zevrant-services.com:30121/zevrant-services/${codeUnit.name}.git")
+//                remote("ssh://git@gitea.zevrant-services.internal:30121/zevrant-services/${codeUnit.name}.git")
 //                credentialsId 'jenkins-git-access-token'
 //                checkoutCredentialsId 'jenkins-git'
 //            }

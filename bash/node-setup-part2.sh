@@ -5,7 +5,7 @@ apt-get install -y jq gnupg lsb-release ca-certificates software-properties-comm
 groupadd developers
 ##Install Node Exporter (Prometheus)
 mkdir -p /opt/node-exporter
-url="$(curl -s https://gitea.zevrant-services.com/api/v1/repos/prometheus/node_exporter/releases/latest | jq .assets[2].browser_download_url)"
+url="$(curl -s https://gitea.zevrant-services.internal/api/v1/repos/prometheus/node_exporter/releases/latest | jq .assets[2].browser_download_url)"
 curl -L "$(echo "$url" | cut -c 2-$((${#url}-1)))" -o node-exporter.tar.gz
 tar xvf node-exporter.tar.gz
 mv node_exporter-* node-exporter

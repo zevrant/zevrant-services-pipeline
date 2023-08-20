@@ -23,7 +23,7 @@ class KubernetesServiceCollection {
                     environments: [
                             KubernetesEnvironment.SHARED
                     ],
-                    url: 'gitea.zevrant-services.com'
+                    url: 'gitea.zevrant-services.internal'
             ]),
             new KubernetesService([
                     serviceName: 'artifactory-jcr',

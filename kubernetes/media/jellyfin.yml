@@ -1,0 +1,165 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: jellyfin
+  namespace: media
+spec:
+  secretName: jellyfin-tls
+  issuerRef:
+    name: acme-issuer
+  duration: 24h
+  renewBefore: 23h
+  dnsNames:
+    - jellyfin.preprod.zevrant-services.com
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: jellyfin
+  namespace: media
+#  annotations:
+#    nginx.ingress.kubernetes.io/backend-protocol: "https"
+#    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+#    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+#    ingress.kubernetes.io/ssl-passthrough: "true"
+#    nginx.ingress.kubernetes.io/rewrite-target: https://minio.zevrant-services.com/api/v1/buckets/$1
+spec:
+  rules:
+    - host: jellyfin.preprod.zevrant-services.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: jellyfin
+                port:
+                  name: http
+  ingressClassName: nginx
+  tls:
+    - secretName: jellyfin-tls
+      hosts:
+        - jellyfin.preprod.zevrant-services.com
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: jellyfin
+  namespace: media
+spec:
+  ports:
+    - port: 8096
+      targetPort: 8096
+      name: http
+  selector:
+    app: jellyfin
+
+---
+
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: jellyfin-config
+  namespace: media
+spec:
+  storageClassName: csi-rbd-sc
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: jellyfin
+  namespace: media
+spec:
+  replicas: 1
+  serviceName: jellyfin
+  selector:
+    matchLabels:
+      app: jellyfin
+  template:
+    metadata:
+      labels:
+        app: jellyfin
+    spec:
+      imagePullSecrets:
+        - name: harbor-ro
+      securityContext:
+        fsGroup: 1000
+        fsGroupChangePolicy: "Always"
+      volumes:
+        - name: media-storage
+          persistentVolumeClaim:
+            claimName: downloads-sabnzbd-0
+            readOnly: true
+        - name: configmap
+          configMap:
+            name: jellyfin
+        - name: jellyfin-config
+          persistentVolumeClaim:
+            claimName: jellyfin-config
+      initContainers:
+        - name: init
+          image: docker.io/ubuntu:latest
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: configmap
+              mountPath: /configmap/config
+            - name: jellyfin-config
+              mountPath: /config
+          command:
+            - /bin/bash
+          args:
+            - -c
+            - |
+              ls -l /configmap/config
+              cp /configmap/config/config.xml /config
+      containers:
+        - name: jellyfin
+          image: docker.io/jellyfin/jellyfin:latest
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: media-storage
+              mountPath: /downloads
+            - name: jellyfin-config
+              mountPath: /config
+          ports:
+            - containerPort: 8096
+          env:
+            - name: TX
+              value: America/Detroit
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: jellyfin
+  namespace: media
+data:
+  config.xml: |
+    <Config>
+        <BindAddress>*</BindAddress>
+        <Port>8989</Port>
+        <SslPort>9898</SslPort>
+        <EnableSsl>False</EnableSsl>
+        <LaunchBrowser>True</LaunchBrowser>
+        <ApiKey>19359964ef4f4a99936fecef730c6da4</ApiKey>
+        <AuthenticationMethod>None</AuthenticationMethod>
+        <AuthenticationRequired>Enabled</AuthenticationRequired>
+        <Branch>develop</Branch>
+        <LogLevel>info</LogLevel>
+        <SslCertPath></SslCertPath>
+        <SslCertPassword></SslCertPassword>
+        <UrlBase></UrlBase>
+        <InstanceName>Sonarr</InstanceName>
+        <UpdateMechanism>Docker</UpdateMechanism>
+    </Config>

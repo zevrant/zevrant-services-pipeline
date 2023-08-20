@@ -1,0 +1,183 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: sonarr
+  namespace: media
+spec:
+  secretName: sonarr-tls
+  issuerRef:
+    name: acme-issuer
+  duration: 24h
+  renewBefore: 23h
+  dnsNames:
+    - sonarr.preprod.zevrant-services.com
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: sonarr
+  namespace: media
+#  annotations:
+#    nginx.ingress.kubernetes.io/backend-protocol: "https"
+#    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+#    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+#    ingress.kubernetes.io/ssl-passthrough: "true"
+#    nginx.ingress.kubernetes.io/rewrite-target: https://minio.zevrant-services.com/api/v1/buckets/$1
+spec:
+  rules:
+    - host: sonarr.preprod.zevrant-services.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: sonarr
+                port:
+                  name: http
+  ingressClassName: nginx
+  tls:
+    - secretName: sonarr-tls
+      hosts:
+        - sonarr.preprod.zevrant-services.com
+---
+
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: sonarr-config
+  namespace: media
+spec:
+  storageClassName: csi-rbd-sc
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: sonarr
+  namespace: media
+spec:
+  ports:
+    - port: 8989
+      targetPort: 8989
+      name: http
+  selector:
+    app: sonarr
+
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: sonarr
+  namespace: media
+spec:
+  replicas: 1
+  serviceName: sonarr
+  selector:
+    matchLabels:
+      app: sonarr
+  template:
+    metadata:
+      labels:
+        app: sonarr
+    spec:
+      imagePullSecrets:
+        - name: harbor-ro
+      securityContext:
+        fsGroup: 1000
+        fsGroupChangePolicy: "Always"
+      volumes:
+        - name: media-storage
+          persistentVolumeClaim:
+            claimName: downloads-sabnzbd-0
+            readOnly: true
+        - name: sonarr-config
+          persistentVolumeClaim:
+            claimName: sonarr-config
+        - name: config
+          configMap:
+            name: sonarr
+        - name: sonarr-config
+          emptyDir:
+            sizeLimit: 1Gi
+      initContainers:
+        - name: init
+          image: harbor.zevrant-services.com/dockerhub/ubuntu:latest
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: config
+              mountPath: /configmap/config
+            - name: sonarr-config
+              mountPath: /config
+          command:
+            - /bin/bash
+          args:
+            - -c
+            - |
+              ls -l /configmap/config
+              cp /configmap/config/sonarr.ini /config
+      containers:
+        - name: sonarr
+          image: harbor.zevrant-services.com/ghcr/hotio/sonarr:v4-9892b99
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: media-storage
+              mountPath: /downloads
+            - name: sonarr-config
+              mountPath: /config
+          ports:
+            - containerPort: 8989
+
+          env:
+            - name: TZ
+              value: America/Detroit
+          livenessProbe:
+            failureThreshold: 3
+            successThreshold: 1
+            periodSeconds: 5
+            httpGet:
+              port: 8989
+              path: /
+          startupProbe:
+            successThreshold: 1
+            failureThreshold: 5
+            periodSeconds: 5
+            httpGet:
+              port: 8989
+              path: /
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sonarr
+  namespace: media
+data:
+  config.xml: |
+    <Config>
+        <BindAddress>*</BindAddress>
+        <Port>8989</Port>
+        <SslPort>9898</SslPort>
+        <EnableSsl>False</EnableSsl>
+        <LaunchBrowser>True</LaunchBrowser>
+        <ApiKey>19359964ef4f4a99936fecef730c6da4</ApiKey>
+        <AuthenticationMethod>None</AuthenticationMethod>
+        <AuthenticationRequired>Enabled</AuthenticationRequired>
+        <Branch>develop</Branch>
+        <LogLevel>info</LogLevel>
+        <SslCertPath></SslCertPath>
+        <SslCertPassword></SslCertPassword>
+        <UrlBase></UrlBase>
+        <InstanceName>Sonarr</InstanceName>
+        <UpdateMechanism>Docker</UpdateMechanism>
+    </Config>

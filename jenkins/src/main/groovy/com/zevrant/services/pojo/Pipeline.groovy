@@ -18,7 +18,7 @@ class Pipeline {
         this.name = params.name
         this.description = params.description ?: ""
         this.parameters = (params.parameters ?: new ArrayList<>()) as ArrayList<PipelineParameter>
-        this.gitRepo = params.gitRepo ?: "ssh://git@gitea.zevrant-services.com:30121/zevrant-services/zevrant-services-pipeline.git"
+        this.gitRepo = params.gitRepo ?: "ssh://git@gitea.zevrant-services.internal:30121/zevrant-services/zevrant-services-pipeline.git"
         this.jenkinsfileLocation = params.jenkinsfileLocation
         this.credentialId = params.credentialId ?: 'jenkins-git'
         this.triggers = (params.triggers as List<PipelineTrigger> ?: new ArrayList<>()) as List<PipelineTrigger>
