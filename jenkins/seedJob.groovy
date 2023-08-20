@@ -19,7 +19,7 @@ pipeline {
                             removedConfigFilesAction: 'DELETE',
                             lookupStrategy: 'SEED_JOB',
                             failOnMissingPlugin: true,
-                            additionalClasspath: '**/*.groovy', //only works with
+                            additionalClasspath: 'jenkins/src/main/groovy/', //only works with
                     )
                 }
             }
