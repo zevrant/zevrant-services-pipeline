@@ -176,23 +176,25 @@ String createMultibranch(CodeUnit codeUnit) {
 }
 
 
-//String kubernetesServicesFolder = 'kubernetes-services'
-//folder(kubernetesServicesFolder) {
-//    displayName = 'Kubernetes Services'
-//}
-//
-//KubernetesServiceCollection.services.each { kubernetesService ->
-//    kubernetesService.environments.each { environment ->
-//        Pipeline pipeline = new Pipeline([
-//                envs               : [
-//                        ENVIRONMENT : environment.getNamespaceName(),
-//                        SERVICE_NAME: kubernetesService.serviceName
-//                ],
-//                jenkinsfileLocation: 'jenkins/pipelines/serviceDeploy.groovy'
-//        ])
-//        createPipeline(kubernetesServicesFolder.concat('/'), pipeline)
-//    }
-//}
+String kubernetesServicesFolder = 'kubernetes-services'
+folder(kubernetesServicesFolder) {
+    displayName = 'Kubernetes Services'
+}
+
+KubernetesServiceCollection.services.each { kubernetesService ->
+    kubernetesService.environments.each { environment ->
+        Pipeline pipeline = new Pipeline([
+                name: kubernetes.serviceName,
+                envs               : [
+
+                        ENVIRONMENT : environment.getNamespaceName(),
+                        SERVICE_NAME: kubernetesService.serviceName
+                ],
+                jenkinsfileLocation: 'jenkins/pipelines/serviceDeploy.groovy'
+        ])
+        createPipeline(kubernetesServicesFolder.concat('/'), pipeline)
+    }
+}
 
 /**
  *
