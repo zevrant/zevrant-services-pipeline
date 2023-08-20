@@ -4,13 +4,9 @@ import com.zevrant.services.pojo.PipelineParameter
 import com.zevrant.services.pojo.Pipeline
 import com.zevrant.services.pojo.PipelineCollection
 import com.zevrant.services.pojo.KubernetesServiceCollection
-import com.zevrant.services.pojo.PipelineTrigger
-import com.zevrant.services.pojo.AndroidCodeUnit
-import com.zevrant.services.pojo.LibraryCodeUnit
 import com.zevrant.services.pojo.LibraryCodeUnitCollection
 import com.zevrant.services.pojo.AndroidCodeUnitCollection
 import com.zevrant.services.pojo.SpringCodeUnitCollection
-import com.zevrant.services.pojo.SpringCodeUnit
 import com.zevrant.services.pojo.CodeUnit
 
 LibraryCodeUnitCollection.libraries.each { libraryCodeUnit ->
