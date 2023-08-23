@@ -1,0 +1,175 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: newznab
+  namespace: media
+spec:
+  secretName: newznab-tls
+  issuerRef:
+    name: acme-issuer
+  duration: 24h
+  renewBefore: 23h
+  dnsNames:
+    - newznab.preprod.zevrant-services.com
+
+---
+
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: newznab-internal
+  namespace: media
+spec:
+  secretName: newznab-internal-tls
+  issuerRef:
+    name: step-ca
+  duration: 24h
+  renewBefore: 23h
+  dnsNames:
+    - newznab.preprod.zevrant-services.internal
+
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: newznab
+  namespace: media
+
+spec:
+  rules:
+    - host: newznab.preprod.zevrant-services.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: newznab
+                port:
+                  name: http
+  ingressClassName: nginx
+  tls:
+    - secretName: newznab-tls
+      hosts:
+        - newznab.preprod.zevrant-services.com
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: newznab-internal
+  namespace: media
+spec:
+  rules:
+    - host: newznab.preprod.zevrant-services.internal
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: newznab
+                port:
+                  name: http
+  ingressClassName: nginx
+  tls:
+    - secretName: newznab-internal-tls
+      hosts:
+        - newznab.preprod.zevrant-services.internal
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: newznab
+  namespace: media
+spec:
+  ports:
+    - port: 8096
+      targetPort: 8096
+      name: http
+  selector:
+    app: newznab
+
+---
+
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: newznab-config
+  namespace: media
+spec:
+  storageClassName: csi-rbd-sc
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+
+---
+
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: newznab-index
+  namespace: media
+spec:
+  storageClassName: csi-rbd-sc
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 50Gi
+
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: newznab
+  namespace: media
+spec:
+  replicas: 1
+  serviceName: newznab
+  selector:
+    matchLabels:
+      app: newznab
+  template:
+    metadata:
+      labels:
+        app: newznab
+    spec:
+      imagePullSecrets:
+        - name: harbor-ro
+      securityContext:
+        fsGroup: 1000
+        fsGroupChangePolicy: "Always"
+      volumes:
+        - name: newznab-index
+          persistentVolumeClaim:
+            claimName: downloads-sabnzbd-0
+            readOnly: true
+        - name: configmap
+          configMap:
+            name: newznab
+        - name: newznab-config
+          persistentVolumeClaim:
+            claimName: newznab-config
+      containers:
+        - name: newznab
+          image: lscr.io/linuxserver/nzbhydra2:latest
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: media-storage
+              mountPath: /downloads
+            - name: newznab-config
+              mountPath: /config
+          ports:
+            - containerPort: 8096
+          env:
+            - name: TX
+              value: America/Detroit

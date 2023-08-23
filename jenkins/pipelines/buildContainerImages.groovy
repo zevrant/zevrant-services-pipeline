@@ -34,11 +34,11 @@ pipeline {
 
         stage("Build & Push Dockerfiles") {
             environment {
-                DOCKER_TOKEN = credentials('jenkins-harbor')
+                DOCKER_CREDENTIALS = credentials('jenkins-harbor')
             }
             steps {
                 script {
-                    imageBuildService.registryLogin(DOCKER_TOKEN_USR, DOCKER_TOKEN_PSW, 'harbor.zevrant-services.com')
+                    imageBuildService.registryLogin(DOCKER_CREDENTIALS_USR, DOCKER_CREDENTIALS_PSW, 'harbor.zevrant-services.com')
                     imageBuildService.buildImagesInParallel(images, 'harbor.zevrant-services.com')
                 }
             }

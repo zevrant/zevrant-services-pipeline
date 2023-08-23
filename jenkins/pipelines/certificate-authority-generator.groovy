@@ -99,8 +99,8 @@ pipeline {
             steps {
                 script {
                     container ('cert-manager') {
+                        sh 'unzip rootCA.zip'
                         dir('rootCA') {
-                            sh 'unzip ../rootCA.zip'
                             writeFile(file: 'issued/openssl.conf', text: readFile(file: 'issued/openssl.conf').replace('dir             = /home/zevrant/rootCA', "dir             = ${pwd()}"))
                             if(fileExists("issued/${ENVIRONMENT}.crt")) {
                                 sh "openssl ca -config issued/openssl.conf -revoke issued/${ENVIRONMENT}.crt"
@@ -117,8 +117,9 @@ pipeline {
                             sh 'mv issued/openssl.conf.bak issued/openssl.conf'
                             sh "cp issued/${ENVIRONMENT}.crt ../intermediate_ca.crt"
                             sh "cp ca.crt ../ca.crt"
-                            sh 'rm ../rootCA.zip; zip -r rootCA.zip *; mv rootCA.zip ../'
+
                         }
+                        sh 'rm rootCA.zip; zip -r rootCA.zip *'
                     }
                 }
             }

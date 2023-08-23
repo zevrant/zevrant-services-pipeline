@@ -1,6 +1,5 @@
 - name: "Create new Ubuntu Linux VM with hookscript and description" #Alma Cloud init image refuses to run :/
   hosts: all
-  remote_user: root
   become: true
   become_user: root
   tasks:

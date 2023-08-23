@@ -6,7 +6,7 @@ metadata:
 spec:
   secretName: harbor-tls
   issuerRef:
-    name: acme-issuer
+    name: step-ca
   privateKey:
     algorithm: ECDSA
     size: 256
@@ -26,7 +26,7 @@ metadata:
 spec:
   secretName: harbor-notary-tls
   issuerRef:
-    name: acme-issuer
+    name: step-ca
   privateKey:
     algorithm: ECDSA
     size: 256
@@ -46,7 +46,7 @@ metadata:
 spec:
   secretName: harbor-notary-signer-tls
   issuerRef:
-    name: acme-issuer
+    name: step-ca
   privateKey:
     algorithm: ECDSA
     size: 256
@@ -68,7 +68,7 @@ metadata:
 spec:
   secretName: harbor-postgres
   issuerRef:
-    name: acme-issuer
+    name: step-ca
   privateKey:
     algorithm: ECDSA
     size: 256

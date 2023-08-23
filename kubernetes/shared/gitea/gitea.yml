@@ -1,12 +1,12 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: gitea
+  name: gitea-internal
   namespace: shared
 spec:
-  secretName: gitea-tls
+  secretName: gitea-internal-tls
   issuerRef:
-    name: acme-issuer
+    name: step-ca
   privateKey:
     algorithm: ECDSA
     size: 256
@@ -15,6 +15,26 @@ spec:
   renewBefore: 13h
   dnsNames:
     - gitea.zevrant-services.internal
+
+---
+
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: gitea
+  namespace: shared
+spec:
+  secretName: gitea-tls
+  issuerRef:
+    name: lets-encrypt
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+    rotationPolicy: Always
+  duration: 2160h
+  renewBefore: 2000h
+  dnsNames:
+    - gitea.zevrant-services.com
 
 ---
 
@@ -90,10 +110,6 @@ spec:
       targetPort: 2222
       nodePort: 30121
       name: ssh
-    - port: 3000
-      targetPort: 3000
-      nodePort: 30122
-      name: http
   selector:
     app: gitea
 
@@ -109,6 +125,28 @@ metadata:
     nginx.ingress.kubernetes.io/ssl-passthrough: "true"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
 spec:
+  ingressClassName: nginx
+  rules:
+    - host: gitea.zevrant-services.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: gitea
+                port:
+                  name: http
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: gitea-internal
+  namespace: shared
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "https"
+spec:
   rules:
     - host: gitea.zevrant-services.internal
       http:
@@ -120,17 +158,11 @@ spec:
                 name: gitea
                 port:
                   name: http
-    - host: gitea.zevrant-services.internal
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: gitea
-                port:
-                  name: http
   ingressClassName: nginx
+  tls:
+    - hosts:
+        - gitea.zevrant-services.internal
+      secretName: gitea-internal-tls
 
 ---
 
@@ -159,11 +191,11 @@ spec:
         fsGroupChangePolicy: "Always"
       imagePullSecrets:
         - name: regcred
-#      dnsPolicy: ClusterFirst
-#      dnsConfig:
-#        nameservers:
-#          - 172.16.1.2
-#          - 1.1.1.1
+      #      dnsPolicy: ClusterFirst
+      #      dnsConfig:
+      #        nameservers:
+      #          - 172.16.1.2
+      #          - 1.1.1.1
       volumes:
         - name: keystore-volume
           emptyDir:
@@ -204,11 +236,11 @@ spec:
       containers:
         - name: gitea
           image: docker.io/zevrant/gitea:latest
-#          command:
-#            - /bin/sh
-#          args:
-#            - -c
-#            - sleep 9999999999
+          #          command:
+          #            - /bin/sh
+          #          args:
+          #            - -c
+          #            - sleep 9999999999
           imagePullPolicy: Always
           ports:
             - containerPort: 3000

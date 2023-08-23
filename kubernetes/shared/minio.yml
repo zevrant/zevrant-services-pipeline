@@ -9,7 +9,7 @@ metadata:
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
 spec:
   rules:
-    - host: minio.zevrant-services.com
+    - host: minio.zevrant-services.internal
       http:
         paths:
           - path: /
@@ -19,7 +19,7 @@ spec:
                 name: shared-console
                 port:
                   name: https-console
-    - host: api.minio.zevrant-services.com
+    - host: api.minio.zevrant-services.internal
       http:
         paths:
           - path: /
@@ -32,8 +32,8 @@ spec:
   ingressClassName: nginx
   tls:
     - hosts:
-      - minio.zevrant-services.com
-      - api.minio.zevrant-services.com
+      - minio.zevrant-services.internal
+      - api.minio.zevrant-services.internal
       secretName: minio-shared-tls
 
 ---
@@ -45,7 +45,7 @@ metadata:
 spec:
   secretName: minio-shared-tls
   issuerRef:
-    name: acme-issuer
+    name: step-ca
   privateKey:
     algorithm: ECDSA
     size: 256
@@ -53,6 +53,6 @@ spec:
   duration: 2160h
   renewBefore: 2000h
   dnsNames:
-    - minio.zevrant-services.com
-    - api.minio.zevrant-services.com
+    - minio.zevrant-services.internal
+    - api.minio.zevrant-services.internal
 

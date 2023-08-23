@@ -4,13 +4,29 @@ metadata:
   name: certificate-authority
   namespace: monitoring
 spec:
-  type: NodePort
+  type: ClusterIP
   ports:
     - port: 443
       targetPort: 8443
       name: https
   selector:
     app: certificate-authority
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: certificate-authority
+  namespace: monitoring
+spec:
+  volumeMode: Filesystem
+  accessModes:
+    - "ReadWriteOnce"
+  storageClassName: "csi-rbd-sc"
+  resources:
+    requests:
+      storage: 10Gi
 
 ---
 
@@ -22,9 +38,9 @@ metadata:
   labels:
     app: certificate-authority
 spec:
-  replicas: 1
   strategy:
     type: Recreate
+  replicas: 1
   selector:
     matchLabels:
       app: certificate-authority
@@ -38,19 +54,17 @@ spec:
         fsGroupChangePolicy: "Always"
       imagePullSecrets:
         - name: regcred
+      dnsPolicy: None
+      dnsConfig:
+        nameservers:
+          - 172.16.1.2
       volumes:
         - name: step-ca
           persistentVolumeClaim:
-            claimName: monitoring-ca
-        - name: certificate-authority-password
+            claimName: certificate-authority
+        - name: ca-password
           secret:
             secretName: certificate-authority-password
-            defaultMode: 0400
-      dnsPolicy: "None"
-      dnsConfig:
-        nameservers:
-          - 1.1.1.1
-          - 8.8.8.8
       containers:
         - name: certificate-authority
           image: docker.io/zevrant/step-ca:latest
@@ -59,15 +73,13 @@ spec:
           volumeMounts:
             - name: step-ca
               mountPath: /opt/step-ca
-            - mountPath: /var/zevrant-services/ca-password
-              name: certificate-authority-password
+            - name: ca-password
+              mountPath: /var/zevrant-services/ca-password
           env:
             - name: CA_NAME
-              value: 'Zevrant Services monitoring'
+              value: 'Zevrant Services Monitoring'
             - name: CA_DNS
               value: certificate-authority
-            - name: CA_DNS_1
-              value: certificate-authority.monitoring.svc.cluster.local
             - name: SECRET_FILE_PATH
               value: /var/zevrant-services/ca-password/password
 #          readinessProbe:

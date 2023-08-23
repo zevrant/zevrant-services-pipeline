@@ -8,15 +8,15 @@ metadata:
 spec:
   secretName: thanos-tls
   issuerRef:
-    name: acme-issuer
+    name: step-ca
   privateKey:
     algorithm: ECDSA
     size: 256
     rotationPolicy: Always
-  duration: 2160h
-  renewBefore: 2000h
+  duration: 24h
+  renewBefore: 23h
   dnsNames:
-    - thanos.preprod.zevrant-services.com
+    - thanos.preprod.zevrant-services.internal
 
 ---
 
@@ -28,12 +28,12 @@ metadata:
 spec:
   secretName: prometheus-tls
   issuerRef:
-    name: acme-issuer
+    name: step-ca
   privateKey:
     algorithm: ECDSA
     size: 256
     rotationPolicy: Always
-  duration: 2160h
-  renewBefore: 2000h
+  duration: 24h
+  renewBefore: 23h
   dnsNames:
-    - prometheus.zevrant-services.com
+    - prometheus.zevrant-services.internal

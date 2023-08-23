@@ -5,7 +5,7 @@ metadata:
 spec:
   secretName: jenkins-tls
   issuerRef:
-    name: acme-issuer
+    name: lets-encrypt
   privateKey:
     algorithm: ECDSA
     size: 256
@@ -14,3 +14,23 @@ spec:
   renewBefore: 1440h # 60d
   dnsNames:
     - jenkins.zevrant-services.com
+
+---
+
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: jenkins-internal
+spec:
+  secretName: jenkins-internal-tls
+  issuerRef:
+    name: step-ca
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+    rotationPolicy: Always
+  duration: 24h
+  renewBefore: 23h
+  commonName: jenkins.zevrant-services.internal
+  dnsNames:
+    - jenkins.zevrant-services.internal

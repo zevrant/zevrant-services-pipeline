@@ -1,6 +1,9 @@
 apiVersion: v1
 data:
   Corefile: |
+    zevrant-services.internal:53 {
+      forward . 172.16.1.2
+    }
     .:53 {
         errors
         health {

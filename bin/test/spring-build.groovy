@@ -6,6 +6,7 @@ import com.zevrant.services.ServiceLoader
 import com.zevrant.services.pojo.Version
 import com.zevrant.services.services.KubernetesService
 import com.zevrant.services.services.VersionService
+import com.zevrant.services.services.ImageBuildService
 
 List<String> angularProjects = ["zevrant-home-ui"];
 
@@ -14,6 +15,8 @@ VersionService versionService = ServiceLoader.load(binding, VersionService) as V
 KubernetesService kubernetesService = ServiceLoader.load(binding, KubernetesService) as KubernetesService
 Version version = null
 String REPOSITORY = scm.getUserRemoteConfigs()[0].getUrl().tokenize('/').last().split("\\.")[0]
+ImageBuildService imageBuildService = new ImageBuildService(this)
+
 pipeline {
     agent {
         kubernetes {
@@ -27,7 +30,7 @@ pipeline {
                 AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
                 AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
                 AWS_DEFAULT_REGION = "us-east-1"
-                DOCKER_TOKEN = credentials('jenkins-dockerhub')
+                DOCKER_CREDENTIALS = credentials('jenkins-harbor')
             }
             steps {
                 script {
@@ -42,7 +45,7 @@ pipeline {
                                                 url: "https://gitea.zevrant-services.internal/zevrant-services/zevrant-services-pipeline/raw/branch/main/docker/dockerfile/spring-microservice-template/Dockerfile"
                                         ).content
                                         String baseImage = ((String[]) dockerfile.split("\n"))[0].split(" ")[1]
-                                        sh 'echo $DOCKER_TOKEN | buildah login -u jenkins --password-stdin docker.io'
+                                        imageBuildService.registryLogin(DOCKER_CREDENTIALS_USR, DOCKER_CREDENTIALS_PSW, 'harbor.zevrant-services.com')
                                         retry(3, {
                                             timeout(time: 5, unit: 'MINUTES') {
                                                 sh "buildah pull $baseImage"
@@ -147,7 +150,7 @@ pipeline {
                 AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
                 AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
                 AWS_DEFAULT_REGION = "us-east-1"
-                DOCKER_TOKEN = credentials('jenkins-dockerhub')
+                DOCKER_CREDENTIALS = credentials('jenkins-harbor')
             }
             steps {
                 script {
@@ -158,7 +161,7 @@ pipeline {
                                     : "${version.toVersionCodeString()}-${branchName}" as String
                             def appYaml = readYaml(file: 'src/main/resources/application.yml')
                             String containerPort = appYaml.server.port
-                            sh 'echo $DOCKER_TOKEN | buildah login -u \'robot$jenkins\' --password-stdin docker.io'
+                            imageBuildService.registryLogin(DOCKER_CREDENTIALS_USR, DOCKER_CREDENTIALS_PSW, 'harbor.zevrant-services.com')
                             sh "buildah bud --build-arg serviceName=$REPOSITORY --build-arg containerPort=$containerPort -t docker.io/zevrant/$REPOSITORY:${versionString} ."
                             sh "buildah push docker.io/zevrant/$REPOSITORY:${versionString}"
                         }

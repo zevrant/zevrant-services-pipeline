@@ -4,24 +4,26 @@ metadata:
   name: certificate-authority
   namespace: minio-operator
 spec:
-  type: NodePort
+  type: ClusterIP
   ports:
     - port: 443
       targetPort: 8443
       name: https
   selector:
     app: certificate-authority
+
 ---
 
-kind: PersistentVolumeClaim
 apiVersion: v1
+kind: PersistentVolumeClaim
 metadata:
-  name: minio-operator-ca
+  name: certificate-authority
   namespace: minio-operator
 spec:
-  storageClassName: kadalu.preprod-shared
+  volumeMode: Filesystem
   accessModes:
-    - ReadWriteOnce
+    - "ReadWriteOnce"
+  storageClassName: "csi-rbd-sc"
   resources:
     requests:
       storage: 10Gi
@@ -36,9 +38,9 @@ metadata:
   labels:
     app: certificate-authority
 spec:
-  replicas: 1
   strategy:
     type: Recreate
+  replicas: 1
   selector:
     matchLabels:
       app: certificate-authority
@@ -52,19 +54,17 @@ spec:
         fsGroupChangePolicy: "Always"
       imagePullSecrets:
         - name: regcred
+      dnsPolicy: None
+      dnsConfig:
+        nameservers:
+          - 172.16.1.2
       volumes:
         - name: step-ca
           persistentVolumeClaim:
-            claimName: minio-operator-ca
-        - name: certificate-authority-password
+            claimName: certificate-authority
+        - name: ca-password
           secret:
             secretName: certificate-authority-password
-            defaultMode: 0400
-      dnsPolicy: "None"
-      dnsConfig:
-        nameservers:
-          - 1.1.1.1
-          - 8.8.8.8
       containers:
         - name: certificate-authority
           image: docker.io/zevrant/step-ca:latest
@@ -73,15 +73,13 @@ spec:
           volumeMounts:
             - name: step-ca
               mountPath: /opt/step-ca
-            - mountPath: /var/zevrant-services/ca-password
-              name: certificate-authority-password
+            - name: ca-password
+              mountPath: /var/zevrant-services/ca-password
           env:
             - name: CA_NAME
               value: 'Zevrant Services Minio Operator'
             - name: CA_DNS
               value: certificate-authority
-            - name: CA_DNS_1
-              value: certificate-authority.preprod-shared.svc.cluster.local
             - name: SECRET_FILE_PATH
               value: /var/zevrant-services/ca-password/password
 #          readinessProbe:

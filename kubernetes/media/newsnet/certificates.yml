@@ -1,0 +1,77 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: sabnzbd
+  namespace: media
+spec:
+  secretName: sabnzbd-tls
+  issuerRef:
+    name: step-ca
+  duration: 24h
+  renewBefore: 23h
+  dnsNames:
+    - sabnzbd.preprod.zevrant-services.internal
+
+---
+
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: sonarr
+  namespace: media
+spec:
+  secretName: sonarr-tls
+  issuerRef:
+    name: step-ca
+  duration: 24h
+  renewBefore: 23h
+  dnsNames:
+    - sonarr.preprod.zevrant-services.internal
+
+---
+
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: radarr
+  namespace: media
+spec:
+  secretName: radarr-tls
+  issuerRef:
+    name: step-ca
+  duration: 24h
+  renewBefore: 23h
+  dnsNames:
+    - radarr.preprod.zevrant-services.internal
+
+---
+
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: jellyfin
+  namespace: media
+spec:
+  secretName: jellyfin-tls
+  issuerRef:
+    name: acme-issuer
+  duration: 24h
+  renewBefore: 23h
+  dnsNames:
+    - jellyfin.preprod.zevrant-services.com
+
+---
+
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: jellyfin-internal
+  namespace: media
+spec:
+  secretName: jellyfin-internal-tls
+  issuerRef:
+    name: step-ca
+  duration: 24h
+  renewBefore: 23h
+  dnsNames:
+    - jellyfin.preprod.zevrant-services.internal

@@ -1,7 +1,7 @@
 apiVersion: cert-manager.io/v1
 kind: Issuer
 metadata:
-  name: acme-issuer
+  name: lets-encrypt
   namespace: media
 spec:
   acme:
@@ -13,20 +13,37 @@ spec:
     solvers:
       - selector:
           dnsZones:
-            - 'zevrant-services.internal'
-        dns01:
-          rfc2136:
-            nameserver: 172.16.1.2:53
-            tsigKeyName: rndc-key
-            tsigAlgorithm: HMACMD5
-            tsigSecretSecretRef:
-              name: dns-update-secret
-              key: secret
-      - selector:
-          dnsZones:
             - 'zevrant-services.com'
         dns01:
           cloudflare:
             apiTokenSecretRef:
               name: cloudflare-token
               key: secret-access-key
+
+---
+
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: step-ca
+  namespace: media
+spec:
+  acme:
+    email: gdittrick@zevrant-services.com
+    privateKeySecretRef:
+      name: step-ca-private-key
+      key: privateKey
+    server: https://certificate-authority.media.svc.cluster.local/acme/acme/directory
+    caBundle: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUNEVENDQWJPZ0F3SUJBZ0lVY2ZNcWdUVWtpSkdXMU5JNldBZFE4MTVEeUdRd0NnWUlLb1pJemowRUF3SXcKVnpFTE1Ba0dBMVVFQmhNQ1ZWTXhFVEFQQmdOVkJBZ01DRTFwWTJocFoyRnVNUkV3RHdZRFZRUUhEQWhDWVhrZwpRMmwwZVRFaU1DQUdBMVVFQXd3WmVtVjJjbUZ1ZEMxelpYSjJhV05sY3k1cGJuUmxjbTVoYkRBZUZ3MHlNekE0Ck1qRXhPRFF4TlRkYUZ3MHpNekE0TVRneE9EUXhOVGRhTUZjeEN6QUpCZ05WQkFZVEFsVlRNUkV3RHdZRFZRUUkKREFoTmFXTm9hV2RoYmpFUk1BOEdBMVVFQnd3SVFtRjVJRU5wZEhreElqQWdCZ05WQkFNTUdYcGxkbkpoYm5RdApjMlZ5ZG1salpYTXVhVzUwWlhKdVlXd3dXVEFUQmdjcWhrak9QUUlCQmdncWhrak9QUU1CQndOQ0FBUlJ2Y1lCClFsdjdCK1ZyNUZET0hiZzlCWHZsN3BXcmtaVUd4d0FzT0Vhd2w0WXpELzNLdk9BeEY4UmRZbk80YlNSSnVVN0IKdGZ6Yms4MWJuUXlLREZmaW8xMHdXekFkQmdOVkhRNEVGZ1FVRXBlblZYSGxidlpjREF0SDZjL09qRmllVUMwdwpId1lEVlIwakJCZ3dGb0FVRXBlblZYSGxidlpjREF0SDZjL09qRmllVUMwd0RBWURWUjBUQkFVd0F3RUIvekFMCkJnTlZIUThFQkFNQ0FRWXdDZ1lJS29aSXpqMEVBd0lEU0FBd1JRSWdQZEhjUEUvdGZrbkNlUFpGTlVEa0wvcVEKTzFiazlnNnBxT3hNM2JUbDVITUNJUUR1c3ZBNlhMcjIzRFVDbGp3VjhrR0tMT1Zod3BWQTlBOENBdzJXYkJjLwoxQT09Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K
+    solvers:
+      - selector:
+          dnsZones:
+            - 'zevrant-services.internal'
+        dns01:
+          rfc2136:
+            nameserver: 172.16.1.2
+            tsigKeyName: "TRANSFER"
+            tsigAlgorithm: "HMACSHA512"
+            tsigSecretSecretRef:
+              name: "dns-update-secret"
+              key: "secret"
