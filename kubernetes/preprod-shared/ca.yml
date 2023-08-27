@@ -67,7 +67,7 @@ spec:
           - 8.8.8.8
       containers:
         - name: certificate-authority
-          image: docker.io/zevrant/step-ca:latest
+          image: harbor.zevrant-services.internal/zevrant-services/step-ca:latest
 #          command:
 #            - /bin/bash
 #          args:

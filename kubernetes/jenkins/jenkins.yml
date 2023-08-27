@@ -128,7 +128,7 @@ spec:
         - name: regcred
       initContainers:
         - name: secret-init
-          image: docker.io/zevrant/ubuntu-base:latest
+          image: harbor.zevrant-services.internal/zevrant-services/ubuntu-base:latest
           imagePullPolicy: IfNotPresent
           securityContext:
             runAsUser: 1000
@@ -152,7 +152,7 @@ spec:
               openssl pkcs12 -export -inkey /opt/acme/certs/..data/tls.key -in /opt/acme/certs/..data/tls.crt -passout 'file:/opt/secrets/password' -out /opt/keystore/zevrant-services.p12
       containers:
         - name: jenkins
-          image: docker.io/zevrant/jenkins:lts-jdk17
+          image: harbor.zevrant-services.internal/zevrant-services/jenkins:lts-jdk17
           imagePullPolicy: IfNotPresent
           command:
             - /bin/sh

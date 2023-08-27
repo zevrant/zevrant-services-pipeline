@@ -113,7 +113,7 @@ spec:
         - name: regcred
       initContainers:
         - name: secret-init
-          image: docker.io/zevrant/ubuntu-base:latest
+          image: harbor.zevrant-services.internal/zevrant-services/ubuntu-base:latest
           imagePullPolicy: Always
           volumeMounts:
             - name: vault-data
@@ -132,7 +132,7 @@ spec:
               chown -R 1000:1000 /opt/secrets
       containers:
         - name: vault-unsealer
-          image: docker.io/zevrant/vault-unsealer:latest
+          image: harbor.zevrant-services.internal/zevrant-services/vault-unsealer:latest
           imagePullPolicy: "Always"
           volumeMounts:
             - mountPath: /var/zevrant-services

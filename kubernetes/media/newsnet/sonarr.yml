@@ -106,28 +106,25 @@ spec:
         - name: config
           configMap:
             name: sonarr
-        - name: sonarr-config
-          emptyDir:
-            sizeLimit: 1Gi
-      initContainers:
-        - name: init
-          image: harbor.zevrant-services.com/dockerhub/ubuntu:latest
-          imagePullPolicy: Always
-          volumeMounts:
-            - name: config
-              mountPath: /configmap/config
-            - name: sonarr-config
-              mountPath: /config
-          command:
-            - /bin/bash
-          args:
-            - -c
-            - |
-              ls -l /configmap/config
-              cp /configmap/config/sonarr.ini /config
+#      initContainers:
+#        - name: init
+#          image: harbor.zevrant-services.internal/dockerhub/ubuntu:latest
+#          imagePullPolicy: Always
+#          volumeMounts:
+#            - name: config
+#              mountPath: /configmap/config
+#            - name: sonarr-config
+#              mountPath: /config
+#          command:
+#            - /bin/bash
+#          args:
+#            - -c
+#            - |
+#              ls -l /configmap/config
+#              cp /configmap/config/config.xml /config
       containers:
         - name: sonarr
-          image: harbor.zevrant-services.com/ghcr/hotio/sonarr:v4-9892b99
+          image: harbor.zevrant-services.internal/ghcr/hotio/sonarr:v4-9892b99
           imagePullPolicy: Always
           volumeMounts:
             - name: media-storage
@@ -172,7 +169,7 @@ data:
         <LaunchBrowser>True</LaunchBrowser>
         <ApiKey>19359964ef4f4a99936fecef730c6da4</ApiKey>
         <AuthenticationMethod>None</AuthenticationMethod>
-        <AuthenticationRequired>Enabled</AuthenticationRequired>
+        <AuthenticationRequired>Disabled</AuthenticationRequired>
         <Branch>develop</Branch>
         <LogLevel>info</LogLevel>
         <SslCertPath></SslCertPath>

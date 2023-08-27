@@ -27,7 +27,7 @@ pipeline {
             steps {
                 script {
                     List<FileWrapper> files = findFiles(glob: '*/*/buildConfig.json')
-                    images = imageBuildService.parseAvailableImages(files, 'harbor.zevrant-services.com', 'zevrant-services')
+                    images = imageBuildService.parseAvailableImages(files, 'harbor.zevrant-services.internal', 'zevrant-services')
                 }
             }
         }
@@ -38,8 +38,8 @@ pipeline {
             }
             steps {
                 script {
-                    imageBuildService.registryLogin(DOCKER_CREDENTIALS_USR, DOCKER_CREDENTIALS_PSW, 'harbor.zevrant-services.com')
-                    imageBuildService.buildImagesInParallel(images, 'harbor.zevrant-services.com')
+                    imageBuildService.registryLogin(DOCKER_CREDENTIALS_USR, DOCKER_CREDENTIALS_PSW, 'harbor.zevrant-services.internal')
+                    imageBuildService.buildImagesInParallel(images, 'harbor.zevrant-services.internal')
                 }
             }
 

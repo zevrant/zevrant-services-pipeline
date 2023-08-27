@@ -39,7 +39,7 @@ spec:
 
       containers:
         - name: solaris-foundry
-          image: docker.io/zevrant/zevrant-foundry-services:0.9.254
+          image: harbor.zevrant-services.internal/zevrant-services/zevrant-foundry-services:0.9.254
           imagePullPolicy: Always
           ports:
             - containerPort: 30000

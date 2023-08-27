@@ -46,7 +46,7 @@
 #      register: sshPubKey
 #    - debug:
 #        var: sshPubKey.stdout
-    - name: Create Kubernetes VM
+    - name: Create VM
       community.general.proxmox_kvm:
         vmid: "{{ vmId }}"
         node: "{{ destHost }}"
@@ -64,8 +64,8 @@
         localtime: true
         machine: pc
         migrate_speed: 0
-        name: "kubernetes-{{ nodeType }}-{{ vmNumber }}"
-        description: "kubernetes {{nodeType}} {{vmNumber}}"
+        name: "{{ softwareType }}-{{ nodeType }}-{{ vmNumber }}"
+        description: "{{ softwareType }} {{nodeType}} {{vmNumber}}"
         cores: "{{ cpus }}"
         cpu: Westmere
         memory: "{{ memory }}"
@@ -83,7 +83,7 @@
         sshkeys: "{{ sshKey }}"
         pool: Default
         tags:
-          - kubernetes
+          - "{{ softwareType }}"
           - "{{ nodeType }}"
         validate_certs: false
         agent: 'enabled=1'

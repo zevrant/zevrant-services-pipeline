@@ -15,7 +15,7 @@
 #            - name: regcred
 #          containers:
 #            - name: kubectl
-#              image: docker.io/zevrant/kubectl:latest
+#              image: harbor.zevrant-services.internal/zevrant-services/kubectl:latest
 #              imagePullPolicy: Always
 #              command:
 #                - /bin/bash

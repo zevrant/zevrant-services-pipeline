@@ -1,0 +1,37 @@
+- name: import Known Hosts
+  hosts: 127.0.0.1
+  tasks:
+    - name: Import SSH Keys
+      ansible.builtin.command:
+        cmd: ssh-keyscan -H "{{ item }}" >> ~/.ssh/known_hosts
+      loop: "{{ hosts }}"
+- name: Setup Jenkins Agent On Host
+  hosts: all
+  become: true
+  become_user: root
+  tasks:
+    - name: Update Packages
+      ansible.builtin.yum:
+        use_backend: yum4
+        update_cache: true
+        name: '*'
+        state: latest
+    - name: Install Dependencies
+      ansible.builtin.yum:
+        use_backend: yum4
+        pkg:
+          - java-17-openjdk-devel
+          - git
+          - git-lfs
+          - buildah
+        state: latest
+    - name: Create Jenkins User
+      ansible.builtin.command:
+        cmd: adduser --system --shel /bin/bash jenkins
+    - name: Create Jenkins Agent Directory
+      ansible.builtin.file:
+        path: /home/jenkins/agent
+        state: directory
+        mode: '0755'
+        owner: jenkins
+        group: jenkins

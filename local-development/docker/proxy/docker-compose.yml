@@ -1,7 +1,7 @@
 version: '3.5'
 services:
   proxy:
-    image: docker.io/zevrant/localdev-proxy:latest
+    image: harbor.zevrant-services.internal/zevrant-services/localdev-proxy:latest
     container_name: localdev-proxy
     ports:
       - "9090:80"

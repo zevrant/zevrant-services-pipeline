@@ -9,7 +9,7 @@ quorumCount: 1
 failoverTimeout: 10000
 downAfterMillis: 5000
 sentinelReplicas: 3
-sentinelImage: docker.io/zevrant/redis-sentinel:latest
+sentinelImage: harbor.zevrant-services.internal/zevrant-services/redis-sentinel:latest
 redisImage: docker.io/redis:7.2-rc3
 additionalUsers:
   - username: redis

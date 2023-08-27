@@ -51,7 +51,7 @@ spec:
             defaultMode: 0400
       initContainers:
         - name: init-myservice
-          image: docker.io/zevrant/ubuntu-base:latest
+          image: harbor.zevrant-services.internal/zevrant-services/ubuntu-base:latest
           volumeMounts:
             - mountPath: /opt/secrets
               name: password-volume
@@ -65,7 +65,7 @@ spec:
               chown -R 1000:1000 /opt/secrets
       containers:
         - name: vault-unsealer
-          image: docker.io/zevrant/vault-unsealer:latest
+          image: harbor.zevrant-services.internal/zevrant-services/vault-unsealer:latest
           imagePullPolicy: "Always"
           volumeMounts:
             - mountPath: /var/zevrant-services
@@ -76,7 +76,7 @@ spec:
                 fieldRef:
                   fieldPath: status.podIP
         - name: zevrant-vault-service
-          image: docker.io/zevrant/vault:latest
+          image: harbor.zevrant-services.internal/zevrant-services/vault:latest
           securityContext:
             capabilities:
               add:

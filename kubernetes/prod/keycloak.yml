@@ -35,7 +35,7 @@ spec:
 
       containers:
         - name: zevrant-keycloak-service
-          image: docker.io/zevrant/keycloak-service:latest
+          image: harbor.zevrant-services.internal/zevrant-services/keycloak-service:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8443

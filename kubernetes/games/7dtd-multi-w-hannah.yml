@@ -109,7 +109,7 @@ spec:
         - name: regcred
       containers:
         - name: 7dtd
-          image: docker.io/zevrant/7dtd:latest
+          image: harbor.zevrant-services.internal/zevrant-services/7dtd:latest
           imagePullPolicy: Always
           command:
             - /bin/bash

@@ -105,7 +105,7 @@ spec:
         - name: harbor-ro
       initContainers:
         - name: init
-          image: harbor.zevrant-services.com/dockerhub/ubuntu:latest
+          image: harbor.zevrant-services.internal/dockerhub/ubuntu:latest
           imagePullPolicy: Always
           volumeMounts:
             - name: config-mount
@@ -126,7 +126,7 @@ spec:
                   fieldPath: spec.nodeName
       containers:
         - name: promtail
-          image: harbor.zevrant-services.com/dockerhub/grafana/promtail:latest
+          image: harbor.zevrant-services.internal/dockerhub/grafana/promtail:latest
           imagePullPolicy: Always
           args:
             - -config.file=/mnt/config/config.yml

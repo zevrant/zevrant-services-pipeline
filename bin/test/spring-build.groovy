@@ -45,7 +45,7 @@ pipeline {
                                                 url: "https://gitea.zevrant-services.internal/zevrant-services/zevrant-services-pipeline/raw/branch/main/docker/dockerfile/spring-microservice-template/Dockerfile"
                                         ).content
                                         String baseImage = ((String[]) dockerfile.split("\n"))[0].split(" ")[1]
-                                        imageBuildService.registryLogin(DOCKER_CREDENTIALS_USR, DOCKER_CREDENTIALS_PSW, 'harbor.zevrant-services.com')
+                                        imageBuildService.registryLogin(DOCKER_CREDENTIALS_USR, DOCKER_CREDENTIALS_PSW, 'harbor.zevrant-services.internal')
                                         retry(3, {
                                             timeout(time: 5, unit: 'MINUTES') {
                                                 sh "buildah pull $baseImage"
@@ -161,9 +161,9 @@ pipeline {
                                     : "${version.toVersionCodeString()}-${branchName}" as String
                             def appYaml = readYaml(file: 'src/main/resources/application.yml')
                             String containerPort = appYaml.server.port
-                            imageBuildService.registryLogin(DOCKER_CREDENTIALS_USR, DOCKER_CREDENTIALS_PSW, 'harbor.zevrant-services.com')
-                            sh "buildah bud --build-arg serviceName=$REPOSITORY --build-arg containerPort=$containerPort -t docker.io/zevrant/$REPOSITORY:${versionString} ."
-                            sh "buildah push docker.io/zevrant/$REPOSITORY:${versionString}"
+                            imageBuildService.registryLogin(DOCKER_CREDENTIALS_USR, DOCKER_CREDENTIALS_PSW, 'harbor.zevrant-services.internal')
+                            sh "buildah bud --build-arg serviceName=$REPOSITORY --build-arg containerPort=$containerPort -t harbor.zevrant-services.internal/zevrant-services/$REPOSITORY:${versionString} ."
+                            sh "buildah push harbor.zevrant-services.internal/zevrant-services/$REPOSITORY:${versionString}"
                         }
                     }
                 }

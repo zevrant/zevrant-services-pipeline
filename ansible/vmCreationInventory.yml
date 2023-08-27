@@ -16,6 +16,7 @@ all:
         cpus: 4
         memory: 4096
         nodeType: master
+        softwareType: kubernetes
       hosts:
         proxmox-01:
           destHost: proxmox-01
@@ -49,6 +50,7 @@ all:
           ipAddress2: 172.16.3.10
     preprodWorkers:
       vars:
+        softwareType: kubernetes
         cpus: 18
         memory: 86016
         nodeType: worker
@@ -84,3 +86,17 @@ all:
           ipAddress: 172.16.2.15
           ipAddress2: 172.16.3.15
           cpus: 8
+    jenkinsNodes:
+      vars:
+        softwareType: kubernetes
+      hosts:
+        proxmox-04.preprod.zevrant-services.internal:
+          destHost: proxmox-04
+          vmId: 200
+          vmNumber: 1
+          ipAddress: 172.16.2.20
+          ipAddress2: 172.16.3.20
+          cpus: 2
+          memory: 4096
+          nodeType: container-build
+          softwareType: jenkins
