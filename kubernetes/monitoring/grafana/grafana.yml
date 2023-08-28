@@ -22,11 +22,11 @@ metadata:
 spec:
   secretName: grafana-tls
   issuerRef:
-    name: acme-issuer
+    name: step-ca
   duration: 24h
   renewBefore: 23h
   dnsNames:
-    - grafana.preprod.zevrant-services.com
+    - grafana.preprod.zevrant-services.internal
 
 ---
 
@@ -40,10 +40,10 @@ metadata:
     nginx.ingress.kubernetes.io/ssl-passthrough: "true"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
     ingress.kubernetes.io/ssl-passthrough: "true"
-#    nginx.ingress.kubernetes.io/rewrite-target: https://minio.zevrant-services.com/api/v1/buckets/$1
+#    nginx.ingress.kubernetes.io/rewrite-target: https://minio.zevrant-services.internal/api/v1/buckets/$1
 spec:
   rules:
-    - host: grafana.preprod.zevrant-services.com
+    - host: grafana.preprod.zevrant-services.internal
       http:
         paths:
           - path: /
@@ -93,7 +93,7 @@ spec:
         - name: regcred
       containers:
         - name: grafana
-          image: docker.io/grafana/grafana-oss:latest
+          image: harbor.zevrant-services.internal/zevrant-services/grafana:latest
           imagePullPolicy: Always
           volumeMounts:
             - name: grafana-cert
@@ -183,5 +183,5 @@ data:
     ha_advertise_address = "${POD_IP}:9094"
     
     [server]
-    domain = grafana.preprod.zevrant-services.com
+    domain = grafana.preprod.zevrant-services.internal
     root_url = %(protocol)s://%(domain)s

@@ -38,6 +38,47 @@ spec:
 
 ---
 
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: minio-shared-external
+  namespace: shared
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "https"
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+#    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+spec:
+  rules:
+    - host: minio.zevrant-services.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: shared-console
+                port:
+                  name: https-console
+    - host: api.minio.zevrant-services.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: minio
+                port:
+                  name: https-minio
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - minio.zevrant-services.com
+        - api.minio.zevrant-services.com
+      secretName: minio-shared-external-tls
+
+
+---
+
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
@@ -56,3 +97,22 @@ spec:
     - minio.zevrant-services.internal
     - api.minio.zevrant-services.internal
 
+---
+
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: minio-shared-external
+spec:
+  secretName: minio-shared-external-tls
+  issuerRef:
+    name: lets-encrypt
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+    rotationPolicy: Always
+  duration: 2160h
+  renewBefore: 2000h
+  dnsNames:
+    - minio.zevrant-services.com
+    - api.minio.zevrant-services.com

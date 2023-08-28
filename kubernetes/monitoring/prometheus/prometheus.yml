@@ -45,7 +45,7 @@ spec:
   duration: 48h
   renewBefore: 24h
   dnsNames:
-    - prometheus-monitoring.preprod.zevrant-services.com
+    - prometheus-monitoring.preprod.zevrant-services.internal
 #
 ---
 
@@ -142,7 +142,7 @@ spec:
             claimName: metrics-database
         - name: prometheus-cert
           secret:
-            secretName: prometheus-monitoring-tls
+            secretName: prometheus-tls
         - name: password-volume
           emptyDir:
             sizeLimit: "1Mi"
@@ -169,9 +169,11 @@ spec:
               mountPath: /etc/prometheus/
             - name: prometheus-data
               mountPath: /prometheus
+            - name: prometheus-cert
+              mountPath: /var/run/zevrant-services/prometheus-certs/
           env:
             - name: prometheus_API_ADDR
-              value: https://prometheus-monitoring.preprod.zevrant-services.com
+              value: https://prometheus-monitoring.preprod.zevrant-services.internal
           ports:
             - containerPort: 9090
           resources:
@@ -232,35 +234,43 @@ data:
         env: monitoring
         region: us-east-1
     remote_write: 
-      - url: https://thanos-receive.preprod.zevrant-services.com/api/v1/receive
+      - url: https://thanos-receive.preprod.zevrant-services.internal/api/v1/receive
+        tls_config:
+          ca_file: /var/run/zevrant-services/prometheus-certs/tls.crt
       
     scrape_configs:
+      - job_name: x509-certificate-exporter
+        honor_timestamps: true
+        metrics_path: /metrics
+        static_configs:
+          - targets:
+            - x509-certificate-exporter.shared.svc.cluster.local:9793
       - job_name: ceph-exporter
         static_configs: 
           - targets:
-            - proxmox-01.preprod.zevrant-services.com:9283
-            - proxmox-02.preprod.zevrant-services.com:9283
-            - proxmox-04.preprod.zevrant-services.com:9283
-            - proxmox-05.preprod.zevrant-services.com:9283
-            - proxmox-06.preprod.zevrant-services.com:9283
+            - proxmox-01.preprod.zevrant-services.internal:9283
+            - proxmox-02.preprod.zevrant-services.internal:9283
+            - proxmox-04.preprod.zevrant-services.internal:9283
+            - proxmox-05.preprod.zevrant-services.internal:9283
+            - proxmox-06.preprod.zevrant-services.internal:9283
       - job_name: node-exporter
         static_configs:
           - targets:
-              - kubernetes-master-01.preprod.zevrant-services.com:9100
-              - kubernetes-master-02.preprod.zevrant-services.com:9100
-              - kubernetes-master-03.preprod.zevrant-services.com:9100
-              - kubernetes-master-04.preprod.zevrant-services.com:9100
-              - kubernetes-master-05.preprod.zevrant-services.com:9100
-              - kubernetes-worker-01.preprod.zevrant-services.com:9100
-              - kubernetes-worker-02.preprod.zevrant-services.com:9100
-              - kubernetes-worker-03.preprod.zevrant-services.com:9100
-              - kubernetes-worker-04.preprod.zevrant-services.com:9100
-              - kubernetes-worker-05.preprod.zevrant-services.com:9100
-              - proxmox-01.preprod.zevrant-services.com:9100
-              - proxmox-02.preprod.zevrant-services.com:9100
-              - proxmox-04.preprod.zevrant-services.com:9100
-              - proxmox-05.preprod.zevrant-services.com:9100
-              - proxmox-06.preprod.zevrant-services.com:9100
+              - kubernetes-master-01.preprod.zevrant-services.internal:9100
+              - kubernetes-master-02.preprod.zevrant-services.internal:9100
+              - kubernetes-master-03.preprod.zevrant-services.internal:9100
+              - kubernetes-master-04.preprod.zevrant-services.internal:9100
+              - kubernetes-master-05.preprod.zevrant-services.internal:9100
+              - kubernetes-worker-01.preprod.zevrant-services.internal:9100
+              - kubernetes-worker-02.preprod.zevrant-services.internal:9100
+              - kubernetes-worker-03.preprod.zevrant-services.internal:9100
+              - kubernetes-worker-04.preprod.zevrant-services.internal:9100
+              - kubernetes-worker-05.preprod.zevrant-services.internal:9100
+              - proxmox-01.preprod.zevrant-services.internal:9100
+              - proxmox-02.preprod.zevrant-services.internal:9100
+              - proxmox-04.preprod.zevrant-services.internal:9100
+              - proxmox-05.preprod.zevrant-services.internal:9100
+              - proxmox-06.preprod.zevrant-services.internal:9100
       - job_name: kube-state-metrics
         honor_timestamps: true
         metrics_path: /metrics

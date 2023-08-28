@@ -26,14 +26,22 @@ class KubernetesServiceCollection {
                     url: 'gitea.zevrant-services.internal'
             ]),
             new KubernetesService([
-                    serviceName: 'artifactory-jcr',
+                    serviceName: 'harbor-trivy',
                     includesDb: true,
                     environments: [
                             KubernetesEnvironment.SHARED
                     ],
                     url: 'docker.io',
                     serviceType: ServiceType.STATEFULSET
-            ])
+            ]),
+            new KubernetesService([
+                    serviceName: 'harbor-core',
+                    includesDb: true,
+                    environments: [
+                            KubernetesEnvironment.SHARED
+                    ],
+                    url: 'gitea.zevrant-services.internal'
+            ]),
     ])
 
     static List<KubernetesService> getServices() {

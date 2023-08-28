@@ -9,7 +9,7 @@ metadata:
 #    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
 spec:
   rules:
-    - host: minio-monitoring.preprod.zevrant-services.com
+    - host: minio-monitoring.preprod.zevrant-services.internal
       http:
         paths:
           - path: /
@@ -19,7 +19,7 @@ spec:
                 name: monitoring-console
                 port:
                   name: https-console
-    - host: api.minio-monitoring.preprod.zevrant-services.com
+    - host: api.minio-monitoring.preprod.zevrant-services.internal
       http:
         paths:
           - path: /
@@ -32,8 +32,8 @@ spec:
   ingressClassName: nginx
   tls:
     - hosts:
-      - minio-monitoring.preprod.zevrant-services.com
-      - api.minio-monitoring.preprod.zevrant-services.com
+      - minio-monitoring.preprod.zevrant-services.internal
+      - api.minio-monitoring.preprod.zevrant-services.internal
       secretName: minio-monitoring-tls
 
 ---
@@ -46,7 +46,7 @@ metadata:
 spec:
   secretName: minio-monitoring-tls
   issuerRef:
-    name: acme-issuer
+    name: step-ca
   privateKey:
     algorithm: ECDSA
     size: 256
@@ -54,6 +54,6 @@ spec:
   duration: 24h
   renewBefore: 13h
   dnsNames:
-    - minio-monitoring.preprod.zevrant-services.com
-    - api.minio-monitoring.preprod.zevrant-services.com
+    - minio-monitoring.preprod.zevrant-services.internal
+    - api.minio-monitoring.preprod.zevrant-services.internal
 

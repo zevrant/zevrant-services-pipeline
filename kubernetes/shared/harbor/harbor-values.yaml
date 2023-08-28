@@ -289,15 +289,15 @@ persistence:
       # Set an existing secret for S3 accesskey and secretkey
       # keys in the secret should be REGISTRY_STORAGE_S3_ACCESSKEY and REGISTRY_STORAGE_S3_SECRETKEY for registry
       existingSecret: "harbor-minio-access"
-      region: us-east-2
+      region: us-east-1
       bucket: harbor
       #accesskey: awsaccesskey
       #secretkey: awssecretkey
-      regionendpoint: https://api.minio.zevrant-services.internal
+      regionendpoint: https://api.minio.zevrant-services.com
       #encrypt: false
       #keyid: mykeyid
       #secure: true
-      #skipverify: false
+      #skipverify: true
       #v4auth: true
       #chunksize: "5242880"
       #rootdirectory: /s3/object/name/prefix

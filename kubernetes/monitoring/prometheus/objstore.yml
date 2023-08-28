@@ -1,8 +1,10 @@
 type: s3
 config:
   bucket: thanos
-  endpoint: api.minio-monitoring.preprod.zevrant-services.com
+  endpoint: api.minio-monitoring.preprod.zevrant-services.internal
   region: ""
+  http_config:
+    insecure_skip_verify: true
   aws_sdk_auth: false
-  access_key: "ACCESS_KEY"
-  secret_key: "SECRET_ACCESS_KEY"
+  access_key: "EVOQUWisy5Gj3DEg4cfD"
+  secret_key: "UdJumOLluGB2aVtJZpXbd9j12Rwudz4tsJBk8JMC"

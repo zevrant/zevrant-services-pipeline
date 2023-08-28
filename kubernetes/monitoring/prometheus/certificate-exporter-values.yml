@@ -1,0 +1,10 @@
+prometheusServiceMonitor:
+  create: false
+prometheusRules:
+  create: false
+secretsExporter:
+  podAnnotations:
+    prometheus.io/port: "9793"
+    prometheus.io/scrape: "true"
+  secretTypes:
+    - "kubernetes.io/tls"

@@ -1,40 +1,22 @@
-- name: import Known Hosts
-  hosts: 127.0.0.1
-  tasks:
-    - name: Import SSH Keys
-      ansible.builtin.command:
-        cmd: ssh-keyscan -H "{{ item }}" >> ~/.ssh/known_hosts
-      loop: "{{ hosts }}"
-- name: Setup Jenkins Agent On Host
+- name: Setup Kubernetes On Host
   hosts: all
   become: true
   become_user: root
+  serial: 1
+  gather_facts: false
   tasks:
-    - name: Update Packages
-      ansible.builtin.yum:
-        use_backend: yum4
-        update_cache: true
-        name: '*'
-        state: latest
-    - name: Install Dependencies
-      ansible.builtin.yum:
-        use_backend: yum4
-        pkg:
-          - java-17-openjdk-devel
-          - git
-          - git-lfs
-          - buildah
-        state: latest
-    - name: Create Jenkins User
-      ansible.builtin.command:
-        cmd: adduser --system --shel /bin/bash jenkins
-    - name: Create Jenkins Agent Directory
-      ansible.builtin.file:
-        path: /home/jenkins/agent
-        state: directory
-        mode: '0755'
-        owner: jenkins
-        group: jenkins
+#    - name: Cordon K8S Node
+#      become: false
+#      local_action: ansible.builtin.command /snap/bin/kubectl cordon "{{ hostname }}"
+#    - name: Drain K8S Node
+#      become: false
+#      local_action: ansible.builtin.command /snap/bin/kubectl drain "{{ hostname }}" --ignore-daemonsets --delete-emptydir-data
+#    - name: Update Packages
+#      ansible.builtin.yum:
+#        use_backend: yum4
+#        update_cache: true
+#        name: '*'
+#        state: latest
     - name: Copy Root Certificate
       ansible.builtin.copy:
         dest: /etc/pki/ca-trust/source/anchors/zevrant-services.crt
@@ -56,6 +38,9 @@
     - name: Load Certificate
       ansible.builtin.command:
         cmd: update-ca-trust extract && openssl verify /etc/pki/ca-trust/source/anchors/zevrant-services.crt
-    - name: Reload Machine
-      ansible.builtin.reboot:
-        test_command: whoami
+#    - name: Reboot Node
+#      ansible.builtin.reboot:
+#        test_command: whoami
+    - name: Uncordon K8S Node
+      become: false
+      local_action: ansible.builtin.command /snap/bin/kubectl uncordon "{{ hostname }}"

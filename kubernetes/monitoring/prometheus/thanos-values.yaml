@@ -1,3 +1,4 @@
+## registry binami/thanos
 ## @section Global parameters
 ## Global Docker image parameters
 ## Please, note that this will override the image parameters, including dependencies, configured to use the global value
@@ -1180,7 +1181,7 @@ queryFrontend:
     enabled: true
     ## @param queryFrontend.ingress.hostname Default host for the ingress resource
     ##
-    hostname: thanos.preprod.zevrant-services.com
+    hostname: thanos.preprod.zevrant-services.internal
     ## @param queryFrontend.ingress.ingressClassName IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+)
     ## This is supported in Kubernetes 1.18+ and required if you have more than one IngressClass marked as the default for your cluster .
     ## ref: https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/
@@ -1200,7 +1201,7 @@ queryFrontend:
     annotations:
       nginx.ingress.kubernetes.io/backend-protocol: http
       cert-manager.io/issuer: acme-issuer
-      cert-manager.io/common-name: thanos.preprod.zevrant-services.com
+      cert-manager.io/common-name: thanos.preprod.zevrant-services.internal
       cert-manager.io/duration: "2160h"
       cert-manager.io/renew-before: "1824h"
       cert-manager.io/private-key-algorithm: ECDSA
@@ -3666,7 +3667,7 @@ receive:
     enabled: true
     ## @param receive.ingress.hostname When the ingress is enabled, a host pointing to this will be created
     ##
-    hostname: thanos-receive.preprod.zevrant-services.com
+    hostname: thanos-receive.preprod.zevrant-services.internal
     ## @param receive.ingress.ingressClassName IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+)
     ## This is supported in Kubernetes 1.18+ and required if you have more than one IngressClass marked as the default for your cluster .
     ## ref: https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/
@@ -3685,8 +3686,8 @@ receive:
     ##
     annotations:
       nginx.ingress.kubernetes.io/backend-protocol: http
-      cert-manager.io/issuer: acme-issuer
-      cert-manager.io/common-name: thanos-receive.preprod.zevrant-services.com
+      cert-manager.io/issuer: step-ca
+      cert-manager.io/common-name: thanos-receive.preprod.zevrant-services.internal
       cert-manager.io/duration: "2160h"
       cert-manager.io/renew-before: "1824h"
       cert-manager.io/private-key-algorithm: ECDSA

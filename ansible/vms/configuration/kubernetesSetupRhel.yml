@@ -150,47 +150,28 @@
         dest: /etc/hostname
         content: |
           "{{ hostname }}"
-    - name: reboot
-      ansible.builtin.reboot:
-        test_command: whoami
+
     - name: Copy Root Certificate
       ansible.builtin.copy:
         dest: /etc/pki/ca-trust/source/anchors/zevrant-services.crt
         content: |
           -----BEGIN CERTIFICATE-----
-          MIIB2zCCAWICFEcEPNArey0dW0m9m1AH4e6qLWnTMAoGCCqGSM49BAMEMFIxCzAJ
-          BgNVBAYTAlVTMREwDwYDVQQIDAhNaWNoaWdhbjERMA8GA1UEBwwIQmF5IENpdHkx
-          HTAbBgNVBAMMFHpldnJhbnQtc2VydmljZXMuY29tMB4XDTIyMDgyMDE2MzY1NloX
-          DTIzMDgyMDE2MzY1NlowUjELMAkGA1UEBhMCVVMxETAPBgNVBAgMCE1pY2hpZ2Fu
-          MREwDwYDVQQHDAhCYXkgQ2l0eTEdMBsGA1UEAwwUemV2cmFudC1zZXJ2aWNlcy5j
-          b20wdjAQBgcqhkjOPQIBBgUrgQQAIgNiAAS+u/fD8QuHGfB2nDXKyCGadI0ZRK1F
-          EkSU9o5fa/xAxuHedvacP52BOetDQFU1kBeU+h3H1YPtpuzSHFrxdAidUprA5Cb1
-          TEy7QPvGY0hNgNZ5eoHEJwYTeK61IP/b8g0wCgYIKoZIzj0EAwQDZwAwZAIwP7dz
-          lJfb8HPAnMNIk+2sQxyltf1bXQrTx67GT5vYe2VS75yI62ZV/ycGRgSm9dJdAjBA
-          Mg3mkNW4v4MzWY2fErtmkTRuVu5n/saCJpGZ/6jAK0qRtzAAdDNJlPtV2NPXMVE=
-          -----END CERTIFICATE-----
-    - name: Copy Root Certificate
-      ansible.builtin.copy:
-        dest: /etc/pki/ca-trust/source/anchors/zevrant-services-preprod-shared.crt
-        content: |
-          -----BEGIN CERTIFICATE-----
-          MIICjzCCAhagAwIBAgICECkwCgYIKoZIzj0EAwQwUjELMAkGA1UEBhMCVVMxETAP
-          BgNVBAgMCE1pY2hpZ2FuMREwDwYDVQQHDAhCYXkgQ2l0eTEdMBsGA1UEAwwUemV2
-          cmFudC1zZXJ2aWNlcy5jb20wHhcNMjMwNTEwMjE0NjM5WhcNMjgwNTA4MjE0NjM5
-          WjAqMSgwJgYDVQQDEx9aZXZyYW50IFNlcnZpY2VzIFByZXByb2QgU2hhcmVkMFkw
-          EwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAExAcD1IJINaN0R4YGlF5aPShLsFal6tHy
-          Gac1zoJzpVeGUeGOxI22b4Tx+YwUN5QNZCs6Y4m2kX5lOJuPmafYLaOCAQIwgf8w
-          HQYDVR0OBBYEFNHlG9r+1wW/IO19OEV0sbXL01ACMHcGA1UdIwRwMG6hVqRUMFIx
-          CzAJBgNVBAYTAlVTMREwDwYDVQQIDAhNaWNoaWdhbjERMA8GA1UEBwwIQmF5IENp
-          dHkxHTAbBgNVBAMMFHpldnJhbnQtc2VydmljZXMuY29tghRHBDzQK3stHVtJvZtQ
-          B+Huqi1p0zASBgNVHRMBAf8ECDAGAQH/AgEAMA4GA1UdDwEB/wQEAwIBhjBBBgNV
-          HREEOjA4gjZjZXJ0aWZpY2F0ZS1hdXRob3JpdHkucHJlcHJvZC1zaGFyZWQuc3Zj
-          LmNsdXN0ZXIubG9jYWwwCgYIKoZIzj0EAwQDZwAwZAIwYB/ip281/01CtBMIcr2E
-          QMUAzgCK6EURpil2i6cb1bD70/iDPo07gDWGng5OouThAjA7uF5Qjs8cSVRs4O97
-          QQeA5xNRdCd0HeKZVx5wF4WDQ0fEfjirJvtH5F2asRe9He0=
+          MIICDTCCAbOgAwIBAgIUcfMqgTUkiJGW1NI6WAdQ815DyGQwCgYIKoZIzj0EAwIw
+          VzELMAkGA1UEBhMCVVMxETAPBgNVBAgMCE1pY2hpZ2FuMREwDwYDVQQHDAhCYXkg
+          Q2l0eTEiMCAGA1UEAwwZemV2cmFudC1zZXJ2aWNlcy5pbnRlcm5hbDAeFw0yMzA4
+          MjExODQxNTdaFw0zMzA4MTgxODQxNTdaMFcxCzAJBgNVBAYTAlVTMREwDwYDVQQI
+          DAhNaWNoaWdhbjERMA8GA1UEBwwIQmF5IENpdHkxIjAgBgNVBAMMGXpldnJhbnQt
+          c2VydmljZXMuaW50ZXJuYWwwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAARRvcYB
+          Qlv7B+Vr5FDOHbg9BXvl7pWrkZUGxwAsOEawl4YzD/3KvOAxF8RdYnO4bSRJuU7B
+          tfzbk81bnQyKDFfio10wWzAdBgNVHQ4EFgQUEpenVXHlbvZcDAtH6c/OjFieUC0w
+          HwYDVR0jBBgwFoAUEpenVXHlbvZcDAtH6c/OjFieUC0wDAYDVR0TBAUwAwEB/zAL
+          BgNVHQ8EBAMCAQYwCgYIKoZIzj0EAwIDSAAwRQIgPdHcPE/tfknCePZFNUDkL/qQ
+          O1bk9g6pqOxM3bTl5HMCIQDusvA6XLr23DUCljwV8kGKLOVhwpVA9A8CAw2WbBc/
+          1A==
           -----END CERTIFICATE-----
     - name: Load Certificate
       ansible.builtin.command:
         cmd: update-ca-trust extract && openssl verify /etc/pki/ca-trust/source/anchors/zevrant-services.crt
-    - name: Reload Machine
+    - name: reboot
       ansible.builtin.reboot:
+        test_command: whoami

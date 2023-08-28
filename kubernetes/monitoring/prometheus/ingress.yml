@@ -8,7 +8,7 @@
 #    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
 #spec:
 #  rules:
-#    - host: thanos.preprod.zevrant-services.com
+#    - host: thanos.preprod.zevrant-services.internal
 #      http:
 #        paths:
 #          - path: /
@@ -21,10 +21,10 @@
 #  ingressClassName: nginx
 #  tls:
 #    - hosts:
-#        - thanos.preprod.zevrant-services.com
+#        - thanos.preprod.zevrant-services.internal
 #      secretName: thanos-tls
-#
-#---
+
+---
 
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -37,7 +37,7 @@ metadata:
 #    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
 spec:
   rules:
-    - host: prometheus-monitoring.preprod.zevrant-services.com
+    - host: prometheus-monitoring.preprod.zevrant-services.internal
       http:
         paths:
           - path: /
@@ -50,5 +50,5 @@ spec:
   ingressClassName: nginx
 #  tls:
 #    - hosts:
-#        - prometheus-monitoring.preprod.zevrant-services.com
+#        - prometheus-monitoring.preprod.zevrant-services.internal
 #      secretName: prometheus-monitoring-tls
