@@ -68,7 +68,7 @@ class ImageBuildService extends Service {
                 remainingBuilds.add(image)
             } else {
                 imageBuilds[image.toString()] = {
-                    pipelineContext.build(job: "./build-${image.repository.split('/').collect({it.capitalize()}).join('-')}-${image.name}")
+                    pipelineContext.build(job: "/containers/build-${image.repository.split('/').collect({it.capitalize()}).join('-')}-${image.name}")
                 }
             }
         }
