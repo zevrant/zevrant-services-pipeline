@@ -18,7 +18,7 @@ class ImageBuildService extends Service {
         return images.findAll ({ image -> image != null })
     }
 
-    Image parseImageConfig(JSONObject imageConfig, String filePath) {
+    Image parseImageConfig(JSONObject imageConfig, String filePath, String registry = 'harbor.zevrant-services.internal', String project = 'zevrant-services') {
         def baseImageConfig = imageConfig.baseImage
         pipelineContext.println("Parsing image ${filePath}")
         Image baseImage = new Image(baseImageConfig.name, baseImageConfig.tag, false, null, baseImageConfig.host, baseImageConfig.repository, null)
