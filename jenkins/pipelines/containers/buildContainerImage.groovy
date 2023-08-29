@@ -22,7 +22,7 @@ pipeline {
             }
         }
 
-        stage ('Registry Login & Setup') {
+        stage('Registry Login & Setup') {
             environment {
                 DOCKER_CREDENTIALS = credentials('jenkins-harbor')
             }
@@ -38,17 +38,15 @@ pipeline {
             }
         }
 
-        stage ("Build Container"){
+        stage("Build Container") {
             steps {
                 script {
-                    dir(BUILD_DIR_PATH) {
-                        imageBuildService.buildImage(image)
-                    }
+                    imageBuildService.buildImage(image)
                 }
             }
         }
 
-        stage ('Push Image') {
+        stage('Push Image') {
             steps {
                 script {
                     imageBuildService.pushImage(image)
