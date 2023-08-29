@@ -10,7 +10,7 @@ import com.zevrant.services.pojo.codeunit.AndroidCodeUnitCollection
 import com.zevrant.services.pojo.codeunit.SpringCodeUnitCollection
 import com.zevrant.services.pojo.codeunit.CodeUnit
 
-(images as List<Image>).forEach {image ->
+(images as List<Image>).each {image ->
     String folderPath = 'containers'
     foler(folderPath) {
         displayName(folderPath.split('/').collect({pathPart -> pathPart.capitalize()}).join(' '))
