@@ -10,21 +10,25 @@ import com.zevrant.services.pojo.codeunit.AndroidCodeUnitCollection
 import com.zevrant.services.pojo.codeunit.SpringCodeUnitCollection
 import com.zevrant.services.pojo.codeunit.CodeUnit
 
-(images as List<Image>).each {image ->
+(images as List<String>).each {imageString ->
+    //<jenkins>harbor.zevrant-services.internal/dockerhub/gitea/gitea:latest-rootless
+    List<String> imageInfo = imageString.split('/')
+    String imageName = imageInfo.get(imageInfo.size() - 1).split(':')[0]
+    String repository = (imageInfo.size() == 4)? imageInfo.get(1) + '/' + imageInfo.get(2) : imageInfo.get(1)
+    String buildDirPath = "${imageInfo.get(0).split('>')[0].replace('<', '')}/${imageName}"
     String folderPath = 'containers'
     foler(folderPath) {
         displayName(folderPath.split('/').collect({pathPart -> pathPart.capitalize()}).join(' '))
     }
-//    createPipeline(folderPath, new Pipeline([
-//            name: "build-${image.repository.split('/').collect({it.capitalize()}).join('-')}-${image.name}",
-//            gitRepo: 'ssh://git@gitea.zevrant-services.internal:30121/zevrant-services/containers.git',
-//            jenkinsfileLocation: 'jenkins/pipelines/containers/buildContainerImage.groovy',
-//            credentialId: 'jenkins-git',
-//            envs: new HashMap<>([
-//                    'IMAGE_NAME' : image.name,
-//                    'BUILD_DIR_PATH': image.buildDirPath
-//            ]),
-//    ]))
+    createPipeline(folderPath, new Pipeline([
+            name: "build-${repository.split('/').collect({it.capitalize()}).join('-')}-${imageName}",
+            gitRepo: 'ssh://git@gitea.zevrant-services.internal:30121/zevrant-services/containers.git',
+            jenkinsfileLocation: 'jenkins/pipelines/containers/buildContainerImage.groovy',
+            credentialId: 'jenkins-git',
+            envs: new HashMap<>([
+                    'BUILD_DIR_PATH': buildDirPath
+            ]),
+    ]))
 }
 
 LibraryCodeUnitCollection.libraries.each { libraryCodeUnit ->
