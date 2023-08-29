@@ -12,7 +12,7 @@ class ImageBuildService extends Service {
     List<Image> parseAvailableImages(List<FileWrapper> files, String registry, String project) {
         List<Image> images = files.collect({ file ->
             def imageConfig = pipelineContext.readJSON(file: file.path as String)
-            parseImage(imageConfig, file.path)
+            parseImageConfig(imageConfig, file.path)
         })
         return images.findAll ({ image -> image != null })
     }
