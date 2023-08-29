@@ -19,11 +19,15 @@ pipeline {
     stages {
 
         stage("Search Images") {
-            dir ('containers') {
-                gitService.checkout('containers')
-                List<FileWrapper> files = findFiles(glob: '*/*/buildConfig.json')
-                images = imageBuildService.parseAvailableImages(files, 'harbor.zevrant-services.internal', 'zevrant-services')
+            steps {
+                script {
+                    dir ('containers') {
+                        gitService.checkout('containers')
+                        List<FileWrapper> files = findFiles(glob: '*/*/buildConfig.json')
+                        images = imageBuildService.parseAvailableImages(files, 'harbor.zevrant-services.internal', 'zevrant-services')
 
+                    }
+                }
             }
         }
 
