@@ -44,7 +44,7 @@ pipeline {
                             failOnMissingPlugin: true,
                             additionalClasspath: 'jenkins/src/main/groovy', //only works with
                             additionalParameters: [
-                                    images     : images.collect({ "<${(it.buildDirPath.contains('jenkins'))? 'jenkins' : 'k8s'}>${it.toJsonString()}" })
+                                    images     : images.collect({ "<${(it.buildDirPath.contains('jenkins'))? 'jenkins' : 'k8s'}>${it.toString()}" })
                             ]
                     )
                 }
