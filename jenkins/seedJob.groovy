@@ -44,7 +44,7 @@ pipeline {
                             failOnMissingPlugin: true,
                             additionalClasspath: 'jenkins/src/main/groovy', //only works with
                             additionalParameters: [
-                                    images     : new ArrayList<>(images),
+                                    images     : images.collect(it.toString()),
                             ]
                     )
                 }
