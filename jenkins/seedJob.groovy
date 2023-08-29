@@ -44,7 +44,7 @@ pipeline {
                             failOnMissingPlugin: true,
                             additionalClasspath: 'jenkins/src/main/groovy', //only works with
                             additionalParameters: [
-                                    images     : 'images',
+                                    images     : new ArrayList<>(images),
                             ]
                     )
                 }
