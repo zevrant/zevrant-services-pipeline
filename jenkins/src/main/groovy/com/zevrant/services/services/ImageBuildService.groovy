@@ -1,6 +1,7 @@
 package com.zevrant.services.services
 
 import com.zevrant.services.pojo.containers.Image
+import net.sf.json.JSONObject
 import org.jenkinsci.plugins.pipeline.utility.steps.fs.FileWrapper
 
 class ImageBuildService extends Service {
@@ -17,7 +18,7 @@ class ImageBuildService extends Service {
         return images.findAll ({ image -> image != null })
     }
 
-    Image parseImageConfig(LinkedHashMap<String, Object> imageConfig, String filePath) {
+    Image parseImageConfig(JSONObject imageConfig, String filePath) {
         def baseImageConfig = imageConfig.baseImage
         pipelineContext.println("Parsing image ${filePath}")
         Image baseImage = new Image(baseImageConfig.name, baseImageConfig.tag, false, null, baseImageConfig.host, baseImageConfig.repository, null)
