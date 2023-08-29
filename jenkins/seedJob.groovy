@@ -25,7 +25,7 @@ pipeline {
                         gitService.checkout('containers')
                         List<FileWrapper> files = findFiles(glob: '*/*/buildConfig.json')
                         images = imageBuildService.parseAvailableImages(files, 'harbor.zevrant-services.internal', 'zevrant-services')
-
+                        println images.size()
                     }
                 }
             }
