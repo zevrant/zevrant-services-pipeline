@@ -35,7 +35,7 @@ pipeline {
             }
         }
 
-        stage ("Build ${IMAGE_NAME}"){
+        stage ("Build Container"){
             steps {
                 script {
                     dir(BUILD_DIR_PATH) {
