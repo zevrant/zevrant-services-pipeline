@@ -225,7 +225,7 @@ KubernetesServiceCollection.services.each { kubernetesService ->
  */
 void createPipeline(String folder, Pipeline pipeline) {
     folder = (folder == null) ? "" : folder
-    folder = (folder.lastIndexOf('/') == folder.length() - 1)? folder.substring(0, folder.length() - 1 ): folder
+    folder = (folder.lastIndexOf('/') == folder.length() - 1)? folder.substring(0, Math.max(0, folder.length() - 1)): folder
     pipelineJob(folder + "/" + pipeline.name) {
         description pipeline.description
         String jobDisplayName = ""
