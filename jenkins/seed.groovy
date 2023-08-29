@@ -10,23 +10,6 @@ import com.zevrant.services.pojo.codeunit.AndroidCodeUnitCollection
 import com.zevrant.services.pojo.codeunit.SpringCodeUnitCollection
 import com.zevrant.services.pojo.codeunit.CodeUnit
 
-(images as List<Image>).each {image ->
-    String folderPath = 'containers'
-    foler(folderPath) {
-        displayName(folderPath.split('/').collect({pathPart -> pathPart.capitalize()}).join(' '))
-    }
-//    createPipeline(folderPath, new Pipeline([
-//            name: "build-${image.repository.split('/').collect({it.capitalize()}).join('-')}-${image.name}",
-//            gitRepo: 'ssh://git@gitea.zevrant-services.internal:30121/zevrant-services/containers.git',
-//            jenkinsfileLocation: 'jenkins/pipelines/containers/buildContainerImage.groovy',
-//            credentialId: 'jenkins-git',
-//            envs: new HashMap<>([
-//                    'IMAGE_NAME' : image.name,
-//                    'BUILD_DIR_PATH': image.buildDirPath
-//            ]),
-//    ]))
-}
-
 LibraryCodeUnitCollection.libraries.each { libraryCodeUnit ->
     createMultibranch((CodeUnit) libraryCodeUnit)
 }
