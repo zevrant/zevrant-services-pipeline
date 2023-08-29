@@ -43,6 +43,9 @@ pipeline {
                             lookupStrategy: 'SEED_JOB',
                             failOnMissingPlugin: true,
                             additionalClasspath: 'jenkins/src/main/groovy', //only works with
+                            additionalParameters: [
+                                    images     : images,
+                            ]
                     )
                 }
             }
