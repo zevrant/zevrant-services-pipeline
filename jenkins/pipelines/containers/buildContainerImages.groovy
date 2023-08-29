@@ -14,9 +14,7 @@ List<Image> images = null
 
 pipeline {
     agent {
-        kubernetes {
-            inheritFrom 'jnlp'
-        }
+        label 'container-build'
     }
 
     stages {
@@ -102,10 +100,5 @@ pipeline {
 //                }
 //            }
 //        }
-    }
-    post {
-        always {
-            sh 'buildah rm --all'
-        }
     }
 }
