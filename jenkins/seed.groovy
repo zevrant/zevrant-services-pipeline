@@ -17,7 +17,7 @@ import com.zevrant.services.pojo.codeunit.CodeUnit
     String repository = (imageInfo.size() == 4)? imageInfo.get(1) + '/' + imageInfo.get(2) : imageInfo.get(1)
     String buildDirPath = "${imageInfo.get(0).split('>')[0].replace('<', '')}/${imageName}"
     String folderPath = 'containers'
-    foler(folderPath) {
+    folder(folderPath) {
         displayName(folderPath.split('/').collect({pathPart -> pathPart.capitalize()}).join(' '))
     }
     createPipeline(folderPath, new Pipeline([
