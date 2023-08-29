@@ -109,6 +109,10 @@ spec:
       securityContext:
         fsGroup: 1000
         fsGroupChangePolicy: "Always"
+      dnsPolicy: "ClusterFirst"
+      dnsConfig:
+        nameservers:
+          - 1.1.1.1
       serviceAccountName: jenkins
       volumes:
         - name: jenkins
@@ -125,7 +129,7 @@ spec:
             secretName: jenkins-internal-tls
             defaultMode: 0400
       imagePullSecrets:
-        - name: regcred
+        - name: harbor-ro
       initContainers:
         - name: secret-init
           image: harbor.zevrant-services.internal/zevrant-services/ubuntu-base:latest

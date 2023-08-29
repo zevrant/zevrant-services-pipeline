@@ -9,7 +9,7 @@ class PipelineCollection {
             new Pipeline(
                     name: "base-image-build",
                     description: "Pipeline to build base docker images",
-                    jenkinsfileLocation: "jenkins/pipelines/buildContainerImages.groovy",
+                    jenkinsfileLocation: "jenkins/pipelines/containers/buildContainerImages.groovy",
                     credentialId: "jenkins-git",
                     triggers: new ArrayList<>([
                             new PipelineTrigger(

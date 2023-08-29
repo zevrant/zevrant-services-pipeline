@@ -1,5 +1,13 @@
 @Library('CommonUtils') _
 
+import com.zevrant.services.services.GitService
+import com.zevrant.services.pojo.containers.Image
+
+
+
+GitService gitService = new GitService(this)
+ImageBuildService imageBuildService = new ImageBuildService(this)
+List<Image> images = []
 pipeline {
     agent {
         kubernetes {
@@ -7,6 +15,15 @@ pipeline {
         }
     }
     stages {
+
+        stage("Search Images") {
+            dir ('containers') {
+                gitService.checkout('containers')
+                List<FileWrapper> files = findFiles(glob: '*/*/buildConfig.json')
+                images = imageBuildService.parseAvailableImages(files, 'harbor.zevrant-services.internal', 'zevrant-services')
+
+            }
+        }
 
         stage("Process Seed File") {
             steps {
@@ -20,6 +37,9 @@ pipeline {
                             lookupStrategy: 'SEED_JOB',
                             failOnMissingPlugin: true,
                             additionalClasspath: 'jenkins/src/main/groovy', //only works with
+                            additionalParameters: [
+                                    libraryRepositories     : images,
+                            ]
                     )
                 }
             }

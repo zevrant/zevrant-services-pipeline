@@ -68,7 +68,7 @@
 /bin/test/android-deploy.groovy
 /bin/test/automatedTest.groovy
 /bin/test/buildBaseImages.groovy
-/bin/test/buildContainerImages.groovy
+/bin/test/containers.buildContainerImages.groovy
 /bin/test/certificate-authority-generator.groovy
 /bin/test/dynamic-dns.groovy
 /bin/test/java-library-build.groovy

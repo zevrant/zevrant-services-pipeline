@@ -1,9 +1,12 @@
+package containers
+
 @Library('CommonUtils') _
 
+
+import com.zevrant.services.pojo.containers.Image
 import com.zevrant.services.services.GitService
 import com.zevrant.services.services.ImageBuildService
 import org.jenkinsci.plugins.pipeline.utility.steps.fs.FileWrapper
-import java.awt.Image
 
 GitService gitService = new GitService(this)
 ImageBuildService imageBuildService = new ImageBuildService(this)
@@ -11,7 +14,9 @@ List<Image> images = null
 
 pipeline {
     agent {
-        label 'container-builder'
+        kubernetes {
+            inheritFrom 'jnlp'
+        }
     }
 
     stages {
@@ -33,12 +38,9 @@ pipeline {
         }
 
         stage("Build & Push Dockerfiles") {
-            environment {
-                DOCKER_CREDENTIALS = credentials('jenkins-harbor')
-            }
+
             steps {
                 script {
-                    imageBuildService.registryLogin(DOCKER_CREDENTIALS_USR, DOCKER_CREDENTIALS_PSW, 'harbor.zevrant-services.internal')
                     imageBuildService.buildImagesInParallel(images, 'harbor.zevrant-services.internal')
                 }
             }

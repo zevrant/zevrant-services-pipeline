@@ -12,14 +12,18 @@ class ImageBuildService extends Service {
     List<Image> parseAvailableImages(List<FileWrapper> files, String registry, String project) {
         List<Image> images = files.collect({ file ->
             def imageConfig = pipelineContext.readJSON(file: file.path as String)
-            def baseImageConfig = imageConfig.baseImage
-            pipelineContext.println("Parsing image ${file.path}")
-            Image baseImage = new Image(baseImageConfig.name, baseImageConfig.tag, false, null, baseImageConfig.host, baseImageConfig.repository, null)
-            List<String> pathParts = file.path.split('/')
-            return new Image(imageConfig.name, imageConfig.version, imageConfig.useLatest, baseImage, registry, project,
-                    pathParts.subList(0, pathParts.size() -1).join('/'), imageConfig.args)
+            parseImage(imageConfig, file.path)
         })
         return images.findAll ({ image -> image != null })
+    }
+
+    Image parseImageConfig(LinkedHashMap<String, Object> imageConfig, String filePath) {
+        def baseImageConfig = imageConfig.baseImage
+        pipelineContext.println("Parsing image ${filePath}")
+        Image baseImage = new Image(baseImageConfig.name, baseImageConfig.tag, false, null, baseImageConfig.host, baseImageConfig.repository, null)
+        List<String> pathParts = filePath.split('/')
+        return new Image(imageConfig.name, imageConfig.version, imageConfig.useLatest, baseImage, registry, project,
+                pathParts.subList(0, pathParts.size() -1).join('/'), imageConfig.args)
     }
 
     void registryLogin(String username, String token, String registry = 'docker.io') {
@@ -63,12 +67,7 @@ class ImageBuildService extends Service {
                 remainingBuilds.add(image)
             } else {
                 imageBuilds[image.toString()] = {
-                    buildImage(image)
-                    pipelineContext.retry(3, {
-                        pipelineContext.timeout(5) {
-                            pushImage(image)
-                        }
-                    })
+                    pipelineContext.build(job: "./build-${image.repository.split('/').collect({it.capitalize()}).join('-')}-${image.name}")
                 }
             }
         }

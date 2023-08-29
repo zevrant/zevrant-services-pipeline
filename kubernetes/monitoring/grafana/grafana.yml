@@ -90,7 +90,7 @@ spec:
           configMap:
             name: grafana
       imagePullSecrets:
-        - name: regcred
+        - name: harbor-ro
       containers:
         - name: grafana
           image: harbor.zevrant-services.internal/zevrant-services/grafana:latest
