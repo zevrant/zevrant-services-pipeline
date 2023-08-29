@@ -14,7 +14,7 @@ List<Image> images = null
 
 pipeline {
     agent {
-        label 'container-build'
+        label 'container-builder'
     }
 
     stages {
