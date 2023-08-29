@@ -31,6 +31,7 @@ pipeline {
                     dir(BUILD_DIR_PATH) {
                         def imageConfig = readJSON(file: 'buildConfig.json' as String)
                         image = imageBuildService.parseImageConfig(imageConfig, pwd() as String)
+                        image.buildDirPath = BUILD_DIR_PATH
                         imageBuildService.registryLogin(DOCKER_CREDENTIALS_USR, DOCKER_CREDENTIALS_PSW, 'harbor.zevrant-services.internal')
                     }
                 }
