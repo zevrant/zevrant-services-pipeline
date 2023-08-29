@@ -28,9 +28,11 @@ pipeline {
             }
             steps {
                 script {
-                    def imageConfig = pipelineContext.readJSON(file: 'buildConfig.json' as String)
-                    image = imageBuildService.parseImageConfig(imageConfig as LinkedHashMap<String, Object>, pwd() as String)
-                    imageBuildService.registryLogin(DOCKER_CREDENTIALS_USR, DOCKER_CREDENTIALS_PSW, 'harbor.zevrant-services.internal')
+                    dir(BUILD_DIR_PATH) {
+                        def imageConfig = readJSON(file: 'buildConfig.json' as String)
+                        image = imageBuildService.parseImageConfig(imageConfig as LinkedHashMap<String, Object>, pwd() as String)
+                        imageBuildService.registryLogin(DOCKER_CREDENTIALS_USR, DOCKER_CREDENTIALS_PSW, 'harbor.zevrant-services.internal')
+                    }
                 }
             }
         }
@@ -39,7 +41,6 @@ pipeline {
             steps {
                 script {
                     dir(BUILD_DIR_PATH) {
-
                         imageBuildService.buildImage(image)
                     }
                 }
