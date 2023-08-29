@@ -17,9 +17,6 @@ import com.zevrant.services.pojo.codeunit.CodeUnit
     }
     createPipeline(folderPath, new Pipeline([
             name: "build-${image.repository.split('/').collect({it.capitalize()}).join('-')}-${image.name}",
-            parameters: new ArrayList<>([
-                    new PipelineParameter<String>(String.class, "VERSION", "Version to be Deployed", "")
-            ]),
             gitRepo: 'ssh://git@gitea.zevrant-services.internal:30121/zevrant-services/containers.git',
             jenkinsfileLocation: 'jenkins/pipelines/containers/buildContainerImage.groovy',
             credentialId: 'jenkins-git',
