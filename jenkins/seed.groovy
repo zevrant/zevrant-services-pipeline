@@ -22,7 +22,7 @@ import com.zevrant.services.pojo.codeunit.CodeUnit
     }
     createPipeline(folderPath, new Pipeline([
             name: "build-${repository.split('/').collect({it.capitalize()}).join('-')}-${imageName}",
-            gitRepo: 'ssh://git@gitea.zevrant-services.internal:30121/zevrant-services/containers.git',
+            gitRepo: 'ssh://git@gitea.zevrant-services.internal:30121/zevrant-services/zevrant-services-pipeline.git',
             jenkinsfileLocation: 'jenkins/pipelines/containers/buildContainerImage.groovy',
             credentialId: 'jenkins-git',
             envs: new HashMap<>([
