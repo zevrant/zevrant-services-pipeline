@@ -91,7 +91,9 @@ class ImageBuildService extends Service {
 
     boolean doesImageExistLocally(Image image) {
         String imageName = "${image.host}/${image.repository}/${image.name}".replace('//', '/')
-        return 0 == pipelineContext.sh(returnStatus: true, script: "buildah images ${image.toString()} | grep ${imageName}")
+        int status = pipelineContext.sh(returnStatus: true, script: "buildah images ${image.toString()} | grep ${imageName}")
+        pipelineContext.println "Return Status was  ${status}"
+        return 0 == status
     }
 
     boolean isImageInBuildQueue(Image image, List<Image> images) {
