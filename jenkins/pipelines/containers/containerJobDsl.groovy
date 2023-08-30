@@ -9,11 +9,7 @@ JobDslService jobDslService = new JobDslService(this)
     String imageName = imageInfo.get(imageInfo.size() - 1).split(':')[0]
     String repository = (imageInfo.size() == 4)? imageInfo.get(1) + '/' + imageInfo.get(2) : imageInfo.get(1)
     String buildDirPath = "${imageInfo.get(0).split('>')[0].replace('<', '')}/${imageName}"
-    String folderPath = 'containers'
-    folder(folderPath) {
-        displayName(folderPath.split('/').collect({pathPart -> pathPart.capitalize()}).join(' '))
-    }
-    jobDslService.createPipeline(folderPath, new Pipeline([
+    jobDslService.createPipeline(FOLDER_PATH as String, new Pipeline([
             name: "build-${repository.split('/').collect({it.capitalize()}).join('-')}-${imageName}",
             gitRepo: 'ssh://git@gitea.zevrant-services.internal:30121/zevrant-services/zevrant-services-pipeline.git',
             jenkinsfileLocation: 'jenkins/pipelines/containers/buildContainerImage.groovy',

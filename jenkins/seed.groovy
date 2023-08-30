@@ -10,7 +10,9 @@ import com.zevrant.services.pojo.codeunit.AndroidCodeUnitCollection
 import com.zevrant.services.pojo.codeunit.SpringCodeUnitCollection
 import com.zevrant.services.pojo.codeunit.CodeUnit
 
-
+folder('containers') {
+    displayName = 'Containers'
+}
 LibraryCodeUnitCollection.libraries.each { libraryCodeUnit ->
     createMultibranch((CodeUnit) libraryCodeUnit)
 }

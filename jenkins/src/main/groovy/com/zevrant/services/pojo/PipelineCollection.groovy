@@ -15,7 +15,10 @@ class PipelineCollection {
                             new PipelineTrigger(
                                     type: PipelineTriggerType.CRON,
                                     value: "0 3 * * 6")
-                    ])
+                    ]),
+                    envs: [
+                            FOLDER_PATH: 'containers'
+                    ]
             ),
             new Pipeline(
                     name: 'Pod cleanup',

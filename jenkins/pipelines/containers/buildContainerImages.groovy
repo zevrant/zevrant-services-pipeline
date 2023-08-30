@@ -55,7 +55,8 @@ pipeline {
                                             String output = "<${image.buildDirPath.split('/')[0]}>${image.toString()}"
                                             println output
                                             return output
-                                        })
+                                        }),
+                                        FOLDER_PATH: $FOLDER_PATH
                                 ]
                         )
                     }
