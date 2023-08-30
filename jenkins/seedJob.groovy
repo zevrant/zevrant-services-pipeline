@@ -48,6 +48,7 @@ pipeline {
                                         println image.buildDirPath
                                         String output =  "<${(image.buildDirPath.contains('jenkins') && !image.buildDirPath.contains('jenkins/jenkins'))? 'jenkins' : 'k8s'}>${image.toString()}"
                                         println output
+                                        return output
                                     })
                             ]
                     )
