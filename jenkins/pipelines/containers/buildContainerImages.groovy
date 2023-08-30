@@ -72,6 +72,7 @@ pipeline {
 
                     while(remainingImages.size() > 0) {
                         println "Number of images remaining: ${remainingImages.size()}"
+                        remainingImages = imageBuildService.buildImages(remainingImages)
                     }
                 }
             }
