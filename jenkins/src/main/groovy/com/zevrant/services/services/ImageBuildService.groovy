@@ -59,8 +59,6 @@ class ImageBuildService extends Service {
             return
         }
         List<Image> remainingBuilds = []
-        def imageBuilds = [:]
-        def results = []
         images.each { image ->
             pipelineContext.println("Checking image ${image.baseImage.name.toString()}")
             boolean existsLocally = doesImageExistLocally(image.baseImage)
@@ -70,15 +68,13 @@ class ImageBuildService extends Service {
             } else if (isInQueue){
                 remainingBuilds.add(image)
             } else {
-                while (!doesImageExistLocally(image.baseImage)) {
+                while (doesImageExistLocally(image.baseImage)) {
                     println "Waiting for ${image.baseImage.toString()} to exist locally"
                     sleep 15
                 }
                 pipelineContext.build(job: "/containers/build-${image.repository.split('/').collect({ it.capitalize() }).join('-')}-${image.name}", wait: false, waitForStart: true)
-
             }
         }
-        pipelineContext.parallel imageBuilds
         return remainingBuilds
     }
 
@@ -88,7 +84,7 @@ class ImageBuildService extends Service {
 
     boolean doesImageExistLocally(Image image) {
         int status = pipelineContext.sh(returnStatus: true, script: "buildah images ${image.getName()}")
-        return status == 2
+        return status != 0
     }
 
     boolean isImageInBuildQueue(Image image, List<Image> images) {
