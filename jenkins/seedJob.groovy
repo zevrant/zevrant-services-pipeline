@@ -45,8 +45,7 @@ pipeline {
                             additionalClasspath: 'jenkins/src/main/groovy', //only works with
                             additionalParameters: [
                                     images     : images.collect({image ->
-                                        println image.buildDirPath
-                                        String output =  "<${(image.buildDirPath.contains('jenkins') && !image.buildDirPath.contains('jenkins/jenkins'))? 'jenkins' : 'k8s'}>${image.toString()}"
+                                        String output =  "<${image.buildDirPath.split('/')[0]}>${image.toString()}"
                                         println output
                                         return output
                                     })
