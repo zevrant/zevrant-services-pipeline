@@ -68,12 +68,15 @@ class ImageBuildService extends Service {
             } else if (isInQueue){
                 remainingBuilds.add(image)
             } else {
-                while (doesImageExistLocally(image.baseImage)) {
+                boolean exists = doesImageExistLocally(image.baseImage)
+                while (exists) {
                     println "Waiting for ${image.baseImage.toString()} to exist locally"
                     if(image.baseImage.toString().contains('dockerhub')) {
                         pullBaseImage(image.baseImage)
+                        break
                     }
                     sleep 15
+                    exists = doesImageExistLocally(image.baseImage)
                 }
                 pipelineContext.build(job: "/containers/build-${image.repository.split('/').collect({ it.capitalize() }).join('-')}-${image.name}", wait: false, waitForStart: true)
             }
