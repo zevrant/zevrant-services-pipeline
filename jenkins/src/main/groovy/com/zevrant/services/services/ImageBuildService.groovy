@@ -54,7 +54,7 @@ class ImageBuildService extends Service {
         }
     }
 
-    void buildImagesInParallel(List<Image> images, String registry) {
+    List<Image> buildImages(List<Image> images) {
         if ( images.size() == 0) {
             return
         }
@@ -69,10 +69,10 @@ class ImageBuildService extends Service {
             } else if (isInQueue){
                 remainingBuilds.add(image)
             } else {
-                pipelineContext.build(job: "/containers/build-${image.repository.split('/').collect({it.capitalize()}).join('-')}-${image.name}",  waitForStart: true)
+                pipelineContext.build(job: "/containers/build-${image.repository.split('/').collect({it.capitalize()}).join('-')}-${image.name}",  wait: false, waitForStart: true)
             }
         }
-        buildImagesInParallel(remainingBuilds)
+        return remainingBuilds
     }
 
     boolean pullBaseImage(Image image) {
