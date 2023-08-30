@@ -68,7 +68,11 @@ pipeline {
 
             steps {
                 script {
-                    imageBuildService.buildImagesInParallel(images, 'harbor.zevrant-services.internal')
+                    List<Image> remainingImages = imageBuildService.buildImages(images)
+
+                    while(remainingImages.size() > 0) {
+                        println "Number of images remaining: ${remainingImages.size()}"
+                    }
                 }
             }
 
