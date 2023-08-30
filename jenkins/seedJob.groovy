@@ -43,13 +43,13 @@ pipeline {
                             lookupStrategy: 'SEED_JOB',
                             failOnMissingPlugin: true,
                             additionalClasspath: 'jenkins/src/main/groovy', //only works with
-                            additionalParameters: [
-                                    images     : images.collect({image ->
-                                        String output =  "<${image.buildDirPath.split('/')[0]}>${image.toString()}"
-                                        println output
-                                        return output
-                                    })
-                            ]
+//                            additionalParameters: [
+//                                    images     : images.collect({image ->
+//                                        String output =  "<${image.buildDirPath.split('/')[0]}>${image.toString()}"
+//                                        println output
+//                                        return output
+//                                    })
+//                            ]
                     )
                 }
             }
