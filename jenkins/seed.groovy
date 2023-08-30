@@ -17,11 +17,11 @@ folder('containers') {
     displayName('Containers')
 }
 LibraryCodeUnitCollection.libraries.each { libraryCodeUnit ->
-    createMultibranch((CodeUnit) libraryCodeUnit)
+    jobDslService.createMultibranch((CodeUnit) libraryCodeUnit)
 }
 
 SpringCodeUnitCollection.microservices.each { springCodeUnit ->
-    String folder = createMultibranch(springCodeUnit as CodeUnit)
+    String folder = jobDslService.createMultibranch(springCodeUnit as CodeUnit)
     Pipeline developDeployPipeline = new Pipeline(
             name: "${springCodeUnit.name}-deploy-to-develop",
             parameters: new ArrayList<>([
@@ -55,7 +55,7 @@ SpringCodeUnitCollection.microservices.each { springCodeUnit ->
 }
 
 AndroidCodeUnitCollection.androidApps.each( { androidCodeUnit ->
-    String androidFolder = createMultibranch(androidCodeUnit as CodeUnit)
+    String androidFolder = jobDslService.createMultibranch(androidCodeUnit as CodeUnit)
 
     Pipeline androidDevelopDeployPipeline = new Pipeline(
             name: "Zevrant-Android-App-Release-To-Internal-Testing",
@@ -85,98 +85,10 @@ AndroidCodeUnitCollection.androidApps.each( { androidCodeUnit ->
     createPipeline(androidFolder, androidProdDeployPipeline)
 })
 
-String adminFolder = createMultibranch(new CodeUnit([
+String adminFolder = jobDslService.createMultibranch(new CodeUnit([
         name: 'jenkins-cac',
         applicationType: ApplicationType.JENKINS_CAC
 ]))
-
-String createMultibranch(CodeUnit codeUnit) {
-    String jobName = ""
-    folder(codeUnit.applicationType.value) {
-
-    }
-    String folderName = codeUnit.applicationType.value + "/"
-    codeUnit.name.split("-").each { name -> jobName += name.capitalize() + " " }
-    jobName = jobName.trim()
-    folderName += jobName + "/"
-    folder(folderName.substring(0, folderName.length() - 1)) {
-
-    }
-
-    multibranchPipelineJob(folderName + codeUnit.name + "-multibranch") {
-        displayName jobName + " Multibranch"
-        factory {
-            remoteJenkinsFileWorkflowBranchProjectFactory {
-                localMarker("")
-                matchBranches(false)
-                remoteJenkinsFile codeUnit.applicationType.getRemoteJenkinsfile()
-                remoteJenkinsFileSCM {
-                    gitSCM {
-                        branches {
-                            branchSpec {
-                                name('main')
-                            }
-                        }
-                        extensions {
-                            wipeWorkspace()
-                            cloneOption {
-                                shallow(true)
-                                depth(1)
-                                noTags(true)
-                                reference("")
-                                timeout(10)
-                            }
-                        }
-                        userRemoteConfigs {
-                            userRemoteConfig {
-                                name("Zevrant Services Pipeline") //Custom Repository Name or ID
-                                url("ssh://git@gitea.zevrant-services.internal:30121/zevrant-services/zevrant-services-pipeline.git")
-                                //URL for the repository
-                                refspec("main") // Branch spec
-                                credentialsId("jenkins-git") // Credential ID. Leave blank if not required
-                            }
-                            browser {} // Leave blank for default Git Browser
-                            gitTool("") //Leave blank for default git executable
-                        }
-                    }
-                }
-            }
-        }
-        branchSources {
-//            git {
-//                id(codeUnit.name) // IMPORTANT: use a constant and unique identifier
-//                remote("ssh://git@gitea.zevrant-services.internal:30121/zevrant-services/${codeUnit.name}.git")
-//                credentialsId 'jenkins-git-access-token'
-//                checkoutCredentialsId 'jenkins-git'
-//            }
-            branchSource {
-                source {
-                    giteaSCMSource {
-                        serverUrl("https://${codeUnit.repo.hostName}")
-                        repoOwner(codeUnit.repo.org)
-                        repository(codeUnit.name)
-                        credentialsId(codeUnit.repo.credentialsId)
-                        id(codeUnit.name)
-                        traits {
-                            giteaPullRequestDiscovery {
-                                strategyId(0)
-                            }
-                            headWildcardFilter {
-                                includes('main PR-*')
-                                excludes('')
-                            }
-                            giteaBranchDiscovery {
-                                strategyId(3)
-                            }
-                            wipeWorkspaceTrait()
-                        }
-                    }
-                }
-            }
-        }
-    }
-    return folderName;
-}
 
 (PipelineCollection.pipelines as List<Pipeline>).each { pipeline ->
     createPipeline("", pipeline)

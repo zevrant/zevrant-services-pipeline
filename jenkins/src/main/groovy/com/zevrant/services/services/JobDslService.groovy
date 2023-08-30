@@ -1,6 +1,7 @@
 package com.zevrant.services.services
 
 import com.zevrant.services.pojo.Pipeline
+import com.zevrant.services.pojo.codeunit.CodeUnit
 
 class JobDslService extends Service {
     private Object dslContext = pipelineContext //renaming variable for clarity of use
@@ -136,5 +137,86 @@ class JobDslService extends Service {
             }
         }
     }
+}
 
+String createMultibranch(CodeUnit codeUnit) {
+    String jobName = ""
+    dslContect.folder(codeUnit.applicationType.value) {
+
+    }
+    String folderName = codeUnit.applicationType.value + "/"
+    codeUnit.name.split("-").each { name -> jobName += name.capitalize() + " " }
+    jobName = jobName.trim()
+    folderName += jobName + "/"
+    dslContect.folder(folderName.substring(0, folderName.length() - 1)) {
+
+    }
+
+    dslContect.multibranchPipelineJob(folderName + codeUnit.name + "-multibranch") {
+        displayName jobName + " Multibranch"
+        factory {
+            remoteJenkinsFileWorkflowBranchProjectFactory {
+                localMarker("")
+                matchBranches(false)
+                remoteJenkinsFile codeUnit.applicationType.getRemoteJenkinsfile()
+                remoteJenkinsFileSCM {
+                    gitSCM {
+                        branches {
+                            branchSpec {
+                                name('main')
+                            }
+                        }
+                        extensions {
+                            wipeWorkspace()
+                            cloneOption {
+                                shallow(true)
+                                depth(1)
+                                noTags(true)
+                                reference("")
+                                timeout(10)
+                            }
+                        }
+                        userRemoteConfigs {
+                            userRemoteConfig {
+                                name("Zevrant Services Pipeline") //Custom Repository Name or ID
+                                url("ssh://git@gitea.zevrant-services.internal:30121/zevrant-services/zevrant-services-pipeline.git")
+                                //URL for the repository
+                                refspec("main") // Branch spec
+                                credentialsId("jenkins-git") // Credential ID. Leave blank if not required
+                            }
+                            browser {} // Leave blank for default Git Browser
+                            gitTool("") //Leave blank for default git executable
+                        }
+                    }
+                }
+            }
+        }
+        branchSources {
+            branchSource {
+                source {
+                    giteaSCMSource {
+                        serverUrl("https://${codeUnit.repo.hostName}")
+                        repoOwner(codeUnit.repo.org)
+                        repository(codeUnit.name)
+                        credentialsId(codeUnit.repo.credentialsId)
+                        id(codeUnit.name)
+                        traits {
+                            giteaPullRequestDiscovery {
+                                strategyId(0)
+                            }
+                            headWildcardFilter {
+                                includes('main PR-*')
+                                excludes('')
+                            }
+                            giteaBranchDiscovery {
+                                strategyId(3)
+                            }
+                            wipeWorkspaceTrait()
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return folderName;
 }
