@@ -1,5 +1,6 @@
 package com.zevrant.services.services
 
+import com.zevrant.services.enumerations.PipelineTriggerType
 import com.zevrant.services.pojo.Pipeline
 import com.zevrant.services.pojo.codeunit.CodeUnit
 
