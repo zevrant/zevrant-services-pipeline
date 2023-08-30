@@ -60,7 +60,7 @@ class ImageBuildService extends Service {
         }
         List<Image> remainingBuilds = []
         images.each { image ->
-            pipelineContext.println("Checking image ${image.baseImage.name.toString()}")
+            pipelineContext.println("Checking image ${image.baseImage.toString()}")
             boolean existsLocally = doesImageExistLocally(image.baseImage)
             boolean isInQueue = isImageInBuildQueue(image.baseImage, images)
             if (!existsLocally && !isInQueue && !pullBaseImage(image.baseImage)) {
@@ -69,8 +69,9 @@ class ImageBuildService extends Service {
                 remainingBuilds.add(image)
             } else {
                 boolean exists = doesImageExistLocally(image.baseImage)
+
                 while (exists) {
-                    println "Waiting for ${image.baseImage.toString()} to exist locally"
+                    pipelineContext.println "Waiting for ${image.baseImage.toString()} to exist locally"
                     if(image.baseImage.toString().contains('dockerhub')) {
                         pullBaseImage(image.baseImage)
                         break
@@ -89,7 +90,7 @@ class ImageBuildService extends Service {
     }
 
     boolean doesImageExistLocally(Image image) {
-        return 0 == pipelineContext.sh(returnStatus: true, script: "buildah images ${image.getName()}")
+        return 0 == pipelineContext.sh(returnStatus: true, script: "buildah images ${image.toString()}")
     }
 
     boolean isImageInBuildQueue(Image image, List<Image> images) {
