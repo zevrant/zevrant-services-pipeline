@@ -72,6 +72,7 @@ class ImageBuildService extends Service {
             } else {
                 while (!doesImageExistLocally(image.baseImage)) {
                     println "Waiting for ${image.baseImage.toString()} to exist locally"
+                    sleep 15
                 }
                 pipelineContext.build(job: "/containers/build-${image.repository.split('/').collect({ it.capitalize() }).join('-')}-${image.name}", wait: false, waitForStart: true)
 
