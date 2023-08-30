@@ -70,7 +70,7 @@ class ImageBuildService extends Service {
             } else {
                 while (doesImageExistLocally(image.baseImage)) {
                     println "Waiting for ${image.baseImage.toString()} to exist locally"
-                    if(image.baseImage.contains('dockerhub')) {
+                    if(image.baseImage.toString().contains('dockerhub')) {
                         pullBaseImage(image.baseImage)
                     }
                     sleep 15
