@@ -22,6 +22,9 @@ pipeline {
             steps {
                 script {
                     gitService.checkout('containers')
+                    dir('pipeline') {
+                        gitService.checkout('zevrant-services-pipeline')
+                    }
                 }
             }
         }
@@ -38,22 +41,24 @@ pipeline {
         stage('Update Container Job Configurations') {
             steps {
                 script {
-                    jobDsl(
-                            targets: 'jenkins/pipelines/containers/containerJobDsl.groovy',
-                            removedJobAction: 'DELETE',
-                            removedViewAction: 'DELETE',
-                            removedConfigFilesAction: 'DELETE',
-                            lookupStrategy: 'SEED_JOB',
-                            failOnMissingPlugin: true,
-                            additionalClasspath: 'jenkins/src/main/groovy', //only works with
-                            additionalParameters: [
-                                    images: images.collect({ image ->
-                                        String output = "<${image.buildDirPath.split('/')[0]}>${image.toString()}"
-                                        println output
-                                        return output
-                                    })
-                            ]
-                    )
+                    dir('pipeline') {
+                        jobDsl(
+                                targets: 'jenkins/pipelines/containers/containerJobDsl.groovy',
+                                removedJobAction: 'DELETE',
+                                removedViewAction: 'DELETE',
+                                removedConfigFilesAction: 'DELETE',
+                                lookupStrategy: 'SEED_JOB',
+                                failOnMissingPlugin: true,
+                                additionalClasspath: 'jenkins/src/main/groovy', //only works with
+                                additionalParameters: [
+                                        images: images.collect({ image ->
+                                            String output = "<${image.buildDirPath.split('/')[0]}>${image.toString()}"
+                                            println output
+                                            return output
+                                        })
+                                ]
+                        )
+                    }
                 }
             }
         }
