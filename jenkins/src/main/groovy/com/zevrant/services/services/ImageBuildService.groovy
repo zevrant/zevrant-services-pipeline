@@ -70,7 +70,7 @@ class ImageBuildService extends Service {
             } else {
                 boolean exists = doesImageExistLocally(image.baseImage)
 
-                while (exists) {
+                while (!exists) {
                     pipelineContext.println "Waiting for ${image.baseImage.toString()} to exist locally"
                     if(image.baseImage.toString().contains('dockerhub')) {
                         pullBaseImage(image.baseImage)
