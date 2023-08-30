@@ -69,7 +69,7 @@ class ImageBuildService extends Service {
             } else if (isInQueue){
                 remainingBuilds.add(image)
             } else {
-                pipelineContext.build(job: "/containers/build-${image.repository.split('/').collect({it.capitalize()}).join('-')}-${image.name}")
+                pipelineContext.build(job: "/containers/build-${image.repository.split('/').collect({it.capitalize()}).join('-')}-${image.name}",  waitForStart: true)
             }
         }
         buildImagesInParallel(remainingBuilds)
