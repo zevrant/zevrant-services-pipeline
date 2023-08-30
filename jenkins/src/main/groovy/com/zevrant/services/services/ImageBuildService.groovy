@@ -70,7 +70,10 @@ class ImageBuildService extends Service {
             } else if (isInQueue){
                 remainingBuilds.add(image)
             } else {
-                println pipelineContext.build(job: "/containers/build-${image.repository.split('/').collect({it.capitalize()}).join('-')}-${image.name}", wait: false, waitForStart: true)
+                while (!doesImageExistLocally(image.baseImage)) {
+                    println "Waiting for ${image.baseImage.toString()} to exist locally"
+                }
+                pipelineContext.build(job: "/containers/build-${image.repository.split('/').collect({ it.capitalize() }).join('-')}-${image.name}", wait: false, waitForStart: true)
 
             }
         }

@@ -70,10 +70,10 @@ pipeline {
                 script {
                     List<Image> remainingImages = imageBuildService.buildImages(images)
 
-//                    while(remainingImages.size() > 0) {
-//                        println "Number of images remaining: ${remainingImages.size()}"
-//                        remainingImages = imageBuildService.buildImages(remainingImages)
-//                    }
+                    while(remainingImages.size() > 0) {
+                        println "Number of images remaining: ${remainingImages.size()}"
+                        remainingImages = imageBuildService.buildImages(remainingImages)
+                    }
                 }
             }
 
