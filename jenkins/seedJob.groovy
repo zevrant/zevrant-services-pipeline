@@ -18,19 +18,6 @@ pipeline {
     }
     stages {
 
-        stage("Search Images") {
-            steps {
-                script {
-                    dir ('containers') {
-                        gitService.checkout('containers')
-                        List<FileWrapper> files = findFiles(glob: '*/*/buildConfig.json')
-                        images = imageBuildService.parseAvailableImages(files, 'harbor.zevrant-services.internal', 'zevrant-services')
-                        println images.size()
-                    }
-                }
-            }
-        }
-
         stage("Process Seed File") {
             steps {
                 script {
@@ -43,13 +30,6 @@ pipeline {
                             lookupStrategy: 'SEED_JOB',
                             failOnMissingPlugin: true,
                             additionalClasspath: 'jenkins/src/main/groovy', //only works with
-//                            additionalParameters: [
-//                                    images     : images.collect({image ->
-//                                        String output =  "<${image.buildDirPath.split('/')[0]}>${image.toString()}"
-//                                        println output
-//                                        return output
-//                                    })
-//                            ]
                     )
                 }
             }

@@ -56,7 +56,7 @@ pipeline {
                                             println output
                                             return output
                                         }),
-                                        FOLDER_PATH: $FOLDER_PATH
+                                        FOLDER_PATH: FOLDER_PATH
                                 ]
                         )
                     }
