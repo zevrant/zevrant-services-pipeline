@@ -50,7 +50,7 @@ SpringCodeUnitCollection.microservices.each { springCodeUnit ->
     )
     jobDslService.createPipeline(folder, developDeployPipeline);
     if(springCodeUnit.prodReady) {
-        createPipeline(folder, prodDeployPipeline);
+        jobDslService.createPipeline(folder, prodDeployPipeline);
     }
 }
 
@@ -81,8 +81,8 @@ AndroidCodeUnitCollection.androidApps.each( { androidCodeUnit ->
                     'ENVIRONMENT': 'prod'
             ])
     )
-    createPipeline(androidFolder, androidDevelopDeployPipeline)
-    createPipeline(androidFolder, androidProdDeployPipeline)
+    jobDslService.createPipeline(androidFolder, androidDevelopDeployPipeline)
+    jobDslService.createPipeline(androidFolder, androidProdDeployPipeline)
 })
 
 String adminFolder = jobDslService.createMultibranch(new CodeUnit([
@@ -91,7 +91,7 @@ String adminFolder = jobDslService.createMultibranch(new CodeUnit([
 ]))
 
 (PipelineCollection.pipelines as List<Pipeline>).each { pipeline ->
-    createPipeline("", pipeline)
+    jobDslService.createPipeline("", pipeline)
 }
 
 
@@ -111,6 +111,6 @@ KubernetesServiceCollection.services.each { kubernetesService ->
                 ],
                 jenkinsfileLocation: 'jenkins/pipelines/serviceDeploy.groovy'
         ])
-        createPipeline(kubernetesServicesFolder.concat('/'), pipeline)
+        jobDslService.createPipeline(kubernetesServicesFolder.concat('/'), pipeline)
     }
 }
