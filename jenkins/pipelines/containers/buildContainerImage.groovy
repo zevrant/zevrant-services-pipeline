@@ -54,4 +54,11 @@ pipeline {
             }
         }
     }
+    post {
+        always {
+            script {
+                sh "buildah rm \"\$(buildah containers | awk '{ print \$4 }' | grep ${image.toString()})\""
+            }
+        }
+    }
 }
