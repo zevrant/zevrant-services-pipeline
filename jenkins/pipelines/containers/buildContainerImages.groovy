@@ -18,6 +18,15 @@ pipeline {
     }
 
     stages {
+        stage('Remove All Images & Containers') {
+            steps {
+                script {
+                    sh 'buildah rm --all'
+                    sh 'buildah rmi --all'
+                }
+            }
+        }
+
         stage("Git Checkout") {
             steps {
                 script {
