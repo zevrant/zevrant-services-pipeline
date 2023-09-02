@@ -66,7 +66,7 @@ pipeline {
                     String containerIds = readFile('imageToRemove')
                     println containerId
                     containerIds.split('\\n').each { id ->
-                        sh "buildah rmi ${containerId}"
+                        sh "buildah rmi ${id}"
                     }
 
                 }
