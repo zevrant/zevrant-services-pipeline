@@ -59,7 +59,7 @@ pipeline {
             script {
                 if (image != null) {
                     String taglessImage = "${image.host}/${image.repository}/${image.name}".replace('//', '/')
-                    sh "buildah rm \"\$(buildah containers | awk '{ print \$4 }' | grep )\""
+                    sh "buildah rm \"\$(buildah containers | awk '{ print \$4 }' | grep ${taglessImage})\""
                 }
             }
         }
