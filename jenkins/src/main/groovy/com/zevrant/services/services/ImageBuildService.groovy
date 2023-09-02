@@ -44,7 +44,9 @@ class ImageBuildService extends Service {
     }
 
     void pushImage(Image image) {
-        pipelineContext.sh "buildah push ${image.toString()}"
+        pipelineContext.retry(3, {
+            pipelineContext.sh "buildah push ${image.toString()}"
+        })
         if(image.useLatest) {
             String newTag = image.toString().replace(image.version, 'latest')
             pipelineContext.sh "buildah tag ${image.toString()} $newTag"
