@@ -60,12 +60,12 @@ pipeline {
                 if (image != null) {
                     String taglessImage = "${image.host}/${image.repository}/${image.name}".replace('//', '/')
                     println taglessImage
-                    sh 'buildah containers --noheading'
-                    sh "buildah containers --noheading | awk '{ print \$1 }'"
-                    sh "buildah containers --noheading | grep ${taglessImage} | awk '{ print \$1 }' | tee imageToRemove"
+                    sh 'buildah images --noheading'
+                    sh "buildah images --noheading | awk '{ print \$3 }'"
+                    sh "buildah images --noheading | grep ${taglessImage} | awk '{ print \$3 }' | tee imageToRemove"
                     String containerId = readFile('imageToRemove')
                     println containerId
-                    sh "buildah rm ${containerId}"
+                    sh "buildah rmi ${containerId}"
                 }
             }
         }
