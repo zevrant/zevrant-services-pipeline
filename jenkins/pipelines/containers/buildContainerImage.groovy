@@ -62,7 +62,9 @@ pipeline {
                     println taglessImage
                     sh "buildah containers | awk '{ print \$4 }'"
                     sh "buildah containers | grep ${taglessImage} | awk '{ print \$1 }' | tee imageToRemove"
-                    sh "buildah rm ${readFile('imageToRemove')}"
+                    String containerId = readFile('imageToRemove')
+                    println containerId
+                    sh "buildah rm ${containerId}"
                 }
             }
         }
