@@ -64,7 +64,6 @@ pipeline {
                     sh "buildah images --noheading | awk '{ print \$3 }'"
                     sh "buildah images --noheading | grep ${taglessImage} | awk '{ print \$3 }' | tee imageToRemove"
                     String containerIds = readFile('imageToRemove')
-                    println containerId
                     containerIds.split('\\n').each { id ->
                         sh "buildah rmi ${id}"
                     }
