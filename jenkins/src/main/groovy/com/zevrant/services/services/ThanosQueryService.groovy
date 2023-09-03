@@ -33,8 +33,7 @@ class ThanosQueryService extends Service {
         JSONObject response = pipelineContext.readJSON(text: queryThanos(getCertExpiryQuery))
         response.data.result
                 .findAll({ result ->
-                    result.metric.get('issuer_CN') != 'ISRG Root X1'
-                            && result.metric.get('issuer_CN').contains('Zevrant Services')
+                    result.metric.get('issuer_CN') != 'ISRG Root X1' && result.metric.get('issuer_CN').contains('Zevrant Services')
                 })
                 .each({ result ->
                     String secretName = result.metric.secret_name
