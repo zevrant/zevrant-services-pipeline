@@ -15,7 +15,7 @@ class ThanosQueryService extends Service {
                 httpMode: 'POST',
                 url: "${thanosUri}query",
                 consoleLogResponseBody: true,
-                contentType: 'APPLICATION_FORM_DATA',
+                contentType: 'APPLICATION_FORM',
                 requestBody: query
         )
         return response.content
