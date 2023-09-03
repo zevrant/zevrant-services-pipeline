@@ -25,7 +25,7 @@ class CertificateService extends Service {
     }
 
     boolean isCertificateValid(String serviceUrl, int port = 443) {
-        timeout(time: 45, unit: 'SECONDS') {
+        pipelineContext.timeout(time: 45, unit: 'SECONDS') {
             sh "echo QUIT | openssl s_client -connect ${serviceUrl}:$port -servername ${serviceUrl} -verify 1 2>/dev/null | openssl x509 -noout -dates | tee certDates"
 
             String certDates = readFile(file: 'certDates')
