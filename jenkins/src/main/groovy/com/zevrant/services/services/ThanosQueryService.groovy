@@ -4,7 +4,7 @@ import com.zevrant.services.services.Service
 
 class ThanosQueryService extends Service {
 
-    private final String thanosUri = 'http://thanos-query.monitoring.svc.cluster.local/api/v1/'
+    private final String thanosUri = 'http://thanos-query.monitoring.svc.cluster.local:9090/api/v1/'
 
     ThanosQueryService(Object pipelineContext) {
         super(pipelineContext)
