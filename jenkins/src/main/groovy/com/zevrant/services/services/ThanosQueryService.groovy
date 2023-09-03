@@ -12,15 +12,10 @@ class ThanosQueryService extends Service {
 
     private void queryThanos(String query) {
         def response = pipelineContext.httpRequest(
-                httpMode: 'GET',
+                httpMode: 'POST',
                 url: "${thanosUri}query",
                 consoleLogResponseBody: true,
-                customeHeaders: [
-                    [
-                        name: 'Content-Type',
-                        value: 'application/x-www-form-urlencoded'
-                    ]
-                ],
+                contentType: 'APPLICATION_FORM_DATA',
                 requestBody: query
         )
         return response.content
