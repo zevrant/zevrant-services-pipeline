@@ -13,8 +13,9 @@ class ThanosQueryService extends Service {
     private void queryThanos(String query) {
         def response = pipelineContext.httpRequest(
                 httpMode: 'GET',
-                url: "${thanosUri}/query",
+                url: "${thanosUri}query",
                 consoleLogResponseBody: true,
+                contentType: 'APPLICATION_FORM_DATA',
                 requestBody: query
         )
         return response.content
