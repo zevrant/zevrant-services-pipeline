@@ -9,7 +9,7 @@ List<CertRotationInfo> certsToRotate = Collections.emptyList()
 pipeline {
     agent {
         kubernetes {
-            inheritFrom 'jnlp'
+            inheritFrom 'kubernetes'
         }
     }
 
@@ -26,7 +26,13 @@ pipeline {
         stage('Trigger Application Cert Rotation') {
             steps {
                 script {
-                    println 'placeholder!!'
+                    certsToRotate.each({cert ->
+                        String serviceName = cert.secretName
+                                .replace('-tls', '')
+                                .replace('-internal', '')
+                        println "Rotating ${serviceName}"
+                    })
+
                 }
             }
         }
