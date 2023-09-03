@@ -18,7 +18,7 @@ pipeline {
             steps {
                 script {
                     certsToRotate = thanosQueryService.getServicesNeedingCertRotation()
-                    println 'There are ${certsToRotate.size()} to rotate!!'
+                    println "There are ${certsToRotate.size()} to rotate!!"
                 }
             }
         }
