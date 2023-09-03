@@ -14,7 +14,7 @@ class ThanosQueryService extends Service {
         def response = pipelineContext.httpRequest(
                 httpMode: 'GET',
                 url: "${thanosUri}/query",
-                consoleLogResponseBudt: true,
+                consoleLogResponseBody: true,
                 requestBody: query
         )
         return response.content
