@@ -40,7 +40,15 @@ class KubernetesServiceCollection {
                     environments: [
                             KubernetesEnvironment.SHARED
                     ],
-                    url: 'gitea.zevrant-services.internal'
+                    url: 'harbor.zevrant-services.internal'
+            ]),
+            new KubernetesService([
+                    serviceName: 'prometheus',
+                    includesDb: false,
+                    environments: [
+                            KubernetesEnvironment.MONITORING
+                    ],
+                    url: 'prometheus-monitoring.preprod.zevrant-services.internal'
             ]),
     ])
 

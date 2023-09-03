@@ -3,7 +3,8 @@ package com.zevrant.services.pojo
 enum KubernetesEnvironment {
     SHARED,
     PREPROD_SHARED,
-    DEVELOP;
+    DEVELOP,
+    MONITORING;
 
     private KubernetesEnvironment() {
 

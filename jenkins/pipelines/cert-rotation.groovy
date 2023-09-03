@@ -2,6 +2,7 @@
 
 
 import com.zevrant.services.pojo.CertRotationInfo
+import com.zevrant.services.pojo.KubernetesServiceCollection
 import com.zevrant.services.services.ThanosQueryService
 
 ThanosQueryService thanosQueryService = new ThanosQueryService(this)
@@ -31,8 +32,11 @@ pipeline {
                                 .replace('-tls', '')
                                 .replace('-internal', '')
                         println "Rotating ${serviceName}"
-                    })
 
+                        if(KubernetesServiceCollection.findServiceByName(serviceName) != null) {
+                            build job: "kubernetes-services/${serviceName}", wait: true
+                        }
+                    })
                 }
             }
         }
