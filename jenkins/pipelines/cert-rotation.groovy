@@ -1,9 +1,11 @@
 @Library("CommonUtils") _
 
+
+import com.zevrant.services.pojo.CertRotationInfo
 import com.zevrant.services.services.ThanosQueryService
 
 ThanosQueryService thanosQueryService = new ThanosQueryService(this)
-
+List<CertRotationInfo> certsToRotate = Collections.emptyList()
 pipeline {
     agent {
         kubernetes {
@@ -15,7 +17,8 @@ pipeline {
         stage('Determine Expiring Certificates') {
             steps {
                 script {
-                    thanosQueryService.getServicesNeedingCertRotation()
+                    certsToRotate = thanosQueryService.getServicesNeedingCertRotation()
+                    println 'There are ${certsToRotate.size()} to rotate!!'
                 }
             }
         }

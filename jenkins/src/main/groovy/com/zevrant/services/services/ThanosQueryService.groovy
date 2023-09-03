@@ -1,6 +1,12 @@
 package com.zevrant.services.services
 
+import com.zevrant.services.pojo.CertRotationInfo
 import com.zevrant.services.services.Service
+import com.zevrant.services.utils.DateTimeUtils
+import net.sf.json.JSONObject
+
+import java.time.ZoneId
+import java.time.ZonedDateTime
 
 class ThanosQueryService extends Service {
 
@@ -10,7 +16,7 @@ class ThanosQueryService extends Service {
         super(pipelineContext)
     }
 
-    private void queryThanos(String query) {
+    private String queryThanos(String query) {
         def response = pipelineContext.httpRequest(
                 httpMode: 'POST',
                 url: "${thanosUri}query",
@@ -21,12 +27,26 @@ class ThanosQueryService extends Service {
         return response.content
     }
 
-    List<String> getServicesNeedingCertRotation() {
+    List<CertRotationInfo> getServicesNeedingCertRotation() {
         String getCertExpiryQuery = 'query=x509_cert_not_after'
+        List<CertRotationInfo> certRotationList = []
+        JSONObject response = pipelineContext.readJSON(text: queryThanos(getCertExpiryQuery))
+        response.data.result
+                .findAll({ result ->
+                    result.metric.get('issuer_CN') != 'ISRG Root X1'
+                            && result.metric.get('issuer_CN').contains('Zevrant Services')
+                })
+                .each({ result ->
+                    String secretName = result.metric.secret_name
+                    ZonedDateTime startTime = DateTimeUtils.unixToLocalDateTime((long) result.value[0])
+                    ZonedDateTime expirationTime = DateTimeUtils.unixToLocalDateTime(Long.parseLong(result.value[1] as String))
 
-        queryThanos(getCertExpiryQuery)
+                    if(ZonedDateTime.now(ZoneId.of("GMT-4")).plusMinutes(58).isAfter(expirationTime)) {
+                        certRotationList.add(new CertRotationInfo(secretName, startTime, expirationTime))
+                    }
 
-        return new ArrayList<String>()
+                })
+        return certRotationList
     }
 
 }
