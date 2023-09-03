@@ -19,9 +19,6 @@ pipeline {
             inheritFrom 'kubernetes'
         }
     }
-    options {
-        retry(3)
-    }
     stages {
         stage("SCM Checkout") {
             steps {
