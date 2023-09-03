@@ -5,7 +5,7 @@ import com.zevrant.services.services.Service
 class ThanosQueryService extends Service {
 
     private final String thanosUri = 'http://thanos-query.monitoring.svc.cluster.local/api/v1/'
-    String oauthFormBody = "grant_type=password&username=${URLEncoder.encode(pipelineContext.username as String, StandardCharsets.UTF_8)}" + "&password=${URLEncoder.encode(pipelineContext.password as String, StandardCharsets.UTF_8)}"
+
     ThanosQueryService(Object pipelineContext) {
         super(pipelineContext)
     }
