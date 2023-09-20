@@ -2,21 +2,29 @@
   hosts: all
   become: true
   become_user: root
-#  serial: 1
+  serial: 1
   gather_facts: false
   tasks:
-#    - name: Cordon K8S Node
-#      become: false
-#      local_action: ansible.builtin.command /snap/bin/kubectl cordon "{{ hostname }}"
-#    - name: Drain K8S Node
-#      become: false
-#      local_action: ansible.builtin.command /snap/bin/kubectl drain "{{ hostname }}" --ignore-daemonsets --delete-emptydir-data
-#    - name: Update Packages
-#      ansible.builtin.yum:
-#        use_backend: yum4
-#        update_cache: true
-#        name: '*'
-#        state: latest
+    - name: Cordon K8S Node
+      become: false
+      local_action: ansible.builtin.command /snap/bin/kubectl cordon "{{ hostname }}"
+      register: cordonresult
+      until: "cordonresult is not failed"
+      retries: 10
+      delay: 10
+    - name: Drain K8S Node
+      become: false
+      local_action: ansible.builtin.command /snap/bin/kubectl drain "{{ hostname }}" --ignore-daemonsets --delete-emptydir-data
+      register: cordonresult
+      until: "cordonresult is not failed"
+      retries: 10
+      delay: 10
+    - name: Update Packages
+      ansible.builtin.yum:
+        use_backend: yum4
+        update_cache: true
+        name: '*'
+        state: latest
     - name: Copy Root Certificate
       ansible.builtin.copy:
         dest: /etc/pki/ca-trust/source/anchors/zevrant-services.crt
@@ -38,9 +46,12 @@
     - name: Load Certificate
       ansible.builtin.command:
         cmd: update-ca-trust
-    - name: Restart Containerd
-      ansible.builtin.command:
-        cmd: systemctl restart containerd
-#    - name: Uncordon K8S Node
-#      become: false
-#      local_action: ansible.builtin.command /snap/bin/kubectl uncordon "{{ hostname }}"
+    - name: Unconditionally reboot the machine with all defaults
+      ansible.builtin.reboot:
+    - name: Uncordon K8S Node
+      register: cordonresult
+      until: "cordonresult is not failed"
+      retries: 30
+      delay: 10
+      become: false
+      local_action: ansible.builtin.command /snap/bin/kubectl uncordon "{{ hostname }}"
