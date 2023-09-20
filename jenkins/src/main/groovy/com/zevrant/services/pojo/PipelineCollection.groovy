@@ -71,7 +71,7 @@ class PipelineCollection {
                     ]
             ),
             new Pipeline(
-                    name: 'Restart Jenkins',
+                    name: 'Admin Utilities/restart-jenkins',
                     description: 'Pipeline intended to restart jenkins when it is time to reload certificates',
                     credentialId: 'jenkins-git',
                     jenkinsfileLocation: 'jenkins/pipelines/admin/jenkins-restart.groovy',
