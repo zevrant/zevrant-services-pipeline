@@ -50,6 +50,14 @@ class KubernetesServiceCollection {
                     ],
                     url: 'prometheus-monitoring.preprod.zevrant-services.internal'
             ]),
+            new KubernetesService([
+                    serviceName: 'grafana',
+                    includesDb: false,
+                    environments: [
+                            KubernetesEnvironment.MONITORING
+                    ],
+                    url: 'grafana.preprod.zevrant-services.internal'
+            ]),
     ])
 
     static List<KubernetesService> getServices() {
