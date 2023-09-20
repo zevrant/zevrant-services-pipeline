@@ -91,7 +91,7 @@ String adminFolder = jobDslService.createMultibranch(new CodeUnit([
 ]))
 
 (PipelineCollection.pipelines as List<Pipeline>).each { pipeline ->
-    jobDslService.createPipeline("", pipeline)
+    jobDslService.createPipeline(pipeline.folder, pipeline)
 }
 
 

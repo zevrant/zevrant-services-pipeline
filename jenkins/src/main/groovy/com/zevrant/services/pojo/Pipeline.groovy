@@ -3,6 +3,7 @@ package com.zevrant.services.pojo
 class Pipeline {
 
     private final String name;
+    private final String folder
     private final String description;
     private final ArrayList<PipelineParameter> parameters;
     private final String gitRepo;
@@ -16,6 +17,7 @@ class Pipeline {
 
     Pipeline(Map<String, Object> params) {
         this.name = params.name
+        this.folder = params.folder ?: ''
         this.description = params.description ?: ""
         this.parameters = (params.parameters ?: new ArrayList<>()) as ArrayList<PipelineParameter>
         this.gitRepo = params.gitRepo ?: "ssh://git@gitea.zevrant-services.internal:30121/zevrant-services/zevrant-services-pipeline.git"
