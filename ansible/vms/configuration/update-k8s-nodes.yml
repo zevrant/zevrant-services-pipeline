@@ -43,7 +43,27 @@
           O1bk9g6pqOxM3bTl5HMCIQDusvA6XLr23DUCljwV8kGKLOVhwpVA9A8CAw2WbBc/
           1A==
           -----END CERTIFICATE-----
-    - name: Load Certificate
+    - name: Setup Node Exporter
+      ansible.builtin.copy:
+        dest: /etc/systemd/system/node-exporter.service
+        content: |
+          [Unit]
+          Description=Node Exporter
+          Documentation=
+          
+          Wants=network.target
+          After=network.target
+          
+          [Service]
+          User=node-exporter
+          
+          WorkingDirectory=/opt/node-exporter
+          ExecStart=/opt/node-exporter/node_exporter
+          
+          [Install]
+          WantedBy=multi-user.target
+
+- name: Load Certificate
       ansible.builtin.command:
         cmd: update-ca-trust
     - name: Unconditionally reboot the machine with all defaults
