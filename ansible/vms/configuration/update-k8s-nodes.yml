@@ -62,8 +62,12 @@
           
           [Install]
           WantedBy=multi-user.target
-
-- name: Load Certificate
+    - name: Enable keepalived
+      ansible.builtin.systemd:
+        name: node-exporter
+        state: started
+        enabled: true
+    - name: Load Certificate
       ansible.builtin.command:
         cmd: update-ca-trust
     - name: Unconditionally reboot the machine with all defaults

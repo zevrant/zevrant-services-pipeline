@@ -47,6 +47,7 @@
           - kubeadm
     - name: Create Node Exporter Systemd File
       ansible.builtin.copy:
+        dest: /etc/systemd/system/node-exporter.service
         content: |
           [Unit]
           Description=Node Exporter
@@ -63,7 +64,7 @@
           
           [Install]
           WantedBy=multi-user.target
-      dest: /etc/systemd/system/node-exporter.service
+
     - name: Create Node Exporter User
       ansible.builtin.command:
         cmd: adduser --system --shel /bin/false --no-create-home node-exporter
