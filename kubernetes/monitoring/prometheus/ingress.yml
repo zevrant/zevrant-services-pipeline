@@ -48,7 +48,7 @@ spec:
                 port:
                   name: https
   ingressClassName: nginx
-#  tls:
-#    - hosts:
-#        - prometheus-monitoring.preprod.zevrant-services.internal
-#      secretName: prometheus-monitoring-tls
+  tls:
+    - hosts:
+        - prometheus-monitoring.preprod.zevrant-services.internal
+      secretName: prometheus-monitoring-tls

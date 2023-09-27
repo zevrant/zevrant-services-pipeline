@@ -39,7 +39,7 @@ metadata:
 spec:
   secretName: prometheus-monitoring-tls
   issuerRef:
-    name: acme-issuer
+    name: step-ca
   privateKey:
     rotationPolicy: Always
   duration: 48h
@@ -56,7 +56,7 @@ metadata:
   namespace: monitoring
 automountServiceAccountToken: true
 imagePullSecrets:
-  - name: regcred
+  - name: harbor-ro
 
 ---
 
@@ -154,7 +154,7 @@ spec:
             secretName: thanos-objstore-config
       containers:
         - name: prometheus
-          image: docker.io/prom/prometheus:latest
+          image: harbor.zevrant-services.internal/dockerhub/prom/prometheus:latest
           args:
             - --storage.tsdb.min-block-duration=5m
             - --storage.tsdb.max-block-duration=5m
@@ -197,24 +197,6 @@ spec:
               port: 9090
             failureThreshold: 3
             periodSeconds: 5
-#        - name: thanos-sidecar
-#          image: docker.io/bitnami/thanos:0.31.0
-#          ports:
-#            - containerPort: 10902
-#          args:
-#            - sidecar
-#            - --tsdb.path=/prometheus
-#            - --prometheus.url=http://localhost:9090
-#            - --hash-func=SHA256
-#            - --objstore.config-file=/var/zevrant-services/objstoreconfig/..data/objstore.yml
-#            - --grpc-address=0.0.0.0:10901
-#            - --http-address=0.0.0.0:10902
-#          volumeMounts:
-#            - mountPath: /prometheus
-#              name: prometheus-data
-#            - mountPath: /var/zevrant-services/objstoreconfig
-#              name: objstore-config
-
 
 
 ---
@@ -237,7 +219,8 @@ data:
       - url: https://thanos-receive.preprod.zevrant-services.internal/api/v1/receive
         tls_config:
           ca_file: /var/run/zevrant-services/prometheus-certs/tls.crt
-      
+          cert_file: /var/run/zevrant-services/prometheus-certs/tls.crt
+          key_file: /var/run/zevrant-services/prometheus-certs/tls.key
     scrape_configs:
       - job_name: x509-certificate-exporter
         honor_timestamps: true

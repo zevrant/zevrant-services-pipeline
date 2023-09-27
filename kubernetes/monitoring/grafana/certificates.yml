@@ -3,12 +3,12 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: grafana-postgres
+  name: loki-tls
   namespace: monitoring
 spec:
   secretName: loki-tls
   issuerRef:
-    name: acme-issuer
+    name: step-ca
   privateKey:
     algorithm: ECDSA
     size: 256
@@ -16,7 +16,7 @@ spec:
   duration: 2160h
   renewBefore: 2000h
   dnsNames:
-    - loki.preprod.zevrant-services.com
+    - loki.preprod.zevrant-services.internal
 
 ---
 

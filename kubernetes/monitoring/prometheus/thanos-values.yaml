@@ -1200,7 +1200,7 @@ queryFrontend:
     ##
     annotations:
       nginx.ingress.kubernetes.io/backend-protocol: http
-      cert-manager.io/issuer: acme-issuer
+      cert-manager.io/issuer: step-ca
       cert-manager.io/common-name: thanos.preprod.zevrant-services.internal
       cert-manager.io/duration: "2160h"
       cert-manager.io/renew-before: "1824h"

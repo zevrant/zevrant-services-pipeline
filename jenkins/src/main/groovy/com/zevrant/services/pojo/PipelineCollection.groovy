@@ -79,7 +79,7 @@ class PipelineCollection {
                     triggers: new ArrayList<>([
                             new PipelineTrigger(
                                     type: PipelineTriggerType.CRON,
-                                    value: "H 4 * * *"
+                                    value: "H */9 * * *"
                             )
                     ])
             )

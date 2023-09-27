@@ -6,19 +6,20 @@ test_pod:
 loki:
   enabled: true
   isDefault: true
+  auth_enabled: false
   url: http://{{(include "loki.serviceName" .)}}:{{ .Values.loki.service.port }}
   storage:
     bucketNames:
-      admin: admin
-      chunks: chunks
-      ruler: ruler
+      admin: loki-admin
+      chunks: loki-chunks
+      ruler: loki-ruler
     type: s3
     s3:
       s3ForcePathStyle: true
-      endpoint: https://api.minio-monitoring.preprod.zevrant-services.com/
+      endpoint: https://api.minio-monitoring.preprod.zevrant-services.internal/
       region: us-east-1
-      accessKeyId: ""
-      secretAccessKey: ""
+      accessKeyId: "QaWNkQ7z1nImseD2T8c8"
+      secretAccessKey: "6n3zqULNj1DUUvq9rgws6s0QY2rmmhiMZuHghNCo"
   readinessProbe:
     httpGet:
       path: /ready

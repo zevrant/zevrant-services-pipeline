@@ -826,7 +826,7 @@ redis:
     # support redis, redis+sentinel
     # addr for redis: <host_redis>:<port_redis>
     # addr for redis+sentinel: <host_sentinel1>:<port_sentinel1>,<host_sentinel2>:<port_sentinel2>,<host_sentinel3>:<port_sentinel3>
-    addr: "redis:6379"
+    addr: "keydb:6379"
     # The name of the set of Redis instances to monitor, it must be set to support redis+sentinel
     sentinelMasterSet: ""
     # The "coreDatabaseIndex" must be "0" as the library Harbor
@@ -836,8 +836,8 @@ redis:
     registryDatabaseIndex: "2"
     trivyAdapterIndex: "5"
     # username field can be an empty string and it will be authenticated against the default user
-    username: "harbor"
-    password: "6`B?g?r(B9Z9Nl3Hcs?<M8x]YeGKYuIGxNn#2@e,"
+    username: ""
+    password: "password"
     # If using existingSecret, the key must be REDIS_PASSWORD
     existingSecret: ""
   ## Additional deployment annotations
