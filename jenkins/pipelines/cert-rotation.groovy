@@ -2,6 +2,7 @@
 
 
 import com.zevrant.services.pojo.CertRotationInfo
+import com.zevrant.services.pojo.KubernetesService
 import com.zevrant.services.pojo.KubernetesServiceCollection
 import com.zevrant.services.services.ThanosQueryService
 
@@ -32,10 +33,11 @@ pipeline {
                                 .replace('-tls', '')
                                 .replace('-internal', '')
                         println "Rotating ${serviceName}"
+                        KubernetesService service = KubernetesServiceCollection.findServiceByName(serviceName)
                         if(serviceName.contains('jenkins')) {
                             build job: "A"
-                        } else if(KubernetesServiceCollection.findServiceByName(serviceName) != null) {
-                            build job: "kubernetes-services/${serviceName}", wait: true
+                        } else if(service != null) {
+                            build job: "kubernetes-services/${service.serviceName}", wait: true
                         }
                     })
                 }
