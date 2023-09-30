@@ -75,8 +75,8 @@ class KubernetesServiceCollection {
 
     static KubernetesService findServiceByName(String name) {
         return services.find({ service ->
-            println(service.serviceName == name.replaceAll('-\\d+$', ''))
-            return service.serviceName == name.replaceAll('-\\d+$', '')
+            println(service.serviceName.replaceAll('-\\d+$', '') == name.replaceAll('-\\d+$', ''))
+            return service.serviceName.replaceAll('-\\d+$', '') == name.replaceAll('-\\d+$', '')
         })
     }
 }
