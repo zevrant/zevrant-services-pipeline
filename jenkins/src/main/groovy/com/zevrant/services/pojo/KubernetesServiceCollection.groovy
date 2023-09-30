@@ -77,4 +77,8 @@ class KubernetesServiceCollection {
     static KubernetesService findServiceByName(String name) {
         return services.find({ service -> service.name == name })
     }
+
+    static KubernetesService findServiceByServiceName(String serviceName) {
+        return services.find({ service -> service.serviceName == serviceName })
+    }
 }
