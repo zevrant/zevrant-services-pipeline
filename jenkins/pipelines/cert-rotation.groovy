@@ -29,15 +29,15 @@ pipeline {
             steps {
                 script {
                     certsToRotate.each({cert ->
-                        String serviceName = cert.secretName
+                        String name = cert.secretName
                                 .replace('-tls', '')
                                 .replace('-internal', '')
-                        println "Rotating ${serviceName}"
-                        KubernetesService service = KubernetesServiceCollection.findServiceByName(serviceName)
-                        if(serviceName.contains('jenkins')) {
+                        println "Rotating ${name}"
+                        KubernetesService service = KubernetesServiceCollection.findServiceByName(name)
+                        if(name.contains('jenkins')) {
                             build job: "A"
                         } else if(service != null) {
-                            build job: "kubernetes-services/${service.serviceName}", wait: true
+                            build job: "kubernetes-services/${service.name}", wait: true
                         }
                     })
                 }

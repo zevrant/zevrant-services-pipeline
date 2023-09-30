@@ -103,7 +103,7 @@ folder(kubernetesServicesFolder) {
 KubernetesServiceCollection.services.each { kubernetesService ->
     kubernetesService.environments.each { environment ->
         Pipeline pipeline = new Pipeline([
-                name: kubernetesService.serviceName,
+                name: kubernetesService.name,
                 envs               : [
 
                         ENVIRONMENT : environment.getNamespaceName(),

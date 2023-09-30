@@ -8,7 +8,9 @@ class KubernetesService {
     final String certCheckPath
     final String url
     final ServiceType serviceType
+    final String name
     KubernetesService(Map<String, Object> params) {
+        this.name = params.name ?: params.serviceName
         this.serviceName = params.serviceName
         this.includesDb = (boolean) params.includesDb
         this.environments = params.environments as List<KubernetesEnvironment>
