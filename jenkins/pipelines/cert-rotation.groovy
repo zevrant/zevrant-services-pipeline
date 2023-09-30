@@ -32,8 +32,9 @@ pipeline {
                                 .replace('-tls', '')
                                 .replace('-internal', '')
                         println "Rotating ${serviceName}"
-
-                        if(KubernetesServiceCollection.findServiceByName(serviceName) != null) {
+                        if(serviceName.contains('jenkins')) {
+                            build job: "A"
+                        } else if(KubernetesServiceCollection.findServiceByName(serviceName) != null) {
                             build job: "kubernetes-services/${serviceName}", wait: true
                         }
                     })

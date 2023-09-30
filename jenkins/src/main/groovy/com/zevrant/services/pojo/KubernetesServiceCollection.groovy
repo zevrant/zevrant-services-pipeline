@@ -58,6 +58,15 @@ class KubernetesServiceCollection {
                     ],
                     url: 'grafana.preprod.zevrant-services.internal'
             ]),
+            new KubernetesService([
+                    serviceName: 'minio-monitoring-0',
+                    includesDb: false,
+                    environments: [
+                            KubernetesEnvironment.MONITORING
+                    ],
+                    url: 'minio-monitoring.preprod.zevrant-services.internal',
+                    serviceType: ServiceType.STATEFULSET
+            ])
     ])
 
     static List<KubernetesService> getServices() {
@@ -65,6 +74,6 @@ class KubernetesServiceCollection {
     }
 
     static KubernetesService findServiceByName(String name) {
-        return services.find({ service -> service.serviceName == name})
+        return services.find({ service -> service.serviceName == name.replaceAll('-\\d+$', '')})
     }
 }
