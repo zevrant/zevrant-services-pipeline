@@ -67,6 +67,17 @@ class KubernetesServiceCollection {
                     ],
                     url: 'minio-monitoring.preprod.zevrant-services.internal',
                     serviceType: ServiceType.STATEFULSET
+            ]),
+            new KubernetesService([
+                    name: 'jenkins-internal',
+                    serviceName: 'jenkins',
+                    includesDb: false,
+                    environments: [
+                            KubernetesEnvironment.JENKINS
+                    ],
+                    url: 'jenkins.zevrant-services.internal',
+                    serviceType: ServiceType.DEPLOYMENT
+
             ])
     ])
 

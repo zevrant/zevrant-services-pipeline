@@ -70,18 +70,18 @@ class PipelineCollection {
                             new PipelineParameter<String>(String, 'DOMAIN', 'Domain name the certificate is being requested for', null)
                     ]
             ),
-            new Pipeline(
-                    name: 'restart-jenkins',
-                    folder: 'Admin Utilities',
-                    description: 'Pipeline intended to restart jenkins when it is time to reload certificates',
-                    credentialId: 'jenkins-git',
-                    jenkinsfileLocation: 'jenkins/pipelines/admin/jenkins-restart.groovy',
-                    triggers: new ArrayList<>([
-                            new PipelineTrigger(
-                                    type: PipelineTriggerType.CRON,
-                                    value: "H */9 * * *"
-                            )
-                    ])
-            )
+//            new Pipeline(
+//                    name: 'restart-jenkins',
+//                    folder: 'Admin Utilities',
+//                    description: 'Pipeline intended to restart jenkins when it is time to reload certificates',
+//                    credentialId: 'jenkins-git',
+//                    jenkinsfileLocation: 'jenkins/pipelines/admin/jenkins-restart.groovy',
+//                    triggers: new ArrayList<>([
+//                            new PipelineTrigger(
+//                                    type: PipelineTriggerType.CRON,
+//                                    value: "H */9 * * *"
+//                            )
+//                    ])
+//            )
     ])
 }
