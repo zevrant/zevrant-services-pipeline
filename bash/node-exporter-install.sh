@@ -1,10 +1,11 @@
+rm -rf /opt/node-exporter/*
 url='https://github.com/prometheus/node_exporter/releases/download/v1.6.1/node_exporter-1.6.1.linux-amd64.tar.gz'
 curl -L "$url" -o node-exporter.tar.gz
 tar xvf node-exporter.tar.gz
 mkdir -p /opt/node-exporter
 mv node_exporter-* node-exporter
 mv node-exporter/* /opt/node-exporter
-rm -r node-exporter*
+rm -rf node-exporter*
 useradd --system -u 997 node-exporter
 chown -R node-exporter:node-exporter /opt/node-exporter
 rm -f /etc/systemd/system/node-exporter.service

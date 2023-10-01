@@ -1,5 +1,5 @@
 service:
-  create: false
+  create: true
 prometheusServiceMonitor:
   create: false
 prometheusRules:

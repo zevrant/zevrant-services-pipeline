@@ -1,1 +1,1 @@
-Jenkins.instance.doSafeRestart(null);
+Jenkins.instance.doSafeExit(null);

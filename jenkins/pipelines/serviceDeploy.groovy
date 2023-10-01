@@ -20,24 +20,24 @@ pipeline {
         }
     }
     stages {
-        stage("SCM Checkout") {
-            steps {
-                container('kubectl') {
-                    script {
-                        retry {
-                            try {
-                                gitService.checkout('zevrant-services-pipeline')
-                            } catch (Exception ex) {
-                                println "Sleeping before retry"
-                                sleep 5
-                                throw ex
-                            }
-                        }
-
-                    }
-                }
-            }
-        }
+//        stage("SCM Checkout") {
+//            steps {
+//                container('kubectl') {
+//                    script {
+//                        retry {
+//                            try {
+//                                gitService.checkout('zevrant-services-pipeline')
+//                            } catch (Exception ex) {
+//                                println "Sleeping before retry"
+//                                sleep 5
+//                                throw ex
+//                            }
+//                        }
+//
+//                    }
+//                }
+//            }
+//        }
         stage("Deploy Service") {
             steps {
                 container('kubectl') {
