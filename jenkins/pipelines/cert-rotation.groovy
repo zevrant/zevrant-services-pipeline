@@ -34,7 +34,7 @@ pipeline {
                             .findAll({ service -> service.url != null && service.url != '' })
                             .each { service ->
                                 if (certificateService.isCertificateValid(service.url)) {
-                                    certsToRotate.add(service.name)
+                                    certsToRotate.add(new CertRotationInfo(service.name, null, null))
                                 }
                             }
                 }

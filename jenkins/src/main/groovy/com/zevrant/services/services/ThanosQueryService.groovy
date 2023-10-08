@@ -20,7 +20,7 @@ class ThanosQueryService extends Service {
         def response = pipelineContext.httpRequest(
                 httpMode: 'POST',
                 url: "${thanosUri}query",
-                consoleLogResponseBody: true,
+                consoleLogResponseBody: false,
                 contentType: 'APPLICATION_FORM',
                 requestBody: query
         )
