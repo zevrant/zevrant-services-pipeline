@@ -72,7 +72,7 @@ class CertificateService extends Service {
         return stringWriter.toString()
     }
 
-    @NonCps
+    @NonCPS
     ZonedDateTime getEndTime(String serviceUrl, int port = 443) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern('MMM d HH:mm:ss yyyy z')
         String certDates = getCertData(serviceUrl, port)
