@@ -29,6 +29,7 @@ class CertificateService extends Service {
             pipelineContext.sh "echo QUIT | openssl s_client -connect ${serviceUrl}:$port -servername ${serviceUrl} -verify 1 2>/dev/null | openssl x509 -noout -dates | tee certDates"
 
             String certDates = pipelineContext.readFile(file: 'certDates')
+            println(certDates)
             String[] lines = certDates.split('\n')
             String beforeDate = lines[0].split('=')[1]
             String afterDate = lines[1].split('=')[1]
