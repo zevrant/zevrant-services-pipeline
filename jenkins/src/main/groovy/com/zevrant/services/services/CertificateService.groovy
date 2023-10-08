@@ -26,10 +26,11 @@ class CertificateService extends Service {
 
     boolean isCertificateValid(String serviceUrl, int port = 443) {
         pipelineContext.timeout(time: 45, unit: 'SECONDS') {
+            String certDates = ''
             for( int i = 0; i < 5; i ++) {
                 pipelineContext.sh "echo QUIT | openssl s_client -connect ${serviceUrl}:$port -servername ${serviceUrl} -verify 1 2>/dev/null | openssl x509 -noout -dates | tee certDates"
 
-                String certDates = pipelineContext.readFile(file: 'certDates')
+                certDates = pipelineContext.readFile(file: 'certDates')
                 println(certDates)
 
                 if(!certDates.toLowerCase().contains('Unable to load certificate'.toLowerCase())) {
