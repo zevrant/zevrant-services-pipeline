@@ -33,7 +33,7 @@ pipeline {
                     KubernetesServiceCollection.services
                             .findAll({ service -> service.url != null && service.url != '' })
                             .each { service ->
-                                if (certificateService.isCertificateValid(service.url)) {
+                                if (!certificateService.isCertificateValid(service.url)) {
                                     certsToRotate.add(new CertRotationInfo(service.name, null, null))
                                 }
                             }
@@ -52,7 +52,7 @@ pipeline {
                         KubernetesService service = KubernetesServiceCollection.findServiceByName(name)
                         retry (3, {
                             if (name.contains('jenkins')) {
-                                build job: "A"
+                                build job: ""
                             } else if (service != null) {
                                 build job: "kubernetes-services/${service.name}", wait: true
                             }
