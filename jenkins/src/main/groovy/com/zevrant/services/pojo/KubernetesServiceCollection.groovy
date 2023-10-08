@@ -12,14 +12,14 @@ class KubernetesServiceCollection {
             ]),
             new KubernetesService([
                     serviceName: 'keycloak',
-                    includesDb: true,
+                    includesDb: false,
                     environments: [
                             KubernetesEnvironment.PREPROD_SHARED
                     ]
             ]),
             new KubernetesService([
                     serviceName: 'gitea',
-                    includesDb: true,
+                    includesDb: false,
                     environments: [
                             KubernetesEnvironment.SHARED
                     ],
@@ -27,7 +27,7 @@ class KubernetesServiceCollection {
             ]),
             new KubernetesService([
                     serviceName: 'harbor-trivy',
-                    includesDb: true,
+                    includesDb: false,
                     environments: [
                             KubernetesEnvironment.SHARED
                     ],
@@ -36,7 +36,7 @@ class KubernetesServiceCollection {
             ]),
             new KubernetesService([
                     serviceName: 'harbor-core',
-                    includesDb: true,
+                    includesDb: false,
                     environments: [
                             KubernetesEnvironment.SHARED
                     ],
