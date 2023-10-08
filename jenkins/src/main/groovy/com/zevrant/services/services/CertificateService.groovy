@@ -18,7 +18,7 @@ class CertificateService extends Service {
     private static boolean isCertExpired(String beforeDate, String afterDate) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern('MMM d HH:mm:ss yyyy z')
         ZonedDateTime now = ZonedDateTime.now(ZoneOffset.UTC)
-        return now.isBefore(ZonedDateTime.parse(beforeDate.replace('  ', ' '), formatter)) || now.isAfter(ZonedDateTime.parse(afterDate.replace('  ', ' '), formatter).minusHours(12))
+        return now.isBefore(ZonedDateTime.parse(beforeDate.replace('  ', ' '), formatter)) || now.isAfter(ZonedDateTime.parse(afterDate.replace('  ', ' '), formatter).minusHours(1))
     }
 
     static String getMicroserviceUrl(String serviceName, String environment) {
