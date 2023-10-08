@@ -36,6 +36,7 @@ class CertificateService extends Service {
                 if(!certDates.toLowerCase().contains('Unable to load certificate'.toLowerCase())) {
                    break;
                 }
+                throw new RuntimeException("Failed to get certificate for $serviceUrl")
             }
             String[] lines = certDates.split('\n')
             String beforeDate = lines[0].split('=')[1]
