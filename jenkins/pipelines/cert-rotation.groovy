@@ -30,11 +30,13 @@ pipeline {
         stage('Get Expired Services') {
             steps {
                 script {
-                    KubernetesServiceCollection.services.each { service ->
-                        if (certificateService.isCertificateValid(service.url)) {
-                            certsToRotate.add(service.name)
-                        }
-                    }
+                    KubernetesServiceCollection.services
+                            .findAll({ service -> service.url != null && service.url != '' })
+                            .each { service ->
+                                if (certificateService.isCertificateValid(service.url)) {
+                                    certsToRotate.add(service.name)
+                                }
+                            }
                 }
             }
         }
@@ -42,15 +44,15 @@ pipeline {
         stage('Trigger Application Cert Rotation') {
             steps {
                 script {
-                    certsToRotate.each({cert ->
+                    certsToRotate.each({ cert ->
                         String name = cert.secretName
                                 .replace('-tls', '')
                                 .replace('-internal', '')
                         println "Rotating ${name}"
                         KubernetesService service = KubernetesServiceCollection.findServiceByName(name)
-                        if(name.contains('jenkins')) {
+                        if (name.contains('jenkins')) {
                             build job: "A"
-                        } else if(service != null) {
+                        } else if (service != null) {
                             build job: "kubernetes-services/${service.name}", wait: true
                         }
                     })
