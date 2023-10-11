@@ -52,7 +52,7 @@ pipeline {
                         KubernetesService service = KubernetesServiceCollection.findServiceByName(name)
                         retry (3, {
                             if (name.contains('jenkins')) {
-                                build job: ""
+                                build job: "kubernetes-services/jenkins-internal"
                             } else if (service != null) {
                                 build job: "kubernetes-services/${service.name}", wait: true
                             }
