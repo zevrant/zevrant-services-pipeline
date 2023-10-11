@@ -77,11 +77,14 @@ pipeline {
 
             steps {
                 script {
-                    List<Image> remainingImages = imageBuildService.buildImages(images)
+                    withCredentials([usernamePassword(credentialsId: 'jenkins-harbor', passwordVariable: 'password', usernameVariable: 'username')]) {
+                        imageBuildService.registryLogin(username, password, "harbor.zevrant-services.internal")
+                        List<Image> remainingImages = imageBuildService.buildImages(images)
 
-                    while(remainingImages.size() > 0) {
-                        println "Number of images remaining: ${remainingImages.size()}"
-                        remainingImages = imageBuildService.buildImages(remainingImages)
+                        while (remainingImages.size() > 0) {
+                            println "Number of images remaining: ${remainingImages.size()}"
+                            remainingImages = imageBuildService.buildImages(remainingImages)
+                        }
                     }
                 }
             }
