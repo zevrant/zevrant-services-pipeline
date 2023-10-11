@@ -61,7 +61,7 @@ class CertificateService extends Service {
             if (line.contains('-----BEGIN CERTIFICATE-----')) {
                 include = true
             } else if (line.contains('-----END CERTIFICATE-----')) {
-                includes = false
+                include = false
             }
             return include
         }).each { line ->
