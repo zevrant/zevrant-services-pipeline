@@ -51,7 +51,7 @@ spec:
         fsGroup: 1000
         fsGroupChangePolicy: "Always"
       imagePullSecrets:
-        - name: regcred
+        - name: harbor-ro
       volumes:
         - name: step-ca
           persistentVolumeClaim:
@@ -60,11 +60,6 @@ spec:
           secret:
             secretName: certificate-authority-password
             defaultMode: 0400
-      dnsPolicy: "None"
-      dnsConfig:
-        nameservers:
-          - 1.1.1.1
-          - 8.8.8.8
       containers:
         - name: certificate-authority
           image: harbor.zevrant-services.internal/zevrant-services/step-ca:latest

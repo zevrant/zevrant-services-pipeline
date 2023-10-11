@@ -31,22 +31,6 @@ spec:
 
 ---
 
-apiVersion: v1
-kind: Service
-metadata:
-  namespace: monitoring
-  name: promtail
-spec:
-  type: NodePort
-  ports:
-    - port: 9080
-      targetPort: 9080
-      nodePort: 30620
-      name: http
-  selector:
-    app: promtail
-
-
 #apiVersion: cert-manager.io/v1
 #kind: Certificate
 #metadata:
@@ -146,6 +130,11 @@ spec:
             - containerPort: 1514
               name: syslog-receiver
               protocol: TCP
+          env:
+            - name: HOSTNAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
           startupProbe:
             httpGet:
               scheme: HTTP
@@ -226,7 +215,7 @@ data:
               - localhost
             labels:
               job: varlogs
-              __path__: /opt/host/syslog
+              __path__: /opt/host/messages
       - job_name: kubernetes_pods
         kubernetes_sd_configs:
             - role: pod

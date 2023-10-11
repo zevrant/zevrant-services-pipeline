@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: root-ca-cert
+  namespace: monitoring
+data:
+  ca.crt: |
+    -----BEGIN CERTIFICATE-----
+    MIICDTCCAbOgAwIBAgIUcfMqgTUkiJGW1NI6WAdQ815DyGQwCgYIKoZIzj0EAwIw
+    VzELMAkGA1UEBhMCVVMxETAPBgNVBAgMCE1pY2hpZ2FuMREwDwYDVQQHDAhCYXkg
+    Q2l0eTEiMCAGA1UEAwwZemV2cmFudC1zZXJ2aWNlcy5pbnRlcm5hbDAeFw0yMzA4
+    MjExODQxNTdaFw0zMzA4MTgxODQxNTdaMFcxCzAJBgNVBAYTAlVTMREwDwYDVQQI
+    DAhNaWNoaWdhbjERMA8GA1UEBwwIQmF5IENpdHkxIjAgBgNVBAMMGXpldnJhbnQt
+    c2VydmljZXMuaW50ZXJuYWwwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAARRvcYB
+    Qlv7B+Vr5FDOHbg9BXvl7pWrkZUGxwAsOEawl4YzD/3KvOAxF8RdYnO4bSRJuU7B
+    tfzbk81bnQyKDFfio10wWzAdBgNVHQ4EFgQUEpenVXHlbvZcDAtH6c/OjFieUC0w
+    HwYDVR0jBBgwFoAUEpenVXHlbvZcDAtH6c/OjFieUC0wDAYDVR0TBAUwAwEB/zAL
+    BgNVHQ8EBAMCAQYwCgYIKoZIzj0EAwIDSAAwRQIgPdHcPE/tfknCePZFNUDkL/qQ
+    O1bk9g6pqOxM3bTl5HMCIQDusvA6XLr23DUCljwV8kGKLOVhwpVA9A8CAw2WbBc/
+    1A==
+    -----END CERTIFICATE-----    
+    

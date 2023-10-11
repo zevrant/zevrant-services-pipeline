@@ -9,8 +9,8 @@ import com.zevrant.services.services.KubernetesService
 
 import java.nio.charset.StandardCharsets
 
-KubernetesService kubernetesService = ServiceLoader.load(binding, KubernetesService.class) as KubernetesService
-CertificateService certificateService = ServiceLoader.load(binding, CertificateService.class) as CertificateService
+KubernetesService kubernetesService = new KubernetesService(this)
+CertificateService certificateService = new CertificateService(this)
 
 if(ENVIRONMENT == '' || ENVIRONMENT == null) {
     throw new RuntimeException("Environment name must be provided, exiting...")
