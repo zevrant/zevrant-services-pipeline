@@ -18,8 +18,8 @@ loki:
       s3ForcePathStyle: true
       endpoint: https://api.minio-monitoring.preprod.zevrant-services.internal/
       region: us-east-1
-      accessKeyId: "QaWNkQ7z1nImseD2T8c8"
-      secretAccessKey: "6n3zqULNj1DUUvq9rgws6s0QY2rmmhiMZuHghNCo"
+      accessKeyId: ""
+      secretAccessKey: ""
   readinessProbe:
     httpGet:
       path: /ready
