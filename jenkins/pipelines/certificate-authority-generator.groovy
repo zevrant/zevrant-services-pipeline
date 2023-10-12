@@ -119,7 +119,7 @@ pipeline {
                             sh "cp ca.crt ../ca.crt"
 
                         }
-                        sh 'rm rootCA.zip; zip -r rootCA.zip *'
+                        sh 'rm rootCA.zip; zip -r rootCA.zip rootCA/*'
                     }
                 }
             }
