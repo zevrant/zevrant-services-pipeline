@@ -84,7 +84,9 @@ class ImageBuildService extends Service {
     }
 
     boolean pullBaseImage(Image image) {
-        return 0 == pipelineContext.sh(returnStatus: true, script: "buildah pull ${image.toString()}")
+        retry (3, {
+            return 0 == pipelineContext.sh(returnStatus: true, script: "buildah pull ${image.toString()}")
+        })
     }
 
     boolean doesImageExistLocally(Image image) {
