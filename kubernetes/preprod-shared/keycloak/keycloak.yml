@@ -25,7 +25,7 @@ metadata:
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
 spec:
   rules:
-    - host: keycloak.preprod.zevrant-services.com
+    - host: keycloak.preprod.zevrant-services.internal
       http:
         paths:
           - path: /
@@ -47,7 +47,7 @@ metadata:
 spec:
   secretName: keycloak-tls
   issuerRef:
-    name: acme-issuer
+    name: step-ca
   privateKey:
     algorithm: RSA
     size: 4096
@@ -55,7 +55,7 @@ spec:
   duration: 24h
   renewBefore: 13h
   dnsNames:
-    - keycloak.preprod.zevrant-services.com
+    - keycloak.preprod.zevrant-services.internal
 ---
 
 apiVersion: apps/v1
@@ -84,10 +84,10 @@ spec:
           secret:
             secretName: keycloak-tls
       imagePullSecrets:
-        - name: regcred
+        - name: harbor-ro
       containers:
         - name: keycloak
-          image: quay.io/keycloak/keycloak:latest
+          image: harbor.zevrant-services.internal/quay/keycloak/keycloak:latest
           imagePullPolicy: Always
           command:
             - /bin/sh
@@ -100,22 +100,22 @@ spec:
               mountPath: /opt/acme/certs/
           ports:
             - containerPort: 8443
-#          startupProbe:
-#            httpGet:
-#              scheme: HTTPS
-#              path: /health/ready
-#              port: 8443
-#            periodSeconds: 5
-#            failureThreshold: 32 #max of 160 seconds
-#            successThreshold: 1
-#          livenessProbe:
-#            httpGet:
-#              scheme: HTTPS
-#              path: /health/live
-#              port: 8443
-#            periodSeconds: 5
-#            failureThreshold: 3
-#            successThreshold: 1
+          startupProbe:
+            httpGet:
+              scheme: HTTPS
+              path: /health/ready
+              port: 8443
+            periodSeconds: 5
+            failureThreshold: 32 #max of 160 seconds
+            successThreshold: 1
+          livenessProbe:
+            httpGet:
+              scheme: HTTPS
+              path: /health/live
+              port: 8443
+            periodSeconds: 5
+            failureThreshold: 3
+            successThreshold: 1
           env:
             - name: KC_DB
               value: postgres
@@ -164,7 +164,7 @@ spec:
             - name: KC_HTTPS_CERTIFICATE_KEY_FILE
               value: /opt/acme/certs/tls.key
             - name: KC_HOSTNAME_URL
-              value: https://keycloak.preprod.zevrant-services.com
+              value: https://keycloak.preprod.zevrant-services.internal
             - name: KC_TRANSACTION_XA_ENABLED
               value: 'true'
             - name: KC_HOSTNAME_STRICT_HTTPS

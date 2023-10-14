@@ -47,9 +47,12 @@ pipeline {
                     certsToRotate.each({ cert ->
                         String name = cert.secretName
                                 .replace('-tls', '')
-                                .replace('-internal', '')
+
                         println "Rotating ${name}"
                         KubernetesService service = KubernetesServiceCollection.findServiceByName(name)
+                        if (service == null) {
+                            service = KubernetesServiceCollection.findServiceByServiceName(name)
+                        }
                         try {
                             retry(3, {
                                 build job: "kubernetes-services/${service.name}", wait: true
