@@ -5,6 +5,7 @@ class KubernetesServiceCollection {
     private static final List<KubernetesService> services = Collections.unmodifiableList([
             new KubernetesService([
                     serviceName: 'vault',
+                    url: 'vault.preprod.zevrant-services.internal',
                     includesDb: false,
                     environments: [
                             KubernetesEnvironment.PREPROD_SHARED
@@ -12,6 +13,7 @@ class KubernetesServiceCollection {
             ]),
             new KubernetesService([
                     serviceName: 'keycloak',
+                    url: 'keycloak.preprod.zevrant-services.internal',
                     includesDb: false,
                     environments: [
                             KubernetesEnvironment.PREPROD_SHARED
