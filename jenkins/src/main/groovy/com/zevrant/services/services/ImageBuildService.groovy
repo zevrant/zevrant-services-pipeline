@@ -84,7 +84,7 @@ class ImageBuildService extends Service {
     }
 
     boolean pullBaseImage(Image image) {
-        retry (3, {
+        pipelineContext.retry(3, {
             return 0 == pipelineContext.sh(returnStatus: true, script: "buildah pull ${image.toString()}")
         })
     }
