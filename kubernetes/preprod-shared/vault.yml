@@ -138,8 +138,8 @@ spec:
             - mountPath: /var/zevrant-services
               name: password-volume
           env:
-            - name: URL
-              value: 'vault.preprod.zevrant-services.internal'
+            - name: VAULT_ADDR
+              value: 'https://vault.preprod.zevrant-services.internal'
             - name: KEY1
               valueFrom:
                 secretKeyRef:

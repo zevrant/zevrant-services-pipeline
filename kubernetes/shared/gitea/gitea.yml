@@ -190,7 +190,7 @@ spec:
         fsGroup: 1000
         fsGroupChangePolicy: "Always"
       imagePullSecrets:
-        - name: regcred
+        - name: harbor-ro
       #      dnsPolicy: ClusterFirst
       #      dnsConfig:
       #        nameservers:
@@ -336,7 +336,6 @@ data:
     SSH_LISTEN_PORT         = 2222
     BUILTIN_SSH_SERVER_USER = git
     LFS_START_SERVER        = true
-    LFS_CONTENT_PATH        = /var/lib/gitea/git/lfs
     DOMAIN                  = gitea.zevrant-services.internal
     LFS_JWT_SECRET          = iNGInu3z1U5DSO-im6vJ_ZIV_EgxPpwqHiHHfG7V2SM
     OFFLINE_MODE            = false
@@ -373,9 +372,8 @@ data:
 
     [log]
     ROOT_PATH = /var/lib/gitea/data/log
-    MODE      = console
     LEVEL     = debug
-    ROUTER    = console
+    logger.router.MODE = console
 
     [security]
     INSTALL_LOCK                  = true
@@ -405,6 +403,10 @@ data:
     ENABLE_OPENID_SIGNUP = true
 
     [webhook]
-    ALLOWED_HOST_LIST = *.zevrant-services.com
+    ALLOWED_HOST_LIST = *.zevrant-services.internal
     PAGIN_NUM         = 25
+
+    [lfs]
+    PATH        = /var/lib/gitea/git/lfs
+
 

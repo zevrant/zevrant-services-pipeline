@@ -10,8 +10,8 @@ import com.zevrant.services.services.VersionService
 List<String> angularProjects = ["zevrant-home-ui"];
 
 String branchName = (BRANCH_NAME.startsWith('PR-')) ? CHANGE_BRANCH : BRANCH_NAME
-VersionService versionService = ServiceLoader.load(binding, VersionService) as VersionService
-KubernetesService kubernetesService = ServiceLoader.load(binding, KubernetesService) as KubernetesService
+VersionService versionService = new VersionService(this)
+KubernetesService kubernetesService = new KubernetesService(this)
 Version version = null
 String REPOSITORY = scm.getUserRemoteConfigs()[0].getUrl().tokenize('/').last().split("\\.")[0]
 pipeline {
