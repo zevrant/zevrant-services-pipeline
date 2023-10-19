@@ -30,7 +30,9 @@ pipeline {
 
     stages {
         stage("Build Microservice") {
-//            environment {
+            environment {
+                GITEA_TOKEN = credentials('jenkins-git-access-token-as-text')
+            }
 //                AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
 //                AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
 //                AWS_DEFAULT_REGION = "us-east-1"
@@ -50,6 +52,7 @@ pipeline {
                 AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
                 AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
                 AWS_DEFAULT_REGION = "us-east-1"
+                GITEA_TOKEN = credentials('jenkins-git-access-token-as-text')
             }
             steps {
                 script {
@@ -79,6 +82,7 @@ pipeline {
                 AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
                 AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
                 AWS_DEFAULT_REGION = "us-east-1"
+                GITEA_TOKEN = credentials('jenkins-git-access-token-as-text')
             }
             steps {
                 script {
