@@ -43,7 +43,9 @@ pipeline {
             when { expression { BRANCH_NAME == 'main' } }
             steps {
                 script {
-                    ConfigurationAsCode.get().configure()
+                    retry ( 3, {
+                        ConfigurationAsCode.get().configure()
+                    })
                 }
             }
         }
