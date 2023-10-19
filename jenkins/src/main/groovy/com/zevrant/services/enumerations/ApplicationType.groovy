@@ -3,7 +3,7 @@ package com.zevrant.services.enumerations
 enum ApplicationType {
     JAVA_LIBRARY('Libraries', 'jenkins/pipelines/java-library-build.groovy'),
     ANDROID('Android', 'jenkins/pipelines/android-build.groovy'),
-    SPRING('Spring', 'jenkins/pipelines/artifact-build.groovy'),
+    SPRING('Spring', 'jenkins/pipelines/spring/artifact-build.groovy'),
     JENKINS_CAC('Admin Utilities', 'jenkins/pipelines/admin/cacUpdate.groovy')
 
     private final String value;
