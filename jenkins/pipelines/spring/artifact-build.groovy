@@ -125,6 +125,9 @@ pipeline {
         }
 
         stage('Assemble Jar') {
+            environment {
+                GITEA_TOKEN = credentials('jenkins-git-access-token-as-text')
+            }
             steps {
                 script {
                     container('openjdk17') {
