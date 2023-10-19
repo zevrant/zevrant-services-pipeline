@@ -1,9 +1,14 @@
+package spring
+
 @Library("CommonUtils") _
 
 
 import com.lesfurets.jenkins.unit.global.lib.Library
 import com.zevrant.services.ServiceLoader
 import com.zevrant.services.pojo.Version
+import com.zevrant.services.pojo.codeunit.SpringCodeUnit
+import com.zevrant.services.pojo.codeunit.SpringCodeUnitCollection
+import com.zevrant.services.services.GradleService
 import com.zevrant.services.services.KubernetesService
 import com.zevrant.services.services.VersionService
 
@@ -12,8 +17,10 @@ List<String> angularProjects = ["zevrant-home-ui"];
 String branchName = (BRANCH_NAME.startsWith('PR-')) ? CHANGE_BRANCH : BRANCH_NAME
 VersionService versionService = new VersionService(this)
 KubernetesService kubernetesService = new KubernetesService(this)
+GradleService gradleService = new GradleService(this)
 Version version = null
 String REPOSITORY = scm.getUserRemoteConfigs()[0].getUrl().tokenize('/').last().split("\\.")[0]
+SpringCodeUnit codeUnit = SpringCodeUnitCollection.findByRepoName(REPOSITORY)
 pipeline {
     agent {
         kubernetes {
@@ -24,40 +31,15 @@ pipeline {
     stages {
         stage("Build Microservice") {
             environment {
-                AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
-                AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
-                AWS_DEFAULT_REGION = "us-east-1"
-                DOCKER_TOKEN = credentials('jenkins-harbor')
+//                AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
+//                AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
+//                AWS_DEFAULT_REGION = "us-east-1"
+//                DOCKER_TOKEN = credentials('jenkins-harbor')
             }
             steps {
                 script {
-                    timeout(time: 20, unit: 'MINUTES') {
-
-
-                        parallel([
-                                "Pull Base Image": {
-                                    container("buildah") {
-                                        String dockerfile = httpRequest(
-                                                authentication: 'gitea-access-token',
-                                                url: "https://gitea.zevrant-services.internal/zevrant-services/containers/raw/branch/main/k8s/spring-microservice-template/Dockerfile"
-                                        ).content
-                                        String baseImage = ((String[]) dockerfile.split("\n"))[0].split(" ")[1]
-                                        sh 'echo $DOCKER_TOKEN | buildah login -u \'robot$jenkins\' --password-stdin docker.io'
-                                        retry(3, {
-                                            timeout(time: 5, unit: 'MINUTES') {
-                                                sh "buildah pull $baseImage"
-                                            }
-                                        })
-                                        sh 'rm -f Dockerfile'
-                                        writeFile(file: 'Dockerfile', text: dockerfile)
-                                    }
-                                },
-                                "Gradle Build"   : {
-                                    container('spring-jenkins-slave') {
-                                        sh "CI=ci bash gradlew assemble -x test -x integrationTest --no-watch-fs"
-                                    }
-                                }
-                        ])
+                    container('spring-jenkins-slave') {
+                        sh "CI=ci bash gradlew assemble -x test -x integrationTest --no-watch-fs"
                     }
                 }
             }
@@ -142,48 +124,52 @@ pipeline {
             }
         }
 
-        stage("Build Artifact") {
-            environment {
-                AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
-                AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
-                AWS_DEFAULT_REGION = "us-east-1"
-                DOCKER_TOKEN = credentials('jenkins-harbor')
-            }
+        stage('Assemble Jar') {
             steps {
                 script {
-                    timeout(time: 20, unit: 'MINUTES') {
-                        container('buildah') {
-                            String versionString = (branchName == "main")
-                                    ? version.toVersionCodeString()
-                                    : "${version.toVersionCodeString()}-${branchName}" as String
-                            def appYaml = readYaml(file: 'src/main/resources/application.yml')
-                            String containerPort = appYaml.server.port
-                            sh 'echo $DOCKER_TOKEN | buildah login -u \'robot$jenkins\' --password-stdin docker.io'
-                            sh "buildah bud --build-arg serviceName=$REPOSITORY --build-arg containerPort=$containerPort -t harbor.zevrant-services.internal/zevrant-services/$REPOSITORY:${versionString} ."
-                            sh "buildah push harbor.zevrant-services.internal/zevrant-services/$REPOSITORY:${versionString}"
+                    container('openjdk17') {
+                        lock(resource: "${codeUnit.name}-version" as String, quantity: 1) {
+                            gradleService.assemble(version)
                         }
+                        gradleService.publish(version, codeUnit)
                     }
                 }
             }
         }
 
-        stage("Trigger Deploy") {
-            when { expression { branchName == "main" } }
-            steps {
-                script {
-                    String[] repositorySplit = REPOSITORY.split("-")
-                    String versionString = (branchName == "main")
-                            ? version.toVersionCodeString()
-                            : "${versionString}-${branchName}" as String
-                    build job: "Spring/${repositorySplit.collect {part -> part.capitalize()}.join(' ')}/${REPOSITORY}-deploy-to-develop" as String, parameters: [
-                            [$class: 'StringParameterValue', name: 'VERSION', value: versionString],
-                    ],
-                            wait: false
-                }
-            }
-        }
+//        stage("Build Artifact") {
+//            environment {
+//                AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
+//                AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
+//                AWS_DEFAULT_REGION = "us-east-1"
+//                DOCKER_TOKEN = credentials('jenkins-harbor')
+//            }
+//            steps {
+//                script {
+//                    timeout(time: 20, unit: 'MINUTES') {
+//                        container('buildah') {
+//                            String versionString = (branchName == "main")
+//                                    ? version.toVersionCodeString()
+//                                    : "${version.toVersionCodeString()}-${branchName}" as String
+//                            def appYaml = readYaml(file: 'src/main/resources/application.yml')
+//                            String containerPort = appYaml.server.port
+//                            sh 'echo $DOCKER_TOKEN | buildah login -u \'robot$jenkins\' --password-stdin docker.io'
+//                            sh "buildah bud --build-arg serviceName=$REPOSITORY --build-arg containerPort=$containerPort -t harbor.zevrant-services.internal/zevrant-services/$REPOSITORY:${versionString} ."
+//                            sh "buildah push harbor.zevrant-services.internal/zevrant-services/$REPOSITORY:${versionString}"
+//                        }
+//                    }
+//                }
+//            }
+//        }
+
     }
     post {
+        success {
+            script {
+                writeFile(file: 'artifactVersion.txt', text: version.toThreeStageVersionString())
+                archiveArtifacts(artifacts: 'artifactVersion.txt', allowEmptyArchive: false)
+            }
+        }
         always {
             script {
                 String appName = "${REPOSITORY.split('-').collect {part -> part.capitalize()}.join(' ')}"

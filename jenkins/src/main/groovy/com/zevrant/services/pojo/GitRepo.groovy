@@ -17,11 +17,31 @@ class GitRepo {
         this.credentialsId = credentialsId
     }
 
-    public String getSshUri() {
+    String getSshUri() {
         return "ssh://${sshHostName}/${org}/${repoName}.git"
     }
 
-    public String getHttpsUri() {
+    String getHttpsUri() {
         return "https://${hostName}/${org}/${repoName}.git"
+    }
+
+    String getRepoName() {
+        return repoName
+    }
+
+    String getOrg() {
+        return org
+    }
+
+    String getHostName() {
+        return hostName
+    }
+
+    String getSshHostName() {
+        return sshHostName
+    }
+
+    String getCredentialsId() {
+        return credentialsId
     }
 }

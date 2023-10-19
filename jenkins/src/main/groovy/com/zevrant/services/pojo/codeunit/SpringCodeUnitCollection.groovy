@@ -22,5 +22,8 @@ class SpringCodeUnitCollection {
             ])
     ])
 
+    static SpringCodeUnit findByRepoName(String repoName) {
+        return microservices.find({codeUnit -> codeUnit.getRepo().getRepoName() == repoName})
+    }
 
 }

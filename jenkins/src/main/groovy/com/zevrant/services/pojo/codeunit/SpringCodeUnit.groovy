@@ -8,6 +8,7 @@ class SpringCodeUnit extends CodeUnit {
     private final boolean postgresDatabase
     private final String databaseName
     private final String databaseUser
+    private final String group
 
     SpringCodeUnit(Map<String, Object> params) {
         super(params)
@@ -16,6 +17,7 @@ class SpringCodeUnit extends CodeUnit {
         postgresDatabase = params.postgresDatabase ?: false
         databaseName = params.databaseName
         databaseUser = params.databaseUser ?: 'zevrant'
+        group = params.group ?: 'com.zevrant.services'
     }
 
     boolean getPostgresDatabase() {
@@ -32,5 +34,9 @@ class SpringCodeUnit extends CodeUnit {
 
     String getDatabaseUser() {
         return databaseUser
+    }
+
+    String getGroup() {
+        return group
     }
 }
