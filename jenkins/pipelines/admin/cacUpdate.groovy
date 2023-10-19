@@ -1,16 +1,11 @@
 @Library("CommonUtils") _
 
 
-import com.zevrant.services.ServiceLoader
-import com.zevrant.services.pojo.Version
-import com.zevrant.services.services.VersionService
 import io.jenkins.plugins.casc.ConfigurationAsCode
 
 List<String> angularProjects = ["zevrant-home-ui"];
 
 String branchName = (BRANCH_NAME.startsWith('PR-')) ? CHANGE_BRANCH : BRANCH_NAME
-VersionService versionTasks = ServiceLoader.load(binding, VersionService) as VersionService
-Version version = null
 String REPOSITORY = scm.getUserRemoteConfigs()[0].getUrl().tokenize('/').last().split("\\.")[0]
 pipeline {
     agent {
