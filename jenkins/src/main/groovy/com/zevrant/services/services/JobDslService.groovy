@@ -101,9 +101,6 @@ class JobDslService extends Service {
                                         upstream {
                                             upstreamProjects(trigger.value)
                                         }
-                                        break;
-                                    default:
-                                        throw new RuntimeException("Pipeline Trigger Type Not Implemented ${trigger.type} for pipeline ${pipeline.name}")
                                 }
                             }
 
