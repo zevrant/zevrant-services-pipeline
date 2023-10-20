@@ -17,7 +17,7 @@ class JobDslService extends Service {
      */
     void createPipeline(String folder, Pipeline pipeline) {
         folder = (folder == null) ? "" : folder
-        folder = (folder.lastIndexOf('/') == folder.length() - 1) ? folder.substring(0, Math.max(0, folder.length() - 1)) : folder
+        folder = (folder.lastIndexOf('/') == folder.length() - 1)? folder.substring(0, Math.max(0, folder.length() - 1)): folder
         dslContext.pipelineJob(folder + "/" + pipeline.name) {
             description pipeline.description
             String jobDisplayName = ""
@@ -85,31 +85,28 @@ class JobDslService extends Service {
                 if (pipeline.triggers.size() > 0) {
                     pipelineTriggers {
                         triggers {
-                            pipeline.triggers.each { trigger ->
-                                switch (trigger.type) {
-                                    case PipelineTriggerType.CRON:
-                                        cron {
+                            cron {
+                                pipeline.triggers.each { trigger ->
+                                    switch (trigger.type) {
+                                        case PipelineTriggerType.CRON:
                                             spec(trigger.value);
-                                        }
-                                        break;
-                                    case PipelineTriggerType.GENERIC:
-                                        println "WARN: Ignoring Generic trigger as it is not yet implemented"
-                                        break
-                                    case PipelineTriggerType.UPSTREAM:
-//                                        upstream {
-//                                            upstreamProjects(trigger.value)
-//                                        }
-                                        break
-                                    default:
-                                        throw new RuntimeException("Pipeline Trigger Type Not Implemented ${trigger.type} for pipeline ${pipeline.name}")
+                                            break;
+                                        case PipelineTriggerType.GENERIC:
+                                            println "WARN: Ignoring Generic trigger as it is not yet implemented"
+                                            break
+                                        case PipelineTriggerType.UPSTREAM:
+                                            break
+                                        default:
+                                            throw new RuntimeException("Pipeline Trigger Type Not Implemented ${trigger.type} for pipeline ${pipeline.name}")
+                                    }
                                 }
                             }
 
                         }
                     }
                 }
-                if (!pipeline.allowConcurrency) {
-                    disableConcurrentBuilds {
+                if(!pipeline.allowConcurrency) {
+                    disableConcurrentBuilds{
                         abortPrevious(false)
                     }
                 }
