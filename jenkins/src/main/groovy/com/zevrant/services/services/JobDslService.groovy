@@ -83,14 +83,17 @@ class JobDslService extends Service {
             }
             properties {
                 if (pipeline.triggers.size() > 0) {
-                    pipelineTriggers {
-                        triggers {
+
 
                             pipeline.triggers.each { trigger ->
                                 switch (trigger.type) {
                                     case PipelineTriggerType.CRON:
-                                        cron {
-                                            spec(trigger.value);
+                                        pipelineTriggers {
+                                            triggers {
+                                                cron {
+                                                    spec(trigger.value);
+                                                }
+                                            }
                                         }
                                         break;
                                     case PipelineTriggerType.GENERIC:
@@ -100,9 +103,6 @@ class JobDslService extends Service {
                                         break
                                     default:
                                         throw new RuntimeException("Pipeline Trigger Type Not Implemented ${trigger.type} for pipeline ${pipeline.name}")
-                                }
-                            }
-
                         }
                     }
                 }
