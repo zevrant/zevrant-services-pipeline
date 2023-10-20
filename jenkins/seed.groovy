@@ -22,6 +22,22 @@ LibraryCodeUnitCollection.libraries.each { libraryCodeUnit ->
 
 SpringCodeUnitCollection.microservices.each { springCodeUnit ->
     String folder = jobDslService.createMultibranch(springCodeUnit as CodeUnit)
+    Pipeline containerBuild = new Pipeline([
+            name               : 'container-build',
+            description        : "Build containers for ${springCodeUnit.name}",
+            jenkinsfileLocation: 'pipelines/applications/spring/container-build.groovy',
+            envs               : [repository: springCodeUnit.repo.repoName],
+            triggers           : [
+                    new PipelineTrigger([
+                            type : PipelineTriggerType.UPSTREAM,
+                            value: "./${springCodeUnit.name}-multibranch/main"
+                    ]),
+                    new PipelineTrigger([
+                            type : PipelineTriggerType.UPSTREAM,
+                            value: "/containers/build-Zevrant-services-ubuntu-base"
+                    ])
+            ]
+    ])
     Pipeline developDeployPipeline = new Pipeline(
             name: "${springCodeUnit.name}-deploy-to-develop",
             parameters: new ArrayList<>([
@@ -34,6 +50,12 @@ SpringCodeUnitCollection.microservices.each { springCodeUnit ->
                     'REPOSITORY' : springCodeUnit.name,
                     'ENVIRONMENT': 'develop'
             ]),
+            triggers           : [
+                    new PipelineTrigger([
+                            type : PipelineTriggerType.UPSTREAM,
+                            value: "./container-build"
+                    ])
+            ]
     )
     Pipeline prodDeployPipeline = new Pipeline(
             name: "${springCodeUnit}-deploy-to-prod",
@@ -48,10 +70,9 @@ SpringCodeUnitCollection.microservices.each { springCodeUnit ->
                     'ENVIRONMENT': 'prod'
             ]),
     )
+    jobDslService.createPipeline(folder,containerBuild)
     jobDslService.createPipeline(folder, developDeployPipeline);
-    if(springCodeUnit.prodReady) {
-        jobDslService.createPipeline(folder, prodDeployPipeline);
-    }
+    jobDslService.createPipeline(folder, prodDeployPipeline);
 }
 
 AndroidCodeUnitCollection.androidApps.each( { androidCodeUnit ->

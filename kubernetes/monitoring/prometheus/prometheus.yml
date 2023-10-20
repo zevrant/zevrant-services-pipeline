@@ -106,7 +106,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 100Gi
+      storage: 150Gi
   storageClassName: csi-rbd-sc
   volumeMode: Filesystem
 
@@ -158,6 +158,7 @@ spec:
           args:
             - --storage.tsdb.min-block-duration=5m
             - --storage.tsdb.max-block-duration=5m
+            - --storage.tsdb.retention.time=2h
             - --config.file=/etc/prometheus/..data/prometheus.yml
           securityContext:
             capabilities:
@@ -355,3 +356,8 @@ data:
           ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
           insecure_skip_verify: true
         metrics_path: /metrics/cadvisor
+      - job_name: hydro_runoff_controller
+        metrics_path: /metrics
+        static_configs: 
+          - targets:
+              - 192.168.1.18
