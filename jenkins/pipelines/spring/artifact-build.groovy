@@ -134,7 +134,7 @@ pipeline {
             }
             steps {
                 script {
-                    container('openjdk17') {
+                    container('spring-jenkins-slave') {
 //                        lock(resource: "${codeUnit.name}-version" as String, quantity: 1) {
 //                        }
                         gradleService.publish(version, codeUnit)
