@@ -1,5 +1,6 @@
 import com.zevrant.services.enumerations.ApplicationType
 import com.zevrant.services.enumerations.PipelineTriggerType
+import com.zevrant.services.enumerations.PipelineTrigger
 import com.zevrant.services.pojo.PipelineParameter
 import com.zevrant.services.pojo.Pipeline
 import com.zevrant.services.pojo.containers.Image
