@@ -99,8 +99,8 @@ class JobDslService extends Service {
                             case PipelineTriggerType.GENERIC:
                                 println "WARN: Ignoring Generic trigger as it is not yet implemented"
                                 break
-//                            case PipelineTriggerType.UPSTREAM:
-//                                break
+                            case PipelineTriggerType.UPSTREAM:
+                                break
                             default:
                                 throw new RuntimeException("Pipeline Trigger Type Not Implemented ${trigger.type} for pipeline ${pipeline.name}")
                         }
