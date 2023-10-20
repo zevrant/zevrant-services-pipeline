@@ -128,16 +128,15 @@ pipeline {
             }
         }
 
-        stage('Assemble Jar') {
+        stage('Publish Jar') {
             environment {
                 GITEA_TOKEN = credentials('jenkins-git-access-token-as-text')
             }
             steps {
                 script {
                     container('openjdk17') {
-                        lock(resource: "${codeUnit.name}-version" as String, quantity: 1) {
-                            gradleService.assemble(version)
-                        }
+//                        lock(resource: "${codeUnit.name}-version" as String, quantity: 1) {
+//                        }
                         gradleService.publish(version, codeUnit)
                     }
                 }
