@@ -51,12 +51,12 @@ SpringCodeUnitCollection.microservices.each { springCodeUnit ->
                     'REPOSITORY' : springCodeUnit.name,
                     'ENVIRONMENT': 'develop'
             ]),
-            triggers           : [
-                    new PipelineTrigger([
-                            type : PipelineTriggerType.UPSTREAM,
-                            value: "./container-build"
-                    ])
-            ]
+//            triggers           : [
+//                    new PipelineTrigger([
+//                            type : PipelineTriggerType.UPSTREAM,
+//                            value: "./container-build"
+//                    ])
+//            ]
     )
     Pipeline prodDeployPipeline = new Pipeline(
             name: "${springCodeUnit}-deploy-to-prod",
