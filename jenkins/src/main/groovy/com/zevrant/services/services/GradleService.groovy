@@ -25,7 +25,7 @@ class GradleService extends Service {
     }
 
     void publish(Version version, SpringCodeUnit springCodeUnit) {
-        pipelineContext.sh "bash gradlew publishAllPublicationsToGiteaRepository -PprojVersion=${version.toThreeStageVersionString()}"
+        pipelineContext.sh "bash gradlew publish -PprojVersion=${version.toThreeStageVersionString()}"
 
     }
 
