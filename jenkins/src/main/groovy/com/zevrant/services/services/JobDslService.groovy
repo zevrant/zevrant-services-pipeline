@@ -4,6 +4,8 @@ import com.zevrant.services.enumerations.PipelineTriggerType
 import com.zevrant.services.pojo.Pipeline
 import com.zevrant.services.pojo.codeunit.CodeUnit
 
+import static com.zevrant.services.enumerations.PipelineTriggerType.UPSTREAM
+
 class JobDslService extends Service {
     private Object dslContext = pipelineContext //renaming variable for clarity of use
     JobDslService(Object pipelineContext) {
@@ -95,6 +97,7 @@ class JobDslService extends Service {
                                     case PipelineTriggerType.GENERIC:
                                         println "WARN: Ignoring Generic trigger as it is not yet implemented"
                                         break
+                                    case UPSTREAM:
                                     default:
                                         throw new RuntimeException("Pipeline Trigger Type Not Implemented ${trigger.type} for pipeline ${pipeline.name}")
                                 }
