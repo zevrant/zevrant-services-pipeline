@@ -71,7 +71,7 @@ SpringCodeUnitCollection.microservices.each { springCodeUnit ->
                     'ENVIRONMENT': 'prod'
             ]),
     )
-    jobDslService.createPipeline(folder,containerBuild)
+//    jobDslService.createPipeline(folder,containerBuild)
     jobDslService.createPipeline(folder, developDeployPipeline);
     jobDslService.createPipeline(folder, prodDeployPipeline);
 }
