@@ -99,9 +99,9 @@ class JobDslService extends Service {
                                         break
                                     case UPSTREAM:
                                         upstream {
-                                            upstreamProjects (trigger.value)
+                                            upstreamProjects(trigger.value)
                                         }
-                                        break
+//                                        break
                                     default:
                                         throw new RuntimeException("Pipeline Trigger Type Not Implemented ${trigger.type} for pipeline ${pipeline.name}")
                                 }
