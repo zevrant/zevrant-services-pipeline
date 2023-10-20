@@ -11,8 +11,8 @@ class PipelineTrigger {
 
     PipelineTrigger(Map<String, Object> params) {
         this.type = params.type as PipelineTriggerType
-        this.value = params.value
-        this.token = params.token
-        this.variables = params.variables as ArrayList<GenericPipelineTriggerVariable>
+        this.value = params.value ?: ''
+        this.token = params.token ?: ''
+        this.variables = params.variables as ArrayList<GenericPipelineTriggerVariable> ?: []
     }
 }
