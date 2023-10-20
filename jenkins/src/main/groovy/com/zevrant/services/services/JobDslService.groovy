@@ -85,24 +85,24 @@ class JobDslService extends Service {
                 if (pipeline.triggers.size() > 0) {
 
 
-                            pipeline.triggers.each { trigger ->
-                                switch (trigger.type) {
-                                    case PipelineTriggerType.CRON:
-                                        pipelineTriggers {
-                                            triggers {
-                                                cron {
-                                                    spec(trigger.value);
-                                                }
-                                            }
+                    pipeline.triggers.each { trigger ->
+                        switch (trigger.type) {
+                            case PipelineTriggerType.CRON:
+                                pipelineTriggers {
+                                    triggers {
+                                        cron {
+                                            spec(trigger.value);
                                         }
-                                        break;
-                                    case PipelineTriggerType.GENERIC:
-                                        println "WARN: Ignoring Generic trigger as it is not yet implemented"
-                                        break
-                                    case PipelineTriggerType.UPSTREAM:
-                                        break
-                                    default:
-                                        throw new RuntimeException("Pipeline Trigger Type Not Implemented ${trigger.type} for pipeline ${pipeline.name}")
+                                    }
+                                }
+                                break;
+                            case PipelineTriggerType.GENERIC:
+                                println "WARN: Ignoring Generic trigger as it is not yet implemented"
+                                break
+//                            case PipelineTriggerType.UPSTREAM:
+//                                break
+                            default:
+                                throw new RuntimeException("Pipeline Trigger Type Not Implemented ${trigger.type} for pipeline ${pipeline.name}")
                         }
                     }
                 }
