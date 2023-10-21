@@ -23,49 +23,49 @@ LibraryCodeUnitCollection.libraries.each { libraryCodeUnit ->
 
 SpringCodeUnitCollection.microservices.each { springCodeUnit ->
     String folder = jobDslService.createMultibranch(springCodeUnit as CodeUnit)
-//    Pipeline containerBuild = new Pipeline([
-//            name               : 'container-build',
-//            description        : "Build containers for ${springCodeUnit.name}",
-//            jenkinsfileLocation: 'pipelines/applications/spring/container-build.groovy',
-//            envs               : [repository: springCodeUnit.repo.repoName],
-//            triggers           : [
-//                    new PipelineTrigger([
-//                            type : PipelineTriggerType.UPSTREAM,
-//                            value: "./${springCodeUnit.name}-multibranch/main"
-//                    ]),
-//                    new PipelineTrigger([
-//                            type : PipelineTriggerType.UPSTREAM,
-//                            value: "/containers/build-Zevrant-services-ubuntu-base"
-//                    ])
-//            ]
-//    ])
-//    Pipeline developDeployPipeline = new Pipeline(
-//            name: "${springCodeUnit.name}-deploy-to-develop",
-//            parameters: new ArrayList<>([
-//                    new PipelineParameter<String>(String.class, "VERSION", "Version to be Deployed", "")
-//            ]),
-//            gitRepo: 'ssh://git@gitea.zevrant-services.internal:30121/zevrant-services/zevrant-services-pipeline.git',
-//            jenkinsfileLocation: 'jenkins/pipelines/kubernetes-deploy.groovy',
-//            credentialId: 'jenkins-git',
-//            envs: new HashMap<>([
-//                    'REPOSITORY' : springCodeUnit.name,
-//                    'ENVIRONMENT': 'develop'
-//            ]),
-//
-//    )
-//    Pipeline prodDeployPipeline = new Pipeline(
-//            name: "${springCodeUnit}-deploy-to-prod",
-//            parameters: new ArrayList<>([
-//                    new PipelineParameter<String>(String.class, "VERSION", "Version to be Deployed", "")
-//            ]),
-//            gitRepo: 'ssh://git@gitea.zevrant-services.internal:30121/zevrant-services/zevrant-services-pipeline.git',
-//            jenkinsfileLocation: 'jenkins/pipelines/kubernetes-deploy.groovy',
-//            credentialId: 'jenkins-git',
-//            envs: new HashMap<>([
-//                    'REPOSITORY' : springCodeUnit.name,
-//                    'ENVIRONMENT': 'prod'
-//            ]),
-//    )
+    Pipeline containerBuild = new Pipeline([
+            name               : 'container-build',
+            description        : "Build containers for ${springCodeUnit.name}",
+            jenkinsfileLocation: 'pipelines/applications/spring/container-build.groovy',
+            envs               : [repository: springCodeUnit.repo.repoName],
+            triggers           : [
+                    new PipelineTrigger([
+                            type : PipelineTriggerType.UPSTREAM,
+                            value: "./${springCodeUnit.name}-multibranch/main"
+                    ]),
+                    new PipelineTrigger([
+                            type : PipelineTriggerType.UPSTREAM,
+                            value: "/containers/build-Zevrant-services-ubuntu-base"
+                    ])
+            ]
+    ])
+    Pipeline developDeployPipeline = new Pipeline(
+            name: "${springCodeUnit.name}-deploy-to-develop",
+            parameters: new ArrayList<>([
+                    new PipelineParameter<String>(String.class, "VERSION", "Version to be Deployed", "")
+            ]),
+            gitRepo: 'ssh://git@gitea.zevrant-services.internal:30121/zevrant-services/zevrant-services-pipeline.git',
+            jenkinsfileLocation: 'jenkins/pipelines/kubernetes-deploy.groovy',
+            credentialId: 'jenkins-git',
+            envs: new HashMap<>([
+                    'REPOSITORY' : springCodeUnit.name,
+                    'ENVIRONMENT': 'develop'
+            ]),
+
+    )
+    Pipeline prodDeployPipeline = new Pipeline(
+            name: "${springCodeUnit}-deploy-to-prod",
+            parameters: new ArrayList<>([
+                    new PipelineParameter<String>(String.class, "VERSION", "Version to be Deployed", "")
+            ]),
+            gitRepo: 'ssh://git@gitea.zevrant-services.internal:30121/zevrant-services/zevrant-services-pipeline.git',
+            jenkinsfileLocation: 'jenkins/pipelines/kubernetes-deploy.groovy',
+            credentialId: 'jenkins-git',
+            envs: new HashMap<>([
+                    'REPOSITORY' : springCodeUnit.name,
+                    'ENVIRONMENT': 'prod'
+            ]),
+    )
 //    jobDslService.createPipeline(folder,containerBuild)
 //    jobDslService.createPipeline(folder, developDeployPipeline);
 //    jobDslService.createPipeline(folder, prodDeployPipeline);
