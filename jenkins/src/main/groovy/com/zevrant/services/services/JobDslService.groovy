@@ -87,25 +87,25 @@ class JobDslService extends Service {
                 if (pipeline.triggers.size() > 0) {
                     pipelineTriggers {
                         triggers {
-                            pipeline.triggers.each { trigger ->
-                                switch (trigger.type) {
-                                    case PipelineTriggerType.CRON:
-                                        cron {
-                                            spec(trigger.value);
-                                        }
-                                        break;
-                                    case PipelineTriggerType.GENERIC:
-                                        println "WARN: Ignoring Generic trigger as it is not yet implemented"
-                                        break
-                                    case UPSTREAM:
-                                        upstream {
-                                            upstreamProjects(trigger.value)
-                                        }
+//                            pipeline.triggers.each { trigger ->
+//                                switch (trigger.type) {
+//                                    case PipelineTriggerType.CRON:
+//                                        cron {
+//                                            spec(trigger.value);
+//                                        }
+//                                        break;
+//                                    case PipelineTriggerType.GENERIC:
+//                                        println "WARN: Ignoring Generic trigger as it is not yet implemented"
 //                                        break
-//                                    default:
-//                                        throw new RuntimeException("Pipeline Trigger Type Not Implemented ${trigger.type} for pipeline ${pipeline.name}")
-                                }
-                            }
+//                                    case UPSTREAM:
+//                                        upstream {
+//                                            upstreamProjects(trigger.value)
+//                                        }
+////                                        break
+////                                    default:
+////                                        throw new RuntimeException("Pipeline Trigger Type Not Implemented ${trigger.type} for pipeline ${pipeline.name}")
+//                                }
+//                            }
 
                         }
                     }
