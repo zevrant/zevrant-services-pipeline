@@ -15,12 +15,12 @@ class JobDslService extends Service {
     void createPipeline(String folder, Pipeline pipeline) {
         folder = (folder == null) ? "" : folder
         folder = (folder.lastIndexOf('/') == folder.length() - 1) ? folder.substring(0, Math.max(0, folder.length() - 1)) : folder
-//        dslContext.pipelineJob(folder + "/" + pipeline.name) {
-//            description pipeline.description
-//            String jobDisplayName = ""
-//            pipeline.name.split("-").each { piece ->
-//                jobDisplayName += piece.capitalize() + " "
-//            }
+        dslContext.pipelineJob(folder + "/" + pipeline.name) {
+            description pipeline.description
+            String jobDisplayName = ""
+            pipeline.name.split("-").each { piece ->
+                jobDisplayName += piece.capitalize() + " "
+            }
 //
 ////            if (pipeline.triggers != null && !pipeline.triggers.isEmpty()) {
 ////                pipeline.triggers.each { trigger ->
@@ -138,7 +138,7 @@ class JobDslService extends Service {
 //                    scriptPath(pipeline.jenkinsfileLocation)
 //                }
 //            }
-//        }
+        }
     }
 
     String createMultibranch(CodeUnit codeUnit) {
