@@ -22,27 +22,27 @@ class JobDslService extends Service {
                 jobDisplayName += piece.capitalize() + " "
             }
 
-            if (pipeline.triggers != null && !pipeline.triggers.isEmpty()) {
-                pipeline.triggers.each { trigger ->
-                    if (trigger.type == PipelineTriggerType.GENERIC) {
-                        genericTrigger {
-                            genericVariables {
-                                if (trigger.variables != null && !trigger.variables.isEmpty()) {
-                                    trigger.variables.each { variable ->
-                                        genericVariable {
-                                            key(variable.key)
-                                            value(variable.expressionValue)
-                                            expressionType(variable.triggerVariableType.value)
-                                            defaultValue(variable.defaultValue) //Optional, defaults to empty string
-                                        }
-                                    }
-                                }
-                            }
-                            token(trigger.token)
-                        }
-                    }
-                }
-            }
+//            if (pipeline.triggers != null && !pipeline.triggers.isEmpty()) {
+//                pipeline.triggers.each { trigger ->
+//                    if (trigger.type == PipelineTriggerType.GENERIC) {
+//                        genericTrigger {
+//                            genericVariables {
+//                                if (trigger.variables != null && !trigger.variables.isEmpty()) {
+//                                    trigger.variables.each { variable ->
+//                                        genericVariable {
+//                                            key(variable.key)
+//                                            value(variable.expressionValue)
+//                                            expressionType(variable.triggerVariableType.value)
+//                                            defaultValue(variable.defaultValue) //Optional, defaults to empty string
+//                                        }
+//                                    }
+//                                }
+//                            }
+//                            token(trigger.token)
+//                        }
+//                    }
+//                }
+//            }
 
             if (pipeline.envs != null
                     && !pipeline.envs.isEmpty()) {
