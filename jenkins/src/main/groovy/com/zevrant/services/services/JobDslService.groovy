@@ -110,11 +110,11 @@ class JobDslService extends Service {
 //                        }
 //                    }
 //                }
-                if (!pipeline.allowConcurrency) {
-                    disableConcurrentBuilds {
-                        abortPrevious(false)
-                    }
-                }
+//                if (!pipeline.allowConcurrency) {
+//                    disableConcurrentBuilds {
+//                        abortPrevious(false)
+//                    }
+//                }
             }
             definition {
                 cpsScm {
