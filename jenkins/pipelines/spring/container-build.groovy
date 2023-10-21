@@ -26,12 +26,12 @@ pipeline {
                             url: "https://gitea.zevrant-services.internal/zevrant-services/containers/raw/branch/main/k8s/spring-microservice-template/Dockerfile"
                     ).content
                     String baseImage = ((String[]) dockerfile.split("\n"))[0].split(" ")[1]
-                    sh 'echo $DOCKER_TOKEN | buildah login -u \'robot$jenkins\' --password-stdin docker.io'
-                    retry(3, {
-                        timeout(time: 5, unit: 'MINUTES') {
-                            sh "buildah pull $baseImage"
-                        }
-                    })
+//                    sh 'echo $DOCKER_TOKEN | buildah login -u \'robot$jenkins\' --password-stdin docker.io'
+//                    retry(3, {
+//                        timeout(time: 5, unit: 'MINUTES') {
+//                            sh "buildah pull $baseImage"
+//                        }
+//                    })
                     sh 'rm -f Dockerfile'
                     writeFile(file: 'Dockerfile', text: dockerfile)
                     httpRequest(
