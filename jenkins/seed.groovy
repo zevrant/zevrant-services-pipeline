@@ -68,7 +68,7 @@ SpringCodeUnitCollection.microservices.each { springCodeUnit ->
     )
     jobDslService.createPipeline(folder,containerBuild)
     jobDslService.createPipeline(folder, developDeployPipeline);
-    jobDslService.createPipeline(folder, prodDeployPipeline);
+//    jobDslService.createPipeline(folder, prodDeployPipeline);
 }
 
 AndroidCodeUnitCollection.androidApps.each( { androidCodeUnit ->
