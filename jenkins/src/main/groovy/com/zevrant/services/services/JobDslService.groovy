@@ -83,10 +83,10 @@ class JobDslService extends Service {
                     }
                 }
             }
-            properties {
-                if (pipeline.triggers.size() > 0) {
-                    pipelineTriggers {
-                        triggers {
+//            properties {
+//                if (pipeline.triggers.size() > 0) {
+//                    pipelineTriggers {
+//                        triggers {
 //                            pipeline.triggers.each { trigger ->
 //                                switch (trigger.type) {
 //                                    case PipelineTriggerType.CRON:
@@ -106,10 +106,10 @@ class JobDslService extends Service {
 ////                                        throw new RuntimeException("Pipeline Trigger Type Not Implemented ${trigger.type} for pipeline ${pipeline.name}")
 //                                }
 //                            }
-
-                        }
-                    }
-                }
+//
+//                        }
+//                    }
+//                }
                 if (!pipeline.allowConcurrency) {
                     disableConcurrentBuilds {
                         abortPrevious(false)
