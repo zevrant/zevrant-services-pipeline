@@ -111,33 +111,33 @@ class JobDslService extends Service {
 ////                    }
 ////                }
 ////            }
-//            definition {
-//                cpsScm {
-//                    lightweight(false)
-//                    scm {
-//                        git {
-//                            remote {
-//                                credentials(pipeline.credentialId)
-//                                name('origin')
-//                                url(pipeline.gitRepo)
-//                            }
-//
-//                            branch('main')
-//
-//                            browser {
-//                                gitWeb("https://github.com:zevrant/zevrant-services-pipeline")
-//                            }
-//                            extensions {
-//                                cloneOptions {
-//                                    shallow(true)
-//                                    depth(1)
-//                                }
-//                            }
-//                        }
-//                    }
-//                    scriptPath(pipeline.jenkinsfileLocation)
-//                }
-//            }
+            definition {
+                cpsScm {
+                    lightweight(false)
+                    scm {
+                        git {
+                            remote {
+                                credentials(pipeline.credentialId)
+                                name('origin')
+                                url(pipeline.gitRepo)
+                            }
+
+                            branch('main')
+
+                            browser {
+                                gitWeb("https://github.com:zevrant/zevrant-services-pipeline")
+                            }
+                            extensions {
+                                cloneOptions {
+                                    shallow(true)
+                                    depth(1)
+                                }
+                            }
+                        }
+                    }
+                    scriptPath(pipeline.jenkinsfileLocation)
+                }
+            }
         }
     }
 
