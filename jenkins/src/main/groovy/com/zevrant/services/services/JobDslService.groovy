@@ -43,41 +43,41 @@ class JobDslService extends Service {
                     }
                 }
             }
-//
-//            if (pipeline.envs != null
-//                    && !pipeline.envs.isEmpty()) {
-//                environmentVariables {
-//                    pipeline.envs.keySet().each { key ->
-//                        env(key, pipeline.envs.get(key))
-//                    }
-//                }
-//            }
-//
-//            displayName(jobDisplayName.trim())
-//            disabled pipeline.disabled
-//            logRotator {
-//                numToKeep pipeline.buildsToKeep
-//            }
-//
-//            if (pipeline.parameters != null && pipeline.parameters.size() > 0) {
-//                parameters() {
-//                    pipeline.parameters.each { parameter ->
-//                        switch (parameter.type) {
-//                            case String.class:
-//                                stringParam(parameter.name, parameter.defaultValue, parameter.description)
-//                                break;
-//                            case Boolean.class:
-//                                booleanParam(parameter.name, parameter.defaultValue, parameter.description)
-//                                break;
-//                            case List.class:
-//                                choiceParam(parameter.name, parameter.defaultValue, parameter.description)
-//                                break;
-//                            default:
-//                                throw RuntimeException("Parameter not supported")
-//                        }
-//                    }
-//                }
-//            }
+
+            if (pipeline.envs != null
+                    && !pipeline.envs.isEmpty()) {
+                environmentVariables {
+                    pipeline.envs.keySet().each { key ->
+                        env(key, pipeline.envs.get(key))
+                    }
+                }
+            }
+
+            displayName(jobDisplayName.trim())
+            disabled pipeline.disabled
+            logRotator {
+                numToKeep pipeline.buildsToKeep
+            }
+
+            if (pipeline.parameters != null && pipeline.parameters.size() > 0) {
+                parameters() {
+                    pipeline.parameters.each { parameter ->
+                        switch (parameter.type) {
+                            case String.class:
+                                stringParam(parameter.name, parameter.defaultValue, parameter.description)
+                                break;
+                            case Boolean.class:
+                                booleanParam(parameter.name, parameter.defaultValue, parameter.description)
+                                break;
+                            case List.class:
+                                choiceParam(parameter.name, parameter.defaultValue, parameter.description)
+                                break;
+                            default:
+                                throw RuntimeException("Parameter not supported")
+                        }
+                    }
+                }
+            }
 ////            properties {
 ////                if (pipeline.triggers.size() > 0) {
 ////                    pipelineTriggers {
