@@ -26,7 +26,7 @@ SpringCodeUnitCollection.microservices.each { springCodeUnit ->
     Pipeline containerBuild = new Pipeline([
             name               : 'container-build',
             description        : "Build containers for ${springCodeUnit.name}",
-            jenkinsfileLocation: 'pipelines/spring/container-build.groovy',
+            jenkinsfileLocation: 'jenkins/pipelines/spring/container-build.groovy',
             envs               : [repository: springCodeUnit.repo.repoName],
             triggers           : [
                     new PipelineTrigger([
