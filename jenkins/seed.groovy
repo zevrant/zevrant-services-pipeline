@@ -23,22 +23,22 @@ LibraryCodeUnitCollection.libraries.each { libraryCodeUnit ->
 
 SpringCodeUnitCollection.microservices.each { springCodeUnit ->
     String folder = jobDslService.createMultibranch(springCodeUnit as CodeUnit)
-    Pipeline containerBuild = new Pipeline([
-            name               : 'container-build',
-            description        : "Build containers for ${springCodeUnit.name}",
-            jenkinsfileLocation: 'pipelines/applications/spring/container-build.groovy',
-            envs               : [repository: springCodeUnit.repo.repoName],
-            triggers           : [
-                    new PipelineTrigger([
-                            type : PipelineTriggerType.UPSTREAM,
-                            value: "./${springCodeUnit.name}-multibranch/main"
-                    ]),
-                    new PipelineTrigger([
-                            type : PipelineTriggerType.UPSTREAM,
-                            value: "/containers/build-Zevrant-services-ubuntu-base"
-                    ])
-            ]
-    ])
+//    Pipeline containerBuild = new Pipeline([
+//            name               : 'container-build',
+//            description        : "Build containers for ${springCodeUnit.name}",
+//            jenkinsfileLocation: 'pipelines/applications/spring/container-build.groovy',
+//            envs               : [repository: springCodeUnit.repo.repoName],
+//            triggers           : [
+//                    new PipelineTrigger([
+//                            type : PipelineTriggerType.UPSTREAM,
+//                            value: "./${springCodeUnit.name}-multibranch/main"
+//                    ]),
+//                    new PipelineTrigger([
+//                            type : PipelineTriggerType.UPSTREAM,
+//                            value: "/containers/build-Zevrant-services-ubuntu-base"
+//                    ])
+//            ]
+//    ])
     Pipeline developDeployPipeline = new Pipeline(
             name: "${springCodeUnit.name}-deploy-to-develop",
             parameters: new ArrayList<>([
