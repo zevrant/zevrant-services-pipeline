@@ -12,11 +12,6 @@ class JobDslService extends Service {
         super(pipelineContext)
     }
 
-    /**
-     *
-     * @param folder must contain ending / or be empty string
-     * @param pipeline
-     */
     void createPipeline(String folder, Pipeline pipeline) {
         folder = (folder == null) ? "" : folder
         folder = (folder.lastIndexOf('/') == folder.length() - 1) ? folder.substring(0, Math.max(0, folder.length() - 1)) : folder
