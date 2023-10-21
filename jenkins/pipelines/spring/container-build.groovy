@@ -1,6 +1,8 @@
 @Library('CommonUtils') _
 
 
+import com.zevrant.services.pojo.codeunit.SpringCodeUnit
+import com.zevrant.services.pojo.codeunit.SpringCodeUnitCollection
 import com.zevrant.services.pojo.containers.Image
 import com.zevrant.services.services.GitService
 import com.zevrant.services.services.ImageBuildService
@@ -8,14 +10,16 @@ import com.zevrant.services.services.ImageBuildService
 ImageBuildService imageBuildService = new ImageBuildService(this)
 
 GitService gitService = new GitService(this)
-Image image = new Image()
+SpringCodeUnit springCodeUnit = SpringCodeUnitCollection.findByRepoName(repository)
+Image(String name, String version, boolean useLatest, Image baseImage, String host, String repository, String buildDirPath, List<String> args = [])
+Image image = new Image(springCodeUnit.name, "", true, null, 'harbor.zevrant-services.internal', 'zevrant-services', '')
 pipeline {
     agent {
         label 'container-builder'
     }
 
     stages {
-        stage('Get Template') {
+        stage('Get Artifacts') {
             steps {
                 script {
                     String dockerfile = httpRequest(
@@ -31,6 +35,10 @@ pipeline {
                     })
                     sh 'rm -f Dockerfile'
                     writeFile(file: 'Dockerfile', text: dockerfile)
+                    httpRequest(
+                            authentication: 'gitea-access-token',
+                            url: "https://gitea.zevrant-services.com/zevrant-services/-/packages/maven/com.zevrant.services-oauth2-service/0.0.1-snapshot/files/30"
+                    )
                 }
             }
         }
