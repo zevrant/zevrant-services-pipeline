@@ -115,7 +115,7 @@ class JobDslService extends Service {
 //                        abortPrevious(false)
 //                    }
 //                }
-            }
+//            }
             definition {
                 cpsScm {
                     lightweight(false)
