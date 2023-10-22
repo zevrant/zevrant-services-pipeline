@@ -26,6 +26,7 @@ pipeline {
                     copyArtifacts filter: 'artifactVersion.txt', fingerprintArtifacts: true, projectName: "./${springCodeUnit.name}-multibranch/main"
                     String versionString = readFile(file: 'artifactVersion.txt')
                     version = new Version(versionString)
+                    image.setVersion(versionString)
                     String dockerfile = httpRequest(
                             authentication: 'gitea-access-token',
                             url: "https://gitea.zevrant-services.internal/zevrant-services/containers/raw/branch/main/k8s/spring-microservice-template/Dockerfile"
