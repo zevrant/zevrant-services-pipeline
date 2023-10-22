@@ -12,7 +12,16 @@ ImageBuildService imageBuildService = new ImageBuildService(this)
 
 GitService gitService = new GitService(this)
 SpringCodeUnit springCodeUnit = SpringCodeUnitCollection.findByRepoName(repository)
-Image image = new Image(springCodeUnit.name, "", true, null, 'harbor.zevrant-services.internal', 'zevrant-services', '')
+Image image = new Image(
+        springCodeUnit.name,
+        "",
+        true,
+        null,
+        'harbor.zevrant-services.internal',
+        'zevrant-services',
+        '',
+        ["serviceName=${springCodeUnit.name}"]
+)
 Version version = null
 pipeline {
     agent {
