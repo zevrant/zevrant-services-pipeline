@@ -72,7 +72,7 @@
 /bin/test/certificate-authority-generator.groovy
 /bin/test/dynamic-dns.groovy
 /bin/test/java-library-build.groovy
-/bin/test/kubernetes-deploy.groovy
+/bin/test/spring.kubernetes-deploy.groovy
 /bin/test/podCleanup.groovy
 /bin/test/serviceDeploy.groovy
 /bin/test/test.groovy

@@ -128,8 +128,11 @@ spec:
               name: promtail-alert
               protocol: TCP
             - containerPort: 1514
-              name: syslog-receiver
+              name: syslog-tcp
               protocol: TCP
+            - containerPort: 1514
+              name: syslog-udp
+              protocol: UDP
           env:
             - name: HOSTNAME
               valueFrom:
@@ -202,6 +205,17 @@ data:
         syslog:
           listen_address: 0.0.0.0:1514
           listen_protocol: tcp
+          idle_timeout: 60s
+          label_structured_data: yes
+          labels:
+            job: "syslog"
+        relabel_configs:
+          - source_labels: ['__syslog_message_hostname']
+            target_label: 'hostname'
+      - job_name: syslog
+        syslog:
+          listen_address: 0.0.0.0:1514
+          listen_protocol: udp
           idle_timeout: 60s
           label_structured_data: yes
           labels:

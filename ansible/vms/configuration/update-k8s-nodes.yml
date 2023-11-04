@@ -14,7 +14,7 @@
       delay: 10
     - name: Drain K8S Node
       become: false
-      local_action: ansible.builtin.command /snap/bin/kubectl drain "{{ hostname }}" --ignore-daemonsets --delete-emptydir-data
+      local_action: ansible.builtin.command /snap/bin/kubectl drain "{{ hostname }}" --ignore-daemonsets --delete-emptydir-data --force
       register: cordonresult
       until: "cordonresult is not failed"
       retries: 10
