@@ -170,6 +170,7 @@ pipeline {
     post {
         success {
             script {
+                tar(file: 'helm-charts.tgz', archive: true, compress: true, glob: 'helm/**/*')
                 writeFile(file: 'artifactVersion.txt', text: version.toThreeStageVersionString())
                 archiveArtifacts(artifacts: 'artifactVersion.txt', allowEmptyArchive: false)
             }

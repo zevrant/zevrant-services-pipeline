@@ -1,0 +1,138 @@
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: solaris-foundry
+  namespace: solaris
+spec:
+  ports:
+    - port: 30000
+      targetPort: 30000
+      name: http
+  selector:
+    app: solaris-foundry
+
+---
+
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: solaris-public
+spec:
+  secretName: solaris-public-tls
+  issuerRef:
+    name: lets-encrypt
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+    rotationPolicy: Always
+  duration: 2160h #90d
+  renewBefore: 1440h # 60d
+  dnsNames:
+    - solaris.zevrant-services.com
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: solaris-public
+  namespace: solaris
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/backend-protocol: "http"
+    nginx.ingress.kubernetes.io/proxy-body-size: "0" #remove data cap
+spec:
+  rules:
+    - host: solaris.zevrant-services.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: solaris-foundry
+                port:
+                  number: 30000
+  ingressClassName: nginx
+  tls:
+    - secretName: solaris-public-tls
+      hosts:
+        - solaris.zevrant-services.com
+
+
+---
+
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: solaris-foundry-data
+  namespace: solaris
+spec:
+  storageClassName: csi-rbd-sc
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Gi
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: solaris-foundry
+  namespace: solaris
+  labels:
+    app: solaris-foundry
+spec:
+  strategy:
+    type: Recreate
+  replicas: 1
+  selector:
+    matchLabels:
+      app: solaris-foundry
+  template:
+    metadata:
+      labels:
+        app: solaris-foundry
+    spec:
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: DoNotSchedule
+      securityContext:
+        fsGroup: 36543
+        fsGroupChangePolicy: "Always"
+      volumes:
+        - name: foundry-data
+          persistentVolumeClaim:
+            claimName: solaris-foundry-data
+      imagePullSecrets:
+        - name: harbor-ro
+      containers:
+        - name: foundryvtt
+          image: harbor.zevrant-services.internal/zevrant-services/foundryvtt:11.313
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: foundry-data
+              mountPath: /home/foundry
+          env:
+            - name: FOUNDRY_VTT_DATA_PATH
+              value: /home/foundry/
+            - name: INITIAL_ADMIN_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: solaris-foundry-admin-key
+          ports:
+            - containerPort: 30000
+              name: tcp
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 2000m
+              memory: 4Gi
+            limits:
+              cpu: 4000m
+              memory: 8Gi

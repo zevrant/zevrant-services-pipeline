@@ -33,6 +33,7 @@ pipeline {
             steps {
                 script {
                     copyArtifacts filter: 'artifactVersion.txt', fingerprintArtifacts: true, projectName: "./${springCodeUnit.name}-multibranch/main"
+                    copyArtifacts filter: 'helm-chart.tgz', fingerprintArtifacts: true, projectName: "./${springCodeUnit.name}-multibranch/main"
                     String versionString = readFile(file: 'artifactVersion.txt')
                     version = new Version(versionString)
                     image.setVersion(versionString)
@@ -75,6 +76,14 @@ pipeline {
             steps {
                 script {
                     imageBuildService.pushImage(image)
+                }
+            }
+        }
+
+        stage('Package Helm Chart') {
+            steps {
+                script {
+
                 }
             }
         }

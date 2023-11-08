@@ -1,0 +1,21 @@
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: lets-encrypt
+  namespace: solaris
+spec:
+  acme:
+    email: gdittrick@zevrant-services.com
+    privateKeySecretRef:
+      name: ca-private-key
+      key: privateKey
+    server: https://acme-v02.api.letsencrypt.org/directory
+    solvers:
+      - selector:
+          dnsZones:
+            - 'zevrant-services.com'
+        dns01:
+          cloudflare:
+            apiTokenSecretRef:
+              name: cloudflare-token
+              key: secret-access-key
