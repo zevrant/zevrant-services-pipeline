@@ -83,7 +83,19 @@ pipeline {
         stage('Package Helm Chart') {
             steps {
                 script {
-
+                    untar(file: 'helm-chart.tgz')
+                    sh "mv helm-chart ${springCodeUnit.name}"
+                    String chartVersion = ''
+                    dir(springCodeUnit.name) {
+                        sh 'helm dependency build'
+                        //Update chart app version with current app version
+                        def chartYaml = readYaml(file: 'Chart.yaml')
+                        chartYaml.appVersion = version.toVersionCodeString()
+                        chartVersion = chartYaml.version
+                        writeYaml(file: Chart.yaml, data: chartYaml)
+                    }
+                    sh "helm package ${springCodeUnit.name}"
+                    sh "helm push ${springCodeUnit.name}-${chartVersion}.tgz oci://harbor.zevrant-services.internal/zevrant-services"
                 }
             }
         }
