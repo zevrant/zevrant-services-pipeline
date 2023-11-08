@@ -51,12 +51,7 @@ spec:
         fsGroup: 1000
         fsGroupChangePolicy: "Always"
       imagePullSecrets:
-        - name: regcred
-      dnsPolicy: "None"
-      dnsConfig:
-        nameservers:
-          - 1.1.1.1
-          - 8.8.8.8
+        - name: harbor-ro
       volumes:
         - name: step-ca
           persistentVolumeClaim:

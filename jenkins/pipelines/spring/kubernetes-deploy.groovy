@@ -57,7 +57,7 @@ pipeline {
                             sh "helm upgrade --install ${codeUnit.name} oci://harbor.zevrant-services.internal/zevrant-services/${codeUnit.name} --version ${VERSION} -f ${ENVIRONMENT}-values.yml --wait"
                                                             //helm pull oci://harbor.zevrant-services.internal/zevrant-services/oauth2-service --version 0.0.1
                         } catch (Exception ignored) {
-                            sh 'helm rollback'
+                            sh "helm rollback ${codeUnit.name}"
                         }
                     }
                 }

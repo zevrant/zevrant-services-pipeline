@@ -104,7 +104,14 @@ pipeline {
             }
         }
     }
-//    post {
+    post {
+        success {
+            script {
+                build job: "./${springCodeUnit.name}-deploy-to-develop", wait: false, parameters: [
+                        [$class: 'StringParameterValue', name: 'VERSION', value: version.toVersionCodeString()]
+                ]
+            }
+        }
 //        always {
 //            script {
 //                if (image != null) {
@@ -121,5 +128,5 @@ pipeline {
 //                }
 //            }
 //        }
-//    }
+    }
 }

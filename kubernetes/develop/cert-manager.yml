@@ -1,24 +1,49 @@
 apiVersion: cert-manager.io/v1
 kind: Issuer
 metadata:
-  name: acme-issuer
+  name: lets-encrypt
   namespace: develop
 spec:
   acme:
     email: gdittrick@zevrant-services.com
     privateKeySecretRef:
       name: ca-private-key
-    server: https://certificate-authority.develop.svc.cluster.local/acme/acme/directory
-    caBundle: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUIyekNDQVdJQ0ZFY0VQTkFyZXkwZFcwbTltMUFINGU2cUxXblRNQW9HQ0NxR1NNNDlCQU1FTUZJeEN6QUoKQmdOVkJBWVRBbFZUTVJFd0R3WURWUVFJREFoTmFXTm9hV2RoYmpFUk1BOEdBMVVFQnd3SVFtRjVJRU5wZEhreApIVEFiQmdOVkJBTU1GSHBsZG5KaGJuUXRjMlZ5ZG1salpYTXVZMjl0TUI0WERUSXlNRGd5TURFMk16WTFObG9YCkRUSXpNRGd5TURFMk16WTFObG93VWpFTE1Ba0dBMVVFQmhNQ1ZWTXhFVEFQQmdOVkJBZ01DRTFwWTJocFoyRnUKTVJFd0R3WURWUVFIREFoQ1lYa2dRMmwwZVRFZE1Cc0dBMVVFQXd3VWVtVjJjbUZ1ZEMxelpYSjJhV05sY3k1agpiMjB3ZGpBUUJnY3Foa2pPUFFJQkJnVXJnUVFBSWdOaUFBUyt1L2ZEOFF1SEdmQjJuRFhLeUNHYWRJMFpSSzFGCkVrU1U5bzVmYS94QXh1SGVkdmFjUDUyQk9ldERRRlUxa0JlVStoM0gxWVB0cHV6U0hGcnhkQWlkVXByQTVDYjEKVEV5N1FQdkdZMGhOZ05aNWVvSEVKd1lUZUs2MUlQL2I4ZzB3Q2dZSUtvWkl6ajBFQXdRRFp3QXdaQUl3UDdkegpsSmZiOEhQQW5NTklrKzJzUXh5bHRmMWJYUXJUeDY3R1Q1dlllMlZTNzV5STYyWlYveWNHUmdTbTlkSmRBakJBCk1nM21rTlc0djRNeldZMmZFcnRta1RSdVZ1NW4vc2FDSnBHWi82akFLMHFSdHpBQWRETkpsUHRWMk5QWE1WRT0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
+      key: privateKey
+    server: https://acme-v02.api.letsencrypt.org/directory
     solvers:
       - selector:
           dnsZones:
-            - 'develop.zevrant-services.com'
+            - 'zevrant-services.com'
         dns01:
-          route53:
-            region: us-east-1
-            accessKeyID: AKIA2RW3K76J3UBZ3SYO
-            hostedZoneID: Z081184728HML2PBPBD8S
-            secretAccessKeySecretRef:
-              name: prod-route53-credentials-secret
+          cloudflare:
+            apiTokenSecretRef:
+              name: cloudflare-token
               key: secret-access-key
+
+---
+
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: step-ca
+  namespace: develop
+spec:
+  acme:
+    email: gdittrick@zevrant-services.com
+    privateKeySecretRef:
+      name: step-ca-private-key
+      key: privateKey
+    server: https://certificate-authority.develop.svc.cluster.local/acme/acme/directory
+    caBundle: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUNEVENDQWJPZ0F3SUJBZ0lVY2ZNcWdUVWtpSkdXMU5JNldBZFE4MTVEeUdRd0NnWUlLb1pJemowRUF3SXcKVnpFTE1Ba0dBMVVFQmhNQ1ZWTXhFVEFQQmdOVkJBZ01DRTFwWTJocFoyRnVNUkV3RHdZRFZRUUhEQWhDWVhrZwpRMmwwZVRFaU1DQUdBMVVFQXd3WmVtVjJjbUZ1ZEMxelpYSjJhV05sY3k1cGJuUmxjbTVoYkRBZUZ3MHlNekE0Ck1qRXhPRFF4TlRkYUZ3MHpNekE0TVRneE9EUXhOVGRhTUZjeEN6QUpCZ05WQkFZVEFsVlRNUkV3RHdZRFZRUUkKREFoTmFXTm9hV2RoYmpFUk1BOEdBMVVFQnd3SVFtRjVJRU5wZEhreElqQWdCZ05WQkFNTUdYcGxkbkpoYm5RdApjMlZ5ZG1salpYTXVhVzUwWlhKdVlXd3dXVEFUQmdjcWhrak9QUUlCQmdncWhrak9QUU1CQndOQ0FBUlJ2Y1lCClFsdjdCK1ZyNUZET0hiZzlCWHZsN3BXcmtaVUd4d0FzT0Vhd2w0WXpELzNLdk9BeEY4UmRZbk80YlNSSnVVN0IKdGZ6Yms4MWJuUXlLREZmaW8xMHdXekFkQmdOVkhRNEVGZ1FVRXBlblZYSGxidlpjREF0SDZjL09qRmllVUMwdwpId1lEVlIwakJCZ3dGb0FVRXBlblZYSGxidlpjREF0SDZjL09qRmllVUMwd0RBWURWUjBUQkFVd0F3RUIvekFMCkJnTlZIUThFQkFNQ0FRWXdDZ1lJS29aSXpqMEVBd0lEU0FBd1JRSWdQZEhjUEUvdGZrbkNlUFpGTlVEa0wvcVEKTzFiazlnNnBxT3hNM2JUbDVITUNJUUR1c3ZBNlhMcjIzRFVDbGp3VjhrR0tMT1Zod3BWQTlBOENBdzJXYkJjLwoxQT09Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K
+    solvers:
+      - selector:
+          dnsZones:
+            - 'zevrant-services.internal'
+        dns01:
+          rfc2136:
+            nameserver: 172.16.1.2
+            tsigKeyName: "TRANSFER"
+            tsigAlgorithm: "HMACSHA512"
+            tsigSecretSecretRef:
+              name: "dns-update-secret"
+              key: "secret"
