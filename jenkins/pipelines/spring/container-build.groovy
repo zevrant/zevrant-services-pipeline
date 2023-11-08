@@ -22,6 +22,7 @@ Image image = new Image(
         ["serviceName=${springCodeUnit.name}"]
 )
 Version version = null
+String chartVersion = ''
 pipeline {
     agent {
         label 'container-builder'
@@ -88,7 +89,7 @@ pipeline {
                     untar(file: 'helm-chart.tgz')
                     sh "rm -rf ${springCodeUnit.name}"
                     sh "mv helm ${springCodeUnit.name}"
-                    String chartVersion = ''
+
                     dir(springCodeUnit.name) {
                         sh 'helm dependency build'
                         //Update chart app version with current app version
@@ -108,7 +109,7 @@ pipeline {
         success {
             script {
                 build job: "./${springCodeUnit.name}-deploy-to-develop", wait: false, parameters: [
-                        [$class: 'StringParameterValue', name: 'VERSION', value: version.toVersionCodeString()]
+                        [$class: 'StringParameterValue', name: 'VERSION', value: chartVersion]
                 ]
             }
         }
