@@ -49,6 +49,7 @@ pipeline {
                             url: "https://gitea.zevrant-services.com/zevrant-services/-/packages/maven/com.zevrant.services-${springCodeUnit.name}/${versionString}/files/30",
                             outputFile: "${springCodeUnit.name}-${version.toVersionCodeString()}.jar"
                     )
+                    sh "jar -t ${springCodeUnit.name}-${version.toVersionCodeString()}.jar"
                 }
             }
         }
