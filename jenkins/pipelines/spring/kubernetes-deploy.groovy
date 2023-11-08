@@ -46,6 +46,9 @@ pipeline {
 
         stage("Deploy Micro Service") {
             when { expression {  VERSION != null && VERSION != '' } }
+            environment {
+                DOCKER_CREDENTIALS = credentials('jenkins-harbor')
+            }
             steps {
                 container('kubectl') {
                     script {
