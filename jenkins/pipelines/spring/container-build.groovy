@@ -84,7 +84,7 @@ pipeline {
             steps {
                 script {
                     untar(file: 'helm-chart.tgz')
-                    sh "mv helm-chart ${springCodeUnit.name}"
+                    sh "mv helm ${springCodeUnit.name}"
                     String chartVersion = ''
                     dir(springCodeUnit.name) {
                         sh 'helm dependency build'
