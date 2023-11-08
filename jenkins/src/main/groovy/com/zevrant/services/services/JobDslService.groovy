@@ -151,7 +151,7 @@ class JobDslService extends Service {
         jobName = jobName.trim()
         folderName += jobName.replaceAll(" ", "-").toLowerCase() + "/"
         dslContext.folder(folderName.substring(0, folderName.length() - 1)) {
-            displayName = jobName
+            displayName(jobName)
         }
 
         dslContext.multibranchPipelineJob(folderName + codeUnit.name + "-multibranch") {
