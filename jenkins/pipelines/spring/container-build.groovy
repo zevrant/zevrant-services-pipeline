@@ -10,7 +10,6 @@ import com.zevrant.services.services.ImageBuildService
 
 ImageBuildService imageBuildService = new ImageBuildService(this)
 
-GitService gitService = new GitService(this)
 SpringCodeUnit springCodeUnit = SpringCodeUnitCollection.findByRepoName(repository)
 Image image = new Image(
         springCodeUnit.name,
@@ -84,6 +83,7 @@ pipeline {
             steps {
                 script {
                     untar(file: 'helm-chart.tgz')
+                    sh "rm -rf ${springCodeUnit.name}"
                     sh "mv helm ${springCodeUnit.name}"
                     String chartVersion = ''
                     dir(springCodeUnit.name) {
