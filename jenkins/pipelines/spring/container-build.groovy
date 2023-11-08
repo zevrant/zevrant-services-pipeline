@@ -92,7 +92,7 @@ pipeline {
                         def chartYaml = readYaml(file: 'Chart.yaml')
                         chartYaml.appVersion = version.toVersionCodeString()
                         chartVersion = chartYaml.version
-                        writeYaml(file: 'Chart.yaml', data: chartYaml)
+                        writeYaml(file: 'Chart.yaml', data: chartYaml, overwrite: true)
                     }
                     sh "helm package ${springCodeUnit.name}"
                     sh "helm push ${springCodeUnit.name}-${chartVersion}.tgz oci://harbor.zevrant-services.internal/zevrant-services"
