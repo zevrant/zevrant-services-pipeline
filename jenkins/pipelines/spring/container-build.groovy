@@ -80,6 +80,9 @@ pipeline {
         }
 
         stage('Package Helm Chart') {
+            environment {
+                DOCKER_CREDENTIALS = credentials('jenkins-harbor')
+            }
             steps {
                 script {
                     untar(file: 'helm-chart.tgz')
@@ -95,6 +98,7 @@ pipeline {
                         writeYaml(file: 'Chart.yaml', data: chartYaml, overwrite: true)
                     }
                     sh "helm package ${springCodeUnit.name}"
+                    sh 'echo $DOCKER_CREDENTIALS_PSW | helm registry login harbor.zevrant-services.internal --username $DOCKER_CREDENTIALS_USR --password-stdin'
                     sh "helm push ${springCodeUnit.name}-${chartVersion}.tgz oci://harbor.zevrant-services.internal/zevrant-services"
                 }
             }
