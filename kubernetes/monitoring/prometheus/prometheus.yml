@@ -142,7 +142,7 @@ spec:
             claimName: metrics-database
         - name: prometheus-cert
           secret:
-            secretName: prometheus-tls
+            secretName: prometheus-monitoring-tls
         - name: password-volume
           emptyDir:
             sizeLimit: "1Mi"
