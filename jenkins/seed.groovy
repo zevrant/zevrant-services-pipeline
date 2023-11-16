@@ -45,7 +45,7 @@ SpringCodeUnitCollection.microservices.each { springCodeUnit ->
                     new PipelineParameter<String>(String.class, "VERSION", "Version to be Deployed", "")
             ]),
             gitRepo: 'ssh://git@gitea.zevrant-services.internal:30121/zevrant-services/zevrant-services-pipeline.git',
-            jenkinsfileLocation: 'jenkins/pipelines/kubernetes-deploy.groovy',
+            jenkinsfileLocation: 'jenkins/pipelines/spring/kubernetes-deploy.groovy',
             credentialId: 'jenkins-git',
             envs: new HashMap<>([
                     'REPOSITORY' : springCodeUnit.name,
