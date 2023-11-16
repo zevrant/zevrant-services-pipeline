@@ -54,10 +54,10 @@ pipeline {
                     script {
                         sh 'echo $DOCKER_CREDENTIALS_PSW | helm registry login harbor.zevrant-services.internal --username $DOCKER_CREDENTIALS_USR --password-stdin'
                         try {
-                            sh "helm upgrade --install ${codeUnit.name} oci://harbor.zevrant-services.internal/zevrant-services/${codeUnit.name} --version ${VERSION} -f ${ENVIRONMENT}-values.yml --wait"
+                            sh "helm upgrade --install --namespace ${environment} ${codeUnit.name} oci://harbor.zevrant-services.internal/zevrant-services/${codeUnit.name} --version ${VERSION} -f ${ENVIRONMENT}-values.yml --wait"
                                                             //helm pull oci://harbor.zevrant-services.internal/zevrant-services/oauth2-service --version 0.0.1
                         } catch (Exception ignored) {
-                            sh "helm rollback ${codeUnit.name}"
+                            sh "helm rollback ${codeUnit.name} --namespace ${environment}"
                         }
                     }
                 }
