@@ -12,11 +12,11 @@ class KeydbService extends Service {
     }
 
     String getKey(String key) {
-        return pipelineContext.sh(returnStdout: true, script: "keydb-cli -h \'${host}\' -p ${port} get \'${key}\'")
+        return pipelineContext.sh(returnStdout: true, script: "/usr/local/bin/keydb-cli -h \'${host}\' -p ${port} get \'${key}\'")
     }
 
     void putKey(String key, String value) {
-        pipelineContext.sh "keydb-cli -h \'${host}\' -p ${port} set \'${key}\' \'${value}\'"
+        pipelineContext.sh "/usr/local/bin/keydb-cli -h \'${host}\' -p ${port} set \'${key}\' \'${value}\'"
     }
 
 }

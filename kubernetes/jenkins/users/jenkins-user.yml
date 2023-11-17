@@ -84,6 +84,7 @@ rules:
       - get
       - patch
       - create
+      - update
       - delete
       - list
       - watch
