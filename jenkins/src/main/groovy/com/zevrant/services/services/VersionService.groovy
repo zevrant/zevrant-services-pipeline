@@ -26,6 +26,7 @@ class VersionService extends Service {
         }
         version = version.replace('"', '').trim() //redis/keydb strings are returned wrapped in double quotes
         version = (version == "" || version == null || version == '(nil)') ? '0.0.0' : version
+        pipelineContext.println("Version is '$version'")
         return new Version(version)
     }
 
