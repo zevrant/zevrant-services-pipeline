@@ -13,10 +13,14 @@ class VersionService extends Service {
 
     Version getVersion(String applicationName) {
         String version = ''
-        pipelineContext.container('keydb') {
+        try {
+            pipelineContext.container('keydb') {
+                version = keydbService.getKey(applicationName).trim()
+            }
+        } catch (Exception ignored) {
             version = keydbService.getKey(applicationName).trim()
         }
-        version = (version == "" || version == null)? '0.0.0' : version
+        version = (version == "" || version == null) ? '0.0.0' : version
         return new Version(version)
     }
 
@@ -25,7 +29,11 @@ class VersionService extends Service {
         version.setMajor(currentVersion.getMajor() + 1)
         version.setMedian(0);
         version.setMinor(0)
-        pipelineContext.container('keydb') {
+        try {
+            pipelineContext.container('keydb') {
+                keydbService.putKey(applicationName, version.toThreeStageVersionString())
+            }
+        } catch (Exception ignored) {
             keydbService.putKey(applicationName, version.toThreeStageVersionString())
         }
         return version
@@ -36,7 +44,11 @@ class VersionService extends Service {
         version.setMedian(currentVersion.getMedian() + 1);
         version.setMinor(0)
 
-        pipelineContext.container('keydb') {
+        try {
+            pipelineContext.container('keydb') {
+                keydbService.putKey(applicationName, version.toThreeStageVersionString())
+            }
+        } catch (Exception ignored) {
             keydbService.putKey(applicationName, version.toThreeStageVersionString())
         }
         return version
@@ -46,7 +58,11 @@ class VersionService extends Service {
         Version version = new Version(currentVersion.toThreeStageVersionString());
         version.setMinor(currentVersion.getMinor() + 1)
 
-        pipelineContext.container('keydb') {
+        try {
+            pipelineContext.container('keydb') {
+                keydbService.putKey(applicationName, version.toThreeStageVersionString())
+            }
+        } catch (Exception ignored) {
             keydbService.putKey(applicationName, version.toThreeStageVersionString())
         }
         return version
@@ -54,15 +70,23 @@ class VersionService extends Service {
 
     Version incrementVersion(String applicationName, Version currentVersion) {
         Version version = new Version(String.valueOf(Integer.parseInt(currentVersion.toVersionCodeString()) + 1))
-        pipelineContext.container('keydb') {
-            keydbService.putKey(applicationName, version.toVersionCodeString())
+        try {
+            pipelineContext.container('keydb') {
+                keydbService.putKey(applicationName, version.toVersionCodeString())
+            }
+        } catch (Exception ignored) {
+            keydbService.putKey(applicationName, version.toThreeStageVersionString())
         }
         return version
     }
 
     Version incrementVersionCode(String applicationName, Version currentVersion) {
         Version version = new Version(String.valueOf(Integer.parseInt(currentVersion.toVersionCodeString()) + 1))
-        pipelineContext.container('keydb') {
+        try {
+            pipelineContext.container('keydb') {
+                keydbService.putKey(applicationName, version.toVersionCodeString())
+            }
+        } catch (Exception ignored) {
             keydbService.putKey(applicationName, version.toVersionCodeString())
         }
         return version
