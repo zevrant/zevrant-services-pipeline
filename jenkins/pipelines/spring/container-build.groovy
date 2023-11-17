@@ -7,9 +7,10 @@ import com.zevrant.services.pojo.codeunit.SpringCodeUnitCollection
 import com.zevrant.services.pojo.containers.Image
 import com.zevrant.services.services.GitService
 import com.zevrant.services.services.ImageBuildService
+import com.zevrant.services.services.VersionService
 
 ImageBuildService imageBuildService = new ImageBuildService(this)
-
+VersionService versionService = new VersionService(this)
 SpringCodeUnit springCodeUnit = SpringCodeUnitCollection.findByRepoName(repository)
 Image image = new Image(
         springCodeUnit.name,
@@ -22,7 +23,7 @@ Image image = new Image(
         ["serviceName=${springCodeUnit.name}"]
 )
 Version version = null
-String chartVersion = ''
+Version chartVersion = null
 pipeline {
     agent {
         label 'container-builder'
@@ -94,9 +95,10 @@ pipeline {
                     dir(springCodeUnit.name) {
                         sh 'helm dependency build'
                         //Update chart app version with current app version
-                        def chartYaml = readYaml(file: 'Chart.yaml')
+                        chartVersion = versionService.getVersion("${springCodeUnit.name}-chart")
                         chartYaml.appVersion = version.toVersionCodeString()
-                        chartVersion = chartYaml.version
+                        chartVersion = versionService.minorVersionUpdate("${springCodeUnit.name}-chart", chartVersion)
+                        chartYaml.version = chartVersion.toThreeStageVersionString()
                         writeYaml(file: 'Chart.yaml', data: chartYaml, overwrite: true)
                     }
                     sh "helm package ${springCodeUnit.name}"
