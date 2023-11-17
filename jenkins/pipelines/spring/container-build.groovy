@@ -105,7 +105,7 @@ pipeline {
                     }
                     sh "helm package ${springCodeUnit.name}"
                     sh 'echo $DOCKER_CREDENTIALS_PSW | helm registry login harbor.zevrant-services.internal --username $DOCKER_CREDENTIALS_USR --password-stdin'
-                    sh "helm push ${springCodeUnit.name}-${chartVersion}.tgz oci://harbor.zevrant-services.internal/zevrant-services"
+                    sh "helm push ${springCodeUnit.name}-${chartVersion.toThreeStageVersionString()}.tgz oci://harbor.zevrant-services.internal/zevrant-services"
                 }
             }
         }
