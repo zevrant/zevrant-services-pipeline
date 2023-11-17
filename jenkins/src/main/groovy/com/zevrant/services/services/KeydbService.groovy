@@ -7,6 +7,8 @@ class KeydbService extends Service {
 
     KeydbService(String host, int port, Object pipelineContext) {
         super(pipelineContext)
+        this.host = host
+        this.port = port
     }
 
     String getKey(String key) {
