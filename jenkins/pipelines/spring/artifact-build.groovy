@@ -47,9 +47,6 @@ pipeline {
 
         stage("Test") {
             environment {
-                AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
-                AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
-                AWS_DEFAULT_REGION = "us-east-1"
                 GITEA_TOKEN = credentials('jenkins-git-access-token-as-text')
             }
             steps {
@@ -77,9 +74,6 @@ pipeline {
 
         stage("Integration Test") {
             environment {
-                AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
-                AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
-                AWS_DEFAULT_REGION = "us-east-1"
                 GITEA_TOKEN = credentials('jenkins-git-access-token-as-text')
             }
             steps {
@@ -94,9 +88,8 @@ pipeline {
 
         stage("Get Version") {
             environment {
-                AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
-                AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
-                AWS_DEFAULT_REGION = "us-east-1"
+                REDISCLI_AUTH = credentials('jenkins-keydb-password')
+
             }
             steps {
                 container('spring-jenkins-slave') {
@@ -112,9 +105,7 @@ pipeline {
         stage("Version Update") {
             when { expression { branchName == "main" } }
             environment {
-                AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
-                AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
-                AWS_DEFAULT_REGION = "us-east-1"
+                REDISCLI_AUTH = credentials('jenkins-keydb-password')
             }
             steps {
                 container('spring-jenkins-slave') {
@@ -140,31 +131,6 @@ pipeline {
                 }
             }
         }
-
-//        stage("Build Artifact") {
-//            environment {
-//                AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
-//                AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
-//                AWS_DEFAULT_REGION = "us-east-1"
-//                DOCKER_TOKEN = credentials('jenkins-harbor')
-//            }
-//            steps {
-//                script {
-//                    timeout(time: 20, unit: 'MINUTES') {
-//                        container('buildah') {
-//                            String versionString = (branchName == "main")
-//                                    ? version.toVersionCodeString()
-//                                    : "${version.toVersionCodeString()}-${branchName}" as String
-//                            def appYaml = readYaml(file: 'src/main/resources/application.yml')
-//                            String containerPort = appYaml.server.port
-//                            sh 'echo $DOCKER_TOKEN | buildah login -u \'robot$jenkins\' --password-stdin docker.io'
-//                            sh "buildah bud --build-arg serviceName=$REPOSITORY --build-arg containerPort=$containerPort -t harbor.zevrant-services.internal/zevrant-services/$REPOSITORY:${versionString} ."
-//                            sh "buildah push harbor.zevrant-services.internal/zevrant-services/$REPOSITORY:${versionString}"
-//                        }
-//                    }
-//                }
-//            }
-//        }
 
     }
     post {
