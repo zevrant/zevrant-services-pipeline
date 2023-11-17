@@ -85,6 +85,7 @@ pipeline {
         stage('Package Helm Chart') {
             environment {
                 DOCKER_CREDENTIALS = credentials('jenkins-harbor')
+                REDISCLI_AUTH = credentials('jenkins-keydb-password')
             }
             steps {
                 script {
