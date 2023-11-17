@@ -1,22 +1,16 @@
-apiVersion: networking.k8s.io/v1
-kind: Ingress
+apiVersion: v1
+kind: Service
 metadata:
-  name: jenkins
+  name: keydb-loadbalancer
   namespace: jenkins
-  annotations:
-    kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
 spec:
-  rules:
-    - host: jenkins-keydb.zevrant-services.internal
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: jenkins-versions-database-keydb
-                port:
-                  name: server
-  ingressClassName: nginx
+  type: NodePort
+  selector:
+    app.kubernetes.io/instance: jenkins-versions-database
+    app.kubernetes.io/name: keydb
+  ports:
+    - name: server
+      nodePort: 31968
+      port: 6379
+      targetPort: 6379
+      protocol: TCP

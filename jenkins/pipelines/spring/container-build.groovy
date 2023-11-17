@@ -10,7 +10,7 @@ import com.zevrant.services.services.ImageBuildService
 import com.zevrant.services.services.VersionService
 
 ImageBuildService imageBuildService = new ImageBuildService(this)
-VersionService versionService = new VersionService(this)
+VersionService versionService = new VersionService(this, false)
 SpringCodeUnit springCodeUnit = SpringCodeUnitCollection.findByRepoName(repository)
 Image image = new Image(
         springCodeUnit.name,
