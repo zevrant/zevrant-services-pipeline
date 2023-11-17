@@ -16,7 +16,7 @@ class Version {
 
     Version(String version) {
         assert version != null: "Supplied version was null"
-        assert version != "": "Supplied version was empty string"
+        assert version.trim() != "": "Supplied version was empty string"
         boolean patternMatches = false;
         for (Pattern pattern : acceptedPatterns) {
             patternMatches = patternMatches || pattern.matcher(version)
@@ -24,7 +24,7 @@ class Version {
         if (!patternMatches) {
             throw new RuntimeException("The supplied version does not match any of the supplied patterns");
         }
-        String[] versionPieces = version.tokenize(".")
+        String[] versionPieces = version.trim().tokenize(".")
         switch (versionPieces.length) {
             case 1:
                 major = Integer.parseInt(version)
