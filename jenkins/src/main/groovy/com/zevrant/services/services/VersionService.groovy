@@ -24,6 +24,7 @@ class VersionService extends Service {
         } catch (Exception ignored) {
             version = keydbService.getKey(applicationName).trim()
         }
+        version = version.trim()
         version = (version == "" || version == null) ? '0.0.0' : version
         return new Version(version)
     }
