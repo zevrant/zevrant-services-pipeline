@@ -114,7 +114,7 @@ pipeline {
         success {
             script {
                 build job: "./${springCodeUnit.name}-deploy-to-develop", wait: false, parameters: [
-                        [$class: 'StringParameterValue', name: 'VERSION', value: chartVersion]
+                        [$class: 'StringParameterValue', name: 'VERSION', value: chartVersion.toThreeStageVersionString()]
                 ]
             }
         }
