@@ -6,9 +6,13 @@ class VersionService extends Service {
 
     private final KeydbService keydbService
 
-    VersionService(Object pipelineContext) {
+    VersionService(Object pipelineContext, boolean useK8s = true) {
         super(pipelineContext)
-        keydbService = new KeydbService('jenkins-versions-database-keydb', 6379, pipelineContext)
+        String jenkinsExternalUrl = 'jenkins-keydb.zevrant-services.internal'
+        keydbService = new KeydbService(
+                (useK8s)? 'jenkins-versions-database-keydb' : jenkinsExternalUrl,
+                6379,
+                pipelineContext)
     }
 
     Version getVersion(String applicationName) {
