@@ -25,7 +25,7 @@ class VersionService extends Service {
             version = keydbService.getKey(applicationName).trim()
         }
         version = version.replace('"', '').trim() //redis/keydb strings are returned wrapped in double quotes
-        version = (version == "" || version == null) ? '0.0.0' : version
+        version = (version == "" || version == null || version == '(nil)') ? '0.0.0' : version
         return new Version(version)
     }
 
