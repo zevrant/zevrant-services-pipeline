@@ -102,7 +102,7 @@ pipeline {
                 container('spring-jenkins-slave') {
                     script {
                         version = versionService.getVersion(REPOSITORY as String) as Version
-                        versionCode = versionService.getVersionCode("${REPOSITORY.toLowerCase()}")
+                        versionCode = versionService.getVersion("${REPOSITORY.toLowerCase()}-code")
                         currentBuild.displayName = "Building version ${version.toVersionCodeString()}"
                     }
                 }
