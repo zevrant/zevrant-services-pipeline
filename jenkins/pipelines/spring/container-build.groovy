@@ -95,6 +95,7 @@ pipeline {
                     dir(springCodeUnit.name) {
                         sh 'helm dependency build'
                         //Update chart app version with current app version
+                        def chartYaml = readYaml(file: 'Chart.yaml')
                         chartVersion = versionService.getVersion("${springCodeUnit.name}-chart")
                         chartYaml.appVersion = version.toVersionCodeString()
                         chartVersion = versionService.minorVersionUpdate("${springCodeUnit.name}-chart", chartVersion)
