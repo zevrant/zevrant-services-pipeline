@@ -58,6 +58,7 @@ pipeline {
                                                             //helm pull oci://harbor.zevrant-services.internal/zevrant-services/oauth2-service --version 0.0.1
                         } catch (Exception ignored) {
                             sh "helm rollback ${codeUnit.name} --namespace ${environment}"
+                            throw ignored
                         }
                     }
                 }

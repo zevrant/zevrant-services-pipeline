@@ -69,6 +69,7 @@ rules:
   - apiGroups:
       - ""
       - apps
+      - "networking.k8s.io"
     resources:
       - configmaps
       - secrets
@@ -80,6 +81,7 @@ rules:
       - deployments
       - replicasets
       - statefulsets
+      - ingresses
     verbs:
       - get
       - patch
