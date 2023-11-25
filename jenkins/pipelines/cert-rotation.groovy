@@ -47,6 +47,9 @@ pipeline {
                     certsToRotate.each({ cert ->
                         String name = cert.secretName
                                 .replace('-tls', '')
+                                .split('-')
+                                .toUnique()
+                                .join('-')
 
                         println "Rotating ${name}"
                         KubernetesService service = KubernetesServiceCollection.findServiceByName(name)
