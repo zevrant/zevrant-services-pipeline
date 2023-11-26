@@ -3,6 +3,7 @@ package com.zevrant.services.pojo
 class Pipeline {
 
     private final String name;
+    private final String displayName
     private final String folder
     private final String description;
     private final ArrayList<PipelineParameter> parameters;
@@ -17,7 +18,7 @@ class Pipeline {
 
     Pipeline(Map<String, Object> params) {
         this.name = params.name
-        this.displayName = (params.displayName)? params.displayName : params.name
+        this.displayName = (params.displayName)? params.displayName : pipeline.name.split("-").collect({ piece -> piece.capitalize()}).join(' ')
         this.folder = params.folder ?: ''
         this.description = params.description ?: ""
         this.parameters = (params.parameters ?: new ArrayList<>()) as ArrayList<PipelineParameter>
@@ -75,5 +76,12 @@ class Pipeline {
         return envs
     }
 
+    String getDisplayName() {
+        return displayName
+    }
+
+    String getFolder() {
+        return folder
+    }
 }
 

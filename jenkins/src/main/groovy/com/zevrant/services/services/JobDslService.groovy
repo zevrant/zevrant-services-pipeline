@@ -17,10 +17,6 @@ class JobDslService extends Service {
         folder = (folder.lastIndexOf('/') == folder.length() - 1) ? folder.substring(0, Math.max(0, folder.length() - 1)) : folder
         dslContext.pipelineJob(folder + "/" + pipeline.name) {
             description pipeline.description
-            String jobDisplayName = ""
-            pipeline.name.split("-").each { piece ->
-                jobDisplayName += piece.capitalize() + " "
-            }
 
             if (pipeline.triggers != null && !pipeline.triggers.isEmpty()) {
                 pipeline.triggers.each { trigger ->
@@ -53,7 +49,7 @@ class JobDslService extends Service {
                 }
             }
 
-            displayName(jobDisplayName.trim())
+            displayName(pipeline.displayName)
             disabled pipeline.disabled
             logRotator {
                 numToKeep pipeline.buildsToKeep
