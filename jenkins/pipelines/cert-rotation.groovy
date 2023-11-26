@@ -4,6 +4,7 @@
 import com.zevrant.services.pojo.CertRotationInfo
 import com.zevrant.services.pojo.KubernetesService
 import com.zevrant.services.pojo.KubernetesServiceCollection
+import com.zevrant.services.pojo.codeunit.SpringCodeUnitCollection
 import com.zevrant.services.services.CertificateService
 import com.zevrant.services.services.ThanosQueryService
 
@@ -47,6 +48,7 @@ pipeline {
                     certsToRotate.each({ cert ->
                         String name = cert.secretName
                                 .replace('-tls', '')
+                                .replace('-internal', '')
                                 .split('-')
                                 .toUnique()
                                 .join('-')
@@ -54,7 +56,7 @@ pipeline {
                         println "Rotating ${name}"
                         KubernetesService service = KubernetesServiceCollection.findServiceByName(name)
                         if (service == null) {
-                            service = KubernetesServiceCollection.findServiceByServiceName(name)
+                            service = SpringCodeUnitCollection.findServiceByServiceName(name)
                         }
                         try {
                             retry(3, {

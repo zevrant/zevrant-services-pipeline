@@ -17,6 +17,7 @@ class Pipeline {
 
     Pipeline(Map<String, Object> params) {
         this.name = params.name
+        this.displayName = (params.displayName)? params.displayName : params.name
         this.folder = params.folder ?: ''
         this.description = params.description ?: ""
         this.parameters = (params.parameters ?: new ArrayList<>()) as ArrayList<PipelineParameter>

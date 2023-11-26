@@ -15,7 +15,7 @@ class SpringCodeUnitCollection {
                     name: 'ui-core-ui-core'
             ]),
             new SpringCodeUnit([
-                    name: 'oauth2-service-oauth2-service'
+                    name: 'oauth2-service'
             ]),
             new SpringCodeUnit([
                     name: 'notification-service'
@@ -24,6 +24,10 @@ class SpringCodeUnitCollection {
 
     static SpringCodeUnit findByRepoName(String repoName) {
         return microservices.find({codeUnit -> codeUnit.getRepo().getRepoName() == repoName})
+    }
+
+    static SpringCodeUnit findServiceByServiceName(String serviceName) {
+        return microservices.find({codeUnit -> codeUnit.name == serviceName})
     }
 
 }

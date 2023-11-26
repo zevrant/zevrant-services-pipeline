@@ -82,6 +82,19 @@ class PipelineCollection {
                                     value: "H */9 * * *"
                             )
                     ])
+            ),
+            new Pipeline(
+                    name: 'dnd-session-reminder',
+                    displayName: 'D&D Session Reminder',
+                    folder: 'Games',
+                    description: 'Pipeline that sends out a weekly reminder for the next scheduled game',
+                    jenkinsfileLocation: 'jenkins/pipelines/dnd-session-reminder.groovy',
+                    triggers: new ArrayList<>([
+                            new PipelineTrigger(
+                                    type: PipelineTriggerType.CRON,
+                                    value: "H 14 * * 6"
+                            )
+                    ])
             )
     ])
 }

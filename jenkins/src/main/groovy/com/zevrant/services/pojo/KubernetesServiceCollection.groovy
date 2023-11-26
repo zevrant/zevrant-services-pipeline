@@ -71,7 +71,7 @@ class KubernetesServiceCollection {
                     serviceType: ServiceType.STATEFULSET
             ]),
             new KubernetesService([
-                    name: 'jenkins-internal',
+                    name: 'jenkins',
                     serviceName: 'jenkins',
                     includesDb: false,
                     environments: [
