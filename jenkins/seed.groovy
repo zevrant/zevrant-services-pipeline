@@ -14,9 +14,17 @@ import com.zevrant.services.services.JobDslService
 
 JobDslService jobDslService = new JobDslService(this)
 
-folder('containers') {
-    displayName('Containers')
+List<String> folders = [
+        'containers',
+        'games'
+]
+
+folders.each { folder ->
+    folder(folder) {
+        displayName(folder.capitalize())
+    }
 }
+
 LibraryCodeUnitCollection.libraries.each { libraryCodeUnit ->
     jobDslService.createMultibranch((CodeUnit) libraryCodeUnit)
 }
