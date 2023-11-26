@@ -18,7 +18,7 @@ class Pipeline {
 
     Pipeline(Map<String, Object> params) {
         this.name = params.name
-        this.displayName = (params.displayName)? params.displayName : pipeline.name.split("-").collect({ piece -> piece.capitalize()}).join(' ')
+        this.displayName = (params.displayName)? params.displayName : name.split("-").collect({ piece -> piece.capitalize()}).join(' ')
         this.folder = params.folder ?: ''
         this.description = params.description ?: ""
         this.parameters = (params.parameters ?: new ArrayList<>()) as ArrayList<PipelineParameter>
