@@ -54,9 +54,12 @@ pipeline {
                                 .join('-')
 
                         println "Rotating ${name}"
+                        String serviceName = ''
                         KubernetesService service = KubernetesServiceCollection.findServiceByName(name)
                         if (service == null) {
-                            service = SpringCodeUnitCollection.findServiceByServiceName(name)
+                            serviceName = SpringCodeUnitCollection.findServiceByServiceName(name).name
+                        } else {
+                            serviceName = service.name
                         }
                         try {
                             retry(3, {
