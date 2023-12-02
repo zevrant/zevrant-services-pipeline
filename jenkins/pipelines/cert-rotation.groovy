@@ -79,7 +79,4 @@ pipeline {
             }
         }
     }
-    post {
-        disc
-    }
 }
