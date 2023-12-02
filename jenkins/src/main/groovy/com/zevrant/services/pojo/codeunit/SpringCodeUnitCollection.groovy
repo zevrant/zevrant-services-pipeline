@@ -12,7 +12,7 @@ class SpringCodeUnitCollection {
                     name: 'acra-backend'
             ]),
             new SpringCodeUnit([
-                    name: 'ui-core-ui-core'
+                    name: 'ui-core'
             ]),
             new SpringCodeUnit([
                     name: 'oauth2-service'
