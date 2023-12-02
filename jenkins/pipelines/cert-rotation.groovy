@@ -70,10 +70,16 @@ pipeline {
                             })
                         } catch (Exception ex) {
                             println("Failed to rotate service $name")
+                            withCredentials([string(credentialsId: 'discord-webhook', variable: 'webhookUrl')]) {
+                                discordSend description: "Jenkins failed to rotate certs for ${serviceName}", result: currentBuild.currentResult, title: "Certificate Rotation", webhookURL: webhookUrl
+                            }
                         }
                     })
                 }
             }
         }
+    }
+    post {
+        disc
     }
 }
