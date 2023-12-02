@@ -15,7 +15,8 @@ class SpringCodeUnitCollection {
                     name: 'ui-core'
             ]),
             new SpringCodeUnit([
-                    name: 'oauth2-service'
+                    name: 'oauth2-service',
+                    deploymentName: 'oauth2-service-oauth2-service'
             ]),
             new SpringCodeUnit([
                     name: 'notification-service'

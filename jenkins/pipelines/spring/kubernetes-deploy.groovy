@@ -76,7 +76,7 @@ pipeline {
                             } catch (Exception ex) {
                                 throw new RuntimeException("Failed to retrieve deployment for repository $REPOSITORY in $ENVIRONMENT")
                             }
-                            sh "kubectl rollout restart deployments $REPOSITORY -n $ENVIRONMENT"
+                            sh "kubectl rollout restart deployments $codeUnit.getDepl -n $ENVIRONMENT"
                             int timeout = kubernetesService.getDeployTimeout(ENVIRONMENT == 'prod' ? 2 : 1)
 //                            try {
                             sh "kubectl rollout status deployments $REPOSITORY -n $ENVIRONMENT --timeout=${timeout}s"

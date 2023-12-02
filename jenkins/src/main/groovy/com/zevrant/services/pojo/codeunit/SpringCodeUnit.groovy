@@ -9,6 +9,7 @@ class SpringCodeUnit extends CodeUnit {
     private final String databaseName
     private final String databaseUser
     private final String group
+    private final String deploymentName
 
     SpringCodeUnit(Map<String, Object> params) {
         super(params)
@@ -18,6 +19,7 @@ class SpringCodeUnit extends CodeUnit {
         databaseName = params.databaseName
         databaseUser = params.databaseUser ?: 'zevrant'
         group = params.group ?: 'com.zevrant.services'
+        deploymentName = params.deploymentName ?: name
     }
 
     boolean getPostgresDatabase() {
