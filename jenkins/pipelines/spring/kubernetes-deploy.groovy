@@ -72,7 +72,7 @@ pipeline {
                     retry(3, {
                         container('kubectl') {
                             try {
-                                sh "kubectl get deployment $REPOSITORY -n $ENVIRONMENT"
+                                sh "kubectl get deployment ${codeUnit.getDeploymentName()} -n $ENVIRONMENT"
                             } catch (Exception ex) {
                                 throw new RuntimeException("Failed to retrieve deployment for repository $REPOSITORY in $ENVIRONMENT")
                             }
