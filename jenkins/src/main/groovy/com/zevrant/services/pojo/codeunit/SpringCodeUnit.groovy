@@ -41,4 +41,8 @@ class SpringCodeUnit extends CodeUnit {
     String getGroup() {
         return group
     }
+
+    String getDeploymentName() {
+        return deploymentName
+    }
 }
