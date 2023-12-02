@@ -55,15 +55,17 @@ pipeline {
 
                         println "Rotating ${name}"
                         String serviceName = ''
-                        KubernetesService service = KubernetesServiceCollection.findServiceByName(name)
-                        if (service == null) {
+                        String folder = ''
+                        try {
+                            serviceName = KubernetesServiceCollection.findServiceByName(name).name
+                            folder = 'kubernetes-services'
+                        } catch (Exception ignored) {
                             serviceName = SpringCodeUnitCollection.findServiceByServiceName(name).name
-                        } else {
-                            serviceName = service.name
+                            folder = 'Spring'
                         }
                         try {
                             retry(3, {
-                                build job: "kubernetes-services/${service.name}", wait: true
+                                build job: "${folder}/${serviceName}", wait: true
                             })
                         } catch (Exception ex) {
                             println("Failed to rotate service $name")
