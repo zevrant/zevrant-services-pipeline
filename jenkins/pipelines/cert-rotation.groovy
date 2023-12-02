@@ -61,6 +61,7 @@ pipeline {
                             folder = 'kubernetes-services'
                         } catch (Exception ignored) {
                             serviceName = SpringCodeUnitCollection.findServiceByServiceName(name).name
+                            serviceName = "${serviceName}/${serviceName}-deploy-to-develop"
                             folder = 'Spring'
                         }
                         try {
