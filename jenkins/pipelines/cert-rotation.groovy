@@ -65,9 +65,7 @@ pipeline {
                             folder = 'Spring'
                         }
                         try {
-                            retry(3, {
-                                build job: "${folder}/${serviceName}", wait: true
-                            })
+                            build job: "${folder}/${serviceName}", wait: false
                         } catch (Exception ex) {
                             println("Failed to rotate service $name")
                             withCredentials([string(credentialsId: 'discord-webhook', variable: 'webhookUrl')]) {
