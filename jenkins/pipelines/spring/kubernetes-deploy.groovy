@@ -87,7 +87,7 @@ pipeline {
 //                            }
                             boolean isCertValid = false
 
-                            isCertValid = certificateService.isCertificateValid("${codeUnit.deploymentName}.${ENVIRONMENT}.svc.cluster.local", 30124)
+                            isCertValid = certificateService.isCertificateValid("${codeUnit.deploymentName}.${ENVIRONMENT}.svc.cluster.local", 443)
 
                             if (!isCertValid) {
                                 throw new RuntimeException("Certificate expired for ${REPOSITORY}, certs were not rotated")
