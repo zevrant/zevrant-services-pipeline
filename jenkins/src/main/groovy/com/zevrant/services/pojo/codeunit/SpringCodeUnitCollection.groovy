@@ -20,7 +20,7 @@ class SpringCodeUnitCollection {
             new SpringCodeUnit([
                     name: 'oauth2-service',
                     deploymentName: 'oauth2-service-oauth2-service',
-                    enabled: false
+                    enabled: true
             ]),
             new SpringCodeUnit([
                     name: 'notification-service',
