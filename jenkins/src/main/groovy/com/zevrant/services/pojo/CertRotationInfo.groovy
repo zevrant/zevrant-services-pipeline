@@ -7,14 +7,16 @@ class CertRotationInfo {
     private String secretName
     private ZonedDateTime start
     private ZonedDateTime expiration
+    private String namespace
 
     CertRotationInfo() {
     }
 
-    CertRotationInfo(String secretName, ZonedDateTime start, ZonedDateTime expiration) {
+    CertRotationInfo(String secretName, ZonedDateTime start, ZonedDateTime expiration, namespace = '') {
         this.secretName = secretName
         this.start = start
         this.expiration = expiration
+        this.namespace = namespace
     }
 
     String getSecretName() {
@@ -39,5 +41,9 @@ class CertRotationInfo {
 
     void setExpiration(ZonedDateTime expiration) {
         this.expiration = expiration
+    }
+
+    String getNamespace() {
+        return namespace
     }
 }

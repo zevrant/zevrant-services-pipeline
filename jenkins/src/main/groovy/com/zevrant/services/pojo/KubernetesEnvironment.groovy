@@ -5,7 +5,8 @@ enum KubernetesEnvironment {
     PREPROD_SHARED,
     DEVELOP,
     JENKINS,
-    MONITORING;
+    MONITORING,
+    PROD;
 
     private KubernetesEnvironment() {
 

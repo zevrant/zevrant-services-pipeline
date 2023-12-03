@@ -2,6 +2,7 @@
 
 
 import com.zevrant.services.pojo.CertRotationInfo
+import com.zevrant.services.pojo.KubernetesEnvironment
 import com.zevrant.services.pojo.KubernetesService
 import com.zevrant.services.pojo.KubernetesServiceCollection
 import com.zevrant.services.pojo.codeunit.SpringCodeUnitCollection
@@ -20,14 +21,14 @@ pipeline {
     }
 
     stages {
-        stage('Determine Expiring Certificates') {
-            steps {
-                script {
-                    certsToRotate = thanosQueryService.getServicesNeedingCertRotation()
-                    println "There are ${certsToRotate.size()} to rotate!!"
-                }
-            }
-        }
+//        stage('Determine Expiring Certificates') {
+//            steps {
+//                script {
+//                    certsToRotate = thanosQueryService.getServicesNeedingCertRotation()
+//                    println "There are ${certsToRotate.size()} to rotate!!"
+//                }
+//            }
+//        }
         stage('Get Expired Services') {
             steps {
                 script {
@@ -35,8 +36,18 @@ pipeline {
                             .findAll({ service -> service.url != null && service.url != '' })
                             .each { service ->
                                 if (!certificateService.isCertificateValid(service.url)) {
-                                    certsToRotate.add(new CertRotationInfo(service.name, null, null))
+                                    certsToRotate.add(new CertRotationInfo(service.name, null, null, service.getEnvironments().get(0).namespaceName))
                                 }
+                            }
+                    SpringCodeUnitCollection.microservices
+                            .each { service ->
+                                if (!certificateService.isCertificateValid("${service.deploymentName}.${KubernetesEnvironment.DEVELOP.getNamespaceName()}.svc.cluster.local")) {
+                                    certsToRotate.add(new CertRotationInfo(service.name, null, null, KubernetesEnvironment.DEVELOP.getNamespaceName()))
+                                }
+
+//                                if (!certificateService.isCertificateValid("${service.deploymentName}.${KubernetesEnvironment.PROD.getNamespaceName()}.svc.cluster.local")) {
+//                                    certsToRotate.add(new CertRotationInfo(service.name, null, null, KubernetesEnvironment.PROD.getNamespaceName()))
+//                                }
                             }
                 }
             }
