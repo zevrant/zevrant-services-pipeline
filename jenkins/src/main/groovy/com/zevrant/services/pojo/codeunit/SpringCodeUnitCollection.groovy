@@ -7,19 +7,24 @@ class SpringCodeUnitCollection {
                     name: 'backup-service',
                     postgresDatabase: true,
                     databaseName: 'backup',
+                    enabled: false
             ]),
             new SpringCodeUnit([
-                    name: 'acra-backend'
+                    name: 'acra-backend',
+                    enabled: false
             ]),
             new SpringCodeUnit([
                     name: 'ui-core'
+                    enabled: false
             ]),
             new SpringCodeUnit([
                     name: 'oauth2-service',
                     deploymentName: 'oauth2-service-oauth2-service'
+                    enabled: false
             ]),
             new SpringCodeUnit([
                     name: 'notification-service'
+                    enabled: false
             ])
     ])
 

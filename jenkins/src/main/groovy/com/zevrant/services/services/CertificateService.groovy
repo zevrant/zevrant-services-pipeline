@@ -29,6 +29,9 @@ class CertificateService extends Service {
         pipelineContext.timeout(time: 45, unit: 'SECONDS') {
             String certDates = getCertData(serviceUrl, port)
             String[] lines = certDates.split('\n')
+            if (lines.size() <=0 || lines[0].split('=').size() <= 0) {
+                return false
+            }
             String beforeDate = lines[0].split('=')[1]
             String afterDate = lines[1].split('=')[1]
             return !isCertExpired(beforeDate, afterDate)

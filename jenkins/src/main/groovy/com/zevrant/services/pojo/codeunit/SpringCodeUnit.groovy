@@ -10,6 +10,7 @@ class SpringCodeUnit extends CodeUnit {
     private final String databaseUser
     private final String group
     private final String deploymentName
+    private final boolean enabled
 
     SpringCodeUnit(Map<String, Object> params) {
         super(params)
@@ -20,6 +21,7 @@ class SpringCodeUnit extends CodeUnit {
         databaseUser = params.databaseUser ?: 'zevrant'
         group = params.group ?: 'com.zevrant.services'
         deploymentName = params.deploymentName ?: name
+        enabled = params.enabled?: true
     }
 
     boolean getPostgresDatabase() {
@@ -44,5 +46,9 @@ class SpringCodeUnit extends CodeUnit {
 
     String getDeploymentName() {
         return deploymentName
+    }
+
+    boolean getEnabled() {
+        return enabled
     }
 }
