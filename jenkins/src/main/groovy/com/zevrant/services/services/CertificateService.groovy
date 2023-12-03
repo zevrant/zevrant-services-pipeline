@@ -30,7 +30,7 @@ class CertificateService extends Service {
             String certDates = getCertData(serviceUrl, port)
             String[] lines = certDates.split('\n')
             if (lines.size() <=1 || lines[0].split('=').size() <= 1 || lines[1].split('=').size() <= 1) {
-                println('Invalid cert data supplied defaulting to invalid certificate')
+                pipelineContext.println('Invalid cert data supplied defaulting to invalid certificate')
                 return false
             }
             String beforeDate = lines[0].split('=')[1]
