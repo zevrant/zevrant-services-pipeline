@@ -70,7 +70,7 @@ pipeline {
                         retry(3, {
 
                             if (!certificateService.isCertificateValid(url)) {
-                                throw new RuntimeException("Certificate expirred for ${SERVICE_NAME}, certs were not rotated")
+                                throw new RuntimeException("Certificate expired for ${SERVICE_NAME}, certs were not rotated")
                             }
                         })
                     }

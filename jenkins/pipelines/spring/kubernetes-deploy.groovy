@@ -1,6 +1,7 @@
 package spring
 
 import com.zevrant.services.ServiceLoader
+import com.zevrant.services.pojo.KubernetesEnvironment
 import com.zevrant.services.pojo.codeunit.SpringCodeUnit
 import com.zevrant.services.pojo.codeunit.SpringCodeUnitCollection
 import com.zevrant.services.services.CertificateService
@@ -85,16 +86,11 @@ pipeline {
 //                                throw new RuntimeException("Deployment for $REPOSITORY in Environment $ENVIRONMENT failed and was rolled back")
 //                            }
                             boolean isCertValid = false
-                            String serviceKey = "${ENVIRONMENT}-${REPOSITORY}"
-                            if (serviceNameOverrides.containsKey(serviceKey)) {
 
-                                isCertValid = certificateService.isCertificateValid(serviceNameOverrides.get(serviceKey) as String, 30124)
-                            } else {
-                                isCertValid = certificateService.isCertificateValid(certificateService.getMicroserviceUrl(REPOSITORY as String, ENVIRONMENT as String))
-                            }
+                            isCertValid = certificateService.isCertificateValid("${codeUnit.deploymentName}.${ENVIRONMENT}.svc.cluster.local", 30124)
 
                             if (!isCertValid) {
-                                throw new RuntimeException("Certificate expirred for ${REPOSITORY}, certs were not rotated")
+                                throw new RuntimeException("Certificate expired for ${REPOSITORY}, certs were not rotated")
                             }
                         }
                     })

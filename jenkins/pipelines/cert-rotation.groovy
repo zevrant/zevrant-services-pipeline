@@ -42,7 +42,7 @@ pipeline {
                     SpringCodeUnitCollection.microservices
                             .findAll({service -> service.enabled})
                             .each { service ->
-                                if (!certificateService.isCertificateValid("${service.deploymentName}.${KubernetesEnvironment.DEVELOP.getNamespaceName()}.svc.cluster.local")) {
+                                if (service.enabled && !certificateService.isCertificateValid("${service.deploymentName}.${KubernetesEnvironment.DEVELOP.getNamespaceName()}.svc.cluster.local")) {
                                     certsToRotate.add(new CertRotationInfo(service.name, null, null, KubernetesEnvironment.DEVELOP.getNamespaceName()))
                                 }
 
