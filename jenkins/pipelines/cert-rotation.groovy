@@ -11,7 +11,7 @@ import com.zevrant.services.services.ThanosQueryService
 
 CertificateService certificateService = new CertificateService(this)
 ThanosQueryService thanosQueryService = new ThanosQueryService(this)
-List<CertRotationInfo> certsToRotate = Collections.emptyList()
+List<CertRotationInfo> certsToRotate = []
 
 pipeline {
     agent {

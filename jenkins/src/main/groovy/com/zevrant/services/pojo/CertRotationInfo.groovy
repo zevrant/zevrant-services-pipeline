@@ -12,7 +12,7 @@ class CertRotationInfo {
     CertRotationInfo() {
     }
 
-    CertRotationInfo(String secretName, ZonedDateTime start, ZonedDateTime expiration, namespace) {
+    CertRotationInfo(String secretName, ZonedDateTime start, ZonedDateTime expiration, namespace = '') {
         this.secretName = secretName
         this.start = start
         this.expiration = expiration
