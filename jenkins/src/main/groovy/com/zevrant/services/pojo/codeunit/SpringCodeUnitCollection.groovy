@@ -14,16 +14,16 @@ class SpringCodeUnitCollection {
                     enabled: false
             ]),
             new SpringCodeUnit([
-                    name: 'ui-core'
+                    name: 'ui-core',
                     enabled: false
             ]),
             new SpringCodeUnit([
                     name: 'oauth2-service',
-                    deploymentName: 'oauth2-service-oauth2-service'
+                    deploymentName: 'oauth2-service-oauth2-service',
                     enabled: false
             ]),
             new SpringCodeUnit([
-                    name: 'notification-service'
+                    name: 'notification-service',
                     enabled: false
             ])
     ])
