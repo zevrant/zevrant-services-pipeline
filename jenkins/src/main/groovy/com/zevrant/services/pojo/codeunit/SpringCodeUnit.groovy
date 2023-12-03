@@ -21,7 +21,7 @@ class SpringCodeUnit extends CodeUnit {
         databaseUser = params.databaseUser ?: 'zevrant'
         group = params.group ?: 'com.zevrant.services'
         deploymentName = params.deploymentName ?: name
-        enabled = params.enabled
+        enabled = (params.containsKey('enabled'))? params.enabled as boolean : true
     }
 
     boolean getPostgresDatabase() {
