@@ -36,7 +36,10 @@ pipeline {
                             'harbor.zevrant-services.internal',
                             'zevrant-services',
                             '',
-                            ["serviceName=${springCodeUnit.name}"]
+                            [
+                                    "serviceName=${springCodeUnit.name}",
+                                    "version=${versionString}"
+                            ]
                     )
                     String dockerfile = httpRequest(
                             authentication: 'gitea-access-token',
