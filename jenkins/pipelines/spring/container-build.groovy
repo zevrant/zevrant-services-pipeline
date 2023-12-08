@@ -12,16 +12,7 @@ import com.zevrant.services.services.VersionService
 ImageBuildService imageBuildService = new ImageBuildService(this)
 VersionService versionService = new VersionService(this, false)
 SpringCodeUnit springCodeUnit = SpringCodeUnitCollection.findByRepoName(repository)
-Image image = new Image(
-        springCodeUnit.name,
-        "",
-        true,
-        null,
-        'harbor.zevrant-services.internal',
-        'zevrant-services',
-        '',
-        ["serviceName=${springCodeUnit.name}"]
-)
+Image image = null
 Version version = null
 Version chartVersion = null
 pipeline {
@@ -37,7 +28,16 @@ pipeline {
                     copyArtifacts filter: 'helm-chart.tgz', fingerprintArtifacts: true, projectName: "./${springCodeUnit.name}-multibranch/main"
                     String versionString = readFile(file: 'artifactVersion.txt')
                     version = new Version(versionString)
-                    image.setVersion(versionString)
+                    image = new Image(
+                            springCodeUnit.name,
+                            versionString,
+                            true,
+                            null,
+                            'harbor.zevrant-services.internal',
+                            'zevrant-services',
+                            '',
+                            ["serviceName=${springCodeUnit.name}"]
+                    )
                     String dockerfile = httpRequest(
                             authentication: 'gitea-access-token',
                             url: "https://gitea.zevrant-services.internal/zevrant-services/containers/raw/branch/main/k8s/spring-microservice-template/Dockerfile"
