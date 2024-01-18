@@ -2,6 +2,8 @@ apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
   name: csi-rbd-sc
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "true"
 provisioner: rbd.csi.ceph.com
 parameters:
   clusterID: 86137ef7-01fe-451a-aac5-d1d469af8126

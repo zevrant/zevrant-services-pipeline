@@ -1,4 +1,3 @@
-import com.zevrant.services.ServiceLoader
 import com.zevrant.services.pojo.Version
 import com.zevrant.services.services.VersionService
 
@@ -6,7 +5,7 @@ String REPOSITORY = scm.getUserRemoteConfigs()[0].getUrl().tokenize('/').last().
 String branchName = (BRANCH_NAME.startsWith('PR-')) ? CHANGE_BRANCH : BRANCH_NAME
 
 Version version;
-VersionService versionTasks = ServiceLoader.load(binding, VersionService) as VersionService
+VersionService versionTasks = new VersionService(this)
 pipeline {
     agent {
         kubernetes {

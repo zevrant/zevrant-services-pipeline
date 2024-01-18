@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: authentik-internal
+  namespace: preprod-shared
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: auth.preprod.zevrant-services.internal
+      http:
+        paths:
+          - backend:
+              service:
+                name: authentik
+                port:
+                  name: http
+            path: /
+            pathType: Prefix
+  tls:
+    - hosts:
+        - auth.preprod.zevrant-services.internal
+      secretName: authentik-internal-tls

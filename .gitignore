@@ -196,3 +196,5 @@
 /kubernetes/preprod-shared/keycloak/postgresql-ha/Chart.yaml
 /kubernetes/preprod-shared/keycloak/postgresql-ha/README.md
 /kubernetes/preprod-shared/keycloak/postgresql-ha/values.yaml
+/kubernetes/preprod-shared/postgresql-ha/
+/kubernetes/preprod-shared/postgresql-ha/
