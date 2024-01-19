@@ -26,9 +26,7 @@ pipeline {
 
         stage("Get Version") {
             environment {
-                environment {
-                    REDISCLI_AUTH = credentials('jenkins-keydb-password')
-                }
+                REDISCLI_AUTH = credentials('jenkins-keydb-password')
             }
             steps {
                 container('spring-jenkins-slave') {
