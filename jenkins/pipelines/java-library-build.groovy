@@ -15,6 +15,9 @@ pipeline {
     stages {
 
         stage("Test") {
+            environment {
+                GITEA_TOKEN = credentials('jenkins-git-access-token-as-text')
+            }
             steps {
                 container('spring-jenkins-slave') {
                     script {
@@ -54,9 +57,7 @@ pipeline {
 
         stage("Build & Publish") {
             environment {
-                AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
-                AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
-                AWS_DEFAULT_REGION = "us-east-1"
+                GITEA_TOKEN = credentials('jenkins-git-access-token-as-text')
             }
             steps {
                 container('spring-jenkins-slave') {
