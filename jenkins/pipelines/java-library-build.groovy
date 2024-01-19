@@ -26,9 +26,9 @@ pipeline {
 
         stage("Get Version") {
             environment {
-                AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
-                AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
-                AWS_DEFAULT_REGION = "us-east-1"
+                environment {
+                    REDISCLI_AUTH = credentials('jenkins-keydb-password')
+                }
             }
             steps {
                 container('spring-jenkins-slave') {
@@ -42,9 +42,7 @@ pipeline {
 
         stage("Version Update") {
             environment {
-                AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
-                AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
-                AWS_DEFAULT_REGION = "us-east-1"
+                REDISCLI_AUTH = credentials('jenkins-keydb-password')
             }
             steps {
                 container('spring-jenkins-slave') {
