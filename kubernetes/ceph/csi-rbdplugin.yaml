@@ -3,7 +3,7 @@ kind: DaemonSet
 apiVersion: apps/v1
 metadata:
   name: csi-rbdplugin
-  # replace with non-default namespace name
+  # replace with non-ceph-csi namespace name
   namespace: ceph-csi
 spec:
   selector:
@@ -29,7 +29,7 @@ spec:
           securityContext:
             privileged: true
             allowPrivilegeEscalation: true
-          image: registry.k8s.io/sig-storage/csi-node-driver-registrar:v2.6.2
+          image: registry.k8s.io/sig-storage/csi-node-driver-registrar:v2.9.3
           args:
             - "--v=1"
             - "--csi-address=/csi/csi.sock"
@@ -51,7 +51,7 @@ spec:
               add: ["SYS_ADMIN"]
             allowPrivilegeEscalation: true
           # for stable functionality replace canary with latest release version
-          image: quay.io/cephcsi/cephcsi:canary
+          image: quay.io/cephcsi/cephcsi:v3.10.1
           args:
             - "--nodeid=$(NODE_ID)"
             - "--pluginpath=/var/lib/kubelet/plugins"
@@ -96,7 +96,7 @@ spec:
               value: unix:///csi/csi.sock
             - name: CSI_ADDONS_ENDPOINT
               value: unix:///csi/csi-addons.sock
-          imagePullPolicy: "IfNotPresent"
+          imagePullPolicy: "Always"
           volumeMounts:
             - name: socket-dir
               mountPath: /csi
@@ -135,7 +135,7 @@ spec:
           securityContext:
             privileged: true
             allowPrivilegeEscalation: true
-          image: quay.io/cephcsi/cephcsi:canary
+          image: quay.io/cephcsi/cephcsi:v3.10.1
           args:
             - "--type=liveness"
             - "--endpoint=$(CSI_ENDPOINT)"
@@ -153,7 +153,7 @@ spec:
           volumeMounts:
             - name: socket-dir
               mountPath: /csi
-          imagePullPolicy: "IfNotPresent"
+          imagePullPolicy: "Always"
       volumes:
         - name: socket-dir
           hostPath:
@@ -216,7 +216,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: csi-metrics-rbdplugin
-  # replace with non-default namespace name
+  # replace with non-ceph-csi namespace name
   namespace: ceph-csi
   labels:
     app: csi-metrics

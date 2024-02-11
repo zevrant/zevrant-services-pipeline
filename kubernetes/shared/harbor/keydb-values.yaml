@@ -1,19 +1,19 @@
-#helm install enapter/keydb
+#helm upgrade --install  harbor-keydb enapter/keydb -f keydb-values.yaml
 
 nameOverride: ""
 fullnameOverride: ""
 
 imageRepository: harbor.zevrant-services.internal/dockerhub/eqalpha/keydb
 imageTag: x86_64_v6.3.2
-imagePullPolicy: IfNotPresent
+imagePullPolicy: Always
 imagePullSecrets:
   - name: "harbor-ro"
 
 nodes: 3
 
-password: "password"
-existingSecret: ""
-existingSecretPasswordKey: "password"
+password: ""
+existingSecret: "harbor-redis"
+existingSecretPasswordKey: "REDIS_PASSWORD"
 port: 6379
 portName: server
 internalPort: 6379
@@ -228,7 +228,7 @@ exporter:
   enabled: false
   imageRepository: oliver006/redis_exporter
   imageTag: v1.48.0-alpine
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
 
   # Prometheus port & scrape path
   port: 9121

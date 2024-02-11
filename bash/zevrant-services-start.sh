@@ -7,10 +7,10 @@ if [[ "$3" != "" ]]; then
 fi
 cat ~/openssl.conf
 
-VAULT_ADDR="https://develop.vault.zevrant-services.com"
+VAULT_ADDR="https://develop.vault.zevrant-services.internal"
 
 if [[ "$ENVIRONMENT" == "prod" ]]; then
-  VAULT_ADDR="https://vault.zevrant-services.com"
+  VAULT_ADDR="https://vault.zevrant-services.internal"
 fi
 
 step ca bootstrap --ca-url certificate-authority.shared.svc.cluster.local --fingerprint 302e9a4e65cd9525a8479bc3bcd14c64050712559954e6cbf866469eba69fe37

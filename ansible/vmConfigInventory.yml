@@ -1,6 +1,6 @@
 all:
   vars:
-#    ansible_ssh_common_args: '-o StrictHostKeyChecking=no -o ProxyCommand="ssh -W %h:%p zevrant@proxmox-05.preprod.zevrant-services.com -p 22"'
+#    ansible_ssh_common_args: '-o StrictHostKeyChecking=no -o ProxyCommand="ssh -W %h:%p zevrant@proxmox-05.preprod.zevrant-services.internal -p 22"'
     ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
     ansible-connection: ssh
     hosts:

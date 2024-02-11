@@ -56,7 +56,6 @@ services:
       EXTERNAL_HOSTNAME: "localhost:9011"
       ENVIRONMENT: "local"
   vault:
-    network_mode: host
     ports:
       - "8200:8200"
     user: "root"

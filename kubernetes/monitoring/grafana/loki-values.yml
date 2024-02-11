@@ -1,7 +1,7 @@
 test_pod:
   enabled: true
   image: bats/bats:1.8.2
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
 
 loki:
   enabled: true

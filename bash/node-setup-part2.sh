@@ -82,7 +82,7 @@ certificateRequest=$(cat ./public.csr)
 certificateRequest=$(printf "%q" "$certificateRequest")
 certificateRequest=$(echo "$certificateRequest" | cut -c 3-$((${#certificateRequest}-1)))
 certificateRequest="{\"certificateRequest\":\"$certificateRequest\",\"ip\":\"$myIp\"}"
-curl --insecure https://zevrant-01.zevrant-services.com:9009/zevrant-certificate-service/certs --data "$certificateRequest" \
+curl --insecure https://zevrant-01.zevrant-services.internal:9009/zevrant-certificate-service/certs --data "$certificateRequest" \
   --user "$username":"$password" -H "Content-Type: application/json" -X POST -o /opt/node-exporter/public.crt
 rm openssl.conf public.csr
 cat << EOF > /etc/systemd/system/node-exporter.service
@@ -128,7 +128,7 @@ sleep 10
 
 usermod -G docker zevrant
 
-curl http://zevrant-01.zevrant-services.com:7644/cacert.pem \
+curl http://zevrant-01.zevrant-services.internal:7644/cacert.pem \
       -o /usr/local/share/ca-certificates/zevrant-services.crt \
     && update-ca-certificates -v \
     && ls -l /etc/ssl/certs/zevrant-services.pem

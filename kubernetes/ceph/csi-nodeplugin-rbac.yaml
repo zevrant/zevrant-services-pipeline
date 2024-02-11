@@ -3,7 +3,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: rbd-csi-nodeplugin
-  # replace with non-default namespace name
+  # replace with non-ceph-csi namespace name
   namespace: ceph-csi
 ---
 kind: ClusterRole
@@ -41,7 +41,7 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: rbd-csi-nodeplugin
-    # replace with non-default namespace name
+    # replace with non-ceph-csi namespace name
     namespace: ceph-csi
 roleRef:
   kind: ClusterRole

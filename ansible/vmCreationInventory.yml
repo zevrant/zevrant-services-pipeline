@@ -11,92 +11,102 @@ all:
     ansible-connection: ssh
     hostCidr: 172.16.2.
   children:
-    preprodMasters:
-      vars:
-        cpus: 4
-        memory: 4096
-        nodeType: master
-        softwareType: kubernetes
-      hosts:
-        proxmox-01:
-          destHost: proxmox-01
-          vmId: 100
-          vmNumber: 1
-          ipAddress: 172.16.2.1
-          ipAddress2: 172.16.3.1
-        proxmox-02:
-          destHost: proxmox-02
-          vmId: 110
-          vmNumber: 2
-          ipAddress: 172.16.2.2
-          ipAddress2: 172.16.3.2
-        proxmox-04:
-          destHost: proxmox-04
-          vmId: 120
-          vmNumber: 3
-          ipAddress: 172.16.2.6
-          ipAddress2: 172.16.3.6
-        proxmox-05:
-          destHost: proxmox-05
-          vmId: 130
-          vmNumber: 4
-          ipAddress: 172.16.2.9
-          ipAddress2: 172.16.3.9
-        proxmox-06:
-          destHost: proxmox-06
-          vmId: 140
-          vmNumber: 5
-          ipAddress: 172.16.2.10
-          ipAddress2: 172.16.3.10
-    preprodWorkers:
-      vars:
-        softwareType: kubernetes
-        cpus: 18
-        memory: 86016
-        nodeType: worker
-      hosts:
-        proxmox-01.preprod.zevrant-services.internal:
-          destHost: proxmox-01
-          vmId: 150
-          vmNumber: 1
-          ipAddress: 172.16.2.11
-          ipAddress2: 172.16.3.11
-        proxmox-02.preprod.zevrant-services.internal:
-          destHost: proxmox-02
-          vmId: 160
-          vmNumber: 2
-          ipAddress: 172.16.2.12
-          ipAddress2: 172.16.3.12
-        proxmox-04.preprod.zevrant-services.internal:
-          destHost: proxmox-04
-          vmId: 170
-          vmNumber: 3
-          ipAddress: 172.16.2.13
-          ipAddress2: 172.16.3.13
-        proxmox-05.preprod.zevrant-services.internal:
-          destHost: proxmox-05
-          vmId: 180
-          vmNumber: 4
-          ipAddress: 172.16.2.14
-          ipAddress2: 172.16.3.14
-        proxmox-06.preprod.zevrant-services.internal:
-          destHost: proxmox-06
-          vmId: 190
-          vmNumber: 5
-          ipAddress: 172.16.2.15
-          ipAddress2: 172.16.3.15
-          cpus: 8
+#    preprodMasters:
+#      vars:
+#        cpus: 4
+#        memory: 4096
+#        nodeType: master
+#        softwareType: kubernetes
+#      hosts:
+#        proxmox-01:
+#          destHost: proxmox-01
+#          vmId: 100
+#          vmNumber: 1
+#          ipAddress: 172.16.2.1
+#          ipAddress2: 172.16.3.1
+#        proxmox-02:
+#          destHost: proxmox-02
+#          vmId: 110
+#          vmNumber: 2
+#          ipAddress: 172.16.2.2
+#          ipAddress2: 172.16.3.2
+#        proxmox-04:
+#          destHost: proxmox-04
+#          vmId: 120
+#          vmNumber: 3
+#          ipAddress: 172.16.2.6
+#          ipAddress2: 172.16.3.6
+#        proxmox-05:
+#          destHost: proxmox-05
+#          vmId: 130
+#          vmNumber: 4
+#          ipAddress: 172.16.2.9
+#          ipAddress2: 172.16.3.9
+#        proxmox-06:
+#          destHost: proxmox-06
+#          vmId: 140
+#          vmNumber: 5
+#          ipAddress: 172.16.2.10
+#          ipAddress2: 172.16.3.10
+#    preprodWorkers:
+#      vars:
+#        softwareType: kubernetes
+#        cpus: 18
+#        memory: 86016
+#        nodeType: worker
+#      hosts:
+#        proxmox-01.preprod.zevrant-services.internal:
+#          destHost: proxmox-01
+#          vmId: 150
+#          vmNumber: 1
+#          ipAddress: 172.16.2.11
+#          ipAddress2: 172.16.3.11
+#        proxmox-02.preprod.zevrant-services.internal:
+#          destHost: proxmox-02
+#          vmId: 160
+#          vmNumber: 2
+#          ipAddress: 172.16.2.12
+#          ipAddress2: 172.16.3.12
+#        proxmox-04.preprod.zevrant-services.internal:
+#          destHost: proxmox-04
+#          vmId: 170
+#          vmNumber: 3
+#          ipAddress: 172.16.2.13
+#          ipAddress2: 172.16.3.13
+#        proxmox-05.preprod.zevrant-services.internal:
+#          destHost: proxmox-05
+#          vmId: 180
+#          vmNumber: 4
+#          ipAddress: 172.16.2.14
+#          ipAddress2: 172.16.3.14
+#        proxmox-06.preprod.zevrant-services.internal:
+#          destHost: proxmox-06
+#          vmId: 190
+#          vmNumber: 5
+#          ipAddress: 172.16.2.15
+#          ipAddress2: 172.16.3.15
+#          cpus: 8
     jenkinsNodes:
       vars:
-        softwareType: kubernetes
+        softwareType: jenkins
       hosts:
-        proxmox-04.preprod.zevrant-services.internal:
-          destHost: proxmox-04
-          vmId: 200
+#        proxmox-04.preprod.zevrant-services.internal:
+#          destHost: proxmox-04
+#          vmId: 200
+#          vmNumber: 1
+#          ipAddress: 172.16.2.20
+#          ipAddress2: 172.16.3.20
+#          cpus: 2
+#          memory: 4096
+#          nodeType: container-build
+#          softwareType: jenkins
+        proxmox-02.preprod.zevrant-services.internal:
+          destHost: proxmox-02
+          vmId: 220
           vmNumber: 1
-          ipAddress: 172.16.2.20
-          ipAddress2: 172.16.3.20
-          cpus: 2
-          memory: 4096
-          nodeType: container-build
+          ipAddress: 172.16.2.22
+          ipAddress2: 172.16.3.22
+          cpus: 4
+          memory: 8192
+          nodeType: master
           softwareType: jenkins

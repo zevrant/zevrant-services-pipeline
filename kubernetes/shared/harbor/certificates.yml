@@ -21,6 +21,106 @@ spec:
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
+  name: harbor-core
+  namespace: shared
+spec:
+  secretName: harbor-core-tls
+  issuerRef:
+    name: step-ca
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+    rotationPolicy: Always
+  duration: 2160h
+  renewBefore: 2000h
+  dnsNames:
+    - harbor-core.zevrant-services.internal
+
+---
+
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: harbor-jobservice
+  namespace: shared
+spec:
+  secretName: harbor-jobservice-tls
+  issuerRef:
+    name: step-ca
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+    rotationPolicy: Always
+  duration: 2160h
+  renewBefore: 2000h
+  dnsNames:
+    - harbor-jobservice.zevrant-services.internal
+
+---
+
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: harbor-registry
+  namespace: shared
+spec:
+  secretName: harbor-registry-tls
+  issuerRef:
+    name: step-ca
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+    rotationPolicy: Always
+  duration: 2160h
+  renewBefore: 2000h
+  dnsNames:
+    - harbor-registry.zevrant-services.internal
+
+---
+
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: harbor-portal
+  namespace: shared
+spec:
+  secretName: harbor-portal-tls
+  issuerRef:
+    name: step-ca
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+    rotationPolicy: Always
+  duration: 2160h
+  renewBefore: 2000h
+  dnsNames:
+    - harbor-portal.zevrant-services.internal
+
+---
+
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: harbor-trivy
+  namespace: shared
+spec:
+  secretName: harbor-trivy-tls
+  issuerRef:
+    name: step-ca
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+    rotationPolicy: Always
+  duration: 2160h
+  renewBefore: 2000h
+  dnsNames:
+    - harbor-trivy.zevrant-services.internal
+
+---
+
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
   name: harbor-notary
   namespace: shared
 spec:

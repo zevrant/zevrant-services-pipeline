@@ -38,7 +38,7 @@
             filename: /tmp/positions.yaml
 
           clients:
-            - url: https://loki.preprod.zevrant-services.com/loki/api/v1/push
+            - url: https://loki.preprod.zevrant-services.internal/loki/api/v1/push
               tenant_id: "zevrant-services"
 
           scrape_configs:

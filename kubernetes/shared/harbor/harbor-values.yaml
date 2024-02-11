@@ -1,3 +1,5 @@
+#  helm install harbor -f harbor-values.yaml harbor/harbor
+
 expose:
   # Set how to expose the service. Set the type as "ingress", "clusterIP", "nodePort" or "loadBalancer"
   # and fill the information in the corresponding section
@@ -128,7 +130,7 @@ externalURL: https://harbor.zevrant-services.internal
 # in each components tls cert files need to provided in advance.
 internalTLS:
   # If internal TLS enabled
-  enabled: false
+  enabled: true
   # There are three ways to provide tls
   # 1) "auto" will generate cert automatically
   # 2) "manual" need provide cert file manually in following value
@@ -141,41 +143,41 @@ internalTLS:
     # secret name for core's tls certs
     secretName: "harbor-core-tls"
     # Content of core's TLS cert file, only available when `certSource` is "manual"
-    crt: ""
+    crt: "tls.crt"
     # Content of core's TLS key file, only available when `certSource` is "manual"
-    key: ""
+    key: "tls.key"
   # jobservice related cert configuration
   jobservice:
     # secret name for jobservice's tls certs
-    secretName: ""
+    secretName: "harbor-jobservice-tls"
     # Content of jobservice's TLS key file, only available when `certSource` is "manual"
-    crt: ""
+    crt: "tls.crt"
     # Content of jobservice's TLS key file, only available when `certSource` is "manual"
-    key: ""
+    key: "tls.key"
   # registry related cert configuration
   registry:
     # secret name for registry's tls certs
-    secretName: ""
+    secretName: "harbor-registry-tls"
     # Content of registry's TLS key file, only available when `certSource` is "manual"
-    crt: ""
+    crt: "tls.crt"
     # Content of registry's TLS key file, only available when `certSource` is "manual"
-    key: ""
+    key: "tls.key"
   # portal related cert configuration
   portal:
     # secret name for portal's tls certs
-    secretName: ""
+    secretName: "harbor-portal-tls"
     # Content of portal's TLS key file, only available when `certSource` is "manual"
-    crt: ""
+    crt: "tls.crt"
     # Content of portal's TLS key file, only available when `certSource` is "manual"
-    key: ""
+    key: "tls.key"
   # trivy related cert configuration
   trivy:
     # secret name for trivy's tls certs
-    secretName: ""
+    secretName: "harbor-trivy-tls"
     # Content of trivy's TLS key file, only available when `certSource` is "manual"
-    crt: ""
+    crt: "tls.crt"
     # Content of trivy's TLS key file, only available when `certSource` is "manual"
-    key: ""
+    key: "tls.key"
 
 ipFamily:
   # ipv6Enabled set to true if ipv6 is enabled in cluster, currently it affected the nginx related component
@@ -337,7 +339,7 @@ persistence:
       #chunksize: 10M
       #rootdirectory: rootdirectory
 
-imagePullPolicy: IfNotPresent
+imagePullPolicy: Always
 
 # Use this set to assign a list of default pullSecrets
 imagePullSecrets:
@@ -380,6 +382,7 @@ proxy:
     - core
     - jobservice
     - trivy
+    - registry
 
 # Run the migration job via helm hook
 enableMigrateHelmHook: false
@@ -574,7 +577,7 @@ registry:
   # Must be a string of 16 chars.
   secret: ""
   # If true, the registry returns relative URLs in Location headers. The client is responsible for resolving the correct URL.
-  relativeurls: false
+  relativeurls: true
   credentials:
     username: "harbor_registry_user"
     password: "harbor_registry_password"
@@ -775,15 +778,17 @@ database:
       #    memory: 128Mi
       #    cpu: 100m
   external:
-    host: "harbor-postgres-postgresql-ha-primary"
+    host: "harbor-postgres-postgresql-ha-pgpool.shared.svc.cluster.local"
     port: "5432"
-    username: "harbor"
+    username: "postgres"
+    password: ""
 #    password: "MFHm+AuTbjUmrp66X*@.6?rW"
     coreDatabase: "registry"
     notaryServerDatabase: "notary_signer"
     notarySignerDatabase: "notary_server"
     # if using existing secret, the key must be "password"
-    existingSecret: "harbor-postgres-postgresql-ha-pguser-harbor"
+    existingSecret: "harbor-postgres-postgresql-ha-postgresql"
+#    existingSecret: "harbor-postgres-password"
     # "disable" - No SSL
     # "require" - Always SSL (skip verification)
     # "verify-ca" - Always SSL (verify that the certificate presented by the
@@ -791,7 +796,7 @@ database:
     # "verify-full" - Always SSL (verify that the certification presented by the
     # server was signed by a trusted CA and the server host name matches the one
     # in the certificate)
-    sslmode: "require"
+    sslmode: "disable"
   # The maximum number of connections in the idle connection pool per pod (core+exporter).
   # If it <=0, no idle connections are retained.
   maxIdleConns: 100
@@ -826,7 +831,7 @@ redis:
     # support redis, redis+sentinel
     # addr for redis: <host_redis>:<port_redis>
     # addr for redis+sentinel: <host_sentinel1>:<port_sentinel1>,<host_sentinel2>:<port_sentinel2>,<host_sentinel3>:<port_sentinel3>
-    addr: "keydb:6379"
+    addr: "harbor-keydb:6379"
     # The name of the set of Redis instances to monitor, it must be set to support redis+sentinel
     sentinelMasterSet: ""
     # The "coreDatabaseIndex" must be "0" as the library Harbor

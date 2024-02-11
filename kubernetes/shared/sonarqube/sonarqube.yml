@@ -1,0 +1,211 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: sonarqube-internal
+  namespace: shared
+spec:
+  secretName: sonarqube-internal-tls
+  issuerRef:
+    name: step-ca
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+    rotationPolicy: Always
+  duration: 24h
+  renewBefore: 13h
+  dnsNames:
+    - sonarqube.zevrant-services.internal
+
+---
+
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: sonarqube
+  namespace: shared
+spec:
+  secretName: sonarqube-tls
+  issuerRef:
+    name: lets-encrypt
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+    rotationPolicy: Always
+  duration: 2160h
+  renewBefore: 2000h
+  dnsNames:
+    - sonarqube.zevrant-services.com
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: sonarqube
+  namespace: shared
+spec:
+  type: ClusterIP
+  ports:
+    - port: 9000
+      targetPort: 9000
+      name: http
+  selector:
+    app: sonarqube
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: sonarqube
+  namespace: shared
+  annotations:
+#    nginx.ingress.kubernetes.io/backend-protocol: "https"
+#    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+#    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: sonarqube.zevrant-services.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: sonarqube
+                port:
+                  name: http
+  tls:
+    - hosts:
+        - sonarqube.zevrant-services.com
+      secretName: sonarqube-tls
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: sonarqube-internal
+  namespace: shared
+  annotations:
+#    nginx.ingress.kubernetes.io/backend-protocol: "https"
+spec:
+  rules:
+    - host: sonarqube.zevrant-services.internal
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: sonarqube
+                port:
+                  name: http
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - sonarqube.zevrant-services.internal
+      secretName: sonarqube-internal-tls
+
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: sonarqube
+  labels:
+    app: sonarqube
+spec:
+  selector:
+    matchLabels:
+      app: sonarqube
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: Retain
+    whenScaled: Retain
+  podManagementPolicy: Parallel
+  replicas: 1
+  revisionHistoryLimit: 10
+  serviceName: shared-hl
+  template:
+    metadata:
+      name: sonarqube
+      namespace: shared
+      labels:
+        app: sonarqube
+    spec:
+      securityContext:
+        runAsUser: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: "Always"
+      imagePullSecrets:
+        - name: harbor-ro
+      containers:
+        - env:
+            - name: SONAR_JDBC_URL
+              value: "jdbc:postgresql://sonarqube-db-primary.shared.svc:5432/sonarqube"
+            - name: SONAR_JDBC_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  key: user
+                  name: sonarqube-db-pguser-sonarqube
+            - name: SONAR_JDBC_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: sonarqube-db-pguser-sonarqube
+          image: harbor.zevrant-services.internal/dockerhub/sonarqube:lts-community
+          imagePullPolicy: Always
+          name: sonarqube
+          ports:
+            - containerPort: 9000
+              protocol: TCP
+              name: http
+          resources:
+            limits:
+              cpu: 2
+              memory: 4Gi
+            requests:
+              cpu: 1
+              memory: 2Gi
+          volumeMounts:
+            - mountPath: /opt/sonarqube/data
+              name: data
+            - mountPath: /opt/sonarqube/logs
+              name: logs
+            - mountPath: /opt/sonarqube/extensions
+              name: extensions
+          startupProbe:
+            failureThreshold: 15
+            periodSeconds: 5
+            successThreshold: 1
+            httpGet:
+              port: 9000
+          livenessProbe:
+            httpGet:
+              port: 9000
+            successThreshold: 1
+            failureThreshold: 2
+            periodSeconds: 5
+      dnsPolicy: ClusterFirst
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 50Gi
+    - metadata:
+        name: logs
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 50Gi
+    - metadata:
+        name: extensions
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 50Gi
+

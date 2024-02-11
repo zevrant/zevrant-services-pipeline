@@ -64,7 +64,7 @@ pipeline {
                         sh 'openssl ecparam -genkey -name prime256v1 -genkey -noout -out private.pem'
                         sh 'openssl req -new -x509 -key private.pem -out certificate.pem -days 900000 -subj "/C=PL/ST=Silesia/L=Katowice/O=MyOrganization/CN=CommonName"'
                         sh 'openssl pkcs12 -export -inkey private.pem -in certificate.pem -passout "file:/var/zevrant-services/keystore/password" -out /opt/acme/certs/zevrant-services.p12'
-                        sh "SPRING_PROFILES_ACTIVE='develop,test' bash gradlew test --no-watch-fs --info"
+                        sh "SPRING_PROFILES_ACTIVE='develop,test' bash gradlew test -x integrationTest -x jacocoTestReport --no-watch-fs --info"
                         junit allowEmptyResults: true, keepLongStdio: true, skipPublishingChecks: true, testResults: 'build/test-results/test/*.xml'
                     }
                 }
@@ -75,12 +75,14 @@ pipeline {
         stage("Integration Test") {
             environment {
                 GITEA_TOKEN = credentials('jenkins-git-access-token-as-text')
+                SONAR_TOKEN = credentials('sonar-publish-token')
             }
             steps {
                 script {
                     container('spring-jenkins-slave') {
                         sh './gradlew integrationTest -Pcicd=true --info'
                         junit allowEmptyResults: true, keepLongStdio: true, skipPublishingChecks: true, testResults: 'build/test-results/integrationTest/*.xml'
+                        sh 'bash gradlew sonar'
                     }
                 }
             }

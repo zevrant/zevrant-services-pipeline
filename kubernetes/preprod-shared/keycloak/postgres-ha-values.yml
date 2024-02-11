@@ -1,3 +1,4 @@
+#helm install -f postgres-ha-values.yml oci://harbor.zevrant-services.internal/zevrant-services/postgrescluster
 pgbackrest:
   image: registry.developers.crunchydata.com/crunchydata/crunchy-pgbackrest:ubi8-2.45-0
   repos:
@@ -9,8 +10,8 @@ pgbackrest:
       storageLimit: 1Ti
 users:
   - databases:
-      - registry
-    name: harbor
+      - keycloak
+    name: keycloak
     options: 'SUPERUSER'
 imagePullPolicy: Always
 postgresImage: registry.developers.crunchydata.com/crunchydata/crunchy-postgres:ubi8-15.3-0

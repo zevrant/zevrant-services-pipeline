@@ -13,7 +13,7 @@ class KubernetesServiceCollection {
             ]),
             new KubernetesService([
                     serviceName: 'keycloak',
-                    url: 'keycloak.preprod.zevrant-services.internal',
+                    url: 'auth.preprod.zevrant-services.internal',
                     includesDb: false,
                     environments: [
                             KubernetesEnvironment.PREPROD_SHARED
@@ -44,32 +44,32 @@ class KubernetesServiceCollection {
                     ],
                     url: 'harbor.zevrant-services.internal'
             ]),
-            new KubernetesService([
-                    serviceName: 'prometheus',
-                    includesDb: false,
-                    environments: [
-                            KubernetesEnvironment.MONITORING
-                    ],
-                    url: 'prometheus-monitoring.preprod.zevrant-services.internal'
-            ]),
-            new KubernetesService([
-                    serviceName: 'grafana',
-                    includesDb: false,
-                    environments: [
-                            KubernetesEnvironment.MONITORING
-                    ],
-                    url: 'grafana.preprod.zevrant-services.internal'
-            ]),
-            new KubernetesService([
-                    name: 'minio-monitoring',
-                    serviceName: 'monitoring-pool-0',
-                    includesDb: false,
-                    environments: [
-                            KubernetesEnvironment.MONITORING
-                    ],
-                    url: 'minio-monitoring.preprod.zevrant-services.internal',
-                    serviceType: ServiceType.STATEFULSET
-            ]),
+//            new KubernetesService([
+//                    serviceName: 'prometheus',
+//                    includesDb: false,
+//                    environments: [
+//                            KubernetesEnvironment.MONITORING
+//                    ],
+//                    url: 'prometheus-monitoring.preprod.zevrant-services.internal'
+//            ]),
+//            new KubernetesService([
+//                    serviceName: 'grafana',
+//                    includesDb: false,
+//                    environments: [
+//                            KubernetesEnvironment.MONITORING
+//                    ],
+//                    url: 'grafana.preprod.zevrant-services.internal'
+//            ]),
+//            new KubernetesService([
+//                    name: 'minio-monitoring',
+//                    serviceName: 'monitoring-pool-0',
+//                    includesDb: false,
+//                    environments: [
+//                            KubernetesEnvironment.MONITORING
+//                    ],
+//                    url: 'minio-monitoring.preprod.zevrant-services.internal',
+//                    serviceType: ServiceType.STATEFULSET
+//            ]),
             new KubernetesService([
                     name: 'jenkins',
                     serviceName: 'jenkins',

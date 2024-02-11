@@ -19,7 +19,7 @@
     - name: Install Dependencies
       ansible.builtin.shell: |
         yum update -y
-        yum install -y yum-utils jq iproute-tc systemd-resolved
+        yum install -y yum-utils jq iproute-tc systemd-resolved vim
         yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
     - name: Update Packages
       ansible.builtin.yum:
@@ -39,6 +39,14 @@
           gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
           exclude=kubelet-1.1*.**-0.x86_64
         dest: /etc/yum.repos.d/kubernetes.repo
+    - name: Add Crictl Config for Containerd
+      ansible.builtin.copy:
+        content: |
+          runtime-endpoint: unix:///run/containerd/containerd.sock
+          image-endpoint: unix:///run/containerd/containerd.sock
+          timeout: 10
+          debug: true
+        destination: /etc/crictl.yaml
     - name: Install Containerd & Kubeadm
       ansible.builtin.yum:
         update_cache: true

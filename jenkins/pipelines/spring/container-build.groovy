@@ -50,7 +50,7 @@ pipeline {
                     writeFile(file: 'Dockerfile', text: dockerfile)
                     httpRequest(
                             authentication: 'gitea-access-token',
-                            url: "https://gitea.zevrant-services.com/api/packages/zevrant-services/maven/com/zevrant/services/${springCodeUnit.name}/${versionString}/${springCodeUnit.name}-${versionString}.jar",
+                            url: "https://gitea.zevrant-services.internal/api/packages/zevrant-services/maven/com/zevrant/services/${springCodeUnit.name}/${versionString}/${springCodeUnit.name}-${versionString}.jar",
                             outputFile: "${springCodeUnit.name}-${version.toVersionCodeString()}.jar"
                     )
                     sh "jar -t ${springCodeUnit.name}-${version.toVersionCodeString()}.jar"

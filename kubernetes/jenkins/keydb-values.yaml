@@ -5,7 +5,7 @@ fullnameOverride: ""
 
 imageRepository: harbor.zevrant-services.internal/dockerhub/eqalpha/keydb
 imageTag: x86_64_v6.3.2
-imagePullPolicy: IfNotPresent
+imagePullPolicy: Always
 imagePullSecrets:
   - name: "harbor-ro"
 
@@ -228,7 +228,7 @@ exporter:
   enabled: true
   imageRepository: oliver006/redis_exporter
   imageTag: v1.48.0-alpine
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
 
   # Prometheus port & scrape path
   port: 9121
