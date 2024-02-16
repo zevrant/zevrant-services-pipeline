@@ -40,13 +40,27 @@ pipeline {
             }
         }
 
+        stage("Get Version") {
+            environment {
+                REDISCLI_AUTH = credentials('jenkins-keydb-password')
+            }
+            steps {
+                container('spring-jenkins-slave') {
+                    script {
+                        version = versionTasks.getVersion(REPOSITORY as String) as Version
+                        currentBuild.displayName = "Building Version ${version.toVersionCodeString()}" as String
+                    }
+                }
+            }
+        }
+
         stage("Sonar Scan") {
             steps {
                 script {
                     container('spring-jenkins-slave') {
 
                         withSonarQubeEnv('production-sonarqube') {
-                            sh 'bash gradlew sonar --info'
+                            sh "bash gradlew sonar -PprojVersion=${version.toVersionCodeString()} --info"
                         }
                         withSonarQubeEnv('production-sonarqube') {
                             timeout(time: 1, unit: 'HOURS') {
@@ -58,20 +72,6 @@ pipeline {
                             }
                         }
 
-                    }
-                }
-            }
-        }
-
-        stage("Get Version") {
-            environment {
-                REDISCLI_AUTH = credentials('jenkins-keydb-password')
-            }
-            steps {
-                container('spring-jenkins-slave') {
-                    script {
-                        version = versionTasks.getVersion(REPOSITORY as String) as Version
-                        currentBuild.displayName = "Building Version ${version.toVersionCodeString()}" as String
                     }
                 }
             }
