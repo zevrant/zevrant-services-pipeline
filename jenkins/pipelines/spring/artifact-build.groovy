@@ -74,7 +74,6 @@ pipeline {
         stage("Integration Test") {
             environment {
                 GITEA_TOKEN = credentials('jenkins-git-access-token-as-text')
-                SONAR_TOKEN = credentials('sonar-publish-token')
             }
             steps {
                 script {
@@ -87,6 +86,9 @@ pipeline {
         }
 
         stage("Sonar Scan") {
+            environment {
+                GITEA_TOKEN = credentials('jenkins-git-access-token-as-text')
+            }
             steps {
                 script {
                     container('spring-jenkins-slave') {

@@ -55,6 +55,9 @@ pipeline {
         }
 
         stage("Sonar Scan") {
+            environment {
+                GITEA_TOKEN = credentials('jenkins-git-access-token-as-text')
+            }
             steps {
                 script {
                     container('spring-jenkins-slave') {
