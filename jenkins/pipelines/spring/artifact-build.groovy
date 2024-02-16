@@ -2,7 +2,6 @@
 
 
 import com.lesfurets.jenkins.unit.global.lib.Library
-import com.zevrant.services.ServiceLoader
 import com.zevrant.services.pojo.Version
 import com.zevrant.services.pojo.codeunit.SpringCodeUnit
 import com.zevrant.services.pojo.codeunit.SpringCodeUnitCollection
@@ -82,7 +81,23 @@ pipeline {
                     container('spring-jenkins-slave') {
                         sh './gradlew integrationTest -Pcicd=true --info'
                         junit allowEmptyResults: true, keepLongStdio: true, skipPublishingChecks: true, testResults: 'build/test-results/integrationTest/*.xml'
+                    }
+                }
+            }
+        }
+
+        stage("Sonar Scan") {
+            steps {
+                script {
+                    withSonarQubeEnv('My SonarQube Server') {
                         sh 'bash gradlew sonar'
+                        timeout(time: 1, unit: 'HOURS') {
+                            // Just in case something goes wrong, pipeline will be killed after a timeout
+                            def qg = waitForQualityGate() // Reuse taskId previously collected by withSonarQubeEnv
+                            if (qg.status != 'OK') {
+                                error "Pipeline aborted due to quality gate failure: ${qg.status}"
+                            }
+                        }
                     }
                 }
             }
@@ -145,7 +160,7 @@ pipeline {
         }
         always {
             script {
-                String appName = "${REPOSITORY.split('-').collect {part -> part.capitalize()}.join(' ')}"
+                String appName = "${REPOSITORY.split('-').collect { part -> part.capitalize() }.join(' ')}"
                 withCredentials([string(credentialsId: 'discord-webhook', variable: 'webhookUrl')]) {
                     discordSend description: "Jenkins Build for ${appName} on branch ${branchName} ${currentBuild.currentResult}", link: env.BUILD_URL, result: currentBuild.currentResult, title: "Spring Build", webhookURL: webhookUrl
                 }
