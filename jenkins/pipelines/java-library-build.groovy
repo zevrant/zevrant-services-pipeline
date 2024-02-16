@@ -30,7 +30,7 @@ pipeline {
         stage("Sonar Scan") {
             steps {
                 script {
-                    withSonarQubeEnv('My SonarQube Server') {
+                    withSonarQubeEnv('production-sonarqube') {
                         sh 'bash gradlew sonar'
                         timeout(time: 1, unit: 'HOURS') {
                             // Just in case something goes wrong, pipeline will be killed after a timeout
