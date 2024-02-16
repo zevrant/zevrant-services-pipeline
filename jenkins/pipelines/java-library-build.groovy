@@ -21,7 +21,7 @@ pipeline {
             steps {
                 container('spring-jenkins-slave') {
                     script {
-                        "bash gradlew clean assemble --info"
+                        sh "bash gradlew clean assemble --info"
                     }
                 }
             }
@@ -34,7 +34,7 @@ pipeline {
             steps {
                 container('spring-jenkins-slave') {
                     script {
-                        "bash gradlew test --info"
+                        sh "bash gradlew test --info"
                     }
                 }
             }
