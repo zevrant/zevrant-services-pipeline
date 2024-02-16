@@ -14,6 +14,19 @@ pipeline {
     }
     stages {
 
+        stage("Assemble") {
+            environment {
+                GITEA_TOKEN = credentials('jenkins-git-access-token-as-text')
+            }
+            steps {
+                container('spring-jenkins-slave') {
+                    script {
+                        "bash gradlew clean assemble --info"
+                    }
+                }
+            }
+        }
+
         stage("Test") {
             environment {
                 GITEA_TOKEN = credentials('jenkins-git-access-token-as-text')
@@ -21,7 +34,7 @@ pipeline {
             steps {
                 container('spring-jenkins-slave') {
                     script {
-                        "bash gradlew clean build --no-daemon"
+                        "bash gradlew clean build --info"
                     }
                 }
             }
@@ -33,7 +46,7 @@ pipeline {
                     container('spring-jenkins-slave') {
 
                         withSonarQubeEnv('production-sonarqube') {
-                            sh 'bash gradlew sonar'
+                            sh 'bash gradlew sonar --info'
                             timeout(time: 1, unit: 'HOURS') {
                                 // Just in case something goes wrong, pipeline will be killed after a timeout
                                 def qg = waitForQualityGate() // Reuse taskId previously collected by withSonarQubeEnv
@@ -93,8 +106,9 @@ pipeline {
         always {
             script {
                 String appName = Arrays.asList(REPOSITORY.split("-")).collect({ part -> part.capitalize() }).join(" ")
+                String versionString = (version == null)? "null" : version.toVersionCodeString()
                 withCredentials([string(credentialsId: 'discord-webhook', variable: 'webhookUrl')]) {
-                    discordSend description: "Jenkins Build for ${appName} on branch ${branchName} building version ${version.toVersionCodeString()} was ${currentBuild.currentResult}", link: env.BUILD_URL, result: currentBuild.currentResult, title: "Spring Build", webhookURL: webhookUrl
+                    discordSend description: "Jenkins Build for ${appName} on branch ${branchName} building version ${versionString} was ${currentBuild.currentResult}", link: env.BUILD_URL, result: currentBuild.currentResult, title: "Spring Build", webhookURL: webhookUrl
                 }
             }
         }
