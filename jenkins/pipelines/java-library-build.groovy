@@ -19,8 +19,20 @@ pipeline {
                 GITEA_TOKEN = credentials('jenkins-git-access-token-as-text')
             }
             steps {
+                String username = ""
+                String password = ""
+                String keycloakPassword = ""
+
+                container('kubectl') {
+                    username = kubernetesService.getSecretValue("jenkins-vault-credentials", 'username', 'jenkins')
+                    password = kubernetesService.getSecretValue("jenkins-vault-credentials", 'password', 'jenkins')
+                    keycloakPassword = kubernetesService.getSecretValue("test-admin-keycloak-credentials", 'password', 'develop')
+                }
                 container('spring-jenkins-slave') {
                     script {
+                        writeFile(file: '/var/zevrant-services/vault/username', text: username)
+                        writeFile(file: '/var/zevrant-services/vault/password', text: password)
+                        writeFile(file: '/var/zevrant-services/keycloak/password', text: keycloakPassword)
                         sh "bash gradlew clean assemble --info"
                     }
                 }
