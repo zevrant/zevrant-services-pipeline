@@ -52,7 +52,7 @@ pipeline {
                 script {
                     String username = ""
                     String password = ""
-                    String keycloakPassword
+                    String keycloakPassword = ""
                     container('kubectl') {
                         username = kubernetesService.getSecretValue("${REPOSITORY}-vault-credentials", 'username', 'develop')
                         password = kubernetesService.getSecretValue("${REPOSITORY}-vault-credentials", 'password', 'develop')

@@ -19,17 +19,18 @@ pipeline {
                 GITEA_TOKEN = credentials('jenkins-git-access-token-as-text')
             }
             steps {
-                String username = ""
-                String password = ""
-                String keycloakPassword = ""
+                script {
+                    String username = ""
+                    String password = ""
+                    String keycloakPassword = ""
 
-                container('kubectl') {
-                    username = kubernetesService.getSecretValue("jenkins-vault-credentials", 'username', 'jenkins')
-                    password = kubernetesService.getSecretValue("jenkins-vault-credentials", 'password', 'jenkins')
-                    keycloakPassword = kubernetesService.getSecretValue("test-admin-keycloak-credentials", 'password', 'develop')
-                }
-                container('spring-jenkins-slave') {
-                    script {
+                    container('kubectl') {
+                        username = kubernetesService.getSecretValue("jenkins-vault-credentials", 'username', 'jenkins')
+                        password = kubernetesService.getSecretValue("jenkins-vault-credentials", 'password', 'jenkins')
+                        keycloakPassword = kubernetesService.getSecretValue("test-admin-keycloak-credentials", 'password', 'develop')
+                    }
+                    container('spring-jenkins-slave') {
+
                         writeFile(file: '/var/zevrant-services/vault/username', text: username)
                         writeFile(file: '/var/zevrant-services/vault/password', text: password)
                         writeFile(file: '/var/zevrant-services/keycloak/password', text: keycloakPassword)
@@ -123,7 +124,7 @@ pipeline {
         always {
             script {
                 String appName = Arrays.asList(REPOSITORY.split("-")).collect({ part -> part.capitalize() }).join(" ")
-                String versionString = (version == null)? "null" : version.toVersionCodeString()
+                String versionString = (version == null) ? "null" : version.toVersionCodeString()
                 withCredentials([string(credentialsId: 'discord-webhook', variable: 'webhookUrl')]) {
                     discordSend description: "Jenkins Build for ${appName} on branch ${branchName} building version ${versionString} was ${currentBuild.currentResult}", link: env.BUILD_URL, result: currentBuild.currentResult, title: "Spring Build", webhookURL: webhookUrl
                 }
