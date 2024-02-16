@@ -62,7 +62,6 @@ pipeline {
                     container('spring-jenkins-slave') {
                         writeFile(file: '/var/zevrant-services/vault/username', text: username)
                         writeFile(file: '/var/zevrant-services/vault/password', text: password)
-                        writeFile(file: '/var/zevrant-services/keycloak/password', text: keycloakPassword)
                         sh 'openssl rand 256 | base64 -w 0 > /var/zevrant-services/keystore/password'
                         sh 'openssl ecparam -genkey -name prime256v1 -genkey -noout -out private.pem'
                         sh 'openssl req -new -x509 -key private.pem -out certificate.pem -days 900000 -subj "/C=PL/ST=Silesia/L=Katowice/O=MyOrganization/CN=CommonName"'

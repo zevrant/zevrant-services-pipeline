@@ -22,20 +22,7 @@ pipeline {
             }
             steps {
                 script {
-                    String username = ""
-                    String password = ""
-                    String keycloakPassword = ""
-
-                    container('kubectl') {
-                        username = kubernetesService.getSecretValue("jenkins-vault-credentials", 'username', 'jenkins')
-                        password = kubernetesService.getSecretValue("jenkins-vault-credentials", 'password', 'jenkins')
-                        keycloakPassword = kubernetesService.getSecretValue("test-admin-keycloak-credentials", 'password', 'jenkins')
-                    }
                     container('spring-jenkins-slave') {
-
-                        writeFile(file: '/var/zevrant-services/vault/username', text: username)
-                        writeFile(file: '/var/zevrant-services/vault/password', text: password)
-                        writeFile(file: '/var/zevrant-services/keycloak/password', text: keycloakPassword)
                         sh "bash gradlew clean assemble --info"
                     }
                 }
@@ -50,6 +37,34 @@ pipeline {
                 container('spring-jenkins-slave') {
                     script {
                         sh "bash gradlew test --info"
+                    }
+                }
+            }
+        }
+
+        stage("Integration Test") {
+            environment {
+                GITEA_TOKEN = credentials('jenkins-git-access-token-as-text')
+            }
+            steps {
+                script {
+                    String username = ""
+                    String password = ""
+                    String keycloakPassword = ""
+
+                    container('kubectl') {
+                        username = kubernetesService.getSecretValue("jenkins-vault-credentials", 'username', 'jenkins')
+                        password = kubernetesService.getSecretValue("jenkins-vault-credentials", 'password', 'jenkins')
+                        keycloakPassword = kubernetesService.getSecretValue("test-admin-keycloak-credentials", 'password', 'jenkins')
+                    }
+                    container('spring-jenkins-slave') {
+                        writeFile(file: '/var/zevrant-services/vault/username', text: username)
+                        writeFile(file: '/var/zevrant-services/vault/password', text: password)
+                        sh 'openssl rand 256 | base64 -w 0 > /var/zevrant-services/keystore/password'
+                        sh 'openssl ecparam -genkey -name prime256v1 -genkey -noout -out private.pem'
+                        sh 'openssl req -new -x509 -key private.pem -out certificate.pem -days 900000 -subj "/C=PL/ST=Silesia/L=Katowice/O=MyOrganization/CN=CommonName"'
+                        sh 'openssl pkcs12 -export -inkey private.pem -in certificate.pem -passout "file:/var/zevrant-services/keystore/password" -out /opt/acme/certs/zevrant-services.p12'
+                        sh "bash gradlew integrationTest --info"
                     }
                 }
             }
