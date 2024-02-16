@@ -56,7 +56,7 @@ pipeline {
                     container('kubectl') {
                         username = kubernetesService.getSecretValue("${REPOSITORY}-vault-credentials", 'username', 'develop')
                         password = kubernetesService.getSecretValue("${REPOSITORY}-vault-credentials", 'password', 'develop')
-                        keycloakPassword = kubernetesService.getSecretValue("test-admin-keycloak-credentials", 'password', 'develop')
+                        keycloakPassword = kubernetesService.getSecretValue("test-admin-keycloak-credentials", 'password', 'jenkins')
 
                     }
                     container('spring-jenkins-slave') {
