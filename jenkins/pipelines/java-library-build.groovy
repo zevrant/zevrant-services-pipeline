@@ -23,7 +23,7 @@ pipeline {
             steps {
                 script {
                     container('spring-jenkins-slave') {
-                        sh "bash gradlew clean assemble --info"
+                        sh "bash gradlew clean assemble --build-cache --info"
                     }
                 }
             }
@@ -36,7 +36,7 @@ pipeline {
             steps {
                 container('spring-jenkins-slave') {
                     script {
-                        sh "bash gradlew test --info"
+                        sh "bash gradlew test --build-cache --info"
                     }
                 }
             }
@@ -68,7 +68,7 @@ pipeline {
                         sh 'openssl ecparam -genkey -name prime256v1 -genkey -noout -out private.pem'
                         sh 'openssl req -new -x509 -key private.pem -out certificate.pem -days 900000 -subj "/C=PL/ST=Silesia/L=Katowice/O=MyOrganization/CN=CommonName"'
                         sh 'openssl pkcs12 -export -inkey private.pem -in certificate.pem -passout "file:/var/zevrant-services/keystore/password" -out /opt/acme/certs/zevrant-services.p12'
-                        sh "bash gradlew integrationTest --info"
+                        sh "bash gradlew integrationTest --build-cache --info"
                     }
                 }
             }
@@ -135,7 +135,7 @@ pipeline {
             steps {
                 container('spring-jenkins-slave') {
                     script {
-                        sh "bash gradlew clean assemble publish -PprojVersion=${version.toVersionCodeString()} --no-daemon"
+                        sh "bash gradlew clean assemble publish -PprojVersion=${version.toVersionCodeString()} --no-daemon --build-cache"
                     }
                 }
             }
