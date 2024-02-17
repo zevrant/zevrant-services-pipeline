@@ -27,7 +27,7 @@ pipeline {
                     container('spring-jenkins-slave') {
                         sh 'buildCache { >> settings.gradle'
                         sh 'remote(HttpBuildCache) { >> settings.gradle'
-                        sh 'url = \'https://example.com:8123/cache/\' >> settings.gradle'
+                        sh 'url = \'https://build-cache-node:5071/cache/\' >> settings.gradle'
                         sh 'credentials { >> settings.gradle'
                         sh 'username = "$GRADLE_CACHE_CREDENTIALS_USR" >> settings.gradle'
                         sh 'password = "$GRADLE_CACHE_CREDENTIALS_PSW" >> settings.gradle'
