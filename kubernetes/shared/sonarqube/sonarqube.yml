@@ -175,7 +175,7 @@ spec:
               name: extensions
           startupProbe:
             failureThreshold: 15
-            periodSeconds: 5
+            periodSeconds: 10
             successThreshold: 1
             httpGet:
               port: 9000
