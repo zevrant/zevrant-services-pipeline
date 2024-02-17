@@ -17,12 +17,21 @@ pipeline {
     stages {
 
         stage("Assemble") {
+                    imageBuildService.registryLogin(DOCKER_CREDENTIALS_USR, DOCKER_CREDENTIALS_PSW, 'harbor.zevrant-services.internal')
             environment {
                 GITEA_TOKEN = credentials('jenkins-git-access-token-as-text')
+                GRADLE_CACHE_CREDENTIALS = credentials('gradle-build-cache')
             }
             steps {
                 script {
                     container('spring-jenkins-slave') {
+                        sh 'buildCache { >> gradle.properties'
+                        sh 'remote(HttpBuildCache) { >> gradle.properties'
+                        sh 'url = \'https://example.com:8123/cache/\' >> gradle.properties'
+                        sh 'credentials { >> gradle.properties'
+                        sh 'username = "$GRADLE_CACHE_CREDENTIALS_USR" >> gradle.properties'
+                        sh 'password = "$GRADLE_CACHE_CREDENTIALS_PSW" >> gradle.properties'
+                        sh '}}} >> gradle.properties'
                         sh "bash gradlew clean assemble --build-cache --info"
                     }
                 }

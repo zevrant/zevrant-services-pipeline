@@ -30,9 +30,35 @@ spec:
       securityContext:
         fsGroup: 999
         fsGroupChangePolicy: Always
+      imagePullSecrets:
+        - name: harbor-ro
+      volumes:
+        - name: user-config
+          configMap:
+            name: gradle-cache-config
+        - name: config-dir
+          emptyDir:
+            sizeLimit: 1Gi
+      initContainers:
+        - name: config-init
+          image: harbor.zevrant-services.internal/dockerhub/ubuntu:latest
+          securityContext:
+            runAsUser: 999
+            runAsGroup: 999
+          volumeMounts:
+            - mountPath: /opt/conf/
+              name: config-dir
+            - mountPath: /data/conf
+              name: user-config
+          command:
+            - /bin/sh
+          args:
+            - -c
+            - |
+              cp /data/conf/config.yaml /opt/conf/
       containers:
         - name: build-cache-node
-          image: gradle/build-cache-node:18.0
+          image: harbor.zevrant-services.internal/dockerhub/gradle/build-cache-node:18.0
           args: [ "start", "--generate-self-signed-cert" ]
           ports:
             - containerPort: 5071
@@ -52,6 +78,8 @@ spec:
           volumeMounts:
             - mountPath: /data
               name: build-cache-node-data-volume
+            - mountPath: /data/conf/
+              name: config-dir
   volumeClaimTemplates:
     - metadata:
         name: build-cache-node-data-volume
@@ -61,3 +89,24 @@ spec:
         resources:
           requests:
             storage: '10Gi'
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gradle-cache-config
+  namespace: jenkins
+data:
+  config.yaml: |
+    version: 5
+    cache:
+      maxArtifactSize: 200
+      accessControl:
+        users:
+          ci-user:
+            password: "Qo5w8+HuvrH119y00yFZPtQN99bCOl0jyxa3TbhpFFA=:VWHgWbeKf9mVkIzbqu16oyvlzZWd/AJU/MmvGSz1vRw="
+            level: "readwrite"
+            note: "Continuous Integration User"
+    uiAccess:
+      type: "disabled"
