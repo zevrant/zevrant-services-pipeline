@@ -27,9 +27,10 @@ pipeline {
                         sh 'echo "buildCache {" >> settings.gradle'
                         sh 'echo "remote(HttpBuildCache) {" >> settings.gradle'
                         sh 'echo "url = \'https://build-cache-node:5071/cache/\'" >> settings.gradle'
+                        sh 'echo "allowUntrustedServer = true" >> settings.gradle'
                         sh 'echo "credentials {" >> settings.gradle'
-                        sh 'echo "username = $GRADLE_CACHE_CREDENTIALS_USR" >> settings.gradle'
-                        sh 'echo "password = $GRADLE_CACHE_CREDENTIALS_PSW" >> settings.gradle'
+                        sh 'echo "username = \'$GRADLE_CACHE_CREDENTIALS_USR\'" >> settings.gradle'
+                        sh 'echo "password = \'$GRADLE_CACHE_CREDENTIALS_PSW\'" >> settings.gradle'
                         sh 'echo "}}}" >> settings.gradle'
                         sh "bash gradlew clean assemble --build-cache --info"
                     }
