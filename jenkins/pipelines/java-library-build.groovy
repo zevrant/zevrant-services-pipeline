@@ -17,7 +17,6 @@ pipeline {
     stages {
 
         stage("Assemble") {
-                    imageBuildService.registryLogin(DOCKER_CREDENTIALS_USR, DOCKER_CREDENTIALS_PSW, 'harbor.zevrant-services.internal')
             environment {
                 GITEA_TOKEN = credentials('jenkins-git-access-token-as-text')
                 GRADLE_CACHE_CREDENTIALS = credentials('gradle-build-cache')
