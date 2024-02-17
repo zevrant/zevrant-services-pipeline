@@ -24,13 +24,13 @@ pipeline {
             steps {
                 script {
                     container('spring-jenkins-slave') {
-                        sh 'buildCache { >> settings.gradle'
-                        sh 'remote(HttpBuildCache) { >> settings.gradle'
-                        sh 'url = \'https://build-cache-node:5071/cache/\' >> settings.gradle'
-                        sh 'credentials { >> settings.gradle'
-                        sh 'username = "$GRADLE_CACHE_CREDENTIALS_USR" >> settings.gradle'
-                        sh 'password = "$GRADLE_CACHE_CREDENTIALS_PSW" >> settings.gradle'
-                        sh '}}} >> settings.gradle'
+                        sh 'echo buildCache { >> settings.gradle'
+                        sh 'echo remote(HttpBuildCache) { >> settings.gradle'
+                        sh 'echo url = \'https://build-cache-node:5071/cache/\' >> settings.gradle'
+                        sh 'echo credentials { >> settings.gradle'
+                        sh 'echo username = "$GRADLE_CACHE_CREDENTIALS_USR" >> settings.gradle'
+                        sh 'echo password = "$GRADLE_CACHE_CREDENTIALS_PSW" >> settings.gradle'
+                        sh 'echo }}} >> settings.gradle'
                         sh "bash gradlew clean assemble --build-cache --info"
                     }
                 }
