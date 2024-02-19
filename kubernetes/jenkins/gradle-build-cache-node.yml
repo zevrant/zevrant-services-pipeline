@@ -105,7 +105,7 @@ data:
       accessControl:
         users:
           ci-user:
-            password: "Qo5w8+HuvrH119y00yFZPtQN99bCOl0jyxa3TbhpFFA=:VWHgWbeKf9mVkIzbqu16oyvlzZWd/AJU/MmvGSz1vRw="
+            password: "FhF2gqjHw+rQQ2HtoFEv5dMarUu8Yf1TUs8N0OIKjoU=:IW4AKRoLRanwG+c7J2Gp43upewQaAveQhcaJTXeJCVs="
             level: "readwrite"
             note: "Continuous Integration User"
     uiAccess:
