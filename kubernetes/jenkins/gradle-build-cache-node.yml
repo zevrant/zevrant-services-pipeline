@@ -56,10 +56,11 @@ spec:
             - -c
             - |
               cp /data/conf/config.yaml /opt/conf/
+              chmod g+x /opt/conf/config.yaml
       containers:
         - name: build-cache-node
           image: harbor.zevrant-services.internal/dockerhub/gradle/build-cache-node:18.0
-          args: [ "start", "--generate-self-signed-cert" ]
+          args: [ "start", "--generate-self-signed-cert", "--data-dir /data"]
           ports:
             - containerPort: 5071
           securityContext:
@@ -104,9 +105,9 @@ data:
       maxArtifactSize: 200
       accessControl:
         users:
-          ci-user:
-            password: "FhF2gqjHw+rQQ2HtoFEv5dMarUu8Yf1TUs8N0OIKjoU=:IW4AKRoLRanwG+c7J2Gp43upewQaAveQhcaJTXeJCVs="
+          jenkins:
+            password: "eBAoOk6UktFFGFtOTLDjlbWcK0CNUPmRYN3/T22bjhA=:ZhCtH9UpmOaTlq0Ivv6J5S6BN4MK8b5w4vdWEZwfCPc="
             level: "readwrite"
             note: "Continuous Integration User"
     uiAccess:
-      type: "disabled"
+      type: "open"
