@@ -2,12 +2,14 @@ package spring
 
 import com.zevrant.services.ServiceLoader
 import com.zevrant.services.pojo.KubernetesEnvironment
+import com.zevrant.services.pojo.Version
 import com.zevrant.services.pojo.codeunit.SpringCodeUnit
 import com.zevrant.services.pojo.codeunit.SpringCodeUnitCollection
 import com.zevrant.services.services.CertificateService
 import com.zevrant.services.services.GitService
 import com.zevrant.services.services.KubernetesService
 import com.zevrant.services.services.PostgresYamlConfigurer
+import com.zevrant.services.services.VersionService
 
 import java.nio.charset.StandardCharsets
 
@@ -20,7 +22,7 @@ LinkedHashMap<String, Serializable> serviceNameOverrides = [
 ] as LinkedHashMap<String, Serializable>
 
 SpringCodeUnit codeUnit = SpringCodeUnitCollection.microservices.find { unit -> unit.repo.repoName == REPOSITORY }
-
+VersionService versionService = new VersionService(this)
 if (codeUnit == null) {
     throw new RuntimeException("Failed to find Spring Code Unit for repository $REPOSITORY")
 }
@@ -72,6 +74,9 @@ pipeline {
                 script {
                     retry(3, {
                         container('kubectl') {
+                            Version version = version = versionService.getVersion(REPOSITORY as String) as Version
+                            println("Redeploying version ${version.toThreeStageVersionString()}")
+                            currentBuild.displayName = "Rotating Certificates for Version ${version.toThreeStageVersionString()}"
                             try {
                                 sh "kubectl get deployment ${codeUnit.getDeploymentName()} -n $ENVIRONMENT"
                             } catch (Exception ex) {
