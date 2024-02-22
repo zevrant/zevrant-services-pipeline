@@ -24,15 +24,15 @@ pipeline {
             steps {
                 script {
                     container('spring-jenkins-slave') {
-                        sh 'echo "buildCache {" >> settings.gradle'
-                        sh 'echo "remote(HttpBuildCache) {" >> settings.gradle'
-                        sh 'echo "url = \'https://build-cache-node:5071/cache/\'" >> settings.gradle'
-                        sh 'echo "allowUntrustedServer = true" >> settings.gradle'
-                        sh 'echo "credentials {" >> settings.gradle'
-                        sh 'echo "username = \'$GRADLE_CACHE_CREDENTIALS_USR\'" >> settings.gradle'
-                        sh 'echo "password = \'$GRADLE_CACHE_CREDENTIALS_PSW\'" >> settings.gradle'
-                        sh 'echo "}}}" >> settings.gradle'
-                        sh "bash gradlew clean assemble --build-cache --info"
+//                        sh 'echo "buildCache {" >> settings.gradle'
+//                        sh 'echo "remote(HttpBuildCache) {" >> settings.gradle'
+//                        sh 'echo "url = \'https://build-cache-node:5071/cache/\'" >> settings.gradle'
+//                        sh 'echo "allowUntrustedServer = true" >> settings.gradle'
+//                        sh 'echo "credentials {" >> settings.gradle'
+//                        sh 'echo "username = \'$GRADLE_CACHE_CREDENTIALS_USR\'" >> settings.gradle'
+//                        sh 'echo "password = \'$GRADLE_CACHE_CREDENTIALS_PSW\'" >> settings.gradle'
+//                        sh 'echo "}}}" >> settings.gradle'
+                        sh "bash gradlew clean assemble --no-watch-fs --info"
                     }
                 }
             }
@@ -45,7 +45,7 @@ pipeline {
             steps {
                 container('spring-jenkins-slave') {
                     script {
-                        sh "bash gradlew test --build-cache --info"
+                        sh "bash gradlew test --no-watch-fs --info"
                     }
                 }
             }
@@ -77,7 +77,7 @@ pipeline {
                         sh 'openssl ecparam -genkey -name prime256v1 -genkey -noout -out private.pem'
                         sh 'openssl req -new -x509 -key private.pem -out certificate.pem -days 900000 -subj "/C=PL/ST=Silesia/L=Katowice/O=MyOrganization/CN=CommonName"'
                         sh 'openssl pkcs12 -export -inkey private.pem -in certificate.pem -passout "file:/var/zevrant-services/keystore/password" -out /opt/acme/certs/zevrant-services.p12'
-                        sh "bash gradlew integrationTest --build-cache --info"
+                        sh "bash gradlew integrationTest --no-watch-fs --info"
                     }
                 }
             }
@@ -144,7 +144,7 @@ pipeline {
             steps {
                 container('spring-jenkins-slave') {
                     script {
-                        sh "bash gradlew clean assemble publish -PprojVersion=${version.toVersionCodeString()} --no-daemon --build-cache"
+                        sh "bash gradlew clean assemble publish -PprojVersion=${version.toVersionCodeString()} --no-daemon --no-watch-fs"
                     }
                 }
             }
