@@ -19,7 +19,7 @@ pipeline {
         stage("Assemble") {
             environment {
                 GITEA_TOKEN = credentials('jenkins-git-access-token-as-text')
-                GRADLE_CACHE_CREDENTIALS = credentials('gradle-cache-credentials')
+//                GRADLE_CACHE_CREDENTIALS = credentials('gradle-cache-credentials')
             }
             steps {
                 script {
