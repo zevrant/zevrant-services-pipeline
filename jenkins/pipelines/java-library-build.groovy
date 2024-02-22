@@ -68,7 +68,9 @@ pipeline {
                         retry(3, {
                             password = kubernetesService.getSecretValue("jenkins-vault-credentials", 'password', 'jenkins')
                         })
-                        keycloakPassword = kubernetesService.getSecretValue("test-admin-keycloak-credentials", 'password', 'jenkins')
+                        retry(3, {
+                            keycloakPassword = kubernetesService.getSecretValue("test-admin-keycloak-credentials", 'password', 'jenkins')
+                        })
                     }
                     container('spring-jenkins-slave') {
                         writeFile(file: '/var/zevrant-services/vault/username', text: username)
