@@ -106,7 +106,7 @@ pipeline {
                 script {
                     container('spring-jenkins-slave') {
                         withSonarQubeEnv('production-sonarqube') {
-                            sh 'bash gradlew sonar'
+                            sh 'bash gradlew jacocoTestReport sonar'
                         }
                         withSonarQubeEnv('production-sonarqube') {
                             timeout(time: 1, unit: 'HOURS') {
