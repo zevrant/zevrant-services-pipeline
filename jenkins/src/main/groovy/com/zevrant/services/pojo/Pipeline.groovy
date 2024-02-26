@@ -15,6 +15,7 @@ class Pipeline {
     private final disabled;
     private final Map<String, String> envs
     private final boolean allowConcurrency
+    private final boolean disableResume
 
     Pipeline(Map<String, Object> params) {
         this.name = params.name
@@ -30,6 +31,7 @@ class Pipeline {
         this.disabled = (params.disabled ?: false) as boolean
         this.envs = params.envs ? params.envs as Map<String, String> : new HashMap<>() as Map<String, String>
         this.allowConcurrency = params.allowConcurency
+        this.disableResume = params.disableResume ?: true
     }
 
     String getName() {
@@ -82,6 +84,10 @@ class Pipeline {
 
     String getFolder() {
         return folder
+    }
+
+    boolean getDisableResume() {
+        return disableResume
     }
 }
 
