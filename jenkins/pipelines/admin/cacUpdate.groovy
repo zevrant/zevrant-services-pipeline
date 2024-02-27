@@ -34,7 +34,7 @@ pipeline {
                     ((String) sh(returnStdout: true, script: 'ls *.yml'))
                             .split("[\\h\\n]")
                             .each { fileName ->
-                                sh "cp '${fileName}' /var/jenkins_home/casc_configs/${fileName}"
+                                sh "cp '${fileName}' /var/lib/jenkins/casc_configs/${fileName}"
                             }
                 }
             }
