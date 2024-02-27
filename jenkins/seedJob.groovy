@@ -13,7 +13,7 @@ List<Image> images = []
 pipeline {
     agent {
         kubernetes {
-            inheritFrom 'jnlp'
+            inheritFrom 'master-node'
         }
     }
     stages {

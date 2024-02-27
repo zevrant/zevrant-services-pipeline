@@ -218,3 +218,49 @@ spec:
               value: "8443"
             - name: JENKINS_HTTPS_KEYSTORE
               value: "/opt/acme/certs/zevrant-services.p12"
+
+
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jenkins-clone
+  namespace: jenkins
+  labels:
+    app: jenkins-clone
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: jenkins-clone
+  template:
+    metadata:
+      labels:
+        app: jenkins-clone
+    spec:
+      securityContext:
+        fsGroup: 1000
+        fsGroupChangePolicy: "Always"
+      volumes:
+        - name: jenkins-clone
+          persistentVolumeClaim:
+            claimName: clone-of-pvc-1
+      imagePullSecrets:
+        - name: harbor-ro
+      containers:
+        - name: jenkins
+          image: harbor.zevrant-services.internal/zevrant-services/jenkins:lts-jdk17
+          imagePullPolicy: Always
+          command:
+            - /bin/sh
+          args:
+            - -c
+            - |
+              sleep 9999999999
+          volumeMounts:
+            - mountPath: /var/jenkins_home/
+              name: jenkins-clone
