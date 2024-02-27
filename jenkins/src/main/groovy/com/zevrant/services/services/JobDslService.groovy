@@ -107,7 +107,9 @@ class JobDslService extends Service {
                     }
                 }
 
-                disableResume(pipeline.disableResume)
+                if (pipeline.disableResume) {
+                    disableResume()
+                }
             }
             definition {
                 cpsScm {
