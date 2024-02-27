@@ -47,7 +47,7 @@ pipeline {
 
 node('master-node') {
     stage('Reload Certificate') {
-        if (keystore == null || keystore.length == 0) {
+        if (keystore == null || keystore.isBlank()) {
             withCredentials([string(credentialsId: 'discord-webhook', variable: 'webhookUrl')]) {
                 discordSend description: "Jenkins failed to rotate certs for itself", result: currentBuild.currentResult, title: "Certificate Rotation", webhookURL: webhookUrl
             }
