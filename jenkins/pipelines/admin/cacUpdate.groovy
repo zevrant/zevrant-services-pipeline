@@ -29,8 +29,8 @@ pipeline {
             when { expression { BRANCH_NAME == 'main' } }
             steps {
                 script {
-                    sh 'ls -l /var/jenkins_home/casc_configs'
-                    sh 'rm -f /var/jenkins_home/casc_configs/*'
+                    sh 'ls -l /var/lib/jenkins/casc_configs'
+                    sh 'rm -f /var/lib/jenkins/casc_configs/*'
                     ((String) sh(returnStdout: true, script: 'ls *.yml'))
                             .split("[\\h\\n]")
                             .each { fileName ->
