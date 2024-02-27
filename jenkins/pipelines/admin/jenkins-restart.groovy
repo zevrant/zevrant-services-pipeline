@@ -15,9 +15,9 @@ pipeline {
 
     stages {
         stage('Get Certificates') {
-            container('kubectl') {
-                steps {
-                    script {
+            steps {
+                script {
+                    container('kubectl') {
                         String tlsCrt = kubernetesService.getSecretValue('jenkins-internal-tls', 'tls.crt', 'jenkins')
                         String tlsKey = kubernetesService.getSecretValue('jenkins-internal-tls', 'tls.key', 'jenkins')
                         String tlsPassword = kubernetesService.getSecretValue('jenkins-keystore-password', 'password', 'jenkins')
@@ -31,9 +31,9 @@ pipeline {
         }
 
         stage('Create P12 Keystore') {
-            container('jnlp') {
-                steps {
-                    script {
+            steps {
+                script {
+                    container('jnlp') {
                         sh 'openssl pkcs12 -export -inkey tls.key -in tls.crt -passout \'file:password\' -out zevrant-services.p12'
                         BufferedInputStream bufferedInputStream = new BufferedInputStream(new FileInputStream(new File('zevrant-services.p12')))
                         keystore = bufferedInputStream.readAllBytes()
