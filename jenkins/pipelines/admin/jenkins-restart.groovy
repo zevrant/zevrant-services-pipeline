@@ -4,7 +4,7 @@ import com.zevrant.services.services.KubernetesService
 
 KubernetesService kubernetesService = new KubernetesService(this)
 
-byte[] keystore
+String keystore
 
 pipeline {
     agent {
@@ -35,8 +35,8 @@ pipeline {
                 script {
                     container('jnlp') {
                         sh 'openssl pkcs12 -export -inkey tls.key -in tls.crt -passout \'file:password\' -out zevrant-services.p12'
-                        BufferedInputStream bufferedInputStream = new BufferedInputStream(new FileInputStream(new File('zevrant-services.p12')))
-                        keystore = bufferedInputStream.readAllBytes()
+                        sh 'cat zevrant-services.p12 | base64 > keystore.b64'
+                        keystore = readFile(file: 'keystore.b64')
                     }
                 }
             }
@@ -53,8 +53,8 @@ node('master-node') {
             }
             throw new RuntimeException("Failed to rotate jenkins certificates, null keystore provided")
         }
-        BufferedOutputStream outputStream = new BufferedWriter(new FileOutputStream(new File('/etc/pki/jenkins/zevrant-services.p12')))
-        outputStream.write(keystore)
+        writeFile(file: 'keystore.b64', text: keystore)
+        sh 'cat keystore.b64 | base64 -d > /etc/pki/jenkins/zevrant-services.p12 && rm keystore.b64'
     }
 
     stage('Restart Jenkins') {
