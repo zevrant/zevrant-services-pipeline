@@ -58,6 +58,6 @@ node('master-node') {
     }
 
     stage('Restart Jenkins') {
-        Jenkins.instance.doSafeExit(null);
+        Jenkins.instance.doSafeRestart(null, "Rotating Certificates");
     }
 }
