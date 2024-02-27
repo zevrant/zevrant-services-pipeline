@@ -14,23 +14,31 @@ pipeline {
     }
 
     stages {
-        stage ('Get Certificates') {
-            container ('kubectl') {
-                String tlsCrt = kubernetesService.getSecretValue('jenkins-internal-tls', 'tls.crt', 'jenkins')
-                String tlsKey = kubernetesService.getSecretValue('jenkins-internal-tls', 'tls.key', 'jenkins')
-                String tlsPassword = kubernetesService.getSecretValue('jenkins-keystore-password', 'password', 'jenkins')
+        stage('Get Certificates') {
+            container('kubectl') {
+                steps {
+                    script {
+                        String tlsCrt = kubernetesService.getSecretValue('jenkins-internal-tls', 'tls.crt', 'jenkins')
+                        String tlsKey = kubernetesService.getSecretValue('jenkins-internal-tls', 'tls.key', 'jenkins')
+                        String tlsPassword = kubernetesService.getSecretValue('jenkins-keystore-password', 'password', 'jenkins')
 
-                writeFile(file: 'tls.crt', text: tlsCrt)
-                writeFile(file: 'tls.key', text: tlsKey)
-                writeFile(file: 'password', text: tlsPassword)
+                        writeFile(file: 'tls.crt', text: tlsCrt)
+                        writeFile(file: 'tls.key', text: tlsKey)
+                        writeFile(file: 'password', text: tlsPassword)
+                    }
+                }
             }
         }
 
-        stage ('Create P12 Keystore') {
+        stage('Create P12 Keystore') {
             container('jnlp') {
-                sh 'openssl pkcs12 -export -inkey tls.key -in tls.crt -passout \'file:password\' -out zevrant-services.p12'
-                BufferedInputStream bufferedInputStream = new BufferedInputStream(new FileInputStream(new File('zevrant-services.p12')))
-                keystore = bufferedInputStream.readAllBytes()
+                steps {
+                    script {
+                        sh 'openssl pkcs12 -export -inkey tls.key -in tls.crt -passout \'file:password\' -out zevrant-services.p12'
+                        BufferedInputStream bufferedInputStream = new BufferedInputStream(new FileInputStream(new File('zevrant-services.p12')))
+                        keystore = bufferedInputStream.readAllBytes()
+                    }
+                }
             }
         }
     }
@@ -38,7 +46,7 @@ pipeline {
 
 
 node('master-node') {
-    stage ('Reload Certificate') {
+    stage('Reload Certificate') {
         if (keystore == null || keystore.length == 0) {
             withCredentials([string(credentialsId: 'discord-webhook', variable: 'webhookUrl')]) {
                 discordSend description: "Jenkins failed to rotate certs for itself", result: currentBuild.currentResult, title: "Certificate Rotation", webhookURL: webhookUrl
@@ -49,7 +57,7 @@ node('master-node') {
         outputStream.write(keystore)
     }
 
-    stage ('Restart Jenkins') {
+    stage('Restart Jenkins') {
         Jenkins.instance.doSafeExit(null);
     }
 }
