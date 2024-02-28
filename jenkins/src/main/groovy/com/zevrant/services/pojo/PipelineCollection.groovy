@@ -76,6 +76,7 @@ class PipelineCollection {
                     description: 'Pipeline intended to restart jenkins when it is time to reload certificates',
                     credentialId: 'jenkins-git',
                     jenkinsfileLocation: 'jenkins/pipelines/admin/jenkins-restart.groovy',
+                    disableResume: false,
                     triggers: new ArrayList<>([
                             new PipelineTrigger(
                                     type: PipelineTriggerType.CRON,
@@ -84,15 +85,14 @@ class PipelineCollection {
                     ])
             ),
             new Pipeline(
-                    name: 'dnd-session-reminder',
-                    displayName: 'D&D Session Reminder',
-                    folder: 'Games',
-                    description: 'Pipeline that sends out a weekly reminder for the next scheduled game',
-                    jenkinsfileLocation: 'jenkins/pipelines/dnd-session-reminder.groovy',
+                    name: 'Check Certs',
+                    description: "Checks certificates on managed services using ephemeral certs",
+                    credentialsId: 'jenkins-git',
+                    jenkinsfileLocation: 'jenkins/pipelines.cert-rotation.groovy',
                     triggers: new ArrayList<>([
                             new PipelineTrigger(
                                     type: PipelineTriggerType.CRON,
-                                    value: "H 14 * * 6"
+                                    value: "H */1 * * *"
                             )
                     ])
             )
