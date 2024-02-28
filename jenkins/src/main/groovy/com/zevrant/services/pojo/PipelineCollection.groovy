@@ -88,7 +88,7 @@ class PipelineCollection {
                     name: 'Check Certs',
                     description: "Checks certificates on managed services using ephemeral certs",
                     credentialsId: 'jenkins-git',
-                    jenkinsfileLocation: 'jenkins/pipelines.cert-rotation.groovy',
+                    jenkinsfileLocation: 'jenkins/pipelines/cert-rotation.groovy',
                     triggers: new ArrayList<>([
                             new PipelineTrigger(
                                     type: PipelineTriggerType.CRON,
