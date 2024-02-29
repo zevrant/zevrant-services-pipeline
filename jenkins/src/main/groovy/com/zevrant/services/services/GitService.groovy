@@ -28,6 +28,7 @@ class GitService extends Service {
     }
 
     List<String> getFilesChanged() {
+        pipelineContext.sh ' git log | head -n 1'
         String changes = pipelineContext.sh(returnStdout: true, script: 'git diff-tree --no-commit-id --name-only "$(git log | head -n 1 | awk \'{print $2}\')" -r')
         return changes.split('\\h')
     }
