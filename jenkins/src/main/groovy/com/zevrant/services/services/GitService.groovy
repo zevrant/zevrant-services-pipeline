@@ -27,6 +27,10 @@ class GitService extends Service {
         )
     }
 
+    List<String> getFilesChanged() {
+        String changes = sh returnStdout: true, script: 'git diff-tree --no-commit-id --name-only "$(git log | head -n 1 | awk \'{print $2}\')" -r'
+        return changes.split('\\h')
+    }
 //oid postBuildPrHook(GitHubRepo gitHubRepo) {
 //    GitHubRepo repo = new GitHubRepo(repoSsh)
 //    BuildManagement buildManagement = TaskLoader.load(binding, BuildManagement)

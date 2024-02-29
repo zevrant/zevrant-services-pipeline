@@ -5,6 +5,7 @@ import com.lesfurets.jenkins.unit.global.lib.Library
 import com.zevrant.services.pojo.Version
 import com.zevrant.services.pojo.codeunit.SpringCodeUnit
 import com.zevrant.services.pojo.codeunit.SpringCodeUnitCollection
+import com.zevrant.services.services.GitService
 import com.zevrant.services.services.GradleService
 import com.zevrant.services.services.KubernetesService
 import com.zevrant.services.services.VersionService
@@ -15,9 +16,12 @@ String branchName = (BRANCH_NAME.startsWith('PR-')) ? CHANGE_BRANCH : BRANCH_NAM
 VersionService versionService = new VersionService(this)
 KubernetesService kubernetesService = new KubernetesService(this)
 GradleService gradleService = new GradleService(this)
+GitService gitService = new GitService(this)
+
 Version version = null
 String REPOSITORY = scm.getUserRemoteConfigs()[0].getUrl().tokenize('/').last().split("\\.")[0]
 SpringCodeUnit codeUnit = SpringCodeUnitCollection.findByRepoName(REPOSITORY)
+boolean containsCodeChanges = true
 pipeline {
     agent {
         kubernetes {
@@ -26,6 +30,11 @@ pipeline {
     }
 
     stages {
+        stage ('Determine Code Changes') {
+            //return true if there are no files changes within src/main/java
+            containsCodeChanges = !gitService.getFilesChanged().findAll({file -> file.concat('src/main/java')}).isEmpty()
+        }
+
         stage("Build Microservice") {
             environment {
                 GITEA_TOKEN = credentials('jenkins-git-access-token-as-text')
@@ -49,6 +58,7 @@ pipeline {
         }
 
         stage("Test") {
+            when { expression { containsCodeChanges } }
             environment {
                 GITEA_TOKEN = credentials('jenkins-git-access-token-as-text')
             }
@@ -99,6 +109,7 @@ pipeline {
 
 
         stage("Sonar Scan") {
+            when { expression { containsCodeChanges } }
             environment {
                 GITEA_TOKEN = credentials('jenkins-git-access-token-as-text')
             }

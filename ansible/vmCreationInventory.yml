@@ -86,10 +86,10 @@ all:
 #          ipAddress: 172.16.2.15
 #          ipAddress2: 172.16.3.15
 #          cpus: 8
-    jenkinsNodes:
-      vars:
-        softwareType: jenkins
-      hosts:
+#    jenkinsNodes:
+#      vars:
+#        softwareType: jenkins
+#      hosts:
 #        proxmox-04.preprod.zevrant-services.internal:
 #          destHost: proxmox-04
 #          vmId: 200
@@ -100,13 +100,26 @@ all:
 #          memory: 4096
 #          nodeType: container-build
 #          softwareType: jenkins
-        proxmox-02.preprod.zevrant-services.internal:
-          destHost: proxmox-02
-          vmId: 220
+#        proxmox-02.preprod.zevrant-services.internal:
+#          destHost: proxmox-02
+#          vmId: 220
+#          vmNumber: 1
+#          ipAddress: 172.16.2.22
+#          ipAddress2: 172.16.3.22
+#          cpus: 4
+#          memory: 8192
+#          nodeType: master
+#          softwareType: jenkins
+    androidEmulation:
+      vars:
+        softwareType: android
+      hosts:
+        proxmox-03.preprod.zevrant-services.internal:
+          destHost: proxmox-03
+          vmId: 230
           vmNumber: 1
-          ipAddress: 172.16.2.22
-          ipAddress2: 172.16.3.22
+          ipAddress: 172.16.2.23
+          ipAddress2: 172.16.3.23
           cpus: 4
           memory: 8192
-          nodeType: master
-          softwareType: jenkins
+          nodeType: emulator
