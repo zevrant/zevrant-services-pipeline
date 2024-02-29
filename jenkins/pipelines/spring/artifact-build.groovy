@@ -35,7 +35,9 @@ pipeline {
                 script {
                     container ('jnlp') {
                         //return true if there are no files changes within src/main/java
-                        containsCodeChanges = !gitService.getFilesChanged().findAll({file -> file.concat('src/main/java')}).isEmpty()
+                        List<String> filesChanged = gitService.getFilesChanged()
+                        println filesChanged.join(' ')
+                        containsCodeChanges = !filesChanged.findAll({file -> file.concat('src/main/java')}).isEmpty()
                     }
                 }
             }
