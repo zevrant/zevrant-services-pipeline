@@ -37,7 +37,9 @@ pipeline {
                         //return true if there are no files changes within src/main/java
                         List<String> filesChanged = gitService.getFilesChanged()
                         println filesChanged.join(' ')
-                        containsCodeChanges = !filesChanged.findAll({file -> file.concat('src/main/java')}).isEmpty()
+                        filesChanged = filesChanged.findAll({file -> file.contains('src/main/java')})
+                        println(filesChanged.join(' '))
+                        containsCodeChanges = !filesChanged.isEmpty()
                     }
                 }
             }
