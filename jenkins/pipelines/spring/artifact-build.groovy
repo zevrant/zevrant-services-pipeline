@@ -31,8 +31,14 @@ pipeline {
 
     stages {
         stage ('Determine Code Changes') {
-            //return true if there are no files changes within src/main/java
-            containsCodeChanges = !gitService.getFilesChanged().findAll({file -> file.concat('src/main/java')}).isEmpty()
+            steps{
+                script {
+                    container ('jnlp') {
+                        //return true if there are no files changes within src/main/java
+                        containsCodeChanges = !gitService.getFilesChanged().findAll({file -> file.concat('src/main/java')}).isEmpty()
+                    }
+                }
+            }
         }
 
         stage("Build Microservice") {
