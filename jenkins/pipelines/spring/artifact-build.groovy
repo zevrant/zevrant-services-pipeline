@@ -196,6 +196,8 @@ pipeline {
                 tar(file: 'helm-chart.tgz', archive: true, compress: true, glob: 'helm/**/*')
                 writeFile(file: 'artifactVersion.txt', text: version.toVersionCodeString())
                 archiveArtifacts(artifacts: 'artifactVersion.txt', allowEmptyArchive: false)
+
+                build job: "../container-build"
             }
         }
         always {

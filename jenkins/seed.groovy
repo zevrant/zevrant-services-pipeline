@@ -35,10 +35,6 @@ SpringCodeUnitCollection.microservices.each { springCodeUnit ->
             triggers           : [
                     new PipelineTrigger([
                             type : PipelineTriggerType.UPSTREAM,
-                            value: "./${springCodeUnit.name}-multibranch/main"
-                    ]),
-                    new PipelineTrigger([
-                            type : PipelineTriggerType.UPSTREAM,
                             value: "/containers/build-Zevrant-services-ubuntu-base"
                     ])
             ]
