@@ -197,7 +197,7 @@ pipeline {
                 writeFile(file: 'artifactVersion.txt', text: version.toVersionCodeString())
                 archiveArtifacts(artifacts: 'artifactVersion.txt', allowEmptyArchive: false)
 
-                build job: "../container-build"
+                build job: "../container-build", wait: false
             }
         }
         always {
