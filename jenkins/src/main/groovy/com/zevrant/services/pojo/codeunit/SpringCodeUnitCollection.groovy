@@ -1,10 +1,13 @@
 package com.zevrant.services.pojo.codeunit
 
+import com.zevrant.services.pojo.ServiceType
+
 class SpringCodeUnitCollection {
 
     static final List<SpringCodeUnit> microservices = Collections.unmodifiableList([
             new SpringCodeUnit([
                     name: 'backup-service',
+                    serviceType: ServiceType.STATEFULSET,
                     postgresDatabase: true,
                     databaseName: 'backup',
                     enabled: true

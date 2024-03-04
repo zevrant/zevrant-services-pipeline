@@ -78,14 +78,14 @@ pipeline {
 //                            println("Redeploying version ${version.toThreeStageVersionString()}")
 //                            currentBuild.displayName = "Rotating Certificates for Version ${version.toThreeStageVersionString()}"
                             try {
-                                sh "kubectl get deployment ${codeUnit.getDeploymentName()} -n $ENVIRONMENT"
+                                sh "kubectl get ${codeUnit.getServiceType().toString().toLowerCase()} ${codeUnit.getDeploymentName()} -n $ENVIRONMENT"
                             } catch (Exception ex) {
-                                throw new RuntimeException("Failed to retrieve deployment for repository $REPOSITORY in $ENVIRONMENT")
+                                throw new RuntimeException("Failed to retrieve ${codeUnit.getServiceType().toString().toLowerCase()} for repository $REPOSITORY in $ENVIRONMENT")
                             }
-                            sh "kubectl rollout restart deployments ${codeUnit.getDeploymentName()} -n $ENVIRONMENT"
+                            sh "kubectl rollout restart ${codeUnit.getServiceType().toString().toLowerCase()} ${codeUnit.getDeploymentName()} -n $ENVIRONMENT"
                             int timeout = kubernetesService.getDeployTimeout(ENVIRONMENT == 'prod' ? 2 : 1)
 //                            try {
-                            sh "kubectl rollout status deployments ${codeUnit.getDeploymentName()} -n $ENVIRONMENT --timeout=${timeout}s"
+                            sh "kubectl rollout status ${codeUnit.getServiceType().toString().toLowerCase()} ${codeUnit.getDeploymentName()} -n $ENVIRONMENT --timeout=${timeout}s"
 //                            } catch (Exception ignored) {
 //                                sh "kubectl rollout undo deploy $REPOSITORY -n $ENVIRONMENT"
 //                                throw new RuntimeException("Deployment for $REPOSITORY in Environment $ENVIRONMENT failed and was rolled back")
