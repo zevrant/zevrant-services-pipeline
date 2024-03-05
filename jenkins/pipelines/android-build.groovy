@@ -15,7 +15,7 @@ currentBuild.displayName = "$REPOSITORY merging to $BRANCH_NAME"
 Version version = null
 String variant = (BRANCH_NAME == "main") ? "release" : 'develop'
 String avdName = "jenkins-android-test-$BUILD_ID"
-VersionService versionTasks = new VersionService(this)
+VersionService versionService = new VersionService(this)
 byte[] b = new byte[2000];
 Version versionCode = null;
 boolean runTests = env.RUN_TESTS ? Boolean.parseBoolean(RUN_TESTS as String) : true
@@ -238,7 +238,7 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
     post {
         always {
             script {
-                String appName = "${REPOSITORY.split("-")[1].capitalize()} ${REPOSITORY.split("-")[2].capitalize()}"
+                String appName = REPOSITORY.split('-').collect({it.capitalize()}).join(' ')
                 withCredentials([string(credentialsId: 'discord-webhook', variable: 'webhookUrl')]) {
                     discordSend description: "Jenkins Build for ${appName} on branch ${BRANCH_NAME} ${currentBuild.currentResult}", link: env.BUILD_URL, result: currentBuild.currentResult, title: "Spring Build", webhookURL: webhookUrl
                 }
