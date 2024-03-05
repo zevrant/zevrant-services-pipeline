@@ -171,7 +171,7 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
             steps {
                 container('keydb') {
                     script {
-                        version = versionTasks.getVersion(REPOSITORY as String)
+                        version = versionService.getVersion(REPOSITORY as String)
                         versionCode = versionService.getVersion("${REPOSITORY.toLowerCase()}-code")
                         currentBuild.displayName = "Building version ${version.toVersionCodeString()}, version code ${versionCode.toVersionCodeString()}"
                     }
@@ -214,8 +214,8 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
             steps {
                 container('keydb') {
                     script {
-                        versionTasks.incrementVersion(REPOSITORY as String, version)
-                        versionTasks.incrementVersionCode(REPOSITORY as String, versionCode)
+                        versionService.incrementVersion(REPOSITORY as String, version)
+                        versionService.incrementVersionCode(REPOSITORY as String, versionCode)
                     }
                 }
             }
