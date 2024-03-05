@@ -169,7 +169,7 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
 
             }
             steps {
-                container('android-emulator') {
+                container('keydb') {
                     script {
                         version = versionTasks.getVersion(REPOSITORY as String)
                         versionCode = versionService.getVersion("${REPOSITORY.toLowerCase()}-code")
@@ -212,7 +212,7 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
                 REDISCLI_AUTH = credentials('jenkins-keydb-password')
             }
             steps {
-                container('android-emulator') {
+                container('keydb') {
                     script {
                         versionTasks.incrementVersion(REPOSITORY as String, version)
                         versionTasks.incrementVersionCode(REPOSITORY as String, versionCode)
