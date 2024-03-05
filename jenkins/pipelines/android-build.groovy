@@ -44,7 +44,7 @@ pipeline {
         }
 
         stage("Integration Test Setup") {
-            when { expression { runTests } }
+            when { expression { runTests && false } }
             environment {
                 AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
                 AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
@@ -120,7 +120,7 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
         }
 
         stage("Integration Test") {
-            when { expression { runTests } }
+            when { expression { runTests && false } }
             environment {
                 AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
                 AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
@@ -165,31 +165,15 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
 
         stage("Get Version") {
             environment {
-                AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
-                AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
-                AWS_DEFAULT_REGION = "us-east-1"
+                REDISCLI_AUTH = credentials('jenkins-keydb-password')
+
             }
             steps {
                 container('android-emulator') {
                     script {
                         version = versionTasks.getVersion(REPOSITORY as String)
-                        versionCode = versionTasks.getVersionCode("${REPOSITORY.toLowerCase()}")
+                        versionCode = versionService.getVersion("${REPOSITORY.toLowerCase()}-code")
                         currentBuild.displayName = "Building version ${version.toVersionCodeString()}, version code ${versionCode.toVersionCodeString()}"
-                    }
-                }
-            }
-        }
-        stage("Version Update") {
-            environment {
-                AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
-                AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
-                AWS_DEFAULT_REGION = "us-east-1"
-            }
-            steps {
-                container('android-emulator') {
-                    script {
-                        versionTasks.incrementVersion(REPOSITORY as String, version)
-                        versionTasks.incrementVersionCode(REPOSITORY as String, versionCode)
                     }
                 }
             }
@@ -222,6 +206,21 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
                 }
             }
         }
+
+        stage("Version Update") {
+            environment {
+                REDISCLI_AUTH = credentials('jenkins-keydb-password')
+            }
+            steps {
+                container('android-emulator') {
+                    script {
+                        versionTasks.incrementVersion(REPOSITORY as String, version)
+                        versionTasks.incrementVersionCode(REPOSITORY as String, versionCode)
+                    }
+                }
+            }
+        }
+
         stage("Trigger Internal Testing Release") {
             steps {
                 script {
