@@ -15,7 +15,7 @@ currentBuild.displayName = "$REPOSITORY merging to $BRANCH_NAME"
 Version version = null
 String variant = (BRANCH_NAME == "main") ? "release" : 'develop'
 String avdName = "jenkins-android-test-$BUILD_ID"
-VersionService versionTasks = ServiceLoader.load(binding, VersionService) as VersionService
+VersionService versionTasks = new VersionService(this)
 byte[] b = new byte[2000];
 Version versionCode = null;
 boolean runTests = env.RUN_TESTS ? Boolean.parseBoolean(RUN_TESTS as String) : true
