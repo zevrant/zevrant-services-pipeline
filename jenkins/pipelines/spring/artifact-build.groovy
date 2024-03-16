@@ -2,12 +2,14 @@
 
 
 import com.lesfurets.jenkins.unit.global.lib.Library
+import com.zevrant.services.pojo.NotificationChannel
 import com.zevrant.services.pojo.Version
 import com.zevrant.services.pojo.codeunit.SpringCodeUnit
 import com.zevrant.services.pojo.codeunit.SpringCodeUnitCollection
 import com.zevrant.services.services.GitService
 import com.zevrant.services.services.GradleService
 import com.zevrant.services.services.KubernetesService
+import com.zevrant.services.services.NotificationService
 import com.zevrant.services.services.VersionService
 
 List<String> angularProjects = ["zevrant-home-ui"];
@@ -203,9 +205,12 @@ pipeline {
         always {
             script {
                 String appName = "${REPOSITORY.split('-').collect { part -> part.capitalize() }.join(' ')}"
-                withCredentials([string(credentialsId: 'discord-webhook', variable: 'webhookUrl')]) {
-                    discordSend description: "Jenkins Build for ${appName} on branch ${branchName} ${currentBuild.currentResult}", link: env.BUILD_URL, result: currentBuild.currentResult, title: "Spring Build", webhookURL: webhookUrl
-                }
+                new NotificationService(this).sendDiscordNotification("Jenkins Build for ${appName} on branch ${branchName} ${currentBuild.currentResult}",
+                        env.BUILD_URL,
+                        currentBuild.currentResult,
+                        "Spring Build",
+                        NotificationChannel.DISCORD_CICD
+                )
                 junit allowEmptyResults: true, checksName: 'JUnit Tests', testResults: 'build/test-results/*/*.xml'
             }
         }

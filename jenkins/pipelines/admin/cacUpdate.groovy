@@ -1,7 +1,10 @@
 @Library("CommonUtils") _
 
 
+import com.zevrant.services.pojo.NotificationChannel
+import com.zevrant.services.services.NotificationService
 import io.jenkins.plugins.casc.ConfigurationAsCode
+
 
 List<String> angularProjects = ["zevrant-home-ui"];
 
@@ -54,9 +57,7 @@ pipeline {
         always {
             script {
                 String appName = REPOSITORY.split("-").each { it.capitalize() }.join(" ")
-                withCredentials([string(credentialsId: 'discord-webhook', variable: 'webhookUrl')]) {
-                    discordSend description: "Jenkins Build for ${appName} on branch ${branchName} ${currentBuild.currentResult}", link: env.BUILD_URL, result: currentBuild.currentResult, title: "Jenkins CaC Update", webhookURL: webhookUrl
-                }
+                new NotificationService(this).notifcationService.sendDiscordNotification("Jenkins Build for ${appName} on branch ${branchName} ${currentBuild.currentResult}", env.BUILD_URL, currentBuild.currentResult, "Jenkins CaC Update", NotificationChannel.DISCORD_CICD)
             }
         }
     }

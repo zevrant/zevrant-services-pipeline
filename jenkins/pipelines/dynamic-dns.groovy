@@ -1,3 +1,6 @@
+import com.zevrant.services.pojo.NotificationChannel
+import com.zevrant.services.services.NotificationService
+
 String ipAddress = ""
 List<String> hostedZoneIds = []
 pipeline {
@@ -101,9 +104,13 @@ pipeline {
     post {
         failure {
             script {
-                withCredentials([string(credentialsId: 'discord-webhook', variable: 'webhookUrl')]) {
-                    discordSend description: "Jenkins Failed to Apply Dynamic DNS Updates", link: env.BUILD_URL, result: currentBuild.currentResult, title: "Dynamic DNS Update", webhookURL: webhookUrl
-                }
+                new NotificationService(this).sendDiscordNotification(
+                        "Jenkins Failed to Apply Dynamic DNS Updates",
+                        env.BUILD_URL,
+                        currentBuild.currentResult,
+                        "Dynamic DNS Update",
+                        NotificationChannel.DISCORD_CICD
+                )
             }
         }
     }

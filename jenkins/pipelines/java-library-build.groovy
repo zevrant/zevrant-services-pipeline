@@ -1,5 +1,7 @@
+import com.zevrant.services.pojo.NotificationChannel
 import com.zevrant.services.pojo.Version
 import com.zevrant.services.services.KubernetesService
+import com.zevrant.services.services.NotificationService
 import com.zevrant.services.services.VersionService
 
 String REPOSITORY = scm.getUserRemoteConfigs()[0].getUrl().tokenize('/').last().split("\\.")[0]
@@ -157,9 +159,13 @@ pipeline {
             script {
                 String appName = Arrays.asList(REPOSITORY.split("-")).collect({ part -> part.capitalize() }).join(" ")
                 String versionString = (version == null) ? "null" : version.toVersionCodeString()
-                withCredentials([string(credentialsId: 'discord-webhook', variable: 'webhookUrl')]) {
-                    discordSend description: "Jenkins Build for ${appName} on branch ${branchName} building version ${versionString} was ${currentBuild.currentResult}", link: env.BUILD_URL, result: currentBuild.currentResult, title: "Spring Build", webhookURL: webhookUrl
-                }
+                new NotificationService(this).sendDiscordNotification(
+                        "Jenkins Build for ${appName} on branch ${branchName} building version ${versionString} was ${currentBuild.currentResult}",
+                        env.BUILD_URL,
+                        currentBuild.currentResult,
+                         "Spring Build",
+                        NotificationChannel.DISCORD_CICD
+                )
             }
         }
     }

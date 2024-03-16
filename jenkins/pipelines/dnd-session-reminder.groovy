@@ -1,3 +1,6 @@
+import com.zevrant.services.pojo.NotificationChannel
+import com.zevrant.services.services.NotificationService
+
 import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
@@ -28,11 +31,11 @@ pipeline {
         stage ('Send Message to Discord') {
             steps {
                 script {
-                    discordSend description: """@everyone 
+                    new NotificationService(this).sendDiscordNotification("""@everyone 
 The next session is scheduled for:
     * ${estTime.format(DateTimeFormatter.RFC_1123_DATE_TIME)}
     * ${arizonaTime.format(DateTimeFormatter.RFC_1123_DATE_TIME)} 
-""", title: "Session Reminder", webhookURL: webhookUrl
+""", "Session Reminder", NotificationChannel.DISCORD_CICD)
                 }
             }
         }

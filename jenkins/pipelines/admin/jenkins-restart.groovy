@@ -1,4 +1,6 @@
+import com.zevrant.services.pojo.NotificationChannel
 import com.zevrant.services.services.KubernetesService
+import com.zevrant.services.services.NotificationService
 
 @Library('CommonUtils')
 
@@ -48,9 +50,13 @@ pipeline {
 node('master-node') {
     stage('Reload Certificate') {
         if (keystore == null || keystore.isBlank()) {
-            withCredentials([string(credentialsId: 'discord-webhook', variable: 'webhookUrl')]) {
-                discordSend description: "Jenkins failed to rotate certs for itself", result: currentBuild.currentResult, title: "Certificate Rotation", webhookURL: webhookUrl
-            }
+            new NotificationService(this).sendDiscordNotification(
+                    "Jenkins failed to rotate certs for itself",
+                    env.BUILD_URL,
+                    currentBuild.currentResult,
+                    "Certificate Rotation",
+                    NotificationChannel.DISCORD_CICD
+            )
             throw new RuntimeException("Failed to rotate jenkins certificates, null keystore provided")
         }
         writeFile(file: 'keystore.b64', text: keystore)

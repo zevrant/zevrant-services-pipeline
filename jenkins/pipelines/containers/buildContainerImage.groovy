@@ -1,8 +1,11 @@
 @Library('CommonUtils') _
 
+
+import com.zevrant.services.pojo.NotificationChannel
 import com.zevrant.services.services.GitService
 import com.zevrant.services.services.ImageBuildService
 import com.zevrant.services.pojo.containers.Image
+import com.zevrant.services.services.NotificationService
 
 ImageBuildService imageBuildService = new ImageBuildService(this)
 
@@ -17,7 +20,14 @@ pipeline {
         stage('SCM Checkout') {
             steps {
                 script {
-                    gitService.checkout('containers')
+                    retry 3, {
+                        try {
+                            gitService.checkout('containers')
+                        } catch (Exception rethrown) {
+                            sleep 5
+                            throw rethrown
+                        }
+                    }
                 }
             }
         }
@@ -54,9 +64,20 @@ pipeline {
             }
         }
     }
-//    post {
-//        always {
-//            script {
+    post {
+        always {
+            script {
+                String imageName = (image != null)? image.name : ''
+                new NotificationService(this).sendDiscordNotification(
+                        "Jenkins Failed to Build Container Image ${imageName}",
+                        env.BUILD_URL,
+                        currentBuild.currentResult,
+                        "Jenkins Image Build - ${imageName}",
+                        NotificationChannel.DISCORD_CICD
+                )
+            }
+        }
+    }
 //                if (image != null) {
 //                    String taglessImage = "${image.host}/${image.repository}/${image.name}".replace('//', '/')
 //                    println taglessImage

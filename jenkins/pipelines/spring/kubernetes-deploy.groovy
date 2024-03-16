@@ -1,17 +1,10 @@
 package spring
 
-import com.zevrant.services.ServiceLoader
-import com.zevrant.services.pojo.KubernetesEnvironment
-import com.zevrant.services.pojo.Version
+
+import com.zevrant.services.pojo.NotificationChannel
 import com.zevrant.services.pojo.codeunit.SpringCodeUnit
 import com.zevrant.services.pojo.codeunit.SpringCodeUnitCollection
-import com.zevrant.services.services.CertificateService
-import com.zevrant.services.services.GitService
-import com.zevrant.services.services.KubernetesService
-import com.zevrant.services.services.PostgresYamlConfigurer
-import com.zevrant.services.services.VersionService
-
-import java.nio.charset.StandardCharsets
+import com.zevrant.services.services.*
 
 CertificateService certificateService = new CertificateService(this)
 KubernetesService kubernetesService = new KubernetesService(this)
@@ -48,7 +41,7 @@ pipeline {
         }
 
         stage("Deploy Micro Service") {
-            when { expression {  VERSION != null && VERSION != '' } }
+            when { expression { VERSION != null && VERSION != '' } }
             environment {
                 DOCKER_CREDENTIALS = credentials('jenkins-harbor')
             }
@@ -58,7 +51,7 @@ pipeline {
                         sh 'echo $DOCKER_CREDENTIALS_PSW | helm registry login harbor.zevrant-services.internal --username $DOCKER_CREDENTIALS_USR --password-stdin'
                         try {
                             sh "helm upgrade --install --namespace ${environment} ${codeUnit.name} oci://harbor.zevrant-services.internal/zevrant-services/${codeUnit.name} --version ${VERSION} -f ${ENVIRONMENT}-values.yml --wait"
-                                                            //helm pull oci://harbor.zevrant-services.internal/zevrant-services/oauth2-service --version 0.0.1
+                            //helm pull oci://harbor.zevrant-services.internal/zevrant-services/oauth2-service --version 0.0.1
                         } catch (Exception ignored) {
                             sh "helm rollback ${codeUnit.name} --namespace ${environment}"
                             throw ignored
@@ -106,16 +99,27 @@ pipeline {
     post {
         always {
             script {
+                NotificationService notificationService = new NotificationService(this)
                 String appName = "${REPOSITORY.split('-').collect { part -> part.capitalize() }.join(' ')}"
-                withCredentials([string(credentialsId: 'discord-webhook', variable: 'webhookUrl')]) {
-                    if (VERSION != null && VERSION != '') {
-                        if (ENVIRONMENT == 'prod') {
-                            return
-                        }
-                        discordSend description: "Jenkins Push to ${ENVIRONMENT.toLowerCase().capitalize()} for ${appName} with version ${VERSION}: ${currentBuild.currentResult}", link: env.BUILD_URL, result: currentBuild.currentResult, title: "Kubernetes Deploy", webhookURL: webhookUrl
-                    } else if (currentBuild.currentResult != 'SUCCESS' && ENVIRONMENT.toLowerCase() == 'develop') {
-                        discordSend description: "Jenkins Certificate Rotation to ${ENVIRONMENT.toLowerCase().capitalize()} for ${appName}: ${currentBuild.currentResult}", link: env.BUILD_URL, result: currentBuild.currentResult, title: "Certificate Rotation", webhookURL: webhookUrl
+                if (VERSION != null && VERSION != '') {
+                    if (ENVIRONMENT == 'prod') {
+                        return
                     }
+                    notificationService.sendDiscordNotification(
+                            "Jenkins Push to ${ENVIRONMENT.toLowerCase().capitalize()} for ${appName} with version ${VERSION}: ${currentBuild.currentResult}",
+                            env.BUILD_URL,
+                            currentBuild.currentResult,
+                            "Kubernetes Deploy",
+                            NotificationChannel.DISCORD_CICD
+                    )
+                } else if (currentBuild.currentResult != 'SUCCESS' && ENVIRONMENT.toLowerCase() == 'develop') {
+                    notificationService.sendDiscordNotification(
+                            "Jenkins Certificate Rotation to ${ENVIRONMENT.toLowerCase().capitalize()} for ${appName}: ${currentBuild.currentResult}",
+                            env.BUILD_URL,
+                            currentBuild.currentResult,
+                            "Certificate Rotation",
+                            NotificationChannel.DISCORD_CICD
+                    )
                 }
             }
         }

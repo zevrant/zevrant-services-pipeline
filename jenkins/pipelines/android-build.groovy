@@ -3,8 +3,9 @@
 
 import com.lesfurets.jenkins.unit.global.lib.Library
 import com.zevrant.services.ServiceLoader
+import com.zevrant.services.pojo.NotificationChannel
 import com.zevrant.services.pojo.Version
-
+import com.zevrant.services.services.NotificationService
 import com.zevrant.services.services.VersionService
 
 
@@ -239,9 +240,7 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
         always {
             script {
                 String appName = REPOSITORY.split('-').collect({it.capitalize()}).join(' ')
-                withCredentials([string(credentialsId: 'discord-webhook', variable: 'webhookUrl')]) {
-                    discordSend description: "Jenkins Build for ${appName} on branch ${BRANCH_NAME} ${currentBuild.currentResult}", link: env.BUILD_URL, result: currentBuild.currentResult, title: "Spring Build", webhookURL: webhookUrl
-                }
+                new NotificationService(this).sendDiscordNotification("Jenkins Build for ${appName} on branch ${BRANCH_NAME} ${currentBuild.currentResult}", env.BUILD_URL, currentBuild.currentResult, title: "Spring Build", NotificationChannel.DISCORD_CICD)
             }
         }
     }

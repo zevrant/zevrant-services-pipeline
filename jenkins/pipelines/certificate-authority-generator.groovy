@@ -1,23 +1,23 @@
 @Library("CommonUtils") _
 
-import com.cloudbees.groovy.cps.NonCPS
+
 import com.lesfurets.jenkins.unit.global.lib.Library
-import com.zevrant.services.ServiceLoader
-import com.zevrant.services.pojo.PodStatus
+import com.zevrant.services.pojo.NotificationChannel
 import com.zevrant.services.services.CertificateService
 import com.zevrant.services.services.KubernetesService
+import com.zevrant.services.services.NotificationService
 
 import java.nio.charset.StandardCharsets
 
 KubernetesService kubernetesService = new KubernetesService(this)
 CertificateService certificateService = new CertificateService(this)
 
-if(ENVIRONMENT == '' || ENVIRONMENT == null) {
+if (ENVIRONMENT == '' || ENVIRONMENT == null) {
     throw new RuntimeException("Environment name must be provided, exiting...")
 }
 
 String caLabel = 'app=certificate-authority'
-String environmentTitle = ENVIRONMENT.split('-').collect({ name -> name.capitalize()}).join(' ')
+String environmentTitle = ENVIRONMENT.split('-').collect({ name -> name.capitalize() }).join(' ')
 pipeline {
     agent {
         kubernetes {
@@ -27,7 +27,7 @@ pipeline {
 
     stages {
 
-        stage ('Erase Existing') {
+        stage('Erase Existing') {
             when { expression { Boolean.valueOf(REMOVE_EXISTING) } }
             steps {
                 script {
@@ -41,7 +41,7 @@ pipeline {
             }
         }
 
-        stage ('Generate CSR') {
+        stage('Generate CSR') {
             steps {
                 script {
                     container('kubectl') {
@@ -65,7 +65,7 @@ pipeline {
             }
         }
 
-        stage ('Pull CA & Decrypt') {
+        stage('Pull CA & Decrypt') {
             environment {
                 AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
                 AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
@@ -73,7 +73,7 @@ pipeline {
             }
             steps {
                 script {
-                    container ('cert-manager') {
+                    container('cert-manager') {
                         sh 'aws secretsmanager get-secret-value --secret-id /root/ca/envryption-properties > secret.json'
                         def secret = readJSON(file: 'secret.json')
                         def secretValues = readJSON(text: secret.SecretString.replace('\\"', '"'))
@@ -95,14 +95,14 @@ pipeline {
             }
         }
 
-        stage ('Issue Certificate') {
+        stage('Issue Certificate') {
             steps {
                 script {
-                    container ('cert-manager') {
+                    container('cert-manager') {
                         sh 'unzip rootCA.zip'
                         dir('rootCA') {
                             writeFile(file: 'issued/openssl.conf', text: readFile(file: 'issued/openssl.conf').replace('dir             = /home/zevrant/rootCA', "dir             = ${pwd()}"))
-                            if(fileExists("issued/${ENVIRONMENT}.crt")) {
+                            if (fileExists("issued/${ENVIRONMENT}.crt")) {
                                 sh "openssl ca -config issued/openssl.conf -revoke issued/${ENVIRONMENT}.crt"
                                 sh "rm issued/${ENVIRONMENT}.*"
                             }
@@ -125,7 +125,7 @@ pipeline {
             }
         }
 
-        stage ('Encrypt & Push') {
+        stage('Encrypt & Push') {
             environment {
                 AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
                 AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
@@ -143,7 +143,7 @@ pipeline {
             }
         }
 
-        stage ('Container Upload') {
+        stage('Container Upload') {
             steps {
                 script {
                     container('kubectl') {
@@ -186,7 +186,13 @@ type: Opaque
         success {
             script {
                 withCredentials([string(credentialsId: 'discord-webhook', variable: 'webhookUrl')]) {
-                    discordSend description: "Jenkins Successfully Created The CA Certs for the $environmentTitle Environment", link: env.BUILD_URL, result: currentBuild.currentResult, title: "CA Certificate Generation", webhookURL: webhookUrl
+                    new NotificationService(this).sendDiscordNotification(
+                            "Jenkins Successfully Created The CA Certs for the $environmentTitle Environment",
+                            env.BUILD_URL,
+                            currentBuild.currentResult,
+                            "CA Certificate Generation",
+                            NotificationChannel.DISCORD_CICD
+                    )
                 }
             }
         }

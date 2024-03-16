@@ -3,10 +3,11 @@
 
 import com.zevrant.services.pojo.CertRotationInfo
 import com.zevrant.services.pojo.KubernetesEnvironment
-import com.zevrant.services.pojo.KubernetesService
 import com.zevrant.services.pojo.KubernetesServiceCollection
+import com.zevrant.services.pojo.NotificationChannel
 import com.zevrant.services.pojo.codeunit.SpringCodeUnitCollection
 import com.zevrant.services.services.CertificateService
+import com.zevrant.services.services.NotificationService
 import com.zevrant.services.services.ThanosQueryService
 
 CertificateService certificateService = new CertificateService(this)
@@ -40,7 +41,7 @@ pipeline {
                                 }
                             }
                     SpringCodeUnitCollection.microservices
-                            .findAll({service -> service.enabled})
+                            .findAll({ service -> service.enabled })
                             .each { service ->
                                 if (service.enabled && !certificateService.isCertificateValid("${service.deploymentName}.${KubernetesEnvironment.DEVELOP.getNamespaceName()}.svc.cluster.local")) {
                                     certsToRotate.add(new CertRotationInfo(service.name, null, null, KubernetesEnvironment.DEVELOP.getNamespaceName()))
@@ -80,9 +81,13 @@ pipeline {
                             build job: "${folder}/${serviceName}", wait: false
                         } catch (Exception ex) {
                             println("Failed to rotate service $name")
-                            withCredentials([string(credentialsId: 'discord-webhook', variable: 'webhookUrl')]) {
-                                discordSend description: "Jenkins failed to rotate certs for ${serviceName}", result: currentBuild.currentResult, title: "Certificate Rotation", webhookURL: webhookUrl
-                            }
+                            new NotificationService(this).sendDiscordNotification(
+                                    "Jenkins failed to rotate certs for ${serviceName}",
+                                    env.BUILD_URL,
+                                    currentBuild.currentResult,
+                                    "Certificate Rotation",
+                                    NotificationChannel.DISCORD_CICD
+                            )
                         }
                     })
                 }

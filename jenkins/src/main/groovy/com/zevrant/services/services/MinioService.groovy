@@ -6,7 +6,7 @@ class MinioService extends Service {
         super(pipelineContext)
     }
 
-    void withContext(String credentialsId, String objectStoreUrl = 'https://objstore-centergrid.cgverge.centergrid.net', Closure closure) {
+    void withContext(String credentialsId, String objectStoreUrl = 'https://minio-shared.zevrant-services.internal', Closure closure) {
         pipelineContext.sh 'mc alias set default '
                 .concat(objectStoreUrl)
                 .concat(' "$ACCESS_KEY_ID" "$SECRET_ACCESS_KEY"')
