@@ -10,6 +10,6 @@ enum NotificationChannel {
     }
 
     String getSecretId() {
-        return this.secretId
+        return secretId
     }
 }
