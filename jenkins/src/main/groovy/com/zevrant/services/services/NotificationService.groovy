@@ -20,7 +20,7 @@ class NotificationService extends Service {
             return
         }
         pipelineContext.withCredentials([pipelineContext.string(credentialsId: channel.getSecretId(), variable: 'url')]) {
-            pipelineContext.discordSend description: message, link: link, result: result, title: title, webhookURL: url
+            pipelineContext.discordSend description: message, link: link, result: result, title: title, webhookURL: pipelineContext.url
         }
     }
 
