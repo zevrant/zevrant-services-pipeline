@@ -22,9 +22,7 @@ Version versionCode = null;
 boolean runTests = env.RUN_TESTS ? Boolean.parseBoolean(RUN_TESTS as String) : true
 pipeline {
     agent {
-        kubernetes {
-            inheritFrom 'android'
-        }
+        label 'android'
     }
     stages {
 
@@ -133,32 +131,8 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
                     script {
                         sh 'adb devices'
                         sh 'echo $ANDROID_HOME'
+                        sh 'adb -s "$(adb devices | tail -n 2 | head -n 1 | awk \'{ print $1 }\')" shell input keyevent 82' //wake up screen
                         sh 'bash gradlew clean connectedDevelopTest --info -PtestVariant=developTest'
-                    }
-                }
-            }
-            post {
-                always {
-                    container('android-emulator') {
-                        script {
-
-                            if (runTests) {
-                                archiveArtifacts artifacts: "nohup-${avdName}.out", followSymlinks: false
-
-                                if (fileExists("app/build/reports/androidTests/connected/index.html")) {
-                                    publishHTML(target: [
-                                            allowMissing         : false,
-                                            alwaysLinkToLastBuild: false,
-                                            keepAll              : true,
-                                            reportDir            : 'app/build/reports/androidTests/connected/',
-                                            reportFiles          : "index.html",
-                                            reportName           : 'JUnit Test Report',
-                                            reportTitles         : 'JUnit Test Report'
-                                    ]
-                                    )
-                                }
-                            }
-                        }
                     }
                 }
             }
@@ -187,7 +161,6 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
                 AWS_DEFAULT_REGION = "us-east-1"
             }
             steps {
-                container('android-emulator') {
                     script {
                         def json = readJSON text: (sh(returnStdout: true, script: "aws secretsmanager get-secret-value --secret-id /android/signing/keystore")) as String
                         String keystore = json['SecretString'];
@@ -203,7 +176,6 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
                         sh "jarsigner -verify -verbose app/build/outputs/bundle/$variant/app-${variant}.aab zevrant-services-unsigned.aab"
                         sh 'mv app/build/outputs/bundle/release/app-release.aab app-release.aab'
                         archiveArtifacts(artifacts: "app-release.aab")
-                    }
                 }
             }
         }
