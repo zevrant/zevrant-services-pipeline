@@ -57,7 +57,7 @@ pipeline {
                         writeFile(file: "secret.txt", text: secret)
                         writeFile(file: 'bashScript.sh', text: """
 #!/bin/bash
-cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services/zevrantandroidapp/secrets/SecretsInitializer.java
+cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services/zimage/secrets/SecretsInitializer.java
 """)
                         sh "bash bashScript.sh && rm secret.txt"
 //                        echo "waiting for emulator to come online"
