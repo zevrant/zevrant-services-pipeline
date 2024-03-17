@@ -2,12 +2,10 @@
 
 
 import com.lesfurets.jenkins.unit.global.lib.Library
-import com.zevrant.services.ServiceLoader
 import com.zevrant.services.pojo.NotificationChannel
 import com.zevrant.services.pojo.Version
 import com.zevrant.services.services.NotificationService
 import com.zevrant.services.services.VersionService
-
 
 BRANCH_NAME = BRANCH_NAME.tokenize("/")
 BRANCH_NAME = BRANCH_NAME[BRANCH_NAME.size() - 1];
@@ -27,18 +25,16 @@ pipeline {
     stages {
 
         stage("Unit Test") {
-            when { expression { runTests  && false } }
+            when { expression { runTests && false } }
             environment {
                 AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
                 AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
                 AWS_DEFAULT_REGION = "us-east-1"
             }
             steps {
-                container('android-emulator') {
                     script {
                         sh "bash gradlew clean testDevelopTestUnitTest"
                     }
-                }
             }
         }
 
@@ -50,7 +46,6 @@ pipeline {
                 AWS_DEFAULT_REGION = "us-east-1"
             }
             steps {
-                container('android-emulator') {
                     script {
 //                        String startEmulator = "emulator -avd $avdName -no-window -no-boot-anim -no-snapshot-save -no-snapshot-load"
 //                        sh ""
@@ -94,12 +89,10 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
 //                            offline = sh returnStdout: true, script: 'adb devices'
 //                            echo offline
 //                        }
-                    }
                 }
             }
 //            post {
 //                failure {
-//                    container('android-emulator') {
 //
 //                        script {
 //                            if (runTests) {
@@ -112,7 +105,6 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
 //                                }
 //                                archiveArtifacts artifacts: "nohup-${avdName}.out", followSymlinks: false
 //                            }
-//                        }
 //                    }
 //                }
 //            }
@@ -126,15 +118,14 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
                 AWS_DEFAULT_REGION = "us-east-1"
             }
             steps {
-                container('android-emulator') {
 
                     script {
                         sh 'adb devices'
                         sh 'echo $ANDROID_HOME'
-                        sh 'adb -s "$(adb devices | tail -n 2 | head -n 1 | awk \'{ print $1 }\')" shell input keyevent 82' //wake up screen
+                        sh 'adb -s "$(adb devices | tail -n 2 | head -n 1 | awk \'{ print $1 }\')" shell input keyevent 82'
+                        //wake up screen
                         sh 'bash gradlew clean connectedDevelopTest --info -PtestVariant=developTest'
                     }
-                }
             }
         }
 
@@ -144,13 +135,11 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
 
             }
             steps {
-                container('keydb') {
                     script {
                         version = versionService.getVersion(REPOSITORY as String)
                         versionCode = versionService.getVersion("${REPOSITORY.toLowerCase()}-code")
                         currentBuild.displayName = "Building version ${version.toVersionCodeString()}, version code ${versionCode.toVersionCodeString()}"
                     }
-                }
             }
         }
 
@@ -161,21 +150,21 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
                 AWS_DEFAULT_REGION = "us-east-1"
             }
             steps {
-                    script {
-                        def json = readJSON text: (sh(returnStdout: true, script: "aws secretsmanager get-secret-value --secret-id /android/signing/keystore")) as String
-                        String keystore = json['SecretString'];
-                        writeFile file: './zevrant-services.txt', text: keystore
-                        sh "base64 -d ./zevrant-services.txt > ./zevrant-services.p12"
-                        json = readJSON text: (sh(returnStdout: true, script: "aws secretsmanager get-secret-value --secret-id /android/signing/password")) as String
-                        String password = json['SecretString']
+                script {
+                    def json = readJSON text: (sh(returnStdout: true, script: "aws secretsmanager get-secret-value --secret-id /android/signing/keystore")) as String
+                    String keystore = json['SecretString'];
+                    writeFile file: './zevrant-services.txt', text: keystore
+                    sh "base64 -d ./zevrant-services.txt > ./zevrant-services.p12"
+                    json = readJSON text: (sh(returnStdout: true, script: "aws secretsmanager get-secret-value --secret-id /android/signing/password")) as String
+                    String password = json['SecretString']
 
-                        sh "bash gradlew clean bundle${variant.capitalize()} -PprojVersion='${version.toVersionCodeString()}' -PversionCode='${versionCode.toVersionCodeString()}' --info"
-                        //for some reason gradle isn't signing like it's supposed to so we do it manually
+                    sh "bash gradlew clean bundle${variant.capitalize()} -PprojVersion='${version.toVersionCodeString()}' -PversionCode='${versionCode.toVersionCodeString()}' --info"
+                    //for some reason gradle isn't signing like it's supposed to so we do it manually
 
-                        sh "jarsigner -verbose -sigalg SHA512withRSA -digestalg SHA-512 -keystore zevrant-services.p12 app/build/outputs/bundle/$variant/app-${variant}.aab -storepass \'$password\' key0"
-                        sh "jarsigner -verify -verbose app/build/outputs/bundle/$variant/app-${variant}.aab zevrant-services-unsigned.aab"
-                        sh 'mv app/build/outputs/bundle/release/app-release.aab app-release.aab'
-                        archiveArtifacts(artifacts: "app-release.aab")
+                    sh "jarsigner -verbose -sigalg SHA512withRSA -digestalg SHA-512 -keystore zevrant-services.p12 app/build/outputs/bundle/$variant/app-${variant}.aab -storepass \'$password\' key0"
+                    sh "jarsigner -verify -verbose app/build/outputs/bundle/$variant/app-${variant}.aab zevrant-services-unsigned.aab"
+                    sh 'mv app/build/outputs/bundle/release/app-release.aab app-release.aab'
+                    archiveArtifacts(artifacts: "app-release.aab")
                 }
             }
         }
@@ -185,11 +174,9 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
                 REDISCLI_AUTH = credentials('jenkins-keydb-password')
             }
             steps {
-                container('keydb') {
-                    script {
-                        versionService.incrementVersion(REPOSITORY as String, version)
-                        versionService.incrementVersionCode(REPOSITORY as String, versionCode)
-                    }
+                script {
+                    versionService.incrementVersion(REPOSITORY as String, version)
+                    versionService.incrementVersionCode(REPOSITORY as String, versionCode)
                 }
             }
         }
@@ -211,8 +198,8 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
     post {
         always {
             script {
-                String appName = REPOSITORY.split('-').collect({it.capitalize()}).join(' ')
-                new NotificationService(this).sendDiscordNotification("Jenkins Build for ${appName} on branch ${BRANCH_NAME} ${currentBuild.currentResult}", env.BUILD_URL, currentBuild.currentResult, title: "Spring Build", NotificationChannel.DISCORD_CICD)
+                String appName = REPOSITORY.split('-').collect({ it.capitalize() }).join(' ')
+                new NotificationService(this).sendDiscordNotification("Jenkins Build for ${appName} on branch ${BRANCH_NAME} ${currentBuild.currentResult}", env.BUILD_URL, currentBuild.currentResult, "Spring Build", NotificationChannel.DISCORD_CICD)
             }
         }
     }
