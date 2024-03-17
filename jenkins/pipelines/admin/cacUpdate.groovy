@@ -57,7 +57,7 @@ pipeline {
         always {
             script {
                 String appName = REPOSITORY.split("-").each { it.capitalize() }.join(" ")
-                new NotificationService(this).notifcationService.sendDiscordNotification("Jenkins Build for ${appName} on branch ${branchName} ${currentBuild.currentResult}", env.BUILD_URL, currentBuild.currentResult, "Jenkins CaC Update", NotificationChannel.DISCORD_CICD)
+                new NotificationService(this).sendDiscordNotification("Jenkins Build for ${appName} on branch ${branchName} ${currentBuild.currentResult}", env.BUILD_URL, currentBuild.currentResult, "Jenkins CaC Update", NotificationChannel.DISCORD_CICD)
             }
         }
     }
