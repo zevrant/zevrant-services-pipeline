@@ -119,10 +119,10 @@ cat secret.txt | base64 --decode > app/src/androidTest/java/com/zevrant/services
 
                     script {
                         sh 'adb devices'
-                        sh 'echo $ANDROID_HOME'
+                        sh 'bash ./gradlew clean compileDevelopTest'
                         sh 'adb -s "$(adb devices | tail -n 2 | head -n 1 | awk \'{ print $1 }\')" shell input keyevent 82'
                         //wake up screen
-                        sh 'bash gradlew clean connectedDevelopTest --info -PtestVariant=developTest'
+                        sh 'bash gradlew connectedDevelopTest --info -PtestVariant=developTest'
                     }
             }
         }
