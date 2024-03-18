@@ -196,6 +196,7 @@ cat secret.txt | base64 --decode  | sed 's/zevrantandroidapp/zimage/g' > app/src
     post {
         always {
             script {
+                junit allowEmptyResults: true, keepLongStdio: true, skipPublishingChecks: true, testResults: 'app/build/outputs/androidTest-results/connected/debug/flavors/develop/*.xml'
                 String appName = REPOSITORY.split('-').collect({ it.capitalize() }).join(' ')
                 new NotificationService(this).sendDiscordNotification("Jenkins Build for ${appName} on branch ${BRANCH_NAME} ${currentBuild.currentResult}", env.BUILD_URL, currentBuild.currentResult, "Spring Build", NotificationChannel.DISCORD_CICD)
                 sh 'rm -rf *'
