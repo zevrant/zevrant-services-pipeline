@@ -155,6 +155,7 @@ cat secret.txt | base64 --decode  | sed 's/zevrantandroidapp/zimage/g' > app/src
                     json = readJSON text: (sh(returnStdout: true, script: "aws secretsmanager get-secret-value --secret-id /android/signing/password")) as String
                     String password = json['SecretString']
 
+                    //DO NOT REMOVE CLEAN FROM THIS COMMAND
                     sh "bash gradlew clean bundle${variant.capitalize()} -PprojVersion='${version.toVersionCodeString()}' -PversionCode='${versionCode.toVersionCodeString()}' --info"
                     //for some reason gradle isn't signing like it's supposed to so we do it manually
 
@@ -197,6 +198,7 @@ cat secret.txt | base64 --decode  | sed 's/zevrantandroidapp/zimage/g' > app/src
             script {
                 String appName = REPOSITORY.split('-').collect({ it.capitalize() }).join(' ')
                 new NotificationService(this).sendDiscordNotification("Jenkins Build for ${appName} on branch ${BRANCH_NAME} ${currentBuild.currentResult}", env.BUILD_URL, currentBuild.currentResult, "Spring Build", NotificationChannel.DISCORD_CICD)
+                sh 'rm -rf *'
             }
         }
     }
