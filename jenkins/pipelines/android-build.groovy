@@ -198,7 +198,7 @@ cat secret.txt | base64 --decode  | sed 's/zevrantandroidapp/zimage/g' > app/src
             script {
                 String appName = REPOSITORY.split('-').collect({ it.capitalize() }).join(' ')
                 new NotificationService(this).sendDiscordNotification("Jenkins Build for ${appName} on branch ${BRANCH_NAME} ${currentBuild.currentResult}", env.BUILD_URL, currentBuild.currentResult, "Spring Build", NotificationChannel.DISCORD_CICD)
-                sh 'rm -rf *'
+                sh 'rm -rf * \\.*'
             }
         }
     }
