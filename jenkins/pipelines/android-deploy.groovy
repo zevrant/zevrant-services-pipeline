@@ -37,10 +37,10 @@ pipeline {
 
                     sh 'ls -l'
                     androidApkUpload(
-                            googleCredentialsId: 'Google Play Console Developer',
-                            trackName: (ENVIRONMENT == "prod") ? 'production' : 'internal',
+                            googleCredentialsId: 'google-play-console-developer',
+                            trackName:  'internal',
                             rolloutPercentage: '100',
-                            filesPattern: "app-release.aab"
+                            filesPattern: "*.aab"
                     )
                     archiveArtifacts('app-release.aab')
                 }

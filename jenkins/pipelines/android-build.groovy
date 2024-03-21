@@ -134,8 +134,7 @@ cat secret.txt | base64 --decode  | sed 's/zevrantandroidapp/zimage/g' > app/src
             steps {
                     script {
                         version = versionService.getVersion(REPOSITORY as String)
-                        versionCode = versionService.getVersion("${REPOSITORY.toLowerCase()}-code")
-                        currentBuild.displayName = "Building version ${version.toVersionCodeString()}, version code ${versionCode.toVersionCodeString()}"
+                        currentBuild.displayName = "Building version ${version.toVersionCodeString()}"
                     }
             }
         }
@@ -156,7 +155,7 @@ cat secret.txt | base64 --decode  | sed 's/zevrantandroidapp/zimage/g' > app/src
                     String password = json['SecretString']
 
                     //DO NOT REMOVE CLEAN FROM THIS COMMAND
-                    sh "bash gradlew clean bundle${variant.capitalize()} -PprojVersion='${version.toVersionCodeString()}' -PversionCode='${versionCode.toVersionCodeString()}' --info"
+                    sh "bash gradlew clean bundle${variant.capitalize()} -PprojVersion='${version.toVersionCodeString()}' -PversionCode='${version.toVersionCodeString()}' --info"
                     //for some reason gradle isn't signing like it's supposed to so we do it manually
 
                     sh "jarsigner -verbose -sigalg SHA512withRSA -digestalg SHA-512 -keystore zevrant-services.p12 app/build/outputs/bundle/developRelease/app-develop-release.aab -storepass \'$password\' key0"
@@ -174,7 +173,6 @@ cat secret.txt | base64 --decode  | sed 's/zevrantandroidapp/zimage/g' > app/src
             steps {
                 script {
                     versionService.incrementVersion(REPOSITORY as String, version)
-                    versionService.incrementVersionCode("${REPOSITORY}-code" as String, versionCode)
                 }
             }
         }
