@@ -17,8 +17,8 @@ pipeline {
             steps {
                 script {
                     String artifactJob = (ENVIRONMENT == 'prod')
-                            ? 'Android/Zevrant Android App/Zevrant-Android-App-Release-To-Internal-Testing'
-                            : 'Android/Zevrant Android App/zevrant-android-app-multibranch/main'
+                            ? 'Android/zimage/ZImage-Release-To-Internal-Testing'
+                            : 'Android/zimage/ZImage-multibranch/main'
                     copyArtifacts(
                             projectName: artifactJob,
                             selector: lastSuccessful()
