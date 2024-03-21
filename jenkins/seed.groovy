@@ -75,26 +75,26 @@ AndroidCodeUnitCollection.androidApps.each( { androidCodeUnit ->
     String androidFolder = jobDslService.createMultibranch(androidCodeUnit as CodeUnit)
 
     Pipeline androidDevelopDeployPipeline = new Pipeline(
-            name: "Zevrant-Android-App-Release-To-Internal-Testing",
+            name: "${androidCodeUnit.name}-Release-To-Internal-Testing",
             parameters: new ArrayList<>([
             ]),
             gitRepo: "ssh://git@gitea.zevrant-services.internal:30121/zevrant-services/zevrant-services-pipeline.git",
             jenkinsfileLocation: 'jenkins/pipelines/android-deploy.groovy',
             credentialId: 'jenkins-git',
             envs: new HashMap<>([
-                    'REPOSITORY' : 'zevrant-android-app',
+                    'REPOSITORY' : androidCodeUnit.name,
                     'ENVIRONMENT': 'develop'
             ])
     )
     Pipeline androidProdDeployPipeline = new Pipeline(
-            name: "Zevrant-Android-App-Release-To-Production",
+            name: "${androidCodeUnit.name}-Release-To-Production",
             parameters: new ArrayList<>([
             ]),
             gitRepo: "ssh://git@gitea.zevrant-services.internal:30121/zevrant-services/zevrant-services-pipeline.git",
             jenkinsfileLocation: 'jenkins/pipelines/android-deploy.groovy',
             credentialId: 'jenkins-git',
             envs: new HashMap<>([
-                    'REPOSITORY' : 'zevrant-android-app',
+                    'REPOSITORY' : androidCodeUnit.name,
                     'ENVIRONMENT': 'prod'
             ])
     )

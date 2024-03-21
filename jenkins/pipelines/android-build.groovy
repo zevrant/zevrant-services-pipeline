@@ -161,7 +161,7 @@ cat secret.txt | base64 --decode  | sed 's/zevrantandroidapp/zimage/g' > app/src
 
                     sh "jarsigner -verbose -sigalg SHA512withRSA -digestalg SHA-512 -keystore zevrant-services.p12 app/build/outputs/bundle/developRelease/app-develop-release.aab -storepass \'$password\' key0"
                     sh "jarsigner -verify -verbose app/build/outputs/bundle/developRelease/app-develop-release.aab"
-                    sh 'mv app/build/outputs/bundle/release/app-develop-release.aab app-release.aab'
+                    sh 'mv app/build/outputs/bundle/developRelease/app-develop-release.aab app-release.aab'
                     archiveArtifacts(artifacts: "app-release.aab")
                 }
             }
@@ -184,7 +184,7 @@ cat secret.txt | base64 --decode  | sed 's/zevrantandroidapp/zimage/g' > app/src
                 script {
                     String[] repositorySplit = REPOSITORY.split("-")
                     build(
-                            job: "Android/${repositorySplit[0].capitalize()} ${repositorySplit[1].capitalize()} ${repositorySplit[2].capitalize()}/${repositorySplit[0].capitalize()}-${repositorySplit[1].capitalize()}-${repositorySplit[2].capitalize()}-Release-To-Internal-Testing" as String, parameters: [
+                            job: "Android/${repositorySplit.join(' ')}/${repositorySplit.collect({ it.capitalize() }).join('-')}-Release-To-Internal-Testing" as String, parameters: [
                     ],
                             wait: false
                     )
