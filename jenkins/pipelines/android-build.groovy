@@ -12,7 +12,7 @@ BRANCH_NAME = BRANCH_NAME[BRANCH_NAME.size() - 1];
 String REPOSITORY = scm.getUserRemoteConfigs()[0].getUrl().tokenize('/').last().split("\\.")[0]
 currentBuild.displayName = "$REPOSITORY merging to $BRANCH_NAME"
 Version version = null
-String variant = (BRANCH_NAME == "main") ? "release" : 'develop'
+String variant = "developRelease"
 String avdName = "jenkins-android-test-$BUILD_ID"
 VersionService versionService = new VersionService(this, false)
 byte[] b = new byte[2000];
@@ -159,9 +159,9 @@ cat secret.txt | base64 --decode  | sed 's/zevrantandroidapp/zimage/g' > app/src
                     sh "bash gradlew clean bundle${variant.capitalize()} -PprojVersion='${version.toVersionCodeString()}' -PversionCode='${versionCode.toVersionCodeString()}' --info"
                     //for some reason gradle isn't signing like it's supposed to so we do it manually
 
-                    sh "jarsigner -verbose -sigalg SHA512withRSA -digestalg SHA-512 -keystore zevrant-services.p12 app/build/outputs/bundle/$variant/app-${variant}.aab -storepass \'$password\' key0"
-                    sh "jarsigner -verify -verbose app/build/outputs/bundle/$variant/app-${variant}.aab zevrant-services-unsigned.aab"
-                    sh 'mv app/build/outputs/bundle/release/app-release.aab app-release.aab'
+                    sh "jarsigner -verbose -sigalg SHA512withRSA -digestalg SHA-512 -keystore zevrant-services.p12 app/build/outputs/bundle/developRelease/app-develop-release.aab -storepass \'$password\' key0"
+                    sh "jarsigner -verify -verbose app/build/outputs/bundle/developRelease/app-develop-release.aab"
+                    sh 'mv app/build/outputs/bundle/release/app-develop-release.aab app-release.aab'
                     archiveArtifacts(artifacts: "app-release.aab")
                 }
             }
