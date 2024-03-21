@@ -41,7 +41,7 @@ pipeline {
                             trackName:  'internal',
                             rolloutPercentage: '100',
                             filesPattern: "*.aab",
-                            release_status: 'inProgress'
+                            release_status: 'draft'
                     )
                     archiveArtifacts('app-release.aab')
                 }
