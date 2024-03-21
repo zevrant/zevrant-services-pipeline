@@ -39,9 +39,8 @@ pipeline {
                     androidApkUpload(
                             googleCredentialsId: 'google-play-console-developer',
                             trackName:  'internal',
-                            rolloutPercentage: '100',
+                            rolloutPercentage: '0',
                             filesPattern: "*.aab",
-                            release_status: 'draft'
                     )
                     archiveArtifacts('app-release.aab')
                 }
