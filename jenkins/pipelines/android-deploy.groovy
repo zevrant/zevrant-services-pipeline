@@ -40,7 +40,8 @@ pipeline {
                             googleCredentialsId: 'google-play-console-developer',
                             trackName:  'internal',
                             rolloutPercentage: '100',
-                            filesPattern: "*.aab"
+                            filesPattern: "*.aab",
+                            release_status: 'inProgress'
                     )
                     archiveArtifacts('app-release.aab')
                 }
@@ -50,7 +51,7 @@ pipeline {
     post {
         always {
             script {
-                String appName = "${REPOSITORY.split("-")[1].capitalize()} ${REPOSITORY.split("-")[2].capitalize()}"
+                String appName = REPOSITORY.collect({ it.capitalize() }).join('-')
                 new NotificationService(this).sendDiscordNotification(
                         "Jenkins Push to ${ENVIRONMENT.toLowerCase().capitalize()} for ${appName}: ${currentBuild.currentResult}",
                         env.BUILD_URL,
