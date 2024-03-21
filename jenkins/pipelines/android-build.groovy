@@ -174,7 +174,7 @@ cat secret.txt | base64 --decode  | sed 's/zevrantandroidapp/zimage/g' > app/src
             steps {
                 script {
                     versionService.incrementVersion(REPOSITORY as String, version)
-                    versionService.incrementVersionCode(REPOSITORY as String, versionCode)
+                    versionService.incrementVersionCode("${REPOSITORY}-code" as String, versionCode)
                 }
             }
         }
@@ -184,7 +184,7 @@ cat secret.txt | base64 --decode  | sed 's/zevrantandroidapp/zimage/g' > app/src
                 script {
                     String[] repositorySplit = REPOSITORY.split("-")
                     build(
-                            job: "Android/${repositorySplit.join(' ')}/${repositorySplit.collect({ it.capitalize() }).join('-')}-Release-To-Internal-Testing" as String, parameters: [
+                            job: "Android/${repositorySplit.join(' ').toLowerCase()}/${repositorySplit.collect({ it.capitalize() }).join('-')}-Release-To-Internal-Testing" as String, parameters: [
                     ],
                             wait: false
                     )
