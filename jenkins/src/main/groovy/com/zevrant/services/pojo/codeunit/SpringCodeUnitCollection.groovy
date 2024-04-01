@@ -10,19 +10,19 @@ class SpringCodeUnitCollection {
                     serviceType: ServiceType.STATEFULSET,
                     postgresDatabase: true,
                     databaseName: 'backup',
-                    enabled: true
+                    enabled: false
             ]),
             new SpringCodeUnit([
                     name: 'acra-backend',
-                    enabled: true
+                    enabled: false
             ]),
             new SpringCodeUnit([
                     name: 'ui-core',
-                    enabled: true
+                    enabled: false
             ]),
             new SpringCodeUnit([
                     name: 'oauth2-service',
-                    enabled: true
+                    enabled: false
             ]),
             new SpringCodeUnit([
                     name: 'notification-service',

@@ -20,7 +20,7 @@ apiVersion: v1
 kind: Service
 metadata:
   namespace: monitoring
-  name: prometheus-thanos
+  name: prometheus
 spec:
   ports:
     - port: 10902
@@ -114,15 +114,14 @@ spec:
 ---
 
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: prometheus
   namespace: monitoring
   labels:
     app: prometheus
 spec:
-  strategy:
-    type: Recreate
+  serviceName: prometheus
   replicas: 1
   selector:
     matchLabels:
@@ -168,7 +167,7 @@ spec:
           volumeMounts:
             - name: prometheus-config
               mountPath: /etc/prometheus/
-            - name: prometheus-data
+            - name: metrics-database
               mountPath: /prometheus
             - name: prometheus-cert
               mountPath: /var/run/zevrant-services/prometheus-certs/
@@ -198,7 +197,15 @@ spec:
               port: 9090
             failureThreshold: 3
             periodSeconds: 5
-
+  volumeClaimTemplates:
+    - metadata:
+        name: metrics-database
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: '150Gi'
 
 ---
 
@@ -216,19 +223,18 @@ data:
         cluster: preprod
         env: monitoring
         region: us-east-1
-    remote_write: 
-      - url: https://thanos-receive.preprod.zevrant-services.internal/api/v1/receive
-        tls_config:
-          ca_file: /var/run/zevrant-services/prometheus-certs/tls.crt
-          cert_file: /var/run/zevrant-services/prometheus-certs/tls.crt
-          key_file: /var/run/zevrant-services/prometheus-certs/tls.key
+    #remote_write: 
+    #  - url: https://thanos-receive.preprod.zevrant-services.internal/api/v1/receive
+    #    tls_config:
+    #      ca_file: /var/run/zevrant-services/prometheus-certs/tls.crt
+    #      cert_file: /var/run/zevrant-services/prometheus-certs/tls.crt
+    #      key_file: /var/run/zevrant-services/prometheus-certs/tls.key
     scrape_configs:
-      - job_name: x509-certificate-exporter
-        honor_timestamps: true
+      - job_name: water-level-sensor
         metrics_path: /metrics
         static_configs:
           - targets:
-            - x509-certificate-exporter.monitoring.svc.cluster.local:9793
+              - 192.168.1.53
       - job_name: ceph-exporter
         static_configs: 
           - targets:
@@ -240,18 +246,18 @@ data:
       - job_name: node-exporter
         static_configs:
           - targets:
-              - kubernetes-master-01.preprod.zevrant-services.internal:9100
-              - kubernetes-master-02.preprod.zevrant-services.internal:9100
+    #          - kubernetes-master-01.preprod.zevrant-services.internal:9100
+    #          - kubernetes-master-02.preprod.zevrant-services.internal:9100
               - kubernetes-master-03.preprod.zevrant-services.internal:9100
               - kubernetes-master-04.preprod.zevrant-services.internal:9100
               - kubernetes-master-05.preprod.zevrant-services.internal:9100
-              - kubernetes-worker-01.preprod.zevrant-services.internal:9100
-              - kubernetes-worker-02.preprod.zevrant-services.internal:9100
+    #          - kubernetes-worker-01.preprod.zevrant-services.internal:9100
+    #          - kubernetes-worker-02.preprod.zevrant-services.internal:9100
               - kubernetes-worker-03.preprod.zevrant-services.internal:9100
               - kubernetes-worker-04.preprod.zevrant-services.internal:9100
               - kubernetes-worker-05.preprod.zevrant-services.internal:9100
-              - proxmox-01.preprod.zevrant-services.internal:9100
-              - proxmox-02.preprod.zevrant-services.internal:9100
+    #          - proxmox-01.preprod.zevrant-services.internal:9100
+    #          - proxmox-02.preprod.zevrant-services.internal:9100
               - proxmox-04.preprod.zevrant-services.internal:9100
               - proxmox-05.preprod.zevrant-services.internal:9100
               - proxmox-06.preprod.zevrant-services.internal:9100
