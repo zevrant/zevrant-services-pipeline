@@ -51,6 +51,9 @@ pipeline {
 //                                    certsToRotate.add(new CertRotationInfo(service.name, null, null, KubernetesEnvironment.PROD.getNamespaceName()))
 //                                }
                             }
+                    if (!certificateService.isCertificateValid("https://jenkins.zevrant-services.internal")) {
+                        build job: "Admin Utilities/restart-jenkins", wait: true
+                    }
                 }
             }
         }
