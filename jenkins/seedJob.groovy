@@ -1,13 +1,6 @@
 @Library('CommonUtils') _
 
 
-import com.zevrant.services.pojo.containers.Image
-import com.zevrant.services.services.GitService
-import com.zevrant.services.services.ImageBuildService
-
-GitService gitService = new GitService(this)
-ImageBuildService imageBuildService = new ImageBuildService(this)
-List<Image> images = []
 pipeline {
     agent {
         label 'master-node'
