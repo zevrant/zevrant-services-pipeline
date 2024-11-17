@@ -144,6 +144,7 @@ spec:
               path: /targets
               port: 9080
             periodSeconds: 5
+            timeoutSeconds: 4
             failureThreshold: 4
             successThreshold: 1
           livenessProbe:
@@ -153,6 +154,7 @@ spec:
               port: 9080
             periodSeconds: 5
             failureThreshold: 3
+            timeoutSeconds: 4
             successThreshold: 1
           resources:
             requests:
@@ -212,6 +214,8 @@ data:
         relabel_configs:
           - source_labels: ['__syslog_message_hostname']
             target_label: 'hostname'
+          - source_labels: ['__syslog_message_severity']
+            target_label: 'severity'
       - job_name: syslog
         syslog:
           listen_address: 0.0.0.0:1514
@@ -223,6 +227,8 @@ data:
         relabel_configs:
           - source_labels: ['__syslog_message_hostname']
             target_label: 'hostname'
+          - source_labels: ['__syslog_message_severity']
+            target_label: 'severity
       - job_name: node-logs
         static_configs:
           - targets:

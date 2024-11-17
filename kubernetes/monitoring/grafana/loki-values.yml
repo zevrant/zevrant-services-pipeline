@@ -1,5 +1,5 @@
 test_pod:
-  enabled: true
+  enabled: false
   image: bats/bats:1.8.2
   pullPolicy: Always
 
@@ -16,10 +16,10 @@ loki:
     type: s3
     s3:
       s3ForcePathStyle: true
-      endpoint: https://api.minio-monitoring.preprod.zevrant-services.internal/
+      endpoint: http://172.16.2.23:9000
       region: us-east-1
-      accessKeyId: ""
-      secretAccessKey: ""
+      accessKeyId: "MUQd6hwpY1NU7592cXTI"
+      secretAccessKey: "Qpqubg9g20nfF9mdHM469kRd64nkPzmvu6hUyH5F"
       http_config:
         ca_file: /var/run/certs/ca.crt
   readinessProbe:

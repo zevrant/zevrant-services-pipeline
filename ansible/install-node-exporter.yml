@@ -1,0 +1,49 @@
+- name: Setup Node Exporter
+  hosts: all
+  become: true
+  become_user: root
+  tasks:
+    - name: Create Node Exporter Systemd File
+      ansible.builtin.copy:
+        dest: /etc/systemd/system/node-exporter.service
+        content: |
+          [Unit]
+          Description=Node Exporter
+          Documentation=
+          
+          Wants=network.target
+          After=network.target
+          
+          [Service]
+          User=node-exporter
+          
+          WorkingDirectory=/opt/node-exporter
+          ExecStart=/opt/node-exporter/node_exporter
+          
+          [Install]
+          WantedBy=multi-user.target
+
+    - name: Create Node Exporter User
+      ansible.builtin.command:
+        cmd: adduser --system --shel /bin/false --no-create-home node-exporter
+    - name: Create Node Exporter Install Folder
+      ansible.builtin.file:
+        path: /opt/node-exporter
+        state: directory
+        mode: '0755'
+        owner: node-exporter
+        group: root
+    - name: Install Node Exporter
+      become_user: root
+      become: true
+      ansible.builtin.shell: |
+        #!/bin/bash
+        curl -L https://github.com/prometheus/node_exporter/releases/download/v1.8.2/node_exporter-1.8.2.linux-amd64.tar.gz -o node-exporter.tar.gz
+        tar xvf node-exporter.tar.gz
+        mv node_exporter-* node-exporter
+        mv node-exporter/* /opt/node-exporter
+        rm -rf node-exporter*
+        chown -R node-exporter:node-exporter /opt/node-exporter
+        systemctl daemon-reload
+        systemctl enable node-exporter --now
+

@@ -23,8 +23,8 @@ metadata:
   name: prometheus
 spec:
   ports:
-    - port: 10902
-      targetPort: 10902
+    - port: 9090
+      targetPort: 9090
       name: http
   selector:
     app: prometheus
@@ -217,7 +217,7 @@ metadata:
 data:
   prometheus.yml: |
     global:
-      scrape_interval: 10s
+      scrape_interval: 30s
       external_labels:
         replica: 0
         cluster: preprod
