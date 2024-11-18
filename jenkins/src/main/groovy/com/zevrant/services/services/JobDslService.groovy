@@ -195,35 +195,6 @@ class JobDslService extends Service {
 //                }
 //            }
 
-            factory{
-                remoteJenkinsFileWorkflowBranchProjectFactory{
-                    localMarker("")
-                    matchBranches(true)
-                    remoteJenkinsFile("Jenkinsfile")
-                    remoteJenkinsFileSCM{
-                        gitSCM{
-                            userRemoteConfigs{
-                                userRemoteConfig{
-                                    name("MyRepo") //Custom Repository Name or ID
-                                    url("https://github.com/aytuncbeken/multibranch-action-triggers-test.git") //URL for the repository
-                                    refspec("master") // Branch spec
-                                    credentialsId("") // Credential ID. Leave blank if not required
-                                }
-                                browser{} // Leave blank for default Git Browser
-                                gitTool("") //Leave blank for default git executable
-                            }
-                        }
-                    }
-                }
-            }
-
-            branchSources {
-                git {
-                    id('1')
-                    remote('https://github.com/jenkinsci/remote-file-plugin.git')
-                    includes('master')
-                }
-            }
 
 //            branchSources {
 //                branchSource {
