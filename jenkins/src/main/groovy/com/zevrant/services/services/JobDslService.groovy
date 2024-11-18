@@ -157,9 +157,9 @@ class JobDslService extends Service {
 //        dslContext.multibranchPipelineJob(folderName + codeUnit.name + "-multibranch") {
         dslContext.multibranchPipelineJob(codeUnit.name + "-multibranch") {
             displayName jobName + " Multibranch"
-            factory {
-                remoteJenkinsFileWorkflowBranchProjectFactory {
-                    localMarker("")
+//            factory {
+//                remoteJenkinsFileWorkflowBranchProjectFactory {
+//                    localMarker("")
 //                    matchBranches(false)
 //                    remoteJenkinsFile codeUnit.applicationType.getRemoteJenkinsfile()
 //                    remoteJenkinsFileSCM {
@@ -192,34 +192,65 @@ class JobDslService extends Service {
 //                            }
 //                        }
 //                    }
-                }
-            }
-            branchSources {
-                branchSource {
-                    source {
-                        giteaSCMSource {
-                            serverUrl("https://${codeUnit.repo.hostName}")
-                            repoOwner(codeUnit.repo.org)
-                            repository(codeUnit.name)
-                            credentialsId(codeUnit.repo.credentialsId)
-                            id(codeUnit.name)
-                            traits {
-                                giteaPullRequestDiscovery {
-                                    strategyId(0)
+//                }
+//            }
+
+            factory{
+                remoteJenkinsFileWorkflowBranchProjectFactory{
+                    localMarker("")
+                    matchBranches(true)
+                    remoteJenkinsFile("Jenkinsfile")
+                    remoteJenkinsFileSCM{
+                        gitSCM{
+                            userRemoteConfigs{
+                                userRemoteConfig{
+                                    name("MyRepo") //Custom Repository Name or ID
+                                    url("https://github.com/aytuncbeken/multibranch-action-triggers-test.git") //URL for the repository
+                                    refspec("master") // Branch spec
+                                    credentialsId("") // Credential ID. Leave blank if not required
                                 }
-                                headWildcardFilter {
-                                    includes('main PR-*')
-                                    excludes('')
-                                }
-                                giteaBranchDiscovery {
-                                    strategyId(3)
-                                }
-                                wipeWorkspaceTrait()
+                                browser{} // Leave blank for default Git Browser
+                                gitTool("") //Leave blank for default git executable
                             }
                         }
                     }
                 }
             }
+
+            branchSources {
+                git {
+                    id('1')
+                    remote('https://github.com/jenkinsci/remote-file-plugin.git')
+                    includes('master')
+                }
+            }
+
+//            branchSources {
+//                branchSource {
+//                    source {
+//                        giteaSCMSource {
+//                            serverUrl("https://${codeUnit.repo.hostName}")
+//                            repoOwner(codeUnit.repo.org)
+//                            repository(codeUnit.name)
+//                            credentialsId(codeUnit.repo.credentialsId)
+//                            id(codeUnit.name)
+//                            traits {
+//                                giteaPullRequestDiscovery {
+//                                    strategyId(0)
+//                                }
+//                                headWildcardFilter {
+//                                    includes('main PR-*')
+//                                    excludes('')
+//                                }
+//                                giteaBranchDiscovery {
+//                                    strategyId(3)
+//                                }
+//                                wipeWorkspaceTrait()
+//                            }
+//                        }
+//                    }
+//                }
+//            }
         }
         return '';
     }
