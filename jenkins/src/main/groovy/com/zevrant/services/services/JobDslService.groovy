@@ -159,7 +159,7 @@ class JobDslService extends Service {
             displayName jobName + " Multibranch"
             factory {
                 remoteJenkinsFileWorkflowBranchProjectFactory {
-//                    localMarker("")
+                    localMarker("")
 //                    matchBranches(false)
 //                    remoteJenkinsFile codeUnit.applicationType.getRemoteJenkinsfile()
 //                    remoteJenkinsFileSCM {
