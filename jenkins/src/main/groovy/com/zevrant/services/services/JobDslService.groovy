@@ -158,41 +158,41 @@ class JobDslService extends Service {
         dslContext.multibranchPipelineJob(codeUnit.name + "-multibranch") {
             displayName jobName + " Multibranch"
             factory {
-                remoteJenkinsFileWorkflowBranchProjectFactory {
-                    localMarker("")
-                    matchBranches(false)
-                    remoteJenkinsFile codeUnit.applicationType.getRemoteJenkinsfile()
-                    remoteJenkinsFileSCM {
-                        gitSCM {
-                            branches {
-                                branchSpec {
-                                    name('main')
-                                }
-                            }
-                            extensions {
-                                wipeWorkspace()
-                                cloneOption {
-                                    shallow(true)
-                                    depth(1)
-                                    noTags(true)
-                                    reference("")
-                                    timeout(10)
-                                }
-                            }
-                            userRemoteConfigs {
-                                userRemoteConfig {
-                                    name("Zevrant Services Pipeline") //Custom Repository Name or ID
-                                    url("ssh://git@gitea.zevrant-services.internal:30121/zevrant-services/zevrant-services-pipeline.git")
-                                    //URL for the repository
-                                    refspec("main") // Branch spec
-                                    credentialsId("jenkins-git") // Credential ID. Leave blank if not required
-                                }
-                                browser {} // Leave blank for default Git Browser
-                                gitTool("") //Leave blank for default git executable
-                            }
-                        }
-                    }
-                }
+//                remoteJenkinsFileWorkflowBranchProjectFactory {
+//                    localMarker("")
+//                    matchBranches(false)
+//                    remoteJenkinsFile codeUnit.applicationType.getRemoteJenkinsfile()
+//                    remoteJenkinsFileSCM {
+//                        gitSCM {
+//                            branches {
+//                                branchSpec {
+//                                    name('main')
+//                                }
+//                            }
+//                            extensions {
+//                                wipeWorkspace()
+//                                cloneOption {
+//                                    shallow(true)
+//                                    depth(1)
+//                                    noTags(true)
+//                                    reference("")
+//                                    timeout(10)
+//                                }
+//                            }
+//                            userRemoteConfigs {
+//                                userRemoteConfig {
+//                                    name("Zevrant Services Pipeline") //Custom Repository Name or ID
+//                                    url("ssh://git@gitea.zevrant-services.internal:30121/zevrant-services/zevrant-services-pipeline.git")
+//                                    //URL for the repository
+//                                    refspec("main") // Branch spec
+//                                    credentialsId("jenkins-git") // Credential ID. Leave blank if not required
+//                                }
+//                                browser {} // Leave blank for default Git Browser
+//                                gitTool("") //Leave blank for default git executable
+//                            }
+//                        }
+//                    }
+//                }
             }
             branchSources {
                 branchSource {
