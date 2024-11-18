@@ -10,7 +10,7 @@ class CodeUnit {
     ApplicationType applicationType
 
     public CodeUnit(Map<String, Object> params) {
-        name = params.name
+        name = params.name as String
         repo = new GitRepo(name)
         applicationType = (ApplicationType) params.applicationType
     }
