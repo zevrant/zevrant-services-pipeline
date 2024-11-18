@@ -143,18 +143,19 @@ class JobDslService extends Service {
 
     String createMultibranch(CodeUnit codeUnit) {
         String jobName = ""
-        dslContext.folder(codeUnit.applicationType.value) {
-
-        }
-        String folderName = codeUnit.applicationType.value + "/"
+//        dslContext.folder(codeUnit.applicationType.value) {
+//
+//        }
+//        String folderName = codeUnit.applicationType.value + "/"
         codeUnit.name.split("-").each { name -> jobName += name.capitalize() + " " }
         jobName = jobName.trim()
         folderName += jobName.replaceAll(" ", "-").toLowerCase() + "/"
-        dslContext.folder(folderName.substring(0, folderName.length() - 1)) {
-            displayName(jobName)
-        }
+//        dslContext.folder(folderName.substring(0, folderName.length() - 1)) {
+//            displayName(jobName)
+//        }
 
-        dslContext.multibranchPipelineJob(folderName + codeUnit.name + "-multibranch") {
+//        dslContext.multibranchPipelineJob(folderName + codeUnit.name + "-multibranch") {
+        dslContext.multibranchPipelineJob(codeUnit.name + "-multibranch") {
             displayName jobName + " Multibranch"
             factory {
                 remoteJenkinsFileWorkflowBranchProjectFactory {
@@ -220,7 +221,7 @@ class JobDslService extends Service {
                 }
             }
         }
-        return folderName;
+        return '';
     }
 }
 
