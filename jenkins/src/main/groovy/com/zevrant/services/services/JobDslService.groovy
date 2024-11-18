@@ -146,7 +146,7 @@ class JobDslService extends Service {
 //        dslContext.folder(codeUnit.applicationType.value) {
 //
 //        }
-//        String folderName = codeUnit.applicationType.value + "/"
+        String folderName = codeUnit.applicationType.value + "/"
 //        codeUnit.name.split("-").each { name -> jobName += name.capitalize() + " " }
 //        jobName = jobName.trim()
 //        folderName += jobName.replaceAll(" ", "-").toLowerCase() + "/"
