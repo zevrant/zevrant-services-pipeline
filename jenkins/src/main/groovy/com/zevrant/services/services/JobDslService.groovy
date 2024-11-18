@@ -143,7 +143,7 @@ class JobDslService extends Service {
 
     String createMultibranch(CodeUnit codeUnit) {
         String jobName = ""
-        dslContext.folder(codeUnit.applicationType.value) {
+        dslContext.folder(codeUnit.applicationType.value as String) {
 
         }
         String folderName = codeUnit.applicationType.value + "/"
