@@ -155,7 +155,7 @@ class JobDslService extends Service {
 //        }
 
 //        dslContext.multibranchPipelineJob(folderName + codeUnit.name + "-multibranch") {
-//        dslContext.multibranchPipelineJob(codeUnit.name + "-multibranch") {
+        dslContext.multibranchPipelineJob(codeUnit.name + "-multibranch") {
 //            displayName jobName + " Multibranch"
 //            factory {
 //                remoteJenkinsFileWorkflowBranchProjectFactory {
@@ -222,7 +222,7 @@ class JobDslService extends Service {
 //                    }
 //                }
 //            }
-//        }
+        }
         return '';
     }
 }
