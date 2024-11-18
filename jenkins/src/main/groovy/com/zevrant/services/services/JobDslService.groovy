@@ -158,7 +158,7 @@ class JobDslService extends Service {
         dslContext.multibranchPipelineJob(codeUnit.name + "-multibranch") {
             displayName jobName + " Multibranch"
             factory {
-//                remoteJenkinsFileWorkflowBranchProjectFactory {
+                remoteJenkinsFileWorkflowBranchProjectFactory {
 //                    localMarker("")
 //                    matchBranches(false)
 //                    remoteJenkinsFile codeUnit.applicationType.getRemoteJenkinsfile()
@@ -192,7 +192,7 @@ class JobDslService extends Service {
 //                            }
 //                        }
 //                    }
-//                }
+                }
             }
             branchSources {
                 branchSource {
