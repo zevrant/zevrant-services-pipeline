@@ -147,16 +147,16 @@ class JobDslService extends Service {
 //
 //        }
 //        String folderName = codeUnit.applicationType.value + "/"
-        codeUnit.name.split("-").each { name -> jobName += name.capitalize() + " " }
-        jobName = jobName.trim()
+//        codeUnit.name.split("-").each { name -> jobName += name.capitalize() + " " }
+//        jobName = jobName.trim()
 //        folderName += jobName.replaceAll(" ", "-").toLowerCase() + "/"
 //        dslContext.folder(folderName.substring(0, folderName.length() - 1)) {
 //            displayName(jobName)
 //        }
 
 //        dslContext.multibranchPipelineJob(folderName + codeUnit.name + "-multibranch") {
-        dslContext.multibranchPipelineJob(codeUnit.name + "-multibranch") {
-            displayName jobName + " Multibranch"
+//        dslContext.multibranchPipelineJob(codeUnit.name + "-multibranch") {
+//            displayName jobName + " Multibranch"
 //            factory {
 //                remoteJenkinsFileWorkflowBranchProjectFactory {
 //                    localMarker("")
@@ -222,7 +222,7 @@ class JobDslService extends Service {
 //                    }
 //                }
 //            }
-        }
+//        }
         return '';
     }
 }
