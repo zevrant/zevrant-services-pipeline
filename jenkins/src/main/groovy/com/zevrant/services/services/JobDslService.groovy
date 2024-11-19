@@ -149,12 +149,12 @@ class JobDslService extends Service {
         }
         codeUnit.name.split("-").each { name -> jobName += name.capitalize() + " " }
         jobName = jobName.trim()
-        String folderName = appFolderName + jobName.replaceAll(" ", "-").toLowerCase() + "/"
-//        dslContext.folder(folderName.substring(0, folderName.length() - 1)) {
-//            displayName(jobName)
-//        }
+        String folderName = appFolderName + '/' + jobName.replaceAll(" ", "-").toLowerCase() + "/"
+        dslContext.folder(folderName.substring(0, folderName.length() - 1)) {
+            displayName(jobName)
+        }
 
-        dslContext.multibranchPipelineJob('test' as String) {
+        dslContext.multibranchPipelineJob(folderName + '/' + jobName + '-multibranch') {
 //            displayName jobName + " Multibranch"
 //            factory {
 //                remoteJenkinsFileWorkflowBranchProjectFactory {
