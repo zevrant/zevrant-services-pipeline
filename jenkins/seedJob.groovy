@@ -12,21 +12,13 @@ pipeline {
                 script {
                     sh 'ls -l'
                     jobDsl(
-//                            targets: 'jenkins/seed.groovy',
+                            targets: 'jenkins/seed.groovy',
                             removedJobAction: 'DELETE',
                             removedViewAction: 'DELETE',
                             removedConfigFilesAction: 'DELETE',
                             lookupStrategy: 'SEED_JOB',
                             failOnMissingPlugin: true,
                             additionalClasspath: 'jenkins/src/main/groovy', //only works with
-                            useScriptText: true,
-                            scriptText: """
-
-
- new JobDslService(this).createMultibranch(new CodeUnit([
-        name: 'jenkins-cac',
-        applicationType: ApplicationType.JENKINS_CAC
-]))
 """
                     )
                 }
