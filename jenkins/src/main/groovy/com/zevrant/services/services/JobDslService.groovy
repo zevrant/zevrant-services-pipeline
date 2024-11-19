@@ -155,7 +155,7 @@ class JobDslService extends Service {
 //            displayName(jobName)
 //        }
 
-        dslContext.folder(folderName) {}
+//        dslContext.folder(folderName) {}
 
         dslContext.multibranchPipelineJob('/test') {
 //            displayName jobName + " Multibranch"
