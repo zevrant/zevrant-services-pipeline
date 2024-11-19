@@ -157,7 +157,7 @@ class JobDslService extends Service {
 
         dslContext.folder(folderName) {}
 
-        dslContext.multibranchPipelineJob(folderName + "-multibranch") {
+        dslContext.multibranchPipelineJob(folderName +'test') {
 //            displayName jobName + " Multibranch"
 //            factory {
 //                remoteJenkinsFileWorkflowBranchProjectFactory {
