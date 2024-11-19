@@ -155,6 +155,8 @@ class JobDslService extends Service {
 //            displayName(jobName)
 //        }
 
+        dslContext.folder(folderName) {}
+
         dslContext.multibranchPipelineJob(folderName + "-multibranch") {
 //            displayName jobName + " Multibranch"
 //            factory {
