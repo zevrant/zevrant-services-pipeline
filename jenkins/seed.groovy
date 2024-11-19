@@ -14,11 +14,11 @@ import com.zevrant.services.services.JobDslService
 
 JobDslService jobDslService = new JobDslService(this)
 
-folder('games'){
+folder('/games'){
     displayName('Games')
 }
 
-folder('containers') {
+folder('/containers') {
     displayName('Containers')
 }
 
