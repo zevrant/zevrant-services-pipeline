@@ -143,19 +143,16 @@ class JobDslService extends Service {
 
     String createMultibranch(CodeUnit codeUnit) {
 //        String jobName = ""
-        dslContext.folder("/" + codeUnit.applicationType.value as String) {
+        String appFolderName = "/" + codeUnit.applicationType.value as String
+        dslContext.folder(appFolderName) {
 
         }
-//        String folderName = codeUnit.applicationType.value + "/"
-//        String folderName = "/test-folder/"
-//        codeUnit.name.split("-").each { name -> jobName += name.capitalize() + " " }
-//        jobName = jobName.trim()
-//        folderName += jobName.replaceAll(" ", "-").toLowerCase() + "/"
-//        dslContext.folder(folderName.substring(0, folderName.length() - 1)) {
-//            displayName(jobName)
-//        }
-
-//        dslContext.folder(folderName) {}
+        codeUnit.name.split("-").each { name -> jobName += name.capitalize() + " " }
+        jobName = jobName.trim()
+        String folderName = appFolderName + jobName.replaceAll(" ", "-").toLowerCase() + "/"
+        dslContext.folder(folderName.substring(0, folderName.length() - 1)) {
+            displayName(jobName)
+        }
 
         dslContext.multibranchPipelineJob('test' as String) {
 //            displayName jobName + " Multibranch"
