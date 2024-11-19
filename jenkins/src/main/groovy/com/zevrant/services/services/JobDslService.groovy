@@ -149,7 +149,7 @@ class JobDslService extends Service {
         }
         codeUnit.name.split("-").each { name -> jobName += name.capitalize() + " " }
         jobName = jobName.trim()
-        String folderName = appFolderName + '/' + jobName.replaceAll(" ", "-").toLowerCase() + "/"
+        String folderName = appFolderName + '/' + jobName.replaceAll(" ", "-").toLowerCase()
         dslContext.folder(folderName.substring(0, folderName.length() - 1)) {
             displayName(jobName)
         }
