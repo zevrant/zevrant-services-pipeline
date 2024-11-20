@@ -3,6 +3,7 @@ package com.zevrant.services.services
 import com.zevrant.services.enumerations.PipelineTriggerType
 import com.zevrant.services.pojo.Pipeline
 import com.zevrant.services.pojo.codeunit.CodeUnit
+import org.apache.commons.lang.StringUtils
 
 import static com.zevrant.services.enumerations.PipelineTriggerType.UPSTREAM
 
@@ -13,7 +14,7 @@ class JobDslService extends Service {
     }
 
     void createPipeline(String folder, Pipeline pipeline) {
-        folder = (folder == null) ? "" : folder
+        folder = (StringUtils.isNotBlank(folder)) ? "/" : folder
         folder = (folder.lastIndexOf('/') == folder.length() - 1) ? folder.substring(0, Math.max(0, folder.length() - 1)) : folder
         folder = ('/' == folder.charAt(0).toString())? folder : '/' + folder
         dslContext.pipelineJob(folder + "/" + pipeline.name) {
