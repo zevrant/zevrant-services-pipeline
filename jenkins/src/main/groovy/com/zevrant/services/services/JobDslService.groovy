@@ -224,7 +224,7 @@ class JobDslService extends Service {
                 }
             }
         }
-        return '';
+        return folderName;
     }
 }
 
