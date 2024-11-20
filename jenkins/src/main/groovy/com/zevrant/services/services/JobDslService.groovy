@@ -15,6 +15,9 @@ class JobDslService extends Service {
 
     void createPipeline(String folder, Pipeline pipeline) {
         dslContext.println(folder)
+        if (StringUtils.isBlank(folder) && pipeline.name == 'container-build') {
+            throw new RuntimeException("container build for ${pipeline.envs.repository}should not be in the root folder", )
+        }
         folder = (StringUtils.isNotBlank(folder)) ? "/" : folder
         folder = (folder.lastIndexOf('/') == folder.length() - 1 && folder.length() > 1) ? folder.substring(0, Math.max(0, folder.length() - 1)) : folder
         folder = (folder.length() == 0 || '/' == folder.charAt(0).toString())? folder : '/' + folder
