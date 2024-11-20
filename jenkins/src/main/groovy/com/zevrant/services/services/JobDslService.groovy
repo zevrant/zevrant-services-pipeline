@@ -15,7 +15,7 @@ class JobDslService extends Service {
 
     void createPipeline(String folder, Pipeline pipeline) {
         folder = (StringUtils.isNotBlank(folder)) ? "/" : folder
-        folder = (folder.lastIndexOf('/') == folder.length() - 1) ? folder.substring(0, Math.max(0, folder.length() - 1)) : folder
+        folder = (folder.lastIndexOf('/') == folder.length() - 1 && folder.length() > 1) ? folder.substring(0, Math.max(0, folder.length() - 1)) : folder
         folder = ('/' == folder.charAt(0).toString())? folder : '/' + folder
         dslContext.pipelineJob(folder + "/" + pipeline.name) {
             description pipeline.description
