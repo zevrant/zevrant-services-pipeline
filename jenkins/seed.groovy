@@ -28,7 +28,6 @@ LibraryCodeUnitCollection.libraries.each { libraryCodeUnit ->
 
 SpringCodeUnitCollection.microservices.each { springCodeUnit ->
     String folder = jobDslService.createMultibranch(springCodeUnit as CodeUnit)
-    dslContext.println(folder)
     Pipeline containerBuild = new Pipeline([
             name               : 'container-build',
             description        : "Build containers for ${springCodeUnit.name}",
