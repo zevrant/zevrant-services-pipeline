@@ -14,7 +14,7 @@ class JobDslService extends Service {
     }
 
     void createPipeline(String folder, Pipeline pipeline) {
-        dslContext.println(folder + " " + pipeline.envs.keySet() + " " + pipeline.envs.values())
+        dslContext.println(folder + " " + pipeline.envs.REPOSITORY + " " + pipeline.envs.values())
         if (StringUtils.isBlank(folder.trim()) && pipeline.name == 'container-build') {
             throw new RuntimeException("container build for ${pipeline.envs.repository}should not be in the root folder", )
         }
@@ -92,7 +92,7 @@ class JobDslService extends Service {
                                         }
                                         break;
                                     case PipelineTriggerType.GENERIC:
-                                        println "WARN: Ignoring Generic trigger as it is not yet implemented"
+                                        dslContext.println "WARN: Ignoring Generic trigger as it is not yet implemented"
                                         break
                                     case UPSTREAM:
                                         upstream {
