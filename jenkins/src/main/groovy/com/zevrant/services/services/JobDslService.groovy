@@ -129,7 +129,7 @@ class JobDslService extends Service {
                                 url(pipeline.gitRepo)
                             }
 
-                            branch('main')
+                            branch('master')
 
                             browser {
                                 gitWeb("https://github.com:zevrant/zevrant-services-pipeline")
