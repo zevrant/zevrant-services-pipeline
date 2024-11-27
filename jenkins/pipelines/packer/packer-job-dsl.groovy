@@ -9,9 +9,6 @@ import org.apache.commons.lang.StringUtils
 
 JobDslService jobDslService = new JobDslService(this)
 
-folder('/packer') {
-    displayName('Packer')
-}
 
 (images as List<PackerCodeUnit>).each { image ->
     List<PipelineTrigger> pipelineTriggers = []

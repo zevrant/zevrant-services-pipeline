@@ -22,6 +22,10 @@ folder('/containers') {
     displayName('Containers')
 }
 
+folder('/packer') {
+    displayName('Packer')
+}
+
 LibraryCodeUnitCollection.libraries.each { libraryCodeUnit ->
     jobDslService.createMultibranch((CodeUnit) libraryCodeUnit)
 }
