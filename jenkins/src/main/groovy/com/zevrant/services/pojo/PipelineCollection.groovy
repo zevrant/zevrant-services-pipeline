@@ -17,7 +17,7 @@ class PipelineCollection {
                                     value: "0 3 * * 6")
                     ]),
                     envs: [
-                            FOLDER_PATH: 'containers'
+                            FOLDER_PATH: '/containers'
                     ]
             ),
             new Pipeline(
@@ -107,9 +107,6 @@ class PipelineCollection {
 //                                    type: PipelineTriggerType.CRON,
 //                                    value: "0 3 * * 6")
 //                    ]),
-//                    envs: [
-//                            FOLDER_PATH: 'containers'
-//                    ]
 //            ),
     ])
 }
