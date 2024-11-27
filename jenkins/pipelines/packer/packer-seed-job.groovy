@@ -7,7 +7,7 @@ import com.zevrant.services.pojo.codeunit.PackerCodeUnitCollection
 
 pipeline {
     agent {
-        label 'master'
+        label 'master-node'
     }
 
     steps {
