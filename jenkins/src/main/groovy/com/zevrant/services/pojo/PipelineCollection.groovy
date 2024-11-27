@@ -99,6 +99,7 @@ class PipelineCollection {
             new Pipeline(
                     name: "packer-seed-job",
                     folder: 'packer',
+                    gitRepo: 'git@github.com:zevrant/zevrant-services-pipeline.git',
                     description: "Pipeline to build base docker images",
                     jenkinsfileLocation: "jenkins/pipelines/packer/packer-seed-job.groovy",
                     credentialId: "jenkins-git",
