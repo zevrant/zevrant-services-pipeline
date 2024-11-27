@@ -18,7 +18,7 @@ class JobDslService extends Service {
         if (StringUtils.isBlank(folder.trim()) && pipeline.name == 'container-build') {
             throw new RuntimeException("container build for ${pipeline.envs.repository}should not be in the root folder", )
         }
-        folder = (StringUtils.isBlank(folder)) ? "/" : folder
+//        folder = (StringUtils.isBlank(folder)) ? "/" : folder
         folder = (folder.lastIndexOf('/') == folder.length() - 1 && folder.length() > 1) ? folder.substring(0, Math.max(0, folder.length() - 1)) : folder
         folder = (folder.length() == 0 || '/' == folder.charAt(0).toString())? folder : '/' + folder
         dslContext.println(folder + "/${pipeline.name}")
