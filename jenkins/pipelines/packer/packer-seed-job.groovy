@@ -7,7 +7,7 @@ pipeline {
         label 'master-node'
     }
 
-    steps {
+    stages {
         stage('Update Job Configurations') {
             steps {
                 script {
