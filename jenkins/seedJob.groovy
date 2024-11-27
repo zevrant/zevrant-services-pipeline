@@ -16,7 +16,7 @@ pipeline {
                             removedJobAction: 'DELETE',
                             removedViewAction: 'DELETE',
                             removedConfigFilesAction: 'DELETE',
-                            lookupStrategy: 'JENKINS_ROOT',
+                            lookupStrategy: 'SEED_JOB',
                             failOnMissingPlugin: true,
                             additionalClasspath: 'jenkins/src/main/groovy', //only works with
                             ignoreExisting: true,
