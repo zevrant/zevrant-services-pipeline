@@ -96,20 +96,20 @@ class PipelineCollection {
                             )
                     ])
             ),
-            new Pipeline(
-                    name: "packer-seed-job",
-                    folder: 'packer',
-                    description: "Pipeline to build base docker images",
-                    jenkinsfileLocation: "jenkins/pipelines/packer/packer-seed-job.groovy",
-                    credentialId: "jenkins-git",
-                    triggers: new ArrayList<>([
-                            new PipelineTrigger(
-                                    type: PipelineTriggerType.CRON,
-                                    value: "0 3 * * 6")
-                    ]),
-                    envs: [
-                            FOLDER_PATH: 'containers'
-                    ]
-            ),
+//            new Pipeline(
+//                    name: "packer-seed-job",
+//                    folder: 'packer',
+//                    description: "Pipeline to build base docker images",
+//                    jenkinsfileLocation: "jenkins/pipelines/packer/packer-seed-job.groovy",
+//                    credentialId: "jenkins-git",
+//                    triggers: new ArrayList<>([
+//                            new PipelineTrigger(
+//                                    type: PipelineTriggerType.CRON,
+//                                    value: "0 3 * * 6")
+//                    ]),
+//                    envs: [
+//                            FOLDER_PATH: 'containers'
+//                    ]
+//            ),
     ])
 }
