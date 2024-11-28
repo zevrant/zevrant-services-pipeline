@@ -1,6 +1,6 @@
 import com.zevrant.services.pojo.NotificationChannel
 import com.zevrant.services.pojo.Version
-import com.zevrant.services.services.KubernetesService
+import com.zevrant.services.services.kubernetesService
 import com.zevrant.services.services.NotificationService
 import com.zevrant.services.services.VersionService
 
@@ -9,7 +9,7 @@ String branchName = (BRANCH_NAME.startsWith('PR-')) ? CHANGE_BRANCH : BRANCH_NAM
 
 Version version;
 VersionService versionTasks = new VersionService(this)
-KubernetesService kubernetesService = new KubernetesService(this)
+kubernetesService kubernetesService = new kubernetesService(this)
 pipeline {
     agent {
         kubernetes {

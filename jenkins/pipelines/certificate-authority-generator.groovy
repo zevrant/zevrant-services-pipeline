@@ -4,12 +4,12 @@
 import com.lesfurets.jenkins.unit.global.lib.Library
 import com.zevrant.services.pojo.NotificationChannel
 import com.zevrant.services.services.CertificateService
-import com.zevrant.services.services.KubernetesService
+import com.zevrant.services.services.kubernetesService
 import com.zevrant.services.services.NotificationService
 
 import java.nio.charset.StandardCharsets
 
-KubernetesService kubernetesService = new KubernetesService(this)
+kubernetesService kubernetesService = new kubernetesService(this)
 CertificateService certificateService = new CertificateService(this)
 
 if (ENVIRONMENT == '' || ENVIRONMENT == null) {

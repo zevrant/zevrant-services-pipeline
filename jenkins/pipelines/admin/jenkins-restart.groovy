@@ -1,10 +1,10 @@
 import com.zevrant.services.pojo.NotificationChannel
-import com.zevrant.services.services.KubernetesService
+import com.zevrant.services.services.kubernetesService
 import com.zevrant.services.services.NotificationService
 
 @Library('CommonUtils')
 
-KubernetesService kubernetesService = new KubernetesService(this)
+kubernetesService kubernetesService = new kubernetesService(this)
 
 String keystore
 
