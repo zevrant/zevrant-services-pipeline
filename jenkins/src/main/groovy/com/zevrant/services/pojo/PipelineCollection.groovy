@@ -75,6 +75,7 @@ class PipelineCollection {
                     folder: 'Admin Utilities',
                     description: 'Pipeline intended to restart jenkins when it is time to reload certificates',
                     credentialId: 'jenkins-git',
+                    gitRepo: 'git@github.com:zevrant/zevrant-services.pipeline.git',
                     jenkinsfileLocation: 'jenkins/pipelines/admin/jenkins-restart.groovy',
                     disableResume: false,
                     triggers: new ArrayList<>([
