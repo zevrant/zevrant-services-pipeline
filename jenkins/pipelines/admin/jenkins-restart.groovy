@@ -1,4 +1,4 @@
-@Library('CommonUtils@master') _
+@Library('CommonUtil')
 
 import com.zevrant.services.pojo.NotificationChannel
 import com.zevrant.services.services.KubernetesService
