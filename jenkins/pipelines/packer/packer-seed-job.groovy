@@ -1,5 +1,9 @@
+package packer
+
 @Library('CommonUtils') _
 
+
+import com.lesfurets.jenkins.unit.global.lib.Library
 import com.zevrant.services.services.GitService
 
 
