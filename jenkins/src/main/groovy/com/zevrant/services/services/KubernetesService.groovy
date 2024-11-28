@@ -1,5 +1,3 @@
-package com.zevrant.services.services
-
 import com.zevrant.services.pojo.PodStatus
 
 import java.nio.charset.StandardCharsets
