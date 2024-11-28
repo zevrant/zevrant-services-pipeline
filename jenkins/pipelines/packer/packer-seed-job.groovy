@@ -3,7 +3,6 @@
 import com.zevrant.services.services.GitService
 
 
-GitService gitService = new GitService(this)
 
 pipeline {
     agent {
@@ -14,6 +13,8 @@ pipeline {
         stage('Retrieve Job Dsl') {
             steps {
                 script {
+                    GitService gitService = new GitService(this)
+
                     gitService.checkout('git@github.com', 'zevrant', 'zevrant-services-pipeline',
                             'master', 'jenkins-git')
                 }
