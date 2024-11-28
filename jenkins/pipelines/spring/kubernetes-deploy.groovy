@@ -7,7 +7,7 @@ import com.zevrant.services.pojo.codeunit.SpringCodeUnitCollection
 import com.zevrant.services.services.*
 
 CertificateService certificateService = new CertificateService(this)
-kubernetesService kubernetesService = new kubernetesService(this)
+KubernetesService kubernetesService = new KubernetesService(this)
 GitService gitService = new GitService(this)
 LinkedHashMap<String, Serializable> serviceNameOverrides = [
         'develop-zevrant-home-ui'     : '172.16.1.10',

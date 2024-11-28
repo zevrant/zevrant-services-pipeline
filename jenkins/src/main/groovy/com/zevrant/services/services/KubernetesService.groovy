@@ -5,9 +5,9 @@ import com.zevrant.services.pojo.PodStatus
 import java.nio.charset.StandardCharsets
 import java.time.LocalDateTime
 
-class kubernetesService extends Service {
+class KubernetesService extends Service {
 
-    kubernetesService(Object pipelineContext) {
+    KubernetesService(Object pipelineContext) {
         super(pipelineContext)
     }
 

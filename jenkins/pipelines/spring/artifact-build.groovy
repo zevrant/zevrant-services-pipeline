@@ -8,7 +8,7 @@ import com.zevrant.services.pojo.codeunit.SpringCodeUnit
 import com.zevrant.services.pojo.codeunit.SpringCodeUnitCollection
 import com.zevrant.services.services.GitService
 import com.zevrant.services.services.GradleService
-import com.zevrant.services.services.kubernetesService
+import com.zevrant.services.services.KubernetesService
 import com.zevrant.services.services.NotificationService
 import com.zevrant.services.services.VersionService
 
@@ -16,7 +16,7 @@ List<String> angularProjects = ["zevrant-home-ui"];
 
 String branchName = (BRANCH_NAME.startsWith('PR-')) ? CHANGE_BRANCH : BRANCH_NAME
 VersionService versionService = new VersionService(this)
-kubernetesService kubernetesService = new kubernetesService(this)
+KubernetesService kubernetesService = new KubernetesService(this)
 GradleService gradleService = new GradleService(this)
 GitService gitService = new GitService(this)
 
