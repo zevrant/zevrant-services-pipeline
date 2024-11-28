@@ -1,10 +1,9 @@
-package admin
+@Library('CommonUtils@master') _
 
 import com.zevrant.services.pojo.NotificationChannel
 import com.zevrant.services.services.KubernetesService
-import com.zevrant.services.services.NotificationService
 
-@Library('CommonUtils@master') _
+import com.zevrant.services.services.NotificationService
 
 KubernetesService kubernetesService = new KubernetesService(this)
 
