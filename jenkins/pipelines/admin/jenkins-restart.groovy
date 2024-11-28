@@ -1,6 +1,6 @@
 @Library('CommonUtils')
 
-import com.zevrant.services.pojo.NotificationChannel
+//import com.zevrant.services.pojo.NotificationChannel
 import com.zevrant.services.services.KubernetesService
 
 import com.zevrant.services.services.NotificationService
