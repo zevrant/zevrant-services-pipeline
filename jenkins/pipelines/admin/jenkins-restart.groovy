@@ -1,6 +1,5 @@
 package admin
 
-import com.lesfurets.jenkins.unit.global.lib.Library
 import com.zevrant.services.pojo.NotificationChannel
 import com.zevrant.services.services.KubernetesService
 import com.zevrant.services.services.NotificationService
