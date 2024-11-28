@@ -1,6 +1,9 @@
 @Library('CommonUtils') _
 
+import com.zevrant.services.services.GitService
 
+
+GitService gitService = new GitService(this)
 
 pipeline {
     agent {
@@ -8,6 +11,15 @@ pipeline {
     }
 
     stages {
+        stage('Retrieve Job Dsl') {
+            steps {
+                script {
+                    gitService.checkout('git@github.com', 'zevrant', 'zevrant-services-pipeline',
+                            'master', 'jenkins-git')
+                }
+            }
+        }
+
         stage('Update Job Configurations') {
             steps {
                 script {
