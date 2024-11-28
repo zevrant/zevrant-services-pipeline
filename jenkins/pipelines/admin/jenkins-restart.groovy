@@ -1,8 +1,11 @@
+package admin
+
+import com.lesfurets.jenkins.unit.global.lib.Library
 import com.zevrant.services.pojo.NotificationChannel
 import com.zevrant.services.services.kubernetesService
 import com.zevrant.services.services.NotificationService
 
-@Library('CommonUtils')
+@Library('CommonUtils') _
 
 kubernetesService kubernetesService = new kubernetesService(this)
 
