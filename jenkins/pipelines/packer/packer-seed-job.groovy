@@ -28,7 +28,7 @@ pipeline {
             steps {
                 script {
                     jobDsl(
-                            targets: 'jenkins/pipelines/packer/packer-job-dsl.groovy',
+                            targets: 'jenkins/pipelines/packer/packerJobDsl.groovy',
                             removedJobAction: 'DELETE',
                             removedViewAction: 'DELETE',
                             removedConfigFilesAction: 'DELETE',
