@@ -21,7 +21,7 @@ JobDslService jobDslService = new JobDslService(this)
 
     jobDslService.createPipeline('/packer/', new Pipeline([
             name               : "build-${image.name.split('/').collect({ it.toLowerCase() }).join('-')}",
-            gitRepo            : image.repo.getSshHostName(),
+            gitRepo            : image.repo.getSshUri(),
             jenkinsfileLocation: 'jenkins/pipelines/packer/packer-build.groovy',
             credentialId       : 'jenkins-git',
             envs               : new HashMap<>([
