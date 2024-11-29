@@ -54,6 +54,7 @@ pipeline {
             steps {
                 script {
                     dir(codeUnit.folderPath) {
+                        sh 'rm -f vars.yaml'
                         writeYaml(file: 'vars.yaml', data: codeUnit.extraArguments)
                         sh "packer build -var base_image_hash=${imageHash} ."
                         sh "mv build-output/${codeUnit.name} $outputFileName"
