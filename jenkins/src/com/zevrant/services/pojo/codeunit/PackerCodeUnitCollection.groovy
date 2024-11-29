@@ -13,7 +13,7 @@ class PackerCodeUnitCollection {
                 folderPath: 'base-vm',
                 repo: new GitRepo(
                         'github.com',  'git@github.com',
-                        'zevrant', 'packer-build-specs',  'jenkins-git'
+                        'zevrant', 'zevrant-services-pipeline',  'jenkins-git'
                 )
         )
     ])
