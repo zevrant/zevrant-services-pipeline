@@ -56,6 +56,7 @@ pipeline {
                     dir(codeUnit.folderPath) {
                         sh 'rm -f vars.yaml'
                         writeYaml(file: 'vars.yaml', data: codeUnit.extraArguments)
+                        sh 'packer init'
                         sh "packer build -var base_image_hash=${imageHash} ."
                         sh "mv build-output/packer-${codeUnit.name} $outputFileName"
                     }
