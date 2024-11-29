@@ -21,7 +21,7 @@ class GitService extends Service {
                         extensions       : [[$class: 'CloneOption', depth: 1, noTags: true, reference: '', shallow: true]],
                         userRemoteConfigs: [[
                                                     credentialsId: credentialsId,
-                                                    url          : "${hostname}/${org}/${repository}.git"
+                                                    url          : "${hostname}:${org}/${repository}.git"
                                             ]]
                 ]
         )
