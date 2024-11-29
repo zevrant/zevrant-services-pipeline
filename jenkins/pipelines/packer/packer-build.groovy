@@ -15,13 +15,16 @@ pipeline {
         label 'container-builder'
     }
     stages {
-        stage ('Validate Base Image') {
+        stage('Validate Base Image') {
             steps {
                 script {
                     retry(2, { //Retry is in case of a concurrent updates
                         if (StringUtils.isBlank(codeUnit.baseImageName)) {
                             //TODO Add GPG validation https://wiki.almalinux.org/cloud/Generic-cloud.html#verify-almalinux-9-images
-                            imageHash = httpRequest(url: 'https://repo.almalinux.org/almalinux/9/cloud/x86_64/images/CHECKSUM').content
+                            String baseImageHashes = httpRequest(url: 'https://repo.almalinux.org/almalinux/9/cloud/x86_64/images/CHECKSUM').content
+                            imageHash = baseImageHashes.split("\n")
+                                    .find { hash -> hash.contains('latest.x86_64') }
+                                    .split('\\h')[0]
                         } else {
                             String baseImageHash = readFile(file: "/opt/vm-images/${codeUnit.baseImageName}.sha512")
                             if (hashingService.getSha512SumFor("/opt/vm-images/${codeUnit.baseImageName}.qcow2") != baseImageHash) {
@@ -35,10 +38,10 @@ pipeline {
 
         }
 
-        stage ('Build Image') {
+        stage('Build Image') {
             steps {
                 script {
-                    dir (codeUnit.folderPath) {
+                    dir(codeUnit.folderPath) {
                         writeYaml(file: 'vars.yaml', data: codeUnit.extraArguments)
                         sh "packer build -var base_image_hash=${imageHash} ."
                         sh "mv build-output/${codeUnit.name} $outputFileName"
@@ -47,7 +50,7 @@ pipeline {
             }
         }
 
-        stage ('Upload Image & Hash') {
+        stage('Upload Image & Hash') {
             steps {
                 script {
                     String filehash = hashingService.getSha512SumFor(outputFileName)
