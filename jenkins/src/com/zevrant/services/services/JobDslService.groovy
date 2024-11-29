@@ -1,9 +1,9 @@
 package com.zevrant.services.services
 
 import com.zevrant.services.enumerations.PipelineTriggerType
-import Pipeline
-import CodeUnit
-import StringUtils
+import com.zevrant.services.pojo.Pipeline
+import com.zevrant.services.pojo.codeunit.CodeUnit
+import org.apache.commons.lang3.StringUtils
 
 import static com.zevrant.services.enumerations.PipelineTriggerType.UPSTREAM
 
