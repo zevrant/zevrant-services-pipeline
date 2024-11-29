@@ -11,7 +11,7 @@ class CodeUnit {
 
     public CodeUnit(Map<String, Object> params) {
         name = params.name as String
-        repo = new GitRepo(name)
+        repo = (params.repo != null)? params.repo as GitRepo :new GitRepo(name)
         applicationType = (ApplicationType) params.applicationType
     }
 }
