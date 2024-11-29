@@ -1,7 +1,7 @@
 package com.zevrant.services.services
 
 
-import com.zevrant.services.pojo.NotificationChannel
+import NotificationChannel
 
 class NotificationService extends Service {
 
@@ -14,7 +14,7 @@ class NotificationService extends Service {
     }
 
 
-    void sendDiscordNotification(String message, String link = '', String result = "SUCCESS",  String title, NotificationChannel channel) {
+    void sendDiscordNotification(String message, String link = '', String result = "SUCCESS", String title, NotificationChannel channel) {
         if(pipelineContext.env.sandboxMode != '' && pipelineContext.env.sandboxMode != null) {
             pipelineContext.println('Not sending notification because sandbox mode is enabled')
             return

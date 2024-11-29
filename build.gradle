@@ -2,11 +2,11 @@ apply plugin: 'groovy'
 
 sourceSets {
     main {
-        groovy.srcDirs = ["jenkins/src/main/groovy", "jenkins/pipelines"]
+        groovy.srcDirs = ["jenkins/src/", "jenkins/pipelines"]
     }
 
     test {
-        groovy.srcDirs = ["jenkins/src/test/groovy", "jenkins/pipelines"]
+        groovy.srcDirs = ["jenkins/test/groovy", "jenkins/pipelines"]
     }
 }
 

@@ -1,6 +1,6 @@
 package com.zevrant.services.services
 
-import com.zevrant.services.pojo.Version
+import Version
 
 Version getVersion(String applicationName) {
     Object parametersResponse = readJSON(text: (sh(returnStdout: true, script: 'aws ssm describe-parameters') as String))

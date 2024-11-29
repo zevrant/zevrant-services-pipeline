@@ -1,9 +1,9 @@
 package com.zevrant.services.services
 
-import com.zevrant.services.pojo.CertRotationInfo
-import com.zevrant.services.services.Service
-import com.zevrant.services.utils.DateTimeUtils
-import net.sf.json.JSONObject
+import CertRotationInfo
+import Service
+import DateTimeUtils
+import JSONObject
 
 import java.time.ZoneId
 import java.time.ZonedDateTime

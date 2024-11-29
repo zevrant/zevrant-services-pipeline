@@ -1,6 +1,6 @@
 package com.zevrant.services.services
 
-import com.cloudbees.groovy.cps.NonCPS
+import NonCPS
 
 import java.time.LocalDateTime
 import java.time.ZoneOffset

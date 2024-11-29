@@ -1,7 +1,7 @@
 package com.zevrant.services.services
 
-import com.zevrant.services.pojo.Version
-import com.zevrant.services.pojo.codeunit.SpringCodeUnit
+import Version
+import SpringCodeUnit
 
 class GradleService extends Service {
 

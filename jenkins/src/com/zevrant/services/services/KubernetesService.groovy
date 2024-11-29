@@ -1,4 +1,6 @@
-import com.zevrant.services.pojo.PodStatus
+package com.zevrant.services.services
+
+import PodStatus
 
 import java.nio.charset.StandardCharsets
 import java.time.LocalDateTime

@@ -1,7 +1,7 @@
 package com.zevrant.services.services
 
-import com.zevrant.services.pojo.containers.Image
-import net.sf.json.JSONObject
+import Image
+import JSONObject
 import org.jenkinsci.plugins.pipeline.utility.steps.fs.FileWrapper
 
 class ImageBuildService extends Service {

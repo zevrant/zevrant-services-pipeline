@@ -3,7 +3,7 @@ package com.zevrant.services
 import com.zevrant.services.services.GitService
 import com.zevrant.services.services.KubernetesService
 import com.zevrant.services.services.PostgresYamlConfigurer
-import com.zevrant.services.services.VersionService
+import VersionService
 //import com.zevrant.services.services.GooglePlayService
 class ServiceLoader {
     static List<Class> taskClassList() {
