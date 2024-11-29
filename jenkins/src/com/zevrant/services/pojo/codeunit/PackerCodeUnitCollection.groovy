@@ -7,7 +7,10 @@ class PackerCodeUnitCollection {
     ])
 
     static PackerCodeUnit findCodeUnitByName(String name) {
-        Optional<PackerCodeUnit> codeUnit = packerImages.stream().filter { codeUnit -> (codeUnit.name == name) }.findFirst()
-        return codeUnit.orElseThrow { () -> new RuntimeException("Packer Code Unit ${name} not found")}
+        Optional<PackerCodeUnit> codeUnitOptional = packerImages.stream().filter { codeUnit -> (codeUnit.name == name) }.findFirst()
+        if (codeUnitOptional.isEmpty()) {
+            throw new RuntimeException("Packer Code Unit ${name} not found")
+        }
+        return codeUnitOptional.get()
     }
 }
