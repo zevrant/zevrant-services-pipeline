@@ -7,7 +7,6 @@ import com.lesfurets.jenkins.unit.global.lib.Library
 import com.zevrant.services.services.GitService
 
 
-
 pipeline {
     agent {
         label 'master-node'
@@ -28,17 +27,15 @@ pipeline {
         stage('Update Job Configurations') {
             steps {
                 script {
-                    dir('pipeline') {
-                        jobDsl(
-                                targets: 'jenkins/pipelines/packer/packer-job-dsl.groovy',
-                                removedJobAction: 'DELETE',
-                                removedViewAction: 'DELETE',
-                                removedConfigFilesAction: 'DELETE',
-                                lookupStrategy: 'SEED_JOB',
-                                failOnMissingPlugin: true,
-                                additionalClasspath: 'jenkins/src/main/groovy', //only works with
-                        )
-                    }
+                    jobDsl(
+                            targets: 'jenkins/pipelines/packer/packer-job-dsl.groovy',
+                            removedJobAction: 'DELETE',
+                            removedViewAction: 'DELETE',
+                            removedConfigFilesAction: 'DELETE',
+                            lookupStrategy: 'SEED_JOB',
+                            failOnMissingPlugin: true,
+                            additionalClasspath: 'jenkins/src/main/groovy', //only works with
+                    )
                 }
             }
         }
