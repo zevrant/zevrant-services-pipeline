@@ -14,13 +14,13 @@ JobDslService jobDslService = new JobDslService(this)
     if (StringUtils.isNotBlank(image.baseImageName)) {
         pipelineTriggers.add(new PipelineTrigger([
                 type : PipelineTriggerType.UPSTREAM,
-                value: "/packer/build-${image.repo.repoName.split('/').collect({ it.toLowerCase() }).join('-')}"
+                value: "/packer/build-${image.name.split('/').collect({ it.toLowerCase() }).join('-')}"
         ]))
     }
 
 
     jobDslService.createPipeline('/packer/', new Pipeline([
-            name               : "build-${image.repo.repoName.split('/').collect({ it.toLowerCase() }).join('-')}",
+            name               : "build-${image.name.split('/').collect({ it.toLowerCase() }).join('-')}",
             gitRepo            : image.repo.getSshHostName(),
             jenkinsfileLocation: 'jenkins/pipelines/packer/packer-build.groovy',
             credentialId       : 'jenkins-git',
