@@ -22,7 +22,7 @@ pipeline {
             steps {
                 script {
                     gitService.checkout('git@github.com', 'zevrant', 'packer-build-specs',
-                                  'master', 'jenkins-git') {
+                                  'master', 'jenkins-git')
                 }
             }
         }
