@@ -11,9 +11,8 @@ PackerCodeUnit codeUnit = PackerCodeUnitCollection.findCodeUnitByName(NAME as St
 String imageHash = ''
 String outputFileName = "build-output/${codeUnit.name}.qcow2"
 pipeline {
-
     agent {
-        label 'container-build'
+        label 'container-builder'
     }
     stages {
         stage ('Validate Base Image') {
