@@ -19,7 +19,7 @@ class PackerCodeUnitCollection {
     ])
 
     static PackerCodeUnit findCodeUnitByName(String name) {
-        List<PackerCodeUnit> codeUnitCollection = packerImages.stream().filter { codeUnit -> (codeUnit.name == name) }.findAll().asList()
+        List<PackerCodeUnit> codeUnitCollection = packerImages.findAll({ codeUnit -> (codeUnit.name == name) }).asList()
         if (codeUnitCollection.isEmpty()) {
             throw new RuntimeException("Packer Code Unit ${name} not found")
         } else if (codeUnitCollection.size() > 1) {
