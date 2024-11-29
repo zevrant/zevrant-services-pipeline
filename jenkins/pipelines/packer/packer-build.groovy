@@ -3,6 +3,7 @@
 import com.zevrant.services.pojo.codeunit.PackerCodeUnit
 import com.zevrant.services.pojo.codeunit.PackerCodeUnitCollection
 import com.zevrant.services.services.HashingService
+import org.apache.commons.lang.StringUtils
 
 HashingService hashingService = new HashingService(this)
 
@@ -19,11 +20,16 @@ pipeline {
             steps {
                 script {
                     retry(2, { //Retry is in case of a concurrent updates
-                        String baseImageHash = readFile(file: "/opt/vm-images/${codeUnit.baseImageName}.sha512")
-                        if (hashingService.getSha512SumFor("/opt/vm-images/${codeUnit.baseImageName}.qcow2") != baseImageHash) {
-                            throw new RuntimeException("Failed to match file hash to specified base image, SOMETHING IS VERY WRONG HERE")
+                        if (StringUtils.isBlank(codeUnit.baseImageName)) {
+                            //TODO Add GPG validation https://wiki.almalinux.org/cloud/Generic-cloud.html#verify-almalinux-9-images
+                            imageHash = httpRequest(url: 'https://repo.almalinux.org/almalinux/9/cloud/x86_64/images/CHECKSUM').content
+                        } else {
+                            String baseImageHash = readFile(file: "/opt/vm-images/${codeUnit.baseImageName}.sha512")
+                            if (hashingService.getSha512SumFor("/opt/vm-images/${codeUnit.baseImageName}.qcow2") != baseImageHash) {
+                                throw new RuntimeException("Failed to match file hash to specified base image, SOMETHING IS VERY WRONG HERE")
+                            }
+                            imageHash = baseImageHash
                         }
-                        imageHash = baseImageHash
                     })
                 }
             }
@@ -34,8 +40,8 @@ pipeline {
             steps {
                 script {
                     dir (codeUnit.folderPath) {
-                        writeYaml(codeUnit.extraArguments)
-                        sh 'packer build .'
+                        writeYaml(file: 'vars.yaml', data: codeUnit.extraArguments)
+                        sh "packer build -var base_image_hash=${imageHash} ."
                         sh "mv build-output/${codeUnit.name} $outputFileName"
                     }
                 }
