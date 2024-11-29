@@ -6,7 +6,7 @@ class PackerCodeUnitCollection {
 
     public static final List<PackerCodeUnit> packerImages = Collections.unmodifiableList([
         new PackerCodeUnit(
-                name: 'base-vm',
+                name: 'alma-base-image',
                 extraArguments: [
                         "nodeExporterVersion": "1.8.2"
                 ],
