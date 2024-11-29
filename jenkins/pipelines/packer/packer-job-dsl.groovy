@@ -6,8 +6,6 @@ import com.zevrant.services.pojo.codeunit.PackerCodeUnitCollection
 import com.zevrant.services.services.JobDslService
 import org.apache.commons.lang.StringUtils
 
-@Library('CommonUtils')
-
 JobDslService jobDslService = new JobDslService(this)
 
 
