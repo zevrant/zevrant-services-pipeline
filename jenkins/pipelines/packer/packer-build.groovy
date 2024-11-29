@@ -2,10 +2,12 @@
 
 import com.zevrant.services.pojo.codeunit.PackerCodeUnit
 import com.zevrant.services.pojo.codeunit.PackerCodeUnitCollection
+import com.zevrant.services.services.GitService
 import com.zevrant.services.services.HashingService
 import org.apache.commons.lang.StringUtils
 
 HashingService hashingService = new HashingService(this)
+GitService gitService = new GitService(this)
 
 PackerCodeUnit codeUnit = PackerCodeUnitCollection.findCodeUnitByName(NAME as String)
 String imageHash = ''
@@ -15,6 +17,16 @@ pipeline {
         label 'container-builder'
     }
     stages {
+
+        stage('Get Source Material') {
+            steps {
+                script {
+                    gitService.checkout('git@github.com', 'zevrant', 'packer-build-specs',
+                                  'master', 'jenkins-git') {
+                }
+            }
+        }
+
         stage('Validate Base Image') {
             steps {
                 script {
