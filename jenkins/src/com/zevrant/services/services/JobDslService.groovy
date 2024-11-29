@@ -139,6 +139,7 @@ class JobDslService extends Service {
                                     shallow(true)
                                     depth(1)
                                 }
+                                wipeOutWorkspace()
                             }
                         }
                     }
