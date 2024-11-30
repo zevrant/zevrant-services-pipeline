@@ -10,7 +10,7 @@ class HashingService extends Service {
         if (filePath.contains(';') || filePath.contains('|') || filePath.contains('&')) {
             throw new RuntimeException("The special characters '&', ';', and '|' are not allowed in the provided file path")
         }
-        pipelineContext.sh("sha512sum ${filePath.trim().split()[0]} > sha512sum")
+        pipelineContext.sh("sha512sum ${filePath.trim()} > sha512sum")
         String sha512Sum = pipelineContext.readFile(file: 'sha512sum')
         pipelineContext.sh('rm sha512sum')
         return sha512Sum
