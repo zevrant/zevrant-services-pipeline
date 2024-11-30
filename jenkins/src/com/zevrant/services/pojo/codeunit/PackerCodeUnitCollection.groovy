@@ -15,6 +15,17 @@ class PackerCodeUnitCollection {
                         'github.com',  'git@github.com',
                         'zevrant', 'zevrant-services-pipeline',  'jenkins-git'
                 )
+        ),
+        new PackerCodeUnit(
+                name: 'jenkins-agent',
+                extraArguments: [
+                        "jenkinsSshKey": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO9n652oHq/eI9F2EUI0xq2ZZw9pgkeQU8+h3HXDU1H/ zevrant@zevrant"
+                ],
+                folderPath: 'jenkins-agent',
+                repo: new GitRepo(
+                        'github.com',  'git@github.com',
+                        'zevrant', 'zevrant-services-pipeline',  'jenkins-git'
+                )
         )
     ])
 
