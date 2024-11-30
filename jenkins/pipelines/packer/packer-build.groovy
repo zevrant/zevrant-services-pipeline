@@ -68,7 +68,7 @@ pipeline {
             steps {
                 script {
                     dir(codeUnit.folderPath) {
-                        String filehash = hashingService.getSha512SumFor(outputFileName)
+                        String filehash = hashingService.getSha512SumFor("build-output/${codeUnit.name}.qcow2")
                         writeFile(file: "/opt/vm-images/${codeUnit.name}.sha512", text: filehash)
                         sh "mv ${outputFileName} /opt/vm-images/${codeUnit.name}.qcow2"
                         if (hashingService.getSha512SumFor("/opt/vm-images/${codeUnit.baseImageName}.qcow2") != filehash) {
