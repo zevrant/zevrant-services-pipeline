@@ -57,7 +57,13 @@ pipeline {
                         sh 'rm -f vars.yaml'
                         writeYaml(file: 'vars.yaml', data: codeUnit.extraArguments)
                         sh 'packer init .'
-                        sh "packer build -var base_image_hash=${imageHash} ."
+                        String additionalArgs = ""
+
+                        if (StringUtils.isNotBlank(codeUnit.baseImageName)) {
+                            additionalArgs = "-var 'base_image_path=/opt/vm-images/${codeUnit.baseImageName}.qcow2'"
+                        }
+
+                        sh "packer build -var base_image_hash=${imageHash} ${additionalArgs} ."
                         sh "mv build-output/packer-${codeUnit.name} $outputFileName"
                     }
                 }
