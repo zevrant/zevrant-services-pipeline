@@ -67,11 +67,14 @@ pipeline {
         stage('Upload Image & Hash') {
             steps {
                 script {
-                    dir(codeUnit.folderPath) {
-                        String filehash = hashingService.getSha512SumFor(outputFileName)
+                    dir(codeUnit.folderPath + "/build-output") {
+                        String filehash = hashingService.getSha512SumFor("${codeUnit.name}.qcow2")
                         writeFile(file: "/opt/vm-images/${codeUnit.name}.sha512", text: filehash)
-                        sh "mv ${outputFileName} /opt/vm-images/${codeUnit.name}.qcow2"
-                        if (hashingService.getSha512SumFor("/opt/vm-images/${codeUnit.name}.qcow2") != filehash) {
+                        println("Original filehash ${filehash}")
+                        sh "mv ${codeUnit.name}.qcow2 /opt/vm-images/${codeUnit.name}.qcow2"
+                        String newFilehash = hashingService.getSha512SumFor("/opt/vm-images/${codeUnit.name}.qcow2").replace("/opt/vm-images/", "")
+                        println("New filehash ${newFilehash}")
+                        if (newFilehash != filehash) {
                             throw new RuntimeException("Failed to match file hash to the built image, SOMETHING IS VERY WRONG HERE")
                         }
                     }
