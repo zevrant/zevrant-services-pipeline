@@ -39,7 +39,7 @@ pipeline {
                                     .split('\\h')[0]
                         } else {
                             String baseImageHash = readFile(file: "/opt/vm-images/${codeUnit.baseImageName}.sha512")
-                            if (hashingService.getSha512SumFor("/opt/vm-images/${codeUnit.baseImageName}.qcow2") != baseImageHash) {
+                            if (hashingService.getSha512SumFor("/opt/vm-images/${codeUnit.baseImageName}.qcow2").replace("/opt/vm-images/", "") != baseImageHash) {
                                 throw new RuntimeException("Failed to match file hash to specified base image, SOMETHING IS VERY WRONG HERE")
                             }
                             imageHash = baseImageHash
