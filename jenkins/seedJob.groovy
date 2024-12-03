@@ -36,7 +36,7 @@ pipeline {
             }
             steps {
                 script {
-                    sh ''
+                    sh './gradlew liquibase update'
                 }
             }
         }
