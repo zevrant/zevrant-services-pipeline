@@ -67,7 +67,7 @@ task('liquibase') {
         activities {
             main {
                 changeLogFile "liquibase/liquibase-changelog.yml"
-                url "jdbc:postgresql://${dbUrl}:${port}/thermostat"
+                url "jdbc:postgresql://${dbUrl}:${port}/jenkins"
                 username dbUsername
                 password dbPassword
                 liquibaseSchemaName "public"
