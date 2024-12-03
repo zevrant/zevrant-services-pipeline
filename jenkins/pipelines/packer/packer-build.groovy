@@ -1,17 +1,20 @@
+import com.zevrant.services.pojo.Version
 @Library("CommonUtils")
 
 import com.zevrant.services.pojo.codeunit.PackerCodeUnit
 import com.zevrant.services.pojo.codeunit.PackerCodeUnitCollection
 import com.zevrant.services.services.GitService
 import com.zevrant.services.services.HashingService
+import com.zevrant.services.services.VersionService
 import org.apache.commons.lang.StringUtils
 
 HashingService hashingService = new HashingService(this)
 GitService gitService = new GitService(this)
+VersionService versionService = new VersionService(this)
 
 PackerCodeUnit codeUnit = PackerCodeUnitCollection.findCodeUnitByName(NAME as String)
 String imageHash = ''
-String outputFileName = "build-output/${codeUnit.name}.qcow2"
+Version version = null
 pipeline {
     agent {
         label 'container-builder'
@@ -50,6 +53,15 @@ pipeline {
 
         }
 
+        stage('Get New Version') {
+            steps {
+                script {
+                    version = versionService.getVersion(codeUnit.name, true)
+                    version = versionService.minorVersionUpdate(codeUnit.name, true)
+                }
+            }
+        }
+
         stage('Build Image') {
             steps {
                 script {
@@ -64,7 +76,7 @@ pipeline {
                         }
 
                         sh "packer build -var base_image_hash=${imageHash.split('\\h')[0]} ${additionalArgs} ."
-                        sh "mv build-output/packer-${codeUnit.name} $outputFileName"
+                        sh "mv build-output/packer-${codeUnit.name} build-output/${codeUnit.name}-${version.toThreeStageVersionString()}.qcow2"
                     }
                 }
             }
@@ -77,8 +89,8 @@ pipeline {
                         String filehash = hashingService.getSha512SumFor("${codeUnit.name}.qcow2")
                         writeFile(file: "/opt/vm-images/${codeUnit.name}.sha512", text: filehash)
                         println("Original filehash ${filehash}")
-                        sh "mv ${codeUnit.name}.qcow2 /opt/vm-images/${codeUnit.name}.qcow2"
-                        String newFilehash = hashingService.getSha512SumFor("/opt/vm-images/${codeUnit.name}.qcow2").replace("/opt/vm-images/", "")
+                        sh "mv ${codeUnit.name}.qcow2 /opt/vm-images/${codeUnit.name}-.qcow2"
+                        String newFilehash = hashingService.getSha512SumFor("/opt/vm-images/${codeUnit.name}-${version.toThreeStageVersionString()}.qcow2").replace("/opt/vm-images/", "")
                         println("New filehash ${newFilehash}")
                         if (newFilehash != filehash) {
                             throw new RuntimeException("Failed to match file hash to the built image, SOMETHING IS VERY WRONG HERE")

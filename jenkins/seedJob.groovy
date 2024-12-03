@@ -23,5 +23,22 @@ pipeline {
                 }
             }
         }
+
+        stage ('Update Version Database Schema') {
+            when { changeset 'src/main/resources/liquibase/liquibase-changelog.yml'}
+            agent {
+                label 'container-builder'
+            }
+            environment {
+                PGUSER = 'jenkins'
+                PGPASSWORD = credentials('jenkins-app-version-password')
+                PGHOST = '192.168.0.101'
+            }
+            steps {
+                script {
+                    sh ''
+                }
+            }
+        }
     }
 }
