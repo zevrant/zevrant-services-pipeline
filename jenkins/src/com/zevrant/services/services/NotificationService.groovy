@@ -1,7 +1,7 @@
 package com.zevrant.services.services
 
 
-import NotificationChannel
+import com.zevrant.services.pojo.NotificationChannel
 
 class NotificationService extends Service {
 
