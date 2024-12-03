@@ -25,7 +25,6 @@ pipeline {
         }
 
         stage ('Update Version Database Schema') {
-            when { changeset 'src/main/resources/liquibase/liquibase-changelog.yml'}
             agent {
                 label 'container-builder'
             }
