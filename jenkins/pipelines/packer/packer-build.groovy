@@ -74,7 +74,9 @@ pipeline {
             steps {
                 script {
                     dir(codeUnit.folderPath) {
-                        dir("tmp") {}
+                        dir("tmp") {
+                            writeFile file:'dummy', text:''
+                        }
                         writeYaml(file: 'vars.yaml', data: codeUnit.extraArguments)
                         sh 'packer init .'
                         String additionalArgs = ""
