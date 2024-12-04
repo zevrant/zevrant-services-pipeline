@@ -57,7 +57,7 @@ pipeline {
             steps {
                 script {
                     version = versionService.getVersion(codeUnit.name, true)
-                    version = versionService.minorVersionUpdate(codeUnit.name, true)
+                    version = versionService.minorVersionUpdate(codeUnit.name, version, true)
                 }
             }
         }
