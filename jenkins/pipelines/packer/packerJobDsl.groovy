@@ -14,7 +14,7 @@ JobDslService jobDslService = new JobDslService(this)
     if (StringUtils.isNotBlank(image.baseImageName)) {
         pipelineTriggers.add(new PipelineTrigger([
                 type : PipelineTriggerType.UPSTREAM,
-                value: "/packer/build-${image.name.split('/').collect({ it.toLowerCase() }).join('-')}"
+                value: "/packer/build-${image.baseImageName.split('/').collect({ it.toLowerCase() }).join('-')}"
         ]))
     }
 
