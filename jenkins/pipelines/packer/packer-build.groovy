@@ -91,10 +91,10 @@ pipeline {
             steps {
                 script {
                     dir(codeUnit.folderPath + "/build-output") {
-                        String filehash = hashingService.getSha512SumFor("${codeUnit.name}.qcow2")
-                        writeFile(file: "/opt/vm-images/${codeUnit.name}.sha512", text: filehash)
+                        String filehash = hashingService.getSha512SumFor("${codeUnit.name}-${version.toThreeStageVersionString()}.qcow2")
+                        writeFile(file: "/opt/vm-images/${codeUnit.name}-${version.toThreeStageVersionString()}.sha512", text: filehash)
                         println("Original filehash ${filehash}")
-                        sh "mv ${codeUnit.name}.qcow2 /opt/vm-images/${codeUnit.name}-.qcow2"
+                        sh "mv ${codeUnit.name}.qcow2 /opt/vm-images/${codeUnit.name}-${version.toThreeStageVersionString()}.qcow2"
                         String newFilehash = hashingService.getSha512SumFor("/opt/vm-images/${codeUnit.name}-${version.toThreeStageVersionString()}.qcow2").replace("/opt/vm-images/", "")
                         println("New filehash ${newFilehash}")
                         if (newFilehash != filehash) {
