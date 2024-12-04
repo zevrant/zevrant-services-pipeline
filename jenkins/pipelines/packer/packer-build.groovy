@@ -55,10 +55,9 @@ pipeline {
 
         stage('Get New Version') {
             environment {
-                POSTGRES_USERNAME = 'jenkins'
-                POSTGRES_PASSWORD = credentials('jenkins-app-version-password')
-                POSTGRES_URL = '192.168.0.101'
-                POSTGRES_PORT = '5432'
+                PGUSER = 'jenkins'
+                PGPASSWORD = credentials('jenkins-app-version-password')
+                PGHOST = '192.168.0.101'
             }
             steps {
                 script {
