@@ -8,7 +8,7 @@ class PackerCodeUnitCollection {
         new PackerCodeUnit(
                 name: 'alma-base-image',
                 extraArguments: [
-                        "nodeExporterVersion": "1.8.2"
+                        'nodeExporterVersion': '1.8.2'
                 ],
                 folderPath: 'base-vm',
                 repo: new GitRepo(
@@ -20,7 +20,8 @@ class PackerCodeUnitCollection {
                 name: 'jenkins-agent',
                 baseImageName: 'alma-base-image',
                 extraArguments: [
-                        "jenkinsSshKey": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO9n652oHq/eI9F2EUI0xq2ZZw9pgkeQU8+h3HXDU1H/ zevrant@zevrant"
+                        'jenkinsSshKey': 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO9n652oHq/eI9F2EUI0xq2ZZw9pgkeQU8+h3HXDU1H/ zevrant@zevrant',
+                        'jenkinsAgentServiceFile': ''
                 ],
                 folderPath: 'jenkins-agent',
                 repo: new GitRepo(
