@@ -29,8 +29,8 @@ class VersionService extends Service {
         } catch (Exception ignored) {
 //            version = keydbService.getKey(applicationName).trim()
             pipelineContext.println("Version not found for ${applicationName}, setting to 0.0.0")
-            pipelineContext.println("set +e psql -c 'insert into app_version(name, version) values(\'${applicationName}\', \'0.0.0\'')")
-            pipelineContext.sh("set +e psql -c 'insert into app_version(name, version) values(\'${applicationName}\', \'0.0.0\'')")
+            pipelineContext.println("set +e psql -c 'insert into app_version(name, version) values(\'${applicationName}\', \'0.0.0\')'")
+            pipelineContext.sh("set +e psql -c 'insert into app_version(name, version) values(\'${applicationName}\', \'0.0.0\')'")
         }
 
         version = version.replace('"', '').trim() //redis/keydb strings are returned wrapped in double quotes
