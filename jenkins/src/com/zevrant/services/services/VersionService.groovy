@@ -66,7 +66,7 @@ class VersionService extends Service {
         version.setMinor(currentVersion.getMinor() + 1)
 
         if (bareMetal) {
-            pipelineContext.sh """psql -c "update app_version set version = '${version.toThreeStageVersionString()}' where name = '${applicationName}'" """
+            pipelineContext.sh """psql -c "update app_version set version = ${version.toThreeStageVersionString()} where name = ${applicationName}" """
         }
         return version
     }
