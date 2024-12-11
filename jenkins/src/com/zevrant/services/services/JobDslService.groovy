@@ -233,7 +233,7 @@ class JobDslService extends Service {
                                 repository(codeUnit.repo.repoName)
                                 repositoryUrl(codeUnit.repo.httpsUri)
                                 configuredByUrl(true)
-                                credentialsId('gitea-access-token')
+                                credentialsId('jenkins-git-access-token-as-text')
                                 id(codeUnit.name)
                                 traits {
                                     gitHubPullRequestDiscovery {
