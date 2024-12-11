@@ -39,7 +39,7 @@ pipeline {
                         cloneUrl = codeUnit.repo.sshUrl
                     }
                     println("Clone Url: ${cloneUrl}")
-                    gitService.checkout(cloneUrl, branchName, true, codeUnit.getRepo().getSshCredentialsId())
+                    gitService.checkout(cloneUrl, codeUnit.getRepo().getOrg(), codeUnit.repo.repoName, branchName, codeUnit.getRepo().getSshCredentialsId())
                     sh ''' echo '[url "ssh://git@github.com/"]
         insteadOf = https://github.com/
         [url "ssh://git@git.zevrant-services.com:30121/"]
