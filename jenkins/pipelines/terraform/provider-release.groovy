@@ -8,6 +8,19 @@ TerraformCloudService terraformCloudService = new TerraformCloudService(this)
 
 
 GoCodeUnit codeUnit = GoCodeUnitCollection.findCodeUnitByRepositoryName(REPOSITORY)
+List<String> providerOs = [
+        "darwin",
+        "freebsd",
+        "linux",
+        "windows"
+]
+
+List<String> providerArch = [
+        "amd64",
+        "arm64",
+        "arm",
+        "386"
+]
 String taggedVersion = ''
 pipeline {
     agent {
@@ -20,6 +33,41 @@ pipeline {
                 script {
                     copyArtifacts filter: 'artifactVersion.txt', fingerprintArtifacts: true, projectName: "./${codeUnit.name.split('-').collect({ item -> item.capitalize() }).join(' ')}-multibranch/master"
                     taggedVersion = readFile(file: 'artifactVersion.txt')
+                    dir('dist') {
+                        withCredentials([string(credentialsId: 'jenkins-git-access-token-as-text', variable: 'token')]) {
+                            providerOs.each { os ->
+                                providerArch.each { arch ->
+                                    httpRequest(
+                                            url: "https://github.com/zevrant/${codeUnit.name}/releases/download/${taggedVersion}/${codeUnit.name}_${taggedVersion.replace('v', '')}_${os}_${arch}.zip",
+                                            outputFile: "${codeUnit.name}_${taggedVersion}_${os}_${arch}.zip",
+                                            [
+                                                    'name' : "Authorization",
+                                                    'value': "bearer " + token.replace('"', ''),
+                                                    'maskValue': true
+                                            ]
+                                    )
+                                }
+                            }
+                            httpRequest(
+                                    url: "https://github.com/zevrant/${codeUnit.name}/releases/download/${taggedVersion}/${codeUnit.name}_${taggedVersion.replace('v','')}_SHA256SUMS",
+                                    outputFile: "${codeUnit.name}_${taggedVersion.replace('v','')}_SHA256SUMS",
+                                    [
+                                            'name' : "Authorization",
+                                            'value': "bearer " + token.replace('"', ''),
+                                            'maskValue': true
+                                    ]
+                            )
+                            httpRequest(
+                                    url: "https://github.com/zevrant/${codeUnit.name}/releases/download/${taggedVersion}/${codeUnit.name}_${taggedVersion.replace('v','')}_SHA256SUMS.sig",
+                                    outputFile: "${codeUnit.name}_${taggedVersion.replace('v','')}_SHA256SUMS.sig",
+                                    [
+                                            'name' : "Authorization",
+                                            'value': "bearer " + token.replace('"', ''),
+                                            'maskValue': true
+                                    ]
+                            )
+                        }
+                    }
                 }
             }
         }
