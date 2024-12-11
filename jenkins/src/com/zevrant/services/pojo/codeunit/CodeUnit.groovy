@@ -23,6 +23,6 @@ class CodeUnit {
     }
 
     GitRepo getRepo() {
-        return repo
+        return this.repo
     }
 }
