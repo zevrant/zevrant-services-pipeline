@@ -9,7 +9,6 @@ TerraformCloudService terraformCloudService = new TerraformCloudService(this)
 
 GoCodeUnit codeUnit = GoCodeUnitCollection.findCodeUnitByRepositoryName(REPOSITORY)
 List<String> providerOs = [
-        "darwin",
         "freebsd",
         "linux",
         "windows"
@@ -37,21 +36,17 @@ pipeline {
                         withCredentials([string(credentialsId: 'jenkins-git-access-token-as-text', variable: 'token')]) {
                             providerOs.each { os ->
                                 providerArch.each { arch ->
-                                    if (os == "darwin" && arch == 'arm') {
-                                        println('32 bit arm not supported by darwin skipping')
-                                    } else {
-                                        httpRequest(
-                                                url: "https://github.com/zevrant/${codeUnit.name}/releases/download/${taggedVersion}/${codeUnit.name}_${taggedVersion.replace('v', '')}_${os}_${arch}.zip",
-                                                outputFile: "${codeUnit.name}_${taggedVersion}_${os}_${arch}.zip",
-                                                customHeaders: [
-                                                        [
-                                                                'name'     : "Authorization",
-                                                                'value'    : "bearer " + token.replace('"', ''),
-                                                                'maskValue': true
-                                                        ]
-                                                ]
-                                        )
-                                    }
+                                    httpRequest(
+                                            url: "https://github.com/zevrant/${codeUnit.name}/releases/download/${taggedVersion}/${codeUnit.name}_${taggedVersion.replace('v', '')}_${os}_${arch}.zip",
+                                            outputFile: "${codeUnit.name}_${taggedVersion}_${os}_${arch}.zip",
+                                            customHeaders: [
+                                                    [
+                                                            'name'     : "Authorization",
+                                                            'value'    : "bearer " + token.replace('"', ''),
+                                                            'maskValue': true
+                                                    ]
+                                            ]
+                                    )
                                 }
                             }
                             httpRequest(
