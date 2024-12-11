@@ -231,6 +231,8 @@ class JobDslService extends Service {
                             github {
                                 repoOwner(codeUnit.repo.org)
                                 repository(codeUnit.repo.repoName)
+                                repositoryUrl(codeUnit.repo.httpsUri)
+                                configuredByUrl(true)
                                 credentialsId(codeUnit.repo.credentialsId)
                                 id(codeUnit.name)
                                 traits {
