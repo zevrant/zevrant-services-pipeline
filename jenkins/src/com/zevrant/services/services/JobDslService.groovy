@@ -231,7 +231,7 @@ class JobDslService extends Service {
                             github {
                                 repoOwner(codeUnit.repo.org)
                                 repository(codeUnit.repo.repoName)
-                                repositoryUrl(codeUnit.repo.httpsUri)
+                                repositoryUrl('https://github.com')
                                 configuredByUrl(false)
                                 credentialsId('jenkins-git-access-token-as-text')
                                 id(codeUnit.name)
