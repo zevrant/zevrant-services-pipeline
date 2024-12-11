@@ -69,12 +69,12 @@ class TerraformCloudService extends Service {
     ProviderShasumsLinks createProviderVersion(String gpgKeyId, String token, String orgName, String providerName, String version) {
         String encodedOrgName = URLEncoder.encode(orgName, StandardCharsets.UTF_8)
         String encodedProviderName = URLEncoder.encode(providerName, StandardCharsets.UTF_8)
-
+        pipelineContext.println("Version is " + version)
         Map<String, Object> requestBody = [
                 "data": [
                         "type"      : "registry-provider-versions",
                         "attributes": [
-                                "version"  : version,
+                                "version"  : version.replace("v", ""),
                                 "key-id"   : gpgKeyId,
                                 "protocols": ["6.0"]
                         ]
