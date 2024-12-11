@@ -152,5 +152,6 @@ GoCodeUnitCollection.codeUnits.each { goCodeUnit ->
                         'REPOSITORY': goCodeUnit.name,
                 ])
         )
+        jobDslService.createPipeline(folder, providerRelease)
     }
 }
