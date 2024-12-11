@@ -9,6 +9,7 @@ import com.zevrant.services.pojo.KubernetesServiceCollection
 import com.zevrant.services.pojo.codeunit.LibraryCodeUnitCollection
 import com.zevrant.services.pojo.codeunit.AndroidCodeUnitCollection
 import com.zevrant.services.pojo.codeunit.SpringCodeUnitCollection
+import com.zevrant.services.pojo.codeunit.GoCodeUnitCollection
 import com.zevrant.services.pojo.codeunit.CodeUnit
 import com.zevrant.services.services.JobDslService
 
