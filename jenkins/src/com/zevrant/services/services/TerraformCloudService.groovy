@@ -27,7 +27,7 @@ class TerraformCloudService extends Service {
         if (StringUtils.isBlank(org)) {
             throw new RuntimeException(('Org Must be provided for terraform cloud actions'))
         }
-        Map<String,Object> authHeader = getAuthHeader(token).replace('"', '')
+        Map<String,Object> authHeader = getAuthHeader(token)
         if (authHeader == null) {
             throw new RuntimeException(('auth header ended up being null'))
         }
