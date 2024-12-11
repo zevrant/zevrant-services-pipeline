@@ -92,6 +92,7 @@ pipeline {
                                     providerName, taggedVersion)
 
                     dir('dist') {
+                        taggedVersion = taggedVersion.replace('v', '')
                         terraformCloudService.uploadFile("${codeUnit.getName()}_${taggedVersion}_SHA256SUMS", terraformCloudToken as String, shasumsLinks.getShasumsUpload())
                         terraformCloudService.uploadFile("${codeUnit.getName()}_${taggedVersion}_SHA256SUMS.sig", terraformCloudToken as String, shasumsLinks.getShasumsSigUpload())
 
