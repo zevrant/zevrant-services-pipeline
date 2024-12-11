@@ -189,7 +189,7 @@ class JobDslService extends Service {
                             userRemoteConfigs {
                                 userRemoteConfig {
                                     name("Zevrant Services Pipeline") //Custom Repository Name or ID
-                                    url('https://github.com:zevrant/zevrant-services-pipeline')
+                                    url('https://github.com/zevrant/zevrant-services-pipeline')
                                     //URL for the repository
                                     refspec("master") // Branch spec
                                     credentialsId("jenkins-git") // Credential ID. Leave blank if not required
