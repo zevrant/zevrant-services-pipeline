@@ -147,7 +147,7 @@ GoCodeUnitCollection.codeUnits.each { codeUnit ->
                 name: "${goCodeUnit.name}-publish-to-terraform-cloud",
                 parameters: new ArrayList<>([]),
                 credentialId: 'jenkins-git',
-                gitRepo: 'git@github.com:zevrant/zevrant-services.pipeline.git',
+                gitRepo: 'git@github.com:zevrant/zevrant-services-pipeline.git',
                 jenkinsfileLocation: 'jenkins/pipelines/terraform/provider-release.groovy',
                 envs: new HashMap<>([
                         'REPOSITORY': goCodeUnit.name,
