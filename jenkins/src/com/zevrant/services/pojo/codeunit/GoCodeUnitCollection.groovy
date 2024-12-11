@@ -3,7 +3,9 @@ package com.zevrant.services.pojo.codeunit
 class GoCodeUnitCollection {
 
     private static final List<GoCodeUnit> codeUnits = Collections.unmodifiableList([
-        new GoCodeUnit([:])
+        new GoCodeUnit([
+                name: 'terraform-provider-proxmox'
+        ])
     ])
 
     static SpringCodeUnit findCodeUnitByRepositoryName(String repoName) {
