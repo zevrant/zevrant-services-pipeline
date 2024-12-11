@@ -140,4 +140,17 @@ KubernetesServiceCollection.services.each { kubernetesService ->
 
 GoCodeUnitCollection.codeUnits.each { goCodeUnit ->
     String folder = jobDslService.createMultibranch(goCodeUnit as CodeUnit)
+
+    if (StringUtils.isNotBlank(goCodeUnit.providerOrgName)) {
+        Pipeline providerRelease = new Pipeline(
+                name: "${goCodeUnit.name}-publish-to-terraform-cloud",
+                parameters: new ArrayList<>([]),
+                credentialId: 'jenkins-git',
+                gitRepo: 'git@github.com:zevrant/zevrant-services.pipeline.git',
+                jenkinsfileLocation: 'jenkins/pipelines/terraform/provider-release.groovy',
+                envs: new HashMap<>([
+                        'REPOSITORY': goCodeUnit.name,
+                ])
+        )
+    }
 }
