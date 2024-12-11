@@ -206,24 +206,46 @@ class JobDslService extends Service {
             branchSources {
                 branchSource {
                     source {
-                        giteaSCMSource {
-                            serverUrl("https://${codeUnit.repo.hostName}")
-                            repoOwner(codeUnit.repo.org)
-                            repository(codeUnit.name)
-                            credentialsId(codeUnit.repo.credentialsId)
-                            id(codeUnit.name)
-                            traits {
-                                giteaPullRequestDiscovery {
-                                    strategyId(0)
+                        if (codeUnit.repo.httpsUri.contains('gitea')) {
+                            giteaSCMSource {
+                                serverUrl("https://${codeUnit.repo.hostName}")
+                                repoOwner(codeUnit.repo.org)
+                                repository(codeUnit.name)
+                                credentialsId(codeUnit.repo.credentialsId)
+                                id(codeUnit.name)
+                                traits {
+                                    giteaPullRequestDiscovery {
+                                        strategyId(0)
+                                    }
+                                    headWildcardFilter {
+                                        includes('main PR-*')
+                                        excludes('')
+                                    }
+                                    giteaBranchDiscovery {
+                                        strategyId(3)
+                                    }
+                                    wipeWorkspaceTrait()
                                 }
-                                headWildcardFilter {
-                                    includes('main PR-*')
-                                    excludes('')
+                            }
+                        } else {
+                            github {
+                                repoOwner(codeUnit.repo.org)
+                                repository(codeUnit.repo.repoName)
+                                credentialsId(codeUnit.repo.credentialsId)
+                                id(codeUnit.name)
+                                traits {
+                                    gitHubPullRequestDiscovery {
+                                        strategyId(0)
+                                    }
+                                    headWildcardFilter {
+                                        includes('main PR-*')
+                                        excludes('')
+                                    }
+                                    giteaBranchDiscovery {
+                                        strategyId(3)
+                                    }
+                                    wipeWorkspaceTrait()
                                 }
-                                giteaBranchDiscovery {
-                                    strategyId(3)
-                                }
-                                wipeWorkspaceTrait()
                             }
                         }
                     }
