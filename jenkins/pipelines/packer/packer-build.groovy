@@ -25,7 +25,7 @@ pipeline {
             steps {
                 script {
                     gitService.checkout('git@github.com', 'zevrant', 'packer-build-specs',
-                                  'master', 'jenkins-git')
+                            'master', 'jenkins-git')
                 }
             }
         }
@@ -63,19 +63,20 @@ pipeline {
                 script {
                     version = versionService.getVersion(codeUnit.name, true)
                     version = versionService.minorVersionUpdate(codeUnit.name, version, true)
+                    currentBuild.displayName = "Building Version ${version.toVersionCodeString()}" as String
                 }
             }
         }
 
         stage('Build Image') {
             environment {
-                TMPDIR="tmp"
+                TMPDIR = "tmp"
             }
             steps {
                 script {
                     dir(codeUnit.folderPath) {
                         dir("tmp") {
-                            writeFile file:'dummy', text:''
+                            writeFile file: 'dummy', text: ''
                         }
                         writeYaml(file: 'vars.yaml', data: codeUnit.extraArguments)
                         sh 'packer init .'
@@ -108,6 +109,14 @@ pipeline {
                         }
                     }
                 }
+            }
+        }
+    }
+    post {
+        success {
+            script {
+                writeFile(file: "artifactVersion.txt", text: version.toThreeStageVersionString())
+                archiveArtifacts(artifacts: 'artifactVersion.txt', allowEmptyArchive: false)
             }
         }
     }

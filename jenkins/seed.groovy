@@ -136,3 +136,7 @@ KubernetesServiceCollection.services.each { kubernetesService ->
         jobDslService.createPipeline(kubernetesServicesFolder.concat('/'), pipeline)
     }
 }
+
+GoCodeUnitCollection.codeUnits.each { goCodeUnit ->
+    String folder = jobDslService.createMultibranch(springCodeUnit as CodeUnit)
+}
