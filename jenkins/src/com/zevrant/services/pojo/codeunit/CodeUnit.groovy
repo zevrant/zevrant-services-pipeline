@@ -18,8 +18,4 @@ class CodeUnit {
         applicationType = (ApplicationType) params.applicationType
     }
 
-    public String getDefaultBranch() {
-        return defaultBranch
-    }
-
 }
