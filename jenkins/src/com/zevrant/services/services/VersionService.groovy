@@ -29,8 +29,9 @@ class VersionService extends Service {
         } catch (Exception ignored) {
 //            version = keydbService.getKey(applicationName).trim()
             pipelineContext.println("Version not found for ${applicationName}, setting to 0.0.0")
-            pipelineContext.println("""set +e psql -c "insert into app_version(name, version) values('${applicationName}', '0.0.0')" """)
             pipelineContext.sh("""set +e psql -c "insert into app_version(name, version) values('${applicationName}', '0.0.0')" """)
+            pipelineContext.sh "psql --csv -t -c 'select version from app_version where name = ${applicationName}' > version"
+            version = pipelineContext.readFile(file: 'version')
         }
 
         version = version.replace('"', '').trim() //redis/keydb strings are returned wrapped in double quotes
@@ -66,8 +67,7 @@ class VersionService extends Service {
         version.setMinor(currentVersion.getMinor() + 1)
 
         if (bareMetal) {
-            writeFile(file: 'versionScript.psql', text: "update app_version set version = ${version.toThreeStageVersionString()} where name = ${applicationName}")
-            pipelineContext.sh "psql -f versionScript.psql"
+            pipelineContext.sh """psql -c "update app_version set version = '${version.toThreeStageVersionString()}' where name = '${applicationName}'" """
         }
         return version
     }

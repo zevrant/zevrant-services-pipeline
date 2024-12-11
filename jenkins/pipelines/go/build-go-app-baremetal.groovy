@@ -30,6 +30,24 @@ pipeline {
 
     stages {
 
+        stage('Get New Version') {
+            environment {
+                PGUSER = 'jenkins'
+                PGPASSWORD = credentials('jenkins-app-version-password')
+                PGHOST = '192.168.0.101'
+            }
+            steps {
+                script {
+                    version = versionService.getVersion(codeUnit.name, true)
+                    version = versionService.minorVersionUpdate(codeUnit.name, version, true)
+                    currentBuild.displayName = "Building Version ${version.toThreeStageVersionString()}" as String
+                    artifactVersion = version.toThreeStageVersionString()
+                    writeFile(file: 'artifactVersion.txt', text: "v${artifactVersion}" as String)
+                    archiveArtifacts(artifacts: 'artifactVersion.txt', allowEmptyArchive: false)
+                }
+            }
+        }
+
         stage('SCM Checkout') {
             steps {
                 script {
@@ -81,24 +99,6 @@ pipeline {
             }
         }
 
-
-        stage('Get New Version') {
-            environment {
-                PGUSER = 'jenkins'
-                PGPASSWORD = credentials('jenkins-app-version-password')
-                PGHOST = '192.168.0.101'
-            }
-            steps {
-                script {
-                    version = versionService.getVersion(codeUnit.name, true)
-                    version = versionService.minorVersionUpdate(codeUnit.name, version, true)
-                    currentBuild.displayName = "Building Version ${version.toThreeStageVersionString()}" as String
-                    artifactVersion = version.toThreeStageVersionString()
-                    writeFile(file: 'artifactVersion.txt', text: "v${artifactVersion}" as String)
-                    archiveArtifacts(artifacts: 'artifactVersion.txt', allowEmptyArchive: false)
-                }
-            }
-        }
 
         stage("Tag Release") {
             steps {
