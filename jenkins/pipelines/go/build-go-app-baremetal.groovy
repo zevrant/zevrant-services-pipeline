@@ -36,7 +36,7 @@ pipeline {
                     sh 'git config --global --add safe.directory "$(pwd)"'
                     String cloneUrl = codeUnit.repo.sshUri
                     println("Clone Url: ${cloneUrl}")
-                    gitService.checkout("git@github.com", codeUnit.getRepo().getOrg(), codeUnit.repo.repoName, branchName, codeUnit.getRepo().getSshCredentialsId())
+                    gitService.checkout("git@github.com", codeUnit.getRepo().getOrg(), codeUnit.repo.repoName, branchName, codeUnit.getRepo().getSshCredentialsId(), false, false)
                     sh ''' echo '[url "ssh://git@github.com/"]
         insteadOf = https://github.com/
         [url "ssh://git@git.zevrant-services.com:30121/"]

@@ -11,14 +11,16 @@ class GitService extends Service {
                   String org = 'zevrant-services',
                   String repository,
                   String branch = 'main',
-                  String credentialsId = 'jenkins-git') {
+                  String credentialsId = 'jenkins-git',
+                  boolean isShallow = true,
+                  boolean excludeTags = true) {
         pipelineContext.checkout(
                 scm: [
                         $class           : 'GitSCM',
                         branches         : [[
                                                     name: branch
                                             ]],
-                        extensions       : [[$class: 'CloneOption', depth: 1, noTags: true, reference: '', shallow: true]],
+                        extensions       : [[$class: 'CloneOption', depth: 1, noTags: excludeTags, reference: '', shallow: isShallow]],
                         userRemoteConfigs: [[
                                                     credentialsId: credentialsId,
                                                     url          : "${hostname}:${org}/${repository}.git"
@@ -41,14 +43,15 @@ class GitService extends Service {
         }
     }
 
-    String getNextBetaTagForVersion(String artifactVersion) { //Provide an artifact version without the beta suffix to get the next beta version for, DO NOT COMMIT THIS BETA VERSION TO MONGO
+    String getNextBetaTagForVersion(String artifactVersion) {
+        //Provide an artifact version without the beta suffix to get the next beta version for, DO NOT COMMIT THIS BETA VERSION TO MONGO
         pipelineContext.sh("git tag -l | grep $artifactVersion-beta | tee tags")
         String tagsString = pipelineContext.readFile(file: 'tags')
         pipelineContext.sh 'rm tags'
         List<String> betaTags = Arrays.asList(tagsString.split("\\n"))
         String betaVersion = "${artifactVersion}-beta.1" //version we start with for consistent
 
-        if ( !betaTags.isEmpty() ) {
+        if (!betaTags.isEmpty()) {
             int highestBetaVersion = 1
             betaTags.each { tag ->
                 String[] tagParts = tag.split("\\.")
@@ -73,7 +76,7 @@ class GitService extends Service {
 
     void cleanUntrackedFiles() {
         String untrackedFiles = pipelineContext.sh returnStdout: true, script: 'git ls-files --others --exclude-standard'
-        untrackedFiles.split('\\h|\\n|\\r\\n').each {file ->
+        untrackedFiles.split('\\h|\\n|\\r\\n').each { file ->
             if (!file.trim().isBlank()) {
                 pipelineContext.println("Deleting ${file}")
                 pipelineContext.sh "rm -rf ${file}"
