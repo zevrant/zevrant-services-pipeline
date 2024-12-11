@@ -133,6 +133,10 @@ github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okW
         }
 
         stage('Release Version') {
+            environment {
+                GPG_FINGERPRINT = "65B4 607F 0CB9 810D 48F2  012B 0CFB 0807 6C37 70BF"
+                GPG_PASSWORD = credentials('terraform-gpg-password')
+            }
             steps {
                 script {
                     //no spillage here as the key var is just the path to the key
