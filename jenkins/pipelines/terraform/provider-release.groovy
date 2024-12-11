@@ -114,7 +114,7 @@ pipeline {
                         }
 
                         binariesUploadList.each { binary ->
-                            String uploadLink = terraformCloudService.createProviderPlatform(terraformCloudToken as String, codeUnit.providerOrgName, codeUnit.name, taggedVersion, binary)
+                            String uploadLink = terraformCloudService.createProviderPlatform(terraformCloudToken as String, codeUnit.providerOrgName, codeUnit.name.split('-')[2], taggedVersion, binary)
                             terraformCloudService.uploadFile(binary.getFileName(), terraformCloudToken as String, uploadLink)
                         }
 

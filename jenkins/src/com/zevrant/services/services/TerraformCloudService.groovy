@@ -133,7 +133,6 @@ class TerraformCloudService extends Service {
                 ]
         ]
         pipelineContext.println(pipelineContext.writeJSON(json: requestBody, returnText: true))
-
         def httpResponse = pipelineContext.httpRequest(
                 url: "${baseUrl}/organizations/${encodedOrgName}/registry-providers/private/${encodedOrgName}/${encodedProviderName}/versions/${encodedVersion}/platforms",
                 customHeaders: [
