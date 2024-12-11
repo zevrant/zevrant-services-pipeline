@@ -16,7 +16,7 @@ import com.zevrant.services.services.JobDslService
 
 JobDslService jobDslService = new JobDslService(this)
 
-folder('/games'){
+folder('/games') {
     displayName('Games')
 }
 
@@ -73,12 +73,12 @@ SpringCodeUnitCollection.microservices.each { springCodeUnit ->
                     'ENVIRONMENT': 'prod'
             ]),
     )
-    jobDslService.createPipeline(folder,containerBuild)
+    jobDslService.createPipeline(folder, containerBuild)
     jobDslService.createPipeline(folder, developDeployPipeline);
 //    jobDslService.createPipeline(folder, prodDeployPipeline);
 }
 
-AndroidCodeUnitCollection.androidApps.each( { androidCodeUnit ->
+AndroidCodeUnitCollection.androidApps.each({ androidCodeUnit ->
     String androidFolder = jobDslService.createMultibranch(androidCodeUnit as CodeUnit)
 
     Pipeline androidDevelopDeployPipeline = new Pipeline(
@@ -110,7 +110,7 @@ AndroidCodeUnitCollection.androidApps.each( { androidCodeUnit ->
 })
 
 String adminFolder = jobDslService.createMultibranch(new CodeUnit([
-        name: 'jenkins-cac',
+        name           : 'jenkins-cac',
         applicationType: ApplicationType.JENKINS_CAC
 ]))
 
@@ -127,7 +127,7 @@ folder(kubernetesServicesFolder) {
 KubernetesServiceCollection.services.each { kubernetesService ->
     kubernetesService.environments.each { environment ->
         Pipeline pipeline = new Pipeline([
-                name: kubernetesService.name,
+                name               : kubernetesService.name,
                 envs               : [
 
                         ENVIRONMENT : environment.getNamespaceName(),
@@ -151,6 +151,12 @@ GoCodeUnitCollection.codeUnits.each { codeUnit ->
                 jenkinsfileLocation: 'jenkins/pipelines/terraform/provider-release.groovy',
                 envs: new HashMap<>([
                         'REPOSITORY': goCodeUnit.name,
+                ],
+                triggers: [
+                        new PipelineTrigger([
+                                type : PipelineTriggerType.UPSTREAM,
+                                value: "./${goCodeUnit.name.split('-').collect({ item -> item.capitalize()}).join(' ')}-multibranch/master"
+                        ])
                 ])
         )
         jobDslService.createPipeline(folder, providerRelease)
