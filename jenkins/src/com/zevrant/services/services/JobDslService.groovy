@@ -240,7 +240,7 @@ class JobDslService extends Service {
                                         strategyId(0)
                                     }
                                     headWildcardFilter {
-                                        includes('main PR-*')
+                                        includes("${codeUnit.defaultBranch} PR-*")
                                         excludes('')
                                     }
                                     giteaBranchDiscovery {
