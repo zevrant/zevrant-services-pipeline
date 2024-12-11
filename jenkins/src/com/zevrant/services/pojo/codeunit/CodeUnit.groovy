@@ -22,7 +22,4 @@ class CodeUnit {
         return defaultBranch
     }
 
-    GitRepo getRepo() {
-        return this.repo
-    }
 }
