@@ -78,7 +78,9 @@ pipeline {
                         dir("tmp") {
                             writeFile file: 'dummy', text: ''
                         }
-                        writeYaml(file: 'vars.yaml', data: codeUnit.extraArguments)
+                        if (codeUnit.extraArguments != null && !codeUnit.extraArguments.isEmpty()) {
+                            writeYaml(file: 'vars.yaml', data: codeUnit.extraArguments)
+                        }
                         sh 'packer init .'
                         String additionalArgs = ""
 
