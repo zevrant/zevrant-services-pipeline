@@ -21,4 +21,8 @@ class CodeUnit {
     public String getDefaultBranch() {
         return defaultBranch
     }
+
+    GitRepo getRepo() {
+        return repo
+    }
 }

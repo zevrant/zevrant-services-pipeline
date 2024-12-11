@@ -211,7 +211,7 @@ class JobDslService extends Service {
                                 serverUrl("https://${codeUnit.repo.hostName}")
                                 repoOwner(codeUnit.repo.org)
                                 repository(codeUnit.name)
-                                credentialsId(codeUnit.repo.credentialsId)
+                                credentialsId(codeUnit.repo.sshCredentialsId)
                                 id(codeUnit.name)
                                 traits {
                                     giteaPullRequestDiscovery {

@@ -136,14 +136,14 @@ pipeline {
 
                         gitService.cleanUntrackedFiles();
                         sshagent([codeUnit.getRepo().getSshCredentialsId()]) {
-                            if (codeUnit.repo.credentialsId.contains('gitea')) {
-                                withCredentials([usernamePassword(credentialsId: codeUnit.getRepo().credentialsId, passwordVariable: 'password', usernameVariable: 'username')]) {
+                            if (codeUnit.repo.sshCredentialsId.contains('gitea')) {
+                                withCredentials([usernamePassword(credentialsId: codeUnit.getRepo().sshCredentialsId, passwordVariable: 'password', usernameVariable: 'username')]) {
                                     withEnv(['GITEA_TOKEN=' + password]) {
                                         sh "goreleaser release --clean"
                                     }
                                 }
                             } else {
-                                withCredentials([usernamePassword(credentialsId: codeUnit.getRepo().credentialsId, passwordVariable: 'password', usernameVariable: 'username')]) {
+                                withCredentials([usernamePassword(credentialsId: codeUnit.getRepo().sshCredentialsId, passwordVariable: 'password', usernameVariable: 'username')]) {
                                     withEnv(['GITHUB_TOKEN=' + password]) {
                                         sh "goreleaser release --clean"
                                     }

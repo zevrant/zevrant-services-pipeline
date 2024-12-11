@@ -41,7 +41,7 @@ class GitRepo {
         return sshHostName
     }
 
-    String getCredentialsId() {
+    String getSshCredentialsId() {
         return credentialsId
     }
 }
