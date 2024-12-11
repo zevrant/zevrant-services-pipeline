@@ -27,11 +27,15 @@ class TerraformCloudService extends Service {
         if (StringUtils.isBlank(org)) {
             throw new RuntimeException(('Org Must be provided for terraform cloud actions'))
         }
+        Map<String,Object> authHeader = getAuthHeader(token).replace('"', '')
+        if (authHeader == null || StringUtils.isBlank(authHeader['name'])) {
+            throw new RuntimeException(('auth header ended up being null'))
+        }
         String encodedOrg = URLEncoder.encode(org, StandardCharsets.UTF_8)
         def httpResponse = pipelineContext.httpRequest(
                 url: "https://app.terraform.io/api/registry/private/v2/gpg-keys?filter%5Bnamespace%5D=$encodedOrg",
                 customHeaders: [
-                        getAuthHeader(token).replace('"', ''),
+                        authHeader,
                         [
                                 "name": 'Content-Type',
                                 'value': 'application/vnd.api+json'
