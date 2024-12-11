@@ -1,10 +1,16 @@
 package com.zevrant.services.pojo.codeunit
 
+import com.zevrant.services.pojo.GitRepo
+
 class GoCodeUnitCollection {
 
     private static final List<GoCodeUnit> codeUnits = Collections.unmodifiableList([
         new GoCodeUnit([
-                name: 'terraform-provider-proxmox'
+                name: 'terraform-provider-proxmox',
+                repo: new GitRepo(
+                        'github.com',  'git@github.com',
+                        'zevrant', 'terraform-provider-proxmox',  'jenkins-git'
+                )
         ])
     ])
 
