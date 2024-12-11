@@ -140,9 +140,8 @@ github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okW
             }
             steps {
                 script {
-                    sh 'gpg-agent --batch --daemon'
                     sh 'gpg -v --batch --import $GPG_KEY'
-                    sh "gpg -v --clearsign main.go"
+                    sh 'gpg -v --batch --passphrase "$GPG_PASSWORD" --clearsign --fingerprint $GPG_FINGERPRINT main.go'
 
                     //no spillage here as the key var is just the path to the key
                     println 'cleaning up untracked files'
