@@ -38,7 +38,7 @@ pipeline {
                                 providerArch.each { arch ->
                                     httpRequest(
                                             url: "https://github.com/zevrant/${codeUnit.name}/releases/download/${taggedVersion}/${codeUnit.name}_${taggedVersion.replace('v', '')}_${os}_${arch}.zip",
-                                            outputFile: "${codeUnit.name}_${taggedVersion}_${os}_${arch}.zip",
+                                            outputFile: "${codeUnit.name}_${taggedVersion.replace('v', '')}_${os}_${arch}.zip",
                                             customHeaders: [
                                                     [
                                                             'name'     : "Authorization",
@@ -51,7 +51,7 @@ pipeline {
                             }
                             httpRequest(
                                     url: "https://github.com/zevrant/${codeUnit.name}/releases/download/${taggedVersion}/${codeUnit.name}_${taggedVersion.replace('v', '')}_SHA256SUMS",
-                                    outputFile: "${codeUnit.name}_${taggedVersion}_SHA256SUMS",
+                                    outputFile: "${codeUnit.name}_${taggedVersion.replace('v', '')}_SHA256SUMS",
                                     customHeaders: [
                                             [
                                                     'name'     : "Authorization",
@@ -62,7 +62,7 @@ pipeline {
                             )
                             httpRequest(
                                     url: "https://github.com/zevrant/${codeUnit.name}/releases/download/${taggedVersion}/${codeUnit.name}_${taggedVersion.replace('v', '')}_SHA256SUMS.sig",
-                                    outputFile: "${codeUnit.name}_${taggedVersion}_SHA256SUMS.sig",
+                                    outputFile: "${codeUnit.name}_${taggedVersion.replace('v', '')}_SHA256SUMS.sig",
                                     customHeaders: [
                                             [
                                                     'name'     : "Authorization",
