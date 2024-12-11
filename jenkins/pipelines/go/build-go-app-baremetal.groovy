@@ -147,7 +147,7 @@ github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okW
                                 }
                             }
                         } else {
-                            withCredentials([string(credentialsId: codeUnit.getRepo().sshCredentialsId, variable: 'password')]) {
+                            withCredentials([string(credentialsId: 'jenkins-git-access-token-as-text', variable: 'password')]) {
                                 withEnv(['GITHUB_TOKEN=' + password]) {
                                     sh "goreleaser release --clean"
                                 }
