@@ -134,14 +134,14 @@ github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okW
 
         stage('Release Version') {
             environment {
-                GPG_FINGERPRINT = "65B4 607F 0CB9 810D 48F2  012B 0CFB 0807 6C37 70BF"
+                GPG_FINGERPRINT = "65B4607F0CB9810D48F2012B0CFB08076C3770BF"
                 GPG_PASSWORD = credentials('terraform-gpg-password')
                 GPG_KEY = credentials('gpg-key')
             }
             steps {
                 script {
                     sh 'gpg -v --batch --import $GPG_KEY'
-                    sh 'gpg -v --batch --passphrase "$GPG_PASSWORD" --clearsign --fingerprint $GPG_FINGERPRINT main.go'
+                    sh 'gpg -v --batch --passphrase "$GPG_PASSWORD" --clearsign --fingerprint "$GPG_FINGERPRINT" main.go'
 
                     //no spillage here as the key var is just the path to the key
                     println 'cleaning up untracked files'
