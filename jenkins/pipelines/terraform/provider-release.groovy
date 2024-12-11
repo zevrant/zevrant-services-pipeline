@@ -30,9 +30,9 @@ pipeline {
             }
             steps {
                 script {
-                    String gpgKeyId = '65B4607F0CB9810D48F2012B0CFB08076C3770BF'
                     sh 'echo "$terraformCloudToken" > tftoken'
                     String terraformCloudToken = readFile(file: 'tftoken')
+                    String gpgKeyId = terraformCloudService.getLatestGPGKeyId(codeUnit.providerOrgName, terraformCloudToken)
                     String providerName = codeUnit.name.replace('terraform-provider-', '')
                     ProviderShasumsLinks shasumsLinks = terraformCloudService
                             .createProviderVersion(gpgKeyId, terraformCloudToken as String, codeUnit.providerOrgName,
