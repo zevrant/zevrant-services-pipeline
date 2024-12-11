@@ -45,7 +45,7 @@ class VersionService extends Service {
         version.setMajor(currentVersion.getMajor() + 1)
         version.setMedian(0);
         version.setMinor(0)
-        updateVersion(version, bareMetal)
+        updateVersion(version, applicationName, bareMetal)
         return version
     }
 
@@ -54,18 +54,18 @@ class VersionService extends Service {
         version.setMedian(currentVersion.getMedian() + 1);
         version.setMinor(0)
 
-        updateVersion(version, bareMetal)
+        updateVersion(version, applicationName, bareMetal)
         return version
     }
 
     Version minorVersionUpdate(String applicationName, Version currentVersion, boolean bareMetal = false) {
         Version version = new Version(currentVersion.toThreeStageVersionString());
         version.setMinor(currentVersion.getMinor() + 1)
-        updateVersion(version, bareMetal)
+        updateVersion(version, applicationName, bareMetal)
         return version
     }
 
-    private void updateVersion(Version version, boolean bareMetal = false) {
+    private void updateVersion(Version version, String applicationName, boolean bareMetal = false) {
         if (bareMetal) {
             pipelineContext.sh """psql -c "update app_version set version = '${version.toThreeStageVersionString()}' where name = '${applicationName}'" """
         }
