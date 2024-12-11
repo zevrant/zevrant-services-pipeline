@@ -1,6 +1,7 @@
 package com.zevrant.services.services
 
 import com.zevrant.services.pojo.ProviderShasumsLinks
+import org.apache.commons.lang.StringUtils
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -23,6 +24,9 @@ class TerraformCloudService extends Service {
     }
 
     String getLatestGPGKeyId(String org, String token) {
+        if (StringUtils.isBlank(org)) {
+            throw new RuntimeException(('Org Must be provided for terraform cloud actions'))
+        }
         String encodedOrg = URLEncoder.encode(org, StandardCharsets.UTF_8)
         def httpResponse = pipelineContext.httpRequest(
                 url: "https://app.terraform.io/api/registry/private/v2/gpg-keys?filter%5Bnamespace%5D=$encodedOrg",
