@@ -28,6 +28,15 @@ class PackerCodeUnitCollection {
                         'github.com',  'git@github.com',
                         'zevrant', 'zevrant-services-pipeline',  'jenkins-git'
                 )
+        ),
+        new PackerCodeUnit(
+                name: 'jenkins',
+                baseImageName: 'alma-base-image',
+                folderPath: 'jenkins',
+                repo: new GitRepo(
+                        'github.com', 'git@github.com',
+                        'zevrant', 'zevrant-services-pipeline', 'jenkins-git'
+                )
         )
     ])
 
