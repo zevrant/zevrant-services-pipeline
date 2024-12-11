@@ -232,7 +232,7 @@ class JobDslService extends Service {
                                 repoOwner(codeUnit.repo.org)
                                 repository(codeUnit.repo.repoName)
                                 repositoryUrl(codeUnit.repo.httpsUri)
-                                configuredByUrl(true)
+                                configuredByUrl(false)
                                 credentialsId('jenkins-git-access-token-as-text')
                                 id(codeUnit.name)
                                 traits {
