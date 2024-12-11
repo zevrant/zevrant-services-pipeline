@@ -28,8 +28,11 @@ class TerraformCloudService extends Service {
             throw new RuntimeException(('Org Must be provided for terraform cloud actions'))
         }
         Map<String,Object> authHeader = getAuthHeader(token).replace('"', '')
-        if (authHeader == null || StringUtils.isBlank(authHeader['name'])) {
+        if (authHeader == null) {
             throw new RuntimeException(('auth header ended up being null'))
+        }
+        if (StringUtils.isBlank(authHeader['name'])) {
+            throw new RuntimeException(('auth header name ended up being null'))
         }
         String encodedOrg = URLEncoder.encode(org, StandardCharsets.UTF_8)
         def httpResponse = pipelineContext.httpRequest(
