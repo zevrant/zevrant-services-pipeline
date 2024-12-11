@@ -138,9 +138,9 @@ KubernetesServiceCollection.services.each { kubernetesService ->
     }
 }
 
-GoCodeUnitCollection.codeUnits.each { goCodeUnit ->
-    String folder = jobDslService.createMultibranch(goCodeUnit as CodeUnit)
-
+GoCodeUnitCollection.codeUnits.each { codeUnit ->
+    String folder = jobDslService.createMultibranch(codeUnit as CodeUnit)
+    GoCodeUnit goCodeUnit = codeUnit as GoCodeUnit
     if (goCodeUnit.providerOrgName != null && goCodeUnit.providerOrgName != "") {
         Pipeline providerRelease = new Pipeline(
                 name: "${goCodeUnit.name}-publish-to-terraform-cloud",
