@@ -243,8 +243,8 @@ class JobDslService extends Service {
                                         includes("${codeUnit.defaultBranch} PR-*")
                                         excludes('')
                                     }
-                                    giteaBranchDiscovery {
-                                        strategyId(3)
+                                    gitHubBranchDiscovery {
+                                        strategyId(0)
                                     }
                                     wipeWorkspaceTrait()
                                 }
