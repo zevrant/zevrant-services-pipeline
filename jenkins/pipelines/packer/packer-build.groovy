@@ -63,7 +63,7 @@ pipeline {
                 script {
                     version = versionService.getVersion(codeUnit.name, true)
                     version = versionService.minorVersionUpdate(codeUnit.name, version, true)
-                    currentBuild.displayName = "Building Version ${version.toVersionCodeString()}" as String
+                    currentBuild.displayName = "Building Version ${version.toThreeStageVersionString()}" as String
                 }
             }
         }

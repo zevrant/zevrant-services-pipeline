@@ -92,7 +92,8 @@ pipeline {
                 script {
                     version = versionService.getVersion(codeUnit.name, true)
                     version = versionService.minorVersionUpdate(codeUnit.name, version, true)
-                    currentBuild.displayName = "Building Version ${version.toVersionCodeString()}" as String
+                    currentBuild.displayName = "Building Version ${version.toThreeStageVersionString()}" as String
+                    artifactVersion = version.toThreeStageVersionString()
                     writeFile(file: 'artifactVersion.txt', text: "v${artifactVersion}" as String)
                     archiveArtifacts(artifacts: 'artifactVersion.txt', allowEmptyArchive: false)
                 }
@@ -134,23 +135,21 @@ github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okW
         stage('Release Version') {
             steps {
                 script {
-                    container('golang') {
-                        //no spillage here as the key var is just the path to the key
-                        println 'cleaning up untracked files'
+                    //no spillage here as the key var is just the path to the key
+                    println 'cleaning up untracked files'
 
-                        gitService.cleanUntrackedFiles();
-                        sshagent([codeUnit.getRepo().getSshCredentialsId()]) {
-                            if (codeUnit.repo.sshCredentialsId.contains('gitea')) {
-                                withCredentials([usernamePassword(credentialsId: codeUnit.getRepo().sshCredentialsId, passwordVariable: 'password', usernameVariable: 'username')]) {
-                                    withEnv(['GITEA_TOKEN=' + password]) {
-                                        sh "goreleaser release --clean"
-                                    }
+                    gitService.cleanUntrackedFiles();
+                    sshagent([codeUnit.getRepo().getSshCredentialsId()]) {
+                        if (codeUnit.repo.sshCredentialsId.contains('gitea')) {
+                            withCredentials([usernamePassword(credentialsId: codeUnit.getRepo().sshCredentialsId, passwordVariable: 'password', usernameVariable: 'username')]) {
+                                withEnv(['GITEA_TOKEN=' + password]) {
+                                    sh "goreleaser release --clean"
                                 }
-                            } else {
-                                withCredentials([string(credentialsId: codeUnit.getRepo().sshCredentialsId, variable: 'password')]) {
-                                    withEnv(['GITHUB_TOKEN=' + password]) {
-                                        sh "goreleaser release --clean"
-                                    }
+                            }
+                        } else {
+                            withCredentials([string(credentialsId: codeUnit.getRepo().sshCredentialsId, variable: 'password')]) {
+                                withEnv(['GITHUB_TOKEN=' + password]) {
+                                    sh "goreleaser release --clean"
                                 }
                             }
                         }
