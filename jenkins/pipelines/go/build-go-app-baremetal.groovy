@@ -93,6 +93,8 @@ pipeline {
                     version = versionService.getVersion(codeUnit.name, true)
                     version = versionService.minorVersionUpdate(codeUnit.name, version, true)
                     currentBuild.displayName = "Building Version ${version.toVersionCodeString()}" as String
+                    writeFile(file: 'artifactVersion.txt', text: "v${artifactVersion}" as String)
+                    archiveArtifacts(artifacts: 'artifactVersion.txt', allowEmptyArchive: false)
                 }
             }
         }
@@ -165,8 +167,7 @@ github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okW
 //                    if (branchName != 'main') {
 //                        pullRequest.comment("Failure Logs Can be Found [Here](${env.BUILD_URL}/console)")
 //                    }
-                    writeFile(file: 'artifactVersion.txt', text: "v${artifactVersion}" as String)
-                    archiveArtifacts(artifacts: 'artifactVersion.txt', allowEmptyArchive: false)
+
 //                    if (codeUnit.staticResourceSource != 'garbage') {
 //                        sh 'ls -l'
 //                        archiveArtifacts(artifacts: "${codeUnit.staticResourceSource}.zip", allowEmptyArchive: false)

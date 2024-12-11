@@ -224,6 +224,9 @@ class JobDslService extends Service {
                                     giteaBranchDiscovery {
                                         strategyId(3)
                                     }
+                                    giteaSSHCheckout {
+                                        credentialsId(codeUnit.repo.sshCredentialsId)
+                                    }
                                     wipeWorkspaceTrait()
                                 }
                             }
@@ -245,6 +248,11 @@ class JobDslService extends Service {
                                     }
                                     gitHubBranchDiscovery {
                                         strategyId(0)
+                                    }
+                                    gitHubSshCheckout {
+                                        // Credentials used to check out sources.
+
+                                        credentialsId(codeUnit.getRepo().getSshCredentialsId())
                                     }
                                     wipeWorkspaceTrait()
                                 }
