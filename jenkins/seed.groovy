@@ -139,5 +139,5 @@ KubernetesServiceCollection.services.each { kubernetesService ->
 }
 
 GoCodeUnitCollection.codeUnits.each { goCodeUnit ->
-    String folder = jobDslService.createMultibranch(springCodeUnit as CodeUnit)
+    String folder = jobDslService.createMultibranch(goCodeUnit as CodeUnit)
 }
