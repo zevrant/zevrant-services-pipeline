@@ -173,7 +173,7 @@ class JobDslService extends Service {
                         gitSCM {
                             branches {
                                 branchSpec {
-                                    name('main')
+                                    name('master')
                                 }
                             }
                             extensions {
