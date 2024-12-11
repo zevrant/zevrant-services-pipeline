@@ -22,7 +22,7 @@ class VersionService extends Service {
 //            pipelineContext.container('keydb') {
 //                version = keydbService.getKey(applicationName).trim()
 //            }
-            if (!bareMetal) {
+            if (bareMetal) {
                 pipelineContext.sh """psql --csv -t -c "select version from app_version where name = '${applicationName}'" > version"""
             }
             version = pipelineContext.readFile(file: 'version')
@@ -45,7 +45,7 @@ class VersionService extends Service {
         version.setMajor(currentVersion.getMajor() + 1)
         version.setMedian(0);
         version.setMinor(0)
-        if (!bareMetal) {
+        if (bareMetal) {
             pipelineContext.sh """psql -c "update app_version set version = '${version.toThreeStageVersionString()}' where name = '${applicationName}'" """
         }
         return version
