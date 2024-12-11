@@ -9,6 +9,7 @@ class GoCodeUnitCollection {
         new GoCodeUnit([
                 name: 'terraform-provider-proxmox',
                 applicationType: ApplicationType.TERRAFORM_PROVIDER,
+                providerOrgName: 'zevrant-services',
                 repo: new GitRepo(
                         'github.com',  'git@github.com',
                         'zevrant', 'terraform-provider-proxmox',  'jenkins-git'
