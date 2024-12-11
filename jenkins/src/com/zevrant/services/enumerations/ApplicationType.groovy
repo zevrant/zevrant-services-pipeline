@@ -6,7 +6,7 @@ enum ApplicationType {
     SPRING('Spring', 'jenkins/pipelines/spring/artifact-build.groovy'),
     JENKINS_CAC('Admin Utilities', 'jenkins/pipelines/admin/cacUpdate.groovy'),
     TERRAFORM('Terraform', 'jenkins/pipelines/terraform/build-test-terraform.groovy'),
-    TERRAFORM_PROVIDER('Terraform Provider', 'jenkins/pipelines/go/build-go-app.groovy'),
+    TERRAFORM_PROVIDER('Terraform Provider', 'jenkins/pipelines/go/build-go-app-baremetal.groovy'),
     GO('GO', 'jenkins/pipelines/go/build-go-app.groovy')
 
     private final String value;
