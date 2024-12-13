@@ -16,6 +16,10 @@ JobDslService jobDslService = new JobDslService(this)
                 type : PipelineTriggerType.UPSTREAM,
                 value: "/packer/build-${image.baseImageName.split('/').collect({ it.toLowerCase() }).join('-')}"
         ]))
+    } else {
+        pipelineTriggers.add(new PipelineTrigger(
+                type: PipelineTriggerType.CRON,
+                value: "H 3 * * 6"))
     }
 
 
