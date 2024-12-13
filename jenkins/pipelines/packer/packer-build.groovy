@@ -15,6 +15,7 @@ VersionService versionService = new VersionService(this)
 PackerCodeUnit codeUnit = PackerCodeUnitCollection.findCodeUnitByName(NAME as String)
 String imageHash = ''
 Version version = null
+String baseImageVersion = ''
 pipeline {
     agent {
         label 'container-builder'
@@ -41,8 +42,10 @@ pipeline {
                                     .find { hash -> hash.contains('latest.x86_64') }
                                     .split('\\h')[0]
                         } else {
-                            String baseImageHash = readFile(file: "/opt/vm-images/${codeUnit.baseImageName}.sha512")
-                            if (hashingService.getSha512SumFor("/opt/vm-images/${codeUnit.baseImageName}.qcow2").replace("/opt/vm-images/", "") != baseImageHash) {
+                            copyArtifacts(filter: 'artifactVersion.txt', projectName: "build-${codeUnit.baseImageName}", selector: lastSuccessful())
+                            baseImageVersion = readFile('artifactVersion.txt')
+                            String baseImageHash = readFile(file: "/opt/vm-images/${codeUnit.baseImageName}-${baseImageVersion}.sha512")
+                            if (hashingService.getSha512SumFor("/opt/vm-images/${codeUnit.baseImageName}-${baseImageVersion}.qcow2").replace("/opt/vm-images/", "") != baseImageHash) {
                                 throw new RuntimeException("Failed to match file hash to specified base image, SOMETHING IS VERY WRONG HERE")
                             }
                             imageHash = baseImageHash
@@ -86,7 +89,7 @@ pipeline {
 
                         println(codeUnit.baseImageName)
                         if (StringUtils.isNotBlank(codeUnit.baseImageName)) {
-                            additionalArgs = "-var 'base_image_path=/opt/vm-images/${codeUnit.baseImageName}.qcow2'"
+                            additionalArgs = "-var 'base_image_path=/opt/vm-images/${codeUnit.baseImageName}-${baseImageVersion}.qcow2'"
                         }
 
                         sh "packer build -var base_image_hash=${imageHash.split('\\h')[0]} ${additionalArgs} ."
