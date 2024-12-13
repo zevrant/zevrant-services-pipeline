@@ -18,24 +18,22 @@ class VersionService extends Service {
 
     Version getVersion(String applicationName, boolean bareMetal = false) {
         String version = ''
-        try {
 //            pipelineContext.container('keydb') {
 //                version = keydbService.getKey(applicationName).trim()
 //            }
-            if (bareMetal) {
-                pipelineContext.sh """psql --csv -t -c "select version from app_version where name = '${applicationName}'" > version"""
-            }
-            version = pipelineContext.readFile(file: 'version')
-        } catch (Exception ignored) {
-//            version = keydbService.getKey(applicationName).trim()
-            pipelineContext.println("Version not found for ${applicationName}, setting to 0.0.0")
-            pipelineContext.sh("""psql -c "insert into app_version(name, version) values('${applicationName}', '0.0.0')" """)
+        if (bareMetal) {
             pipelineContext.sh """psql --csv -t -c "select version from app_version where name = '${applicationName}'" > version"""
-            version = pipelineContext.readFile(file: 'version')
+        }
+        version = pipelineContext.readFile(file: 'version')
+
+//            version = keydbService.getKey(applicationName).trim()
+        pipelineContext.println("Version not found for ${applicationName}, setting to 0.0.0")
+        version = pipelineContext.readFile(file: 'version').replace('"', '').trim()
+        if (version == "" || version == null || version == '(nil)') {
+            version = '0.0.0'
+            pipelineContext.sh("""psql -c "insert into app_version(name, version) values('${applicationName}', '0.0.0')" """)
         }
 
-        version = version.replace('"', '').trim() //redis/keydb strings are returned wrapped in double quotes
-        version = (version == "" || version == null || version == '(nil)') ? '0.0.0' : version
         pipelineContext.println("Version is '$version'")
         return new Version(version)
     }
