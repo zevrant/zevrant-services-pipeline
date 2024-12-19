@@ -43,7 +43,7 @@ class PackerCodeUnitCollection {
                 baseImageName: 'alma-base-image',
                 folderPath: 'puppet-server',
                 repo: new GitRepo('github.com', 'git@github.com',
-                        'zevrant', 'zevrant-services-pipelines', 'jenkins-git'),
+                        'zevrant', 'zevrant-services-pipeline', 'jenkins-git'),
                 extraArguments: [
                         'puppetMajorVersion': '8',
                         'almaVersion'       : '9'
