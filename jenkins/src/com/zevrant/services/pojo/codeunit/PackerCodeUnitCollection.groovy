@@ -48,7 +48,7 @@ class PackerCodeUnitCollection {
             new PackerCodeUnit(
                     name: 'shared-nginx-ingress',
                     baseImageName: 'nginx-base',
-                    folderPath: 'shared/nginx-ingress',
+                    folderPath: 'shared-nginx-ingress',
                     repo: new GitRepo('github.com', 'git@github.com',
                             'zevrant', 'zevrant-services-pipeline', 'jenkins-git'),
                     specRepo: new GitRepo('github.com', 'git@github.com',
