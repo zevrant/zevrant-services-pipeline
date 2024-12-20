@@ -53,23 +53,6 @@ class PackerCodeUnitCollection {
                             'zevrant', 'zevrant-services-pipeline', 'jenkins-git'),
                     specRepo: new GitRepo('github.com', 'git@github.com',
                             'zevrant', 'zevrant-services-terraform', 'jenkins-git'),
-                    extraArguments: [
-                            firewall_ports: [
-                                    [
-                                            protocol: 'tcp',
-                                            port    : '80'
-                                    ]
-                            ],
-                            haproxy_configs: [
-//                                    [
-//                                            src : 'haproxy.cfg',
-//                                            dest: '/etc/haproxy/haproxy.cfg'
-//                                    ],
-                                    [
-                                            src : 'jenkins-ingress.cfg',
-                                            dest: '/etc/haproxy/conf.d/jenkins-ingress.cfg'
-                                    ]
-                            ]
                     ]
             )
     ])
