@@ -13,7 +13,6 @@ GitService gitService = new GitService(this)
 VersionService versionService = new VersionService(this)
 
 
-String branchName = (BRANCH_NAME.startsWith('PR-')) ? CHANGE_BRANCH : BRANCH_NAME
 
 PackerCodeUnit codeUnit = PackerCodeUnitCollection.findCodeUnitByName(NAME as String)
 String imageHash = ''
@@ -29,7 +28,7 @@ pipeline {
             steps {
                 script {
                     gitService.checkout(codeUnit.specRepo.sshHostName, codeUnit.specRepo.org, codeUnit.specRepo.repoName,
-                            branchName, 'jenkins-git')
+                            'master', 'jenkins-git')
                 }
             }
         }
