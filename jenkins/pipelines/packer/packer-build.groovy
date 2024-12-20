@@ -12,6 +12,9 @@ HashingService hashingService = new HashingService(this)
 GitService gitService = new GitService(this)
 VersionService versionService = new VersionService(this)
 
+
+String branchName = (BRANCH_NAME.startsWith('PR-')) ? CHANGE_BRANCH : BRANCH_NAME
+
 PackerCodeUnit codeUnit = PackerCodeUnitCollection.findCodeUnitByName(NAME as String)
 String imageHash = ''
 Version version = null
@@ -25,8 +28,8 @@ pipeline {
         stage('Get Source Material') {
             steps {
                 script {
-                    gitService.checkout('git@github.com', 'zevrant', 'packer-build-specs',
-                            'master', 'jenkins-git')
+                    gitService.checkout(codeUnit.specRepo.sshHostName, codeUnit.specRepo.org, codeUnit.specRepo.repoName,
+                            branchName 'jenkins-git')
                 }
             }
         }

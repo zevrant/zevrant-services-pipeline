@@ -5,46 +5,55 @@ import com.zevrant.services.pojo.GitRepo
 class PackerCodeUnitCollection {
 
     public static final List<PackerCodeUnit> packerImages = Collections.unmodifiableList([
-        new PackerCodeUnit(
-                name: 'alma-base-image',
-                extraArguments: [
-                        'nodeExporterVersion': '1.8.2',
-                ],
-                folderPath: 'base-images/base-vm',
-                repo: new GitRepo(
-                        'github.com',  'git@github.com',
-                        'zevrant', 'zevrant-services-pipeline',  'jenkins-git'
-                )
-        ),
-        new PackerCodeUnit(
-                name: 'jenkins-agent',
-                baseImageName: 'alma-base-image',
-                extraArguments: [
-                        'jenkinsSshKey': 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO9n652oHq/eI9F2EUI0xq2ZZw9pgkeQU8+h3HXDU1H/ zevrant@zevrant',
-                        'jenkinsAgentServiceFile': ''
-                ],
-                folderPath: 'shared/jenkins-agent',
-                repo: new GitRepo(
-                        'github.com',  'git@github.com',
-                        'zevrant', 'zevrant-services-pipeline',  'jenkins-git'
-                )
-        ),
-        new PackerCodeUnit(
-                name: 'jenkins',
-                baseImageName: 'alma-base-image',
-                folderPath: 'shared/jenkins',
-                repo: new GitRepo(
-                        'github.com', 'git@github.com',
-                        'zevrant', 'zevrant-services-pipeline', 'jenkins-git'
-                )
-        ),
-        new PackerCodeUnit(
-                name: 'nginx-base',
-                baseImageName: 'alma-base-image',
-                folderPath: 'base-images/nginx-base',
-                repo: new GitRepo('github.com', 'git@github.com',
-                        'zevrant', 'zevrant-services-pipeline', 'jenkins-git'),
-        )
+            new PackerCodeUnit(
+                    name: 'alma-base-image',
+                    extraArguments: [
+                            'nodeExporterVersion': '1.8.2',
+                    ],
+                    folderPath: 'base-vm',
+                    repo: new GitRepo(
+                            'github.com', 'git@github.com',
+                            'zevrant', 'zevrant-services-pipeline', 'jenkins-git'
+                    )
+            ),
+            new PackerCodeUnit(
+                    name: 'jenkins-agent',
+                    baseImageName: 'alma-base-image',
+                    extraArguments: [
+                            'jenkinsSshKey'          : 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO9n652oHq/eI9F2EUI0xq2ZZw9pgkeQU8+h3HXDU1H/ zevrant@zevrant',
+                            'jenkinsAgentServiceFile': ''
+                    ],
+                    folderPath: 'jenkins-agent',
+                    repo: new GitRepo(
+                            'github.com', 'git@github.com',
+                            'zevrant', 'zevrant-services-pipeline', 'jenkins-git'
+                    )
+            ),
+            new PackerCodeUnit(
+                    name: 'jenkins',
+                    baseImageName: 'alma-base-image',
+                    folderPath: 'jenkins',
+                    repo: new GitRepo(
+                            'github.com', 'git@github.com',
+                            'zevrant', 'zevrant-services-pipeline', 'jenkins-git'
+                    )
+            ),
+            new PackerCodeUnit(
+                    name: 'nginx-base',
+                    baseImageName: 'alma-base-image',
+                    folderPath: 'nginx-base',
+                    repo: new GitRepo('github.com', 'git@github.com',
+                            'zevrant', 'zevrant-services-pipeline', 'jenkins-git'),
+            ),
+            new PackerCodeUnit(
+                    name: 'shared-nginx-ingress',
+                    baseImageName: 'nginx-base',
+                    folderPath: 'shared/nginx-ingress',
+                    repo: new GitRepo('github.com', 'git@github.com',
+                            'zevrant', 'zevrant-services-pipeline', 'jenkins-git'),
+                    specRepo: new GitRepo('github.com', 'git@github.com',
+                            'zevrant', 'zevrant-services-terraform', 'jenkins-git')
+            )
     ])
 
     static PackerCodeUnit findCodeUnitByName(String name) {
