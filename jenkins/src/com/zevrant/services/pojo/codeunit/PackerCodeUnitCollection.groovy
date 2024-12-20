@@ -9,8 +9,6 @@ class PackerCodeUnitCollection {
                 name: 'alma-base-image',
                 extraArguments: [
                         'nodeExporterVersion': '1.8.2',
-                        'puppetMajorVersion' : '8',
-                        'almaVersion'        : '9'
                 ],
                 folderPath: 'base-vm',
                 repo: new GitRepo(
@@ -40,13 +38,6 @@ class PackerCodeUnitCollection {
                         'zevrant', 'zevrant-services-pipeline', 'jenkins-git'
                 )
         ),
-        new PackerCodeUnit(
-                name: 'puppet-server',
-                baseImageName: 'alma-base-image',
-                folderPath: 'puppet-server',
-                repo: new GitRepo('github.com', 'git@github.com',
-                        'zevrant', 'zevrant-services-pipeline', 'jenkins-git'),
-        )
     ])
 
     static PackerCodeUnit findCodeUnitByName(String name) {
