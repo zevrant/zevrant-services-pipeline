@@ -29,7 +29,7 @@ pipeline {
             steps {
                 script {
                     gitService.checkout(codeUnit.specRepo.sshHostName, codeUnit.specRepo.org, codeUnit.specRepo.repoName,
-                            branchName 'jenkins-git')
+                            branchName, 'jenkins-git')
                 }
             }
         }
