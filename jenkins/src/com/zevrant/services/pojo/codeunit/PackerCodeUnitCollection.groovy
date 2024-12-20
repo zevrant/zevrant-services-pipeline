@@ -38,6 +38,13 @@ class PackerCodeUnitCollection {
                         'zevrant', 'zevrant-services-pipeline', 'jenkins-git'
                 )
         ),
+        new PackerCodeUnit(
+                name: 'nginx-base',
+                baseImageName: 'alma-base-image',
+                folderPath: 'nginx-base',
+                repo: new GitRepo('github.com', 'git@github.com',
+                        'zevrant', 'zevrant-services-pipeline', 'jenkins-git'),
+        )
     ])
 
     static PackerCodeUnit findCodeUnitByName(String name) {
