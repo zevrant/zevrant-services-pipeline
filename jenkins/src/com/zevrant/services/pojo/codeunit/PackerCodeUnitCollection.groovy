@@ -39,16 +39,16 @@ class PackerCodeUnitCollection {
                     )
             ),
             new PackerCodeUnit(
-                    name: 'nginx-base',
+                    name: 'haproxy-base',
                     baseImageName: 'alma-base-image',
-                    folderPath: 'nginx-base',
+                    folderPath: 'haproxy-base',
                     repo: new GitRepo('github.com', 'git@github.com',
                             'zevrant', 'zevrant-services-pipeline', 'jenkins-git'),
             ),
             new PackerCodeUnit(
-                    name: 'shared-nginx-ingress',
-                    baseImageName: 'nginx-base',
-                    folderPath: 'shared-nginx-ingress',
+                    name: 'shared-haproxy-ingress',
+                    baseImageName: 'haproxy-base',
+                    folderPath: 'shared-haproxy-ingress',
                     repo: new GitRepo('github.com', 'git@github.com',
                             'zevrant', 'zevrant-services-pipeline', 'jenkins-git'),
                     specRepo: new GitRepo('github.com', 'git@github.com',
@@ -60,14 +60,10 @@ class PackerCodeUnitCollection {
                                             port    : '80'
                                     ]
                             ],
-                            nginx_configs : [
-                                    [
-                                            src : 'nginx.conf',
-                                            dest: '/etc/nginx/nginx.conf'
-                                    ],
+                            haproxy_configs: [
                                     [
                                             src : 'jenkins-ingress.conf',
-                                            dest: '/etc/nginx/conf.d/http/jenkins-ingress.conf'
+                                            dest: '/etc/haproxy/conf.d/jenkins-ingress.conf'
                                     ]
                             ]
                     ]
