@@ -16,7 +16,7 @@ class PackerCodeUnit extends CodeUnit {
         baseImageName = params.baseImageName
         if (params.specRepo == null) {
             params.specRepo = new GitRepo('github.com', 'git@github.com',
-                    'zevrant', 'packer-build-spec', 'jenkins-git')
+                    'zevrant', 'packer-build-specs', 'jenkins-git')
         }
         specRepo = params.specRepo
 
