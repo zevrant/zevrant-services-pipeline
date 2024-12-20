@@ -152,13 +152,13 @@ GoCodeUnitCollection.codeUnits.each { codeUnit ->
                 jenkinsfileLocation: 'jenkins/pipelines/terraform/provider-release.groovy',
                 envs: new HashMap<>([
                         'REPOSITORY': goCodeUnit.name,
-                ],
+                ]),
                 triggers: [
                         new PipelineTrigger([
                                 type : PipelineTriggerType.UPSTREAM,
                                 value: "./${codeUnitTitle}-multibranch/master"
                         ])
-                ])
+                ]
         )
         jobDslService.createPipeline(folder, providerRelease)
     }
