@@ -52,7 +52,25 @@ class PackerCodeUnitCollection {
                     repo: new GitRepo('github.com', 'git@github.com',
                             'zevrant', 'zevrant-services-pipeline', 'jenkins-git'),
                     specRepo: new GitRepo('github.com', 'git@github.com',
-                            'zevrant', 'zevrant-services-terraform', 'jenkins-git')
+                            'zevrant', 'zevrant-services-terraform', 'jenkins-git'),
+                    extraArguments: [
+                            firewall_ports: [
+                                    [
+                                            protocol: 'tcp',
+                                            port    : '80'
+                                    ]
+                            ],
+                            nginx_configs : [
+                                    [
+                                            src : 'nginx.conf',
+                                            dest: '/etc/nginx/nginx.conf'
+                                    ],
+                                    [
+                                            src : 'jenkins-ingress.conf',
+                                            dest: '/etc/nginx/conf.d/http/jenkins-ingress.conf'
+                                    ]
+                            ]
+                    ]
             )
     ])
 
