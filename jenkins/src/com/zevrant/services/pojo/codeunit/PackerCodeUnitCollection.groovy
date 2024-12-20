@@ -61,10 +61,10 @@ class PackerCodeUnitCollection {
                                     ]
                             ],
                             haproxy_configs: [
-                                    [
-                                            src : 'haproxy.cfg',
-                                            dest: '/etc/haproxy/haproxy.cfg'
-                                    ],
+//                                    [
+//                                            src : 'haproxy.cfg',
+//                                            dest: '/etc/haproxy/haproxy.cfg'
+//                                    ],
                                     [
                                             src : 'jenkins-ingress.cfg',
                                             dest: '/etc/haproxy/conf.d/jenkins-ingress.cfg'
