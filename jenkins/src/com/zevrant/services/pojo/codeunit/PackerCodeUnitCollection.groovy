@@ -10,7 +10,7 @@ class PackerCodeUnitCollection {
                 extraArguments: [
                         'nodeExporterVersion': '1.8.2',
                 ],
-                folderPath: 'base-vm',
+                folderPath: 'base-images/base-vm',
                 repo: new GitRepo(
                         'github.com',  'git@github.com',
                         'zevrant', 'zevrant-services-pipeline',  'jenkins-git'
@@ -23,7 +23,7 @@ class PackerCodeUnitCollection {
                         'jenkinsSshKey': 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO9n652oHq/eI9F2EUI0xq2ZZw9pgkeQU8+h3HXDU1H/ zevrant@zevrant',
                         'jenkinsAgentServiceFile': ''
                 ],
-                folderPath: 'jenkins-agent',
+                folderPath: 'shared/jenkins-agent',
                 repo: new GitRepo(
                         'github.com',  'git@github.com',
                         'zevrant', 'zevrant-services-pipeline',  'jenkins-git'
@@ -32,7 +32,7 @@ class PackerCodeUnitCollection {
         new PackerCodeUnit(
                 name: 'jenkins',
                 baseImageName: 'alma-base-image',
-                folderPath: 'jenkins',
+                folderPath: 'shared/jenkins',
                 repo: new GitRepo(
                         'github.com', 'git@github.com',
                         'zevrant', 'zevrant-services-pipeline', 'jenkins-git'
@@ -41,7 +41,7 @@ class PackerCodeUnitCollection {
         new PackerCodeUnit(
                 name: 'nginx-base',
                 baseImageName: 'alma-base-image',
-                folderPath: 'nginx-base',
+                folderPath: 'base-images/nginx-base',
                 repo: new GitRepo('github.com', 'git@github.com',
                         'zevrant', 'zevrant-services-pipeline', 'jenkins-git'),
         )
