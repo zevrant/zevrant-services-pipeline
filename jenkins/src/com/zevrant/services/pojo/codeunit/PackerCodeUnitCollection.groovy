@@ -57,7 +57,7 @@ class PackerCodeUnitCollection {
             new PackerCodeUnit(
                     name: 'bind9-base',
                     baseImageName: 'alma-base-image',
-                    folderPath: 'haproxy-base',
+                    folderPath: 'bind9-base',
                     repo: new GitRepo('github.com', 'git@github.com',
                             'zevrant', 'zevrant-services-pipeline', 'jenkins-git')
             ),
