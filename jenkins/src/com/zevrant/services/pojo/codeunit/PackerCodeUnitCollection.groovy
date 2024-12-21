@@ -53,7 +53,22 @@ class PackerCodeUnitCollection {
                             'zevrant', 'zevrant-services-pipeline', 'jenkins-git'),
                     specRepo: new GitRepo('github.com', 'git@github.com',
                             'zevrant', 'zevrant-services-terraform', 'jenkins-git'),
-                    ]
+            ),
+            new PackerCodeUnit(
+                    name: 'bind9-base',
+                    baseImageName: 'haproxy-base',
+                    folderPath: 'alma-base-image',
+                    repo: new GitRepo('github.com', 'git@github.com',
+                            'zevrant', 'zevrant-services-pipeline', 'jenkins-git')
+            ),
+            new PackerCodeUnit(
+                    name: 'internal-bind9',
+                    baseImageName: 'bind9-base',
+                    folderPath: 'internal-bind9',
+                    repo: new GitRepo('github.com', 'git@github.com',
+                            'zevrant', 'zevrant-services-pipeline', 'jenkins-git'),
+                    specRepo: new GitRepo('github.com', 'git@github.com',
+                            'zevrant', 'zevrant-services-terraform', 'jenkins-git'),
             )
     ])
 
