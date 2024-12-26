@@ -72,7 +72,7 @@ class SecretsService extends Service {
 
         pipelineContext.println(response.content)
 
-        return new Secret('', '')
+        return new Secret(jsonObject.static_version.value)
     }
 
 }

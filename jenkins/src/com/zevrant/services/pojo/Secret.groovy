@@ -2,19 +2,13 @@ package com.zevrant.services.pojo
 
 class Secret {
 
-    private final String username
-    private final String password
+    private final String value
 
-    Secret(String username, String password) {
-        this.username = username
-        this.password = password
+    Secret(String value) {
+        this.value = value
     }
 
-    String getUsername() {
-        return username
-    }
-
-    String getPassword() {
-        return password
+    String getValue() {
+        return value
     }
 }
