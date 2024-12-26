@@ -23,7 +23,7 @@ class SecretsService extends Service {
                         ]
                 ],
                 requestBody: 'client_id=' + encodedClientId + '&client_secret=' + encodedClientSecret + '&grant_type=client_credentials&audience=https://api.hashicorp.cloud'
-                status: '200,201'
+                validResponseCodes: '200,201'
         )
 
         return pipelineContext.readJSON(test: response.content).access_token
@@ -49,7 +49,7 @@ class SecretsService extends Service {
                                 value: 'Bearer ' + hcpToken
                         ]
                 ],
-                status: '200'
+                validResponseCodes: '200'
         )
 
         pipelineContext.println(response.content)
