@@ -31,7 +31,7 @@ class SecretsService extends Service {
 
     Secret getSecret(String secretName, String hcpToken, useCloud = false, String orgId = '', String projectId = '') {
         String getSecretUrl = ''
-        if (useCloud = true) {
+        if (useCloud) {
             getSecretUrl = 'https://api.cloud.hashicorp.com/secrets/2023-11-28/organizations/8a8ed772-fcf9-4a4b-b70f-bfa8554dd909/projects/3cdbcc02-4119-4937-81d6-6009254f3b42/apps/sample-app/secrets/' + secretName
         } else if (StringUtils.isBlank(orgId)) {
             throw new RuntimeException("When not using cloud Vault, the organization id must be provided")
