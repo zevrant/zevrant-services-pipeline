@@ -15,7 +15,7 @@ class SecretsService extends Service {
         String encodedClientSecret = URLEncoder.encode(clientSecret, StandardCharsets.UTF_8)
         def response = pipelineContext.httpRequest(
                 url: 'https://auth.idp.hashicorp.com/oauth2/token',
-                method: 'POST',
+                method: 'GET',
                 customeHeaders: [
                         [
                                 name : 'Content-Type',
