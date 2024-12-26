@@ -24,10 +24,9 @@ class SecretsService extends Service {
                 ],
                 requestBody: 'client_id=' + encodedClientId + '&client_secret=' + encodedClientSecret + '&grant_type=client_credentials&audience=https://api.hashicorp.cloud',
                 validResponseCodes: '200,201',
-                consoleLogResponseBody: true
         )
 
-        return pipelineContext.readJSON(test: response.content).access_token
+        return pipelineContext.readJSON(text: response.content).access_token
     }
 
     Secret getSecret(String secretName, String hcpToken, useCloud = false, String orgId = '', String projectId = '') {
