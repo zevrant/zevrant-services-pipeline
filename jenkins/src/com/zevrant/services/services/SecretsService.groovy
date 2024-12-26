@@ -56,7 +56,7 @@ class SecretsService extends Service {
         def jsonObject = pipelineContext.readJSON(text: response.content)
 
         response = pipelineContext.httpRequest(
-                url: "${getSecretUrl}/versions/${jsonObject.latest_version}:open",
+                url: "${getSecretUrl}/versions/${jsonObject.secret.latest_version}:open",
                 httpMode: 'GET',
                 customHeaders: [
                         [
