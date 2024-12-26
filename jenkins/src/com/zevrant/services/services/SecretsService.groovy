@@ -70,8 +70,6 @@ class SecretsService extends Service {
 
         jsonObject = pipelineContext.readJSON(text: response.content)
 
-        pipelineContext.println(response.content)
-
         return new Secret(jsonObject.static_version.value)
     }
 
