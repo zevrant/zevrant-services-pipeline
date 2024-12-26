@@ -26,7 +26,8 @@ class SecretsService extends Service {
                 validResponseCodes: '200,201'
         )
 
-        return pipelineContext.readJSON(test: response.content).access_token
+//        return pipelineContext.readJSON(test: response.content).access_token
+        return ''
     }
 
     Secret getSecret(String secretName, String hcpToken, useCloud = false, String orgId = '', String projectId = '') {
