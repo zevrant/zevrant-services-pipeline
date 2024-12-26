@@ -76,7 +76,16 @@ class PackerCodeUnitCollection {
                     folderPath: 'hashicorp-vault-base',
                     repo: new GitRepo('github.com', 'git@github.com',
                             'zevrant', 'zevrant-services-pipeline', 'jenkins-git'),
-            )
+            ),
+            new PackerCodeUnit(
+                    name: 'shared-hashicorp-vault',
+                    baseImageName: 'hashicorp-vault-base',
+                    folderPath: 'shared/shared-hashicorp-vault',
+                    repo: new GitRepo('github.com', 'git@github.com',
+                            'zevrant', 'zevrant-services-pipeline', 'jenkins-git'),
+                    specRepo: new GitRepo('github.com', 'git@github.com',
+                            'zevrant', 'zevrant-services-terraform', 'jenkins-git'),
+            ),
     ])
 
     static PackerCodeUnit findCodeUnitByName(String name) {
