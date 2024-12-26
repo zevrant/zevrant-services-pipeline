@@ -2,8 +2,6 @@ package com.zevrant.services.services
 
 import com.zevrant.services.pojo.Secret
 
-import java.nio.charset.StandardCharsets
-
 class SecretsService extends Service {
 
     SecretsService(Object pipelineContext) {
@@ -11,8 +9,8 @@ class SecretsService extends Service {
     }
 
     String getHcpApiToken(String clientId, String clientSecret) {
-        String encodedClientId = URLEncoder.encode(clientId, StandardCharsets.UTF_8)
-        String encodedClientSecret = URLEncoder.encode(clientSecret, StandardCharsets.UTF_8)
+//        String encodedClientId = URLEncoder.encode(clientId, StandardCharsets.UTF_8)
+//        String encodedClientSecret = URLEncoder.encode(clientSecret, StandardCharsets.UTF_8)
 //        def response = pipelineContext.httpRequest(
 //                url: 'https://auth.idp.hashicorp.com/oauth2/token',
 //                method: 'POST',
