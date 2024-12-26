@@ -15,8 +15,8 @@ class SecretsService extends Service {
         String encodedClientSecret = URLEncoder.encode(clientSecret, StandardCharsets.UTF_8)
         def response = pipelineContext.httpRequest(
                 url: 'https://auth.idp.hashicorp.com/oauth2/token',
-                method: 'GET',
-                customeHeaders: [
+                httpMode: 'POST',
+                customHeaders: [
                         [
                                 name : 'Content-Type',
                                 value: 'application/x-www-form-urlencoded',
@@ -43,7 +43,7 @@ class SecretsService extends Service {
 
         def response = pipelineContext.httpRequest(
                 url: getSecretUrl,
-                method: 'GET',
+                httpMode: 'GET',
                 customeHeaders: [
                         [
                                 name : 'Authorization',
