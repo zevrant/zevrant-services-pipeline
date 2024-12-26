@@ -44,7 +44,7 @@ class SecretsService extends Service {
         def response = pipelineContext.httpRequest(
                 url: getSecretUrl,
                 httpMode: 'GET',
-                customeHeaders: [
+                customHeaders: [
                         [
                                 name : 'Authorization',
                                 value: 'Bearer ' + hcpToken,
