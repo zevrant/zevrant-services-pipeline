@@ -53,9 +53,7 @@ class SecretsService extends Service {
                 validResponseCodes: '200'
         )
 
-        pipelineContext.println(response.content)
-
-        def jsonObject = pipelineContext.readJson(text: response.content)
+        def jsonObject = pipelineContext.readJSON(text: response.content)
 
         response = pipelineContext.httpRequest(
                 url: "${getSecretUrl}/versions/${jsonObject.latest_version}:open",
