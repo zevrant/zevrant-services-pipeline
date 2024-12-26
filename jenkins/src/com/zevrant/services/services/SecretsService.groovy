@@ -22,7 +22,7 @@ class SecretsService extends Service {
                                 value: 'application/x-www-form-urlencoded',
                         ]
                 ],
-                requestBody: 'client_id=' + encodedClientId + '&client_secret=' + encodedClientSecret + '&grant_type=client_credentials&audience=https://api.hashicorp.cloud'
+                requestBody: 'client_id=' + encodedClientId + '&client_secret=' + encodedClientSecret + '&grant_type=client_credentials&audience=https://api.hashicorp.cloud',
                 validResponseCodes: '200,201'
         )
 
