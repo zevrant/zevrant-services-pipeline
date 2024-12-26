@@ -13,7 +13,7 @@ class SecretsService extends Service {
     String getHcpApiToken(String clientId, String clientSecret) {
         String encodedClientId = URLEncoder.encode(clientId, StandardCharsets.UTF_8)
         String encodedClientSecret = URLEncoder.encode(clientSecret, StandardCharsets.UTF_8)
-        Object response = pipelineContext.httpRequest(
+        def response = pipelineContext.httpRequest(
                 url: 'https://auth.idp.hashicorp.com/oauth2/token',
                 method: 'POST',
                 customeHeaders: [
@@ -40,7 +40,7 @@ class SecretsService extends Service {
         }
 
 
-        Object response = pipelineContext.httpRequest(
+        def response = pipelineContext.httpRequest(
                 url: getSecretUrl,
                 method: 'GET',
                 customeHeaders: [
