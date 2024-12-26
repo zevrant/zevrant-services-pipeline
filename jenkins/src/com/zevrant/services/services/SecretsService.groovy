@@ -2,6 +2,8 @@ package com.zevrant.services.services
 
 import com.zevrant.services.pojo.Secret
 
+import java.nio.charset.StandardCharsets
+
 class SecretsService extends Service {
 
     SecretsService(Object pipelineContext) {
@@ -9,23 +11,23 @@ class SecretsService extends Service {
     }
 
     String getHcpApiToken(String clientId, String clientSecret) {
-//        String encodedClientId = URLEncoder.encode(clientId, StandardCharsets.UTF_8)
-//        String encodedClientSecret = URLEncoder.encode(clientSecret, StandardCharsets.UTF_8)
-//        def response = pipelineContext.httpRequest(
-//                url: 'https://auth.idp.hashicorp.com/oauth2/token',
-//                method: 'POST',
-//                customeHeaders: [
-//                        [
-//                                name : 'Content-Type',
-//                                value: 'application/x-www-form-urlencoded',
-//                        ]
-//                ],
-//                requestBody: 'client_id=' + encodedClientId + '&client_secret=' + encodedClientSecret + '&grant_type=client_credentials&audience=https://api.hashicorp.cloud',
-//                validResponseCodes: '200,201'
-//        )
+        String encodedClientId = URLEncoder.encode(clientId, StandardCharsets.UTF_8)
+        String encodedClientSecret = URLEncoder.encode(clientSecret, StandardCharsets.UTF_8)
+        def response = pipelineContext.httpRequest(
+                url: 'https://auth.idp.hashicorp.com/oauth2/token',
+                method: 'POST',
+                customeHeaders: [
+                        [
+                                name : 'Content-Type',
+                                value: 'application/x-www-form-urlencoded',
+                        ]
+                ],
+                requestBody: 'client_id=' + encodedClientId + '&client_secret=' + encodedClientSecret + '&grant_type=client_credentials&audience=https://api.hashicorp.cloud',
+                validResponseCodes: '200,201',
+                consoleLogResponseBody: true
+        )
 
-//        return pipelineContext.readJSON(test: response.content).access_token
-        return ''
+        return pipelineContext.readJSON(test: response.content).access_token
     }
 
     Secret getSecret(String secretName, String hcpToken, useCloud = false, String orgId = '', String projectId = '') {
@@ -45,7 +47,8 @@ class SecretsService extends Service {
                 customeHeaders: [
                         [
                                 name : 'Authorization',
-                                value: 'Bearer ' + hcpToken
+                                value: 'Bearer ' + hcpToken,
+                                mask : true
                         ]
                 ],
                 validResponseCodes: '200'
