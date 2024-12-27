@@ -37,7 +37,12 @@ pipeline {
             steps {
                 script {
                     retry(2, { //Retry is in case of a concurrent updates
-                        if (StringUtils.isBlank(codeUnit.baseImageName)) {
+                        if (codeUnit.name == 'ubuntu-server-base-image') {
+                            String baseImageHashes = httpRequest(url: 'https://cloud-images.ubuntu.com/noble/current/SHA256SUMS').content
+                            imageHash = baseImageHashes.split("\n")
+                                    .find { hash -> hash.contains('noble-server-cloudimg-amd64.img') }
+                                    .split('\\h')[0]
+                        } else if (StringUtils.isBlank(codeUnit.baseImageName)) {
                             //TODO Add GPG validation https://wiki.almalinux.org/cloud/Generic-cloud.html#verify-almalinux-9-images
                             String baseImageHashes = httpRequest(url: 'https://repo.almalinux.org/almalinux/9/cloud/x86_64/images/CHECKSUM').content
                             imageHash = baseImageHashes.split("\n")

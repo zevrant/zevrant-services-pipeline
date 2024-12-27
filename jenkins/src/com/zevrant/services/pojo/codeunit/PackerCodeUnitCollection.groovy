@@ -17,6 +17,17 @@ class PackerCodeUnitCollection {
                     )
             ),
             new PackerCodeUnit(
+                    name: 'ubuntu-server-base-image',
+                    extraArguments: [
+                            'nodeExporterVersion': '1.8.2',
+                    ],
+                    folderPath: 'ubuntu-base-vm',
+                    repo: new GitRepo(
+                            'github.com', 'git@github.com',
+                            'zevrant', 'zevrant-services-pipeline', 'jenkins-git'
+                    )
+            ),
+            new PackerCodeUnit(
                     name: 'jenkins-agent',
                     baseImageName: 'alma-base-image',
                     extraArguments: [
