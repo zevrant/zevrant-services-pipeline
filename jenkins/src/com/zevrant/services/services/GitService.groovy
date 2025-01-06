@@ -84,6 +84,13 @@ class GitService extends Service {
         }
     }
 
+    List<String> listTags() {
+        pipelineContext.sh('git tag -l | tee tags')
+        String tags = pipelineContext.readFile(file: 'tags')
+        pipelineContext.sh('rm tags')
+        return List.of(tags.split('\\n'))
+    }
+
 //oid postBuildPrHook(GitHubRepo gitHubRepo) {
 //    GitHubRepo repo = new GitHubRepo(repoSsh)
 //    BuildManagement buildManagement = TaskLoader.load(binding, BuildManagement)

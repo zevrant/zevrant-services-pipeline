@@ -17,7 +17,7 @@ class GoCodeUnitCollection {
         ])
     ])
 
-    static SpringCodeUnit findCodeUnitByRepositoryName(String repoName) {
+    static GoCodeUnit findCodeUnitByRepositoryName(String repoName) {
         return codeUnits.find({codeUnit -> codeUnit.getRepo().getRepoName() == repoName})
     }
 

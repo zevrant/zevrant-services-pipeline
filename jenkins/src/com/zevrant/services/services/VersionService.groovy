@@ -6,9 +6,11 @@ class VersionService extends Service {
 
 //    private final KeydbService keydbService
 //    private final PostgresService postgresService;
+    private final GitService gitService
 
     VersionService(Object pipelineContext, boolean useK8s = true) {
         super(pipelineContext)
+        gitService = new GitService(pipelineContext)
         String jenkinsExternalUrl = 'jenkins-keydb.zevrant-services.internal'
 //        keydbService = new KeydbService(
 //                (useK8s)? 'jenkins-versions-database-keydb' : jenkinsExternalUrl,
@@ -79,6 +81,20 @@ class VersionService extends Service {
             keydbService.putKey(applicationName, version.toVersionCodeString())
         }
         return version
+    }
+
+    Version getPreviousVersion(isRc = false) {
+        List<String> sortedVersions = gitService.listTags()
+                .collect({ tag -> tag.replace('v', '').trim() })
+                .findAll({ tag -> (isRc) ? tag.matches('^\\d+\\.\\d+\\.\\d+-rc\\d+$') : tag.matches('^\\d+\\.\\d+\\.\\d+$') })
+                .sort { tag1, tag2 ->
+                    Version version1 = new Version(tag1)
+                    Version version2 = new Version(tag2)
+                    return Integer.parseInt("${version1.getMajor()}${version1.getMedian()}${version1.getMinor()}")
+                            <=> Integer.parseInt("${version2.getMajor()}${version2.getMedian()}${version2.getMinor()}")
+
+                }
+        return new Version(sortedVersions.get(sortedVersions.size() - 2))
     }
 
 }

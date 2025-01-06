@@ -109,6 +109,10 @@ AndroidCodeUnitCollection.androidApps.each({ androidCodeUnit ->
     jobDslService.createPipeline(androidFolder, androidProdDeployPipeline)
 })
 
+AngularCodeUnitCollection.codeUnits.each({angularCodeUnit ->
+    String angularFolder = jobdslService.createMultibranch(angularCodeUnit as CodeUnit)
+})
+
 String adminFolder = jobDslService.createMultibranch(new CodeUnit([
         name           : 'jenkins-cac',
         applicationType: ApplicationType.JENKINS_CAC
