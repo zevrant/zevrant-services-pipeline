@@ -60,7 +60,7 @@ pipeline {
 
         stage('Upload Artifact') {
             environment {
-                GH_TOKEN = credential('jenkins-git-access-token-as-text')
+                GH_TOKEN = credentials('jenkins-git-access-token-as-text')
             }
             steps {
                 script {
