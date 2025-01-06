@@ -7,6 +7,8 @@ import com.zevrant.services.services.VersionService
 
 @Library('CommonUtils')
 
+String REPOSITORY = scm.getUserRemoteConfigs()[0].getUrl().tokenize('/').last().split("\\.")[0]
+
 String branchName = (BRANCH_NAME.startsWith('PR-')) ? CHANGE_BRANCH : BRANCH_NAME
 VersionService versionService = new VersionService(this)
 GitService gitService = new GitService(this)
