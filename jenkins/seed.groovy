@@ -111,7 +111,7 @@ AndroidCodeUnitCollection.androidApps.each({ androidCodeUnit ->
 })
 
 AngularCodeUnitCollection.codeUnits.each({angularCodeUnit ->
-    String angularFolder = jobdslService.createMultibranch(angularCodeUnit as CodeUnit)
+    String angularFolder = jobDslService.createMultibranch(angularCodeUnit as CodeUnit)
 })
 
 String adminFolder = jobDslService.createMultibranch(new CodeUnit([
