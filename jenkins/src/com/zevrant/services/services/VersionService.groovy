@@ -96,7 +96,7 @@ class VersionService extends Service {
                     return Integer.parseInt("${version1.getMajor()}${version1.getMedian()}${version1.getMinor()}") <=> Integer.parseInt("${version2.getMajor()}${version2.getMedian()}${version2.getMinor()}")
 
                 }
-        return sortedVersions.size() == 1 ? currentVersion : new Version(sortedVersions.get(sortedVersions.size() - 2))
+        return sortedVersions.size() == 1 ? new Version(sortedVersions.get(sortedVersions.size() - 1)) : new Version(sortedVersions.get(sortedVersions.size() - 2))
     }
 
 }

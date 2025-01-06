@@ -64,12 +64,12 @@ pipeline {
             steps {
                 script {
                     String additionalParams = ''
-                    String previousVersion = versionService.getPreviousVersion(version)
+                    Version previousVersion = versionService.getPreviousVersion(version)
                     if (branchName != 'master') {
                         additionalParams += ' --prerelease'
                     }
 
-                    sh "gh release create --repo ${codeUnit.repo.repoName} --notes-from-tag  --notes-start-tag ${versionService.getPreviousVersion()} -t ${version.toThreeStageVersionString()} ${version.toThreeStageVersionString()}"
+                    sh "gh release create --repo ${codeUnit.repo.repoName} --notes-from-tag  --notes-start-tag ${previousVersion.toThreeStageVersionString()} -t ${version.toThreeStageVersionString()} ${version.toThreeStageVersionString()}"
                     sh "gh release upload '${codeUnit.name}-${version.toThreeStageVersionString()}.tar.gz'  --repo ${codeUnit.repo.repoName}"
                 }
             }
