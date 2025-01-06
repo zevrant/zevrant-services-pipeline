@@ -48,7 +48,6 @@ pipeline {
         }
 
         stage('Build') {
-            when { expression { codeUnit.testsEnabled } }
             steps {
                 script {
                     gitService.tagVersion(version.toThreeStageVersionString(), 'jenkins-git')
