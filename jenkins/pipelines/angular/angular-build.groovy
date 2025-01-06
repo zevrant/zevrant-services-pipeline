@@ -69,7 +69,6 @@ pipeline {
                         additionalParams += ' --prerelease'
                     }
 
-                    sh 'gh auth login -h github.com'
                     sh "gh release create --repo ${codeUnit.repo.repoName} --notes-from-tag  --notes-start-tag ${versionService.getPreviousVersion()} -t ${version.toThreeStageVersionString()} ${version.toThreeStageVersionString()}"
                     sh "gh release upload '${codeUnit.name}-${version.toThreeStageVersionString()}.tar.gz'  --repo ${codeUnit.repo.repoName}"
                 }
