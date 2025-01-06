@@ -3,6 +3,7 @@ import com.zevrant.services.pojo.Version
 import com.zevrant.services.pojo.codeunit.AngularCodeUnit
 import com.zevrant.services.pojo.codeunit.AngularCodeUnitCollection
 import com.zevrant.services.services.GitService
+import com.zevrant.services.services.GradleService
 import com.zevrant.services.services.VersionService
 
 @Library('CommonUtils')
@@ -12,6 +13,7 @@ String REPOSITORY = scm.getUserRemoteConfigs()[0].getUrl().tokenize('/').last().
 String branchName = (BRANCH_NAME.startsWith('PR-')) ? CHANGE_BRANCH : BRANCH_NAME
 VersionService versionService = new VersionService(this)
 GitService gitService = new GitService(this)
+GradleService gradleService = new GradleService(this)
 
 AngularCodeUnit codeUnit = AngularCodeUnitCollection.findCodeUnitByRepositoryName(REPOSITORY)
 Version version = null
@@ -25,8 +27,7 @@ pipeline {
             when { expression { codeUnit.testsEnabled } }
             steps {
                 script {
-                    sh 'nvm use --lts'
-                    sh 'npm run test'
+                    gradleService.unitTest()
                 }
             }
         }
@@ -51,7 +52,7 @@ pipeline {
             steps {
                 script {
                     gitService.tagVersion(version.toThreeStageVersionString(), 'jenkins-git')
-                    sh 'npm run build --prod'
+                    gradleService.assemble(version)
                     tar file: "${codeUnit.name}-${version.toThreeStageVersionString()}.tar.gz", archive: false, compress: true, dir: "dist/${codeUnit.name}/browser/"
                 }
             }
