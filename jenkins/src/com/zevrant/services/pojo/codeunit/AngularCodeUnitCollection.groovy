@@ -12,7 +12,8 @@ class AngularCodeUnitCollection {
                     repo           : new GitRepo(
                             'github.com', 'git@github.com',
                             'zevrant', 'the-fence-gurus', 'jenkins-git'
-                    )
+                    ),
+                    testsEnabled   : false
             ])
     ])
 
