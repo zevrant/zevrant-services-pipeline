@@ -25,6 +25,7 @@ pipeline {
             when { expression { codeUnit.testsEnabled } }
             steps {
                 script {
+                    sh 'nvm use --lts'
                     sh 'npm run test'
                 }
             }
