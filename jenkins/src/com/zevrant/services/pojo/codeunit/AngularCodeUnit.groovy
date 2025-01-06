@@ -12,7 +12,7 @@ class AngularCodeUnit extends CodeUnit {
         testsEnabled = (params.testsEnabled == null) ? true : params.testsEnabled
     }
 
-    boolean gettestsEnabled() {
+    boolean getTestsEnabled() {
         return testsEnabled
     }
 }
