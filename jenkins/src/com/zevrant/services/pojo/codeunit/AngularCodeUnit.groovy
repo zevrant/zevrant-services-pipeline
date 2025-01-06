@@ -9,10 +9,10 @@ class AngularCodeUnit extends CodeUnit {
     AngularCodeUnit(Map<String, Object> params) {
         super(params)
         applicationType = ApplicationType.ANGULAR
-        testsEnabled = params.testsEnabled ?: true
+        testsEnabled = (params.testsEnabled == null) ? true : params.testsEnabled
     }
 
-    boolean getTestsEnabled() {
+    boolean gettestsEnabled() {
         return testsEnabled
     }
 }
