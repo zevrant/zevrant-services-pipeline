@@ -83,7 +83,10 @@ class VersionService extends Service {
         return version
     }
 
-    Version getPreviousVersion(isRc = false) {
+    Version getPreviousVersion(Version currentVersion, isRc = false) {
+        if (currentVersion.toThreeStageVersionString() == '0.0.0') {
+            return currentVersion
+        }
         List<String> sortedVersions = gitService.listTags()
                 .collect({ tag -> tag.replace('v', '').trim() })
                 .findAll({ tag -> (isRc) ? tag.matches('^\\d+\\.\\d+\\.\\d+-rc\\d+$') : tag.matches('^\\d+\\.\\d+\\.\\d+$') })
