@@ -52,7 +52,7 @@ pipeline {
                 script {
                     gitService.tagVersion(version.toThreeStageVersionString(), 'jenkins-git')
                     gradleService.assemble(version)
-                    tar file: "${codeUnit.name}-${version.toThreeStageVersionString()}.tar.gz", archive: false, compress: true, dir: "dist/${codeUnit.name}/browser/"
+//                    tar file: "${codeUnit.name}-${version.toThreeStageVersionString()}.tar.gz", archive: false, compress: true, dir: "dist/${codeUnit.name}/browser/", glob: "${codeUnit.name}-${version.toThreeStageVersionString()}.jar"
                 }
             }
         }
@@ -69,7 +69,7 @@ pipeline {
                         additionalParams += ' --prerelease'
                     }
 
-                    sh "gh release create --repo ${codeUnit.repo.sshUri} --notes-start-tag ${previousVersion.toThreeStageVersionString()} ${version.toThreeStageVersionString()} '${codeUnit.name}-${version.toThreeStageVersionString()}.tar.gz'"
+                    sh "gh release create --repo ${codeUnit.repo.sshUri} --notes-start-tag ${previousVersion.toThreeStageVersionString()} ${version.toThreeStageVersionString()} 'build/libs/${codeUnit.name}-${version.toThreeStageVersionString()}.jar'"
                 }
             }
         }

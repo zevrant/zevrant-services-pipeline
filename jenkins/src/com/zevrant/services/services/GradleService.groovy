@@ -21,7 +21,7 @@ class GradleService extends Service {
     }
 
     void assemble(Version version) {
-        pipelineContext.sh "bash gradlew assemble -PprojVersion=${version.toVersionCodeString()}"
+        pipelineContext.sh "bash gradlew assemble -PprojVersion=${version.toThreeStageVersionString()}"
     }
 
     void publish(Version version, SpringCodeUnit springCodeUnit) {
