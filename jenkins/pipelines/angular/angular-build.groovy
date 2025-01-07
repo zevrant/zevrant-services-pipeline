@@ -69,8 +69,7 @@ pipeline {
                         additionalParams += ' --prerelease'
                     }
 
-                    sh "gh release create --repo ${codeUnit.repo.sshUri} --notes-start-tag ${previousVersion.toThreeStageVersionString()} -t ${version.toThreeStageVersionString()} ${version.toThreeStageVersionString()}"
-                    sh "gh release upload '${codeUnit.name}-${version.toThreeStageVersionString()}.tar.gz'  --repo ${codeUnit.repo.sshUri}"
+                    sh "gh release create --repo ${codeUnit.repo.sshUri} --notes-start-tag ${previousVersion.toThreeStageVersionString()} ${version.toThreeStageVersionString()} '${codeUnit.name}-${version.toThreeStageVersionString()}.tar.gz'"
                 }
             }
         }
