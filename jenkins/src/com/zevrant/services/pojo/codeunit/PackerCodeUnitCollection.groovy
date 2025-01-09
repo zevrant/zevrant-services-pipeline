@@ -17,17 +17,6 @@ class PackerCodeUnitCollection {
                     )
             ),
             new PackerCodeUnit(
-                    name: 'ubuntu-server-base-image',
-                    extraArguments: [
-                            'nodeExporterVersion': '1.8.2',
-                    ],
-                    folderPath: 'ubuntu-base-vm',
-                    repo: new GitRepo(
-                            'github.com', 'git@github.com',
-                            'zevrant', 'zevrant-services-pipeline', 'jenkins-git'
-                    )
-            ),
-            new PackerCodeUnit(
                     name: 'jenkins-agent',
                     baseImageName: 'alma-base-image',
                     extraArguments: [
@@ -35,19 +24,6 @@ class PackerCodeUnitCollection {
                             'jenkinsAgentServiceFile': ''
                     ],
                     folderPath: 'jenkins-agent',
-                    repo: new GitRepo(
-                            'github.com', 'git@github.com',
-                            'zevrant', 'zevrant-services-pipeline', 'jenkins-git'
-                    )
-            ),
-            new PackerCodeUnit(
-                    name: 'ubuntu-jenkins-agent',
-                    baseImageName: 'ubuntu-server-base-imagee',
-                    extraArguments: [
-                            'jenkinsSshKey'          : 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO9n652oHq/eI9F2EUI0xq2ZZw9pgkeQU8+h3HXDU1H/ zevrant@zevrant',
-                            'jenkinsAgentServiceFile': ''
-                    ],
-                    folderPath: 'ubuntu-jenkins-agent',
                     repo: new GitRepo(
                             'github.com', 'git@github.com',
                             'zevrant', 'zevrant-services-pipeline', 'jenkins-git'
@@ -82,6 +58,13 @@ class PackerCodeUnitCollection {
                     name: 'bind9-base',
                     baseImageName: 'alma-base-image',
                     folderPath: 'bind9-base',
+                    repo: new GitRepo('github.com', 'git@github.com',
+                            'zevrant', 'zevrant-services-pipeline', 'jenkins-git')
+            ),
+            new PackerCodeUnit(
+                    name: 'minio-base',
+                    baseImageName: 'alma-base-image',
+                    folderPath: 'minio-base',
                     repo: new GitRepo('github.com', 'git@github.com',
                             'zevrant', 'zevrant-services-pipeline', 'jenkins-git')
             ),
