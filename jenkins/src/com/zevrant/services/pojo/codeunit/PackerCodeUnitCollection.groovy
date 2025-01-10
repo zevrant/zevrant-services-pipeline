@@ -93,6 +93,15 @@ class PackerCodeUnitCollection {
                     specRepo: new GitRepo('github.com', 'git@github.com',
                             'zevrant', 'zevrant-services-terraform', 'jenkins-git'),
             ),
+            new PackerCodeUnit(
+                    name: 'shared-s3-minio',
+                    baseImageName: 'minio-base',
+                    folderPath: 'shared/shared-s3-minio',
+                    repo: new GitRepo('github.com', 'git@github.com',
+                            'zevrant', 'zevrant-services-pipeline', 'jenkins-git'),
+                    specRepo: new GitRepo('github.com', 'git@github.com',
+                            'zevrant', 'zevrant-services-terraform', 'jenkins-git'),
+            ),
     ])
 
     static PackerCodeUnit findCodeUnitByName(String name) {
