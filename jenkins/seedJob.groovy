@@ -31,7 +31,7 @@ pipeline {
             environment {
                 POSTGRES_USERNAME = 'jenkins'
                 POSTGRES_PASSWORD = credentials('jenkins-app-version-password')
-                POSTGRES_URL = '192.168.0.101'
+                POSTGRES_URL = '10.1.0.18'
                 POSTGRES_PORT = '5432'
             }
             steps {

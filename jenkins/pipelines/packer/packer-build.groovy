@@ -67,7 +67,7 @@ pipeline {
             environment {
                 PGUSER = 'jenkins'
                 PGPASSWORD = credentials('jenkins-app-version-password')
-                PGHOST = '192.168.0.101'
+                PGHOST = '10.1.0.18'
             }
             steps {
                 script {
