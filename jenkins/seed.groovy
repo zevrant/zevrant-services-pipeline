@@ -1,18 +1,7 @@
 import com.zevrant.services.enumerations.ApplicationType
 import com.zevrant.services.enumerations.PipelineTriggerType
-import com.zevrant.services.pojo.PipelineTrigger
-import com.zevrant.services.pojo.PipelineParameter
-import com.zevrant.services.pojo.Pipeline
-import com.zevrant.services.pojo.containers.Image
-import com.zevrant.services.pojo.PipelineCollection
-import com.zevrant.services.pojo.KubernetesServiceCollection
-import com.zevrant.services.pojo.codeunit.LibraryCodeUnitCollection
-import com.zevrant.services.pojo.codeunit.AndroidCodeUnitCollection
-import com.zevrant.services.pojo.codeunit.SpringCodeUnitCollection
-import com.zevrant.services.pojo.codeunit.GoCodeUnitCollection
-import com.zevrant.services.pojo.codeunit.AngularCodeUnitCollection
-import com.zevrant.services.pojo.codeunit.CodeUnit
-import com.zevrant.services.pojo.codeunit.GoCodeUnit
+import com.zevrant.services.pojo.*
+import com.zevrant.services.pojo.codeunit.*
 import com.zevrant.services.services.JobDslService
 
 JobDslService jobDslService = new JobDslService(this)
@@ -110,7 +99,7 @@ AndroidCodeUnitCollection.androidApps.each({ androidCodeUnit ->
     jobDslService.createPipeline(androidFolder, androidProdDeployPipeline)
 })
 
-AngularCodeUnitCollection.codeUnits.each({angularCodeUnit ->
+AngularCodeUnitCollection.codeUnits.each({ angularCodeUnit ->
     String angularFolder = jobDslService.createMultibranch(angularCodeUnit as CodeUnit)
 })
 
@@ -147,7 +136,7 @@ KubernetesServiceCollection.services.each { kubernetesService ->
 GoCodeUnitCollection.codeUnits.each { codeUnit ->
     String folder = jobDslService.createMultibranch(codeUnit as CodeUnit)
     GoCodeUnit goCodeUnit = codeUnit as GoCodeUnit
-    String codeUnitTitle = goCodeUnit.name.split('-').collect({ item -> item.capitalize()}).join(' ')
+    String codeUnitTitle = goCodeUnit.name.split('-').collect({ item -> item.capitalize() }).join(' ')
     if (goCodeUnit.providerOrgName != null && goCodeUnit.providerOrgName != "") {
         Pipeline providerRelease = new Pipeline(
                 name: "${goCodeUnit.name}-publish-to-terraform-cloud",
@@ -165,6 +154,34 @@ GoCodeUnitCollection.codeUnits.each { codeUnit ->
                         ])
                 ]
         )
+        jobDslService.createPipeline(folder, providerRelease)
+    }
+}
+
+TerraformCodeUnitCollection.codeUnits.each { codeUnit ->
+    String folder = jobDslService.createMultibranch(codeUnit as CodeUnit)
+    TerraformCodeUnit terraformCodeUnit = codeUnit as CodeUnit
+
+
+    terraformCodeUnit.envs.keySet().each { env ->
+        Pipeline providerRelease = new Pipeline(
+                name: "${terraformCodeUnit.name.toLowerCase()}-deploy-to-${env}",
+                parameters: new ArrayList<>([]),
+                credentialId: 'jenkins-git',
+                gitRepo: 'git@github.com:zevrant/zevrant-services-pipeline.git',
+                jenkinsfileLocation: 'jenkins/pipelines/terraform/build-test-terraform.groovy',
+                envs: new HashMap<>([
+                ]),
+
+        )
+        if ('dev' == env) {
+            providerRelease.triggers = [
+                    new PipelineTrigger([
+                            type : PipelineTriggerType.UPSTREAM,
+                            value: "./${terraformCodeUnit.name.toLowerCase()}-deploy-to-${env}-multibranch/master"
+                    ])
+            ]
+        }
         jobDslService.createPipeline(folder, providerRelease)
     }
 }

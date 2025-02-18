@@ -73,4 +73,42 @@ class SecretsService extends Service {
         return new Secret(jsonObject.static_version.value)
     }
 
+    String getLocalApiToken(String clientId, String clientSecret) {
+        String encodedClientId = URLEncoder.encode(clientId, StandardCharsets.UTF_8)
+        def response = pipelineContext.httpRequest(
+                url: 'https://vault.zevrant-services.com/v1/auth/userpass/login/' + encodedClientId,
+                httpMode: 'POST',
+                customHeaders: [
+                        [
+                                name : 'Content-Type',
+                                value: 'application/json',
+                        ]
+                ],
+                requestBody: '{"password":"' + clientSecret + '"}',
+                validResponseCodes: '200',
+        )
+
+        return pipelineContext.readJSON(text: response.content).auth.client_token
+    }
+
+    Map<String, Object> getLocalSecret(String authToken, String secretPath) {
+        def response = pipelineContext.httpRequest(
+                url: "https://vault.zevrant-services.com/v1/kv/data/${secretPath}",
+                httpMode: 'GET',
+                customHeaders: [
+                        [
+                                name : 'Content-Type',
+                                value: 'application/json',
+                        ],
+                        [
+                                name : 'X-Vault-Token',
+                                value: authToken,
+                                mask : true
+                        ]
+                ],
+                validResponseCodes: '200',
+        )
+
+        return pipelineContext.readJSON(text: response.content).data.data
+    }
 }
