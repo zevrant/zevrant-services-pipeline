@@ -34,6 +34,13 @@ pipeline {
 
 
         stage('Build Terraform') {
+            environment {
+                PGHOST = '10.1.0.18'
+                PGUSER = 'jenkins'
+                PGPASSWORD = credentials('jenkins-app-version-password')
+                PGSSLMODE = 'disable'
+                PGDATABASE = 'cicd_tf_backend'
+            }
             steps {
                 script {
                     terraformCodeUnit.envs.each { env ->
