@@ -1,5 +1,6 @@
 @Library('CommonUtils') _
 
+import com.zevrant.services.pojo.*;
 
 pipeline {
     agent {
@@ -11,6 +12,8 @@ pipeline {
             steps {
                 script {
                     sh 'ls -l'
+                    print(TerraformCodeUnitCollection.codeUnits.size())
+
                     jobDsl(
                             targets: 'jenkins/seed.groovy',
                             removedJobAction: 'DELETE',
