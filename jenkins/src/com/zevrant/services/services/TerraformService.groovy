@@ -52,7 +52,10 @@ class TerraformService extends Service {
             Object value = environmentConfig.get(key)
             if (value instanceof SecretMapping) {
                 SecretMapping mapping = value as SecretMapping
-                Map<String, Object> response = secretsService.getLocalSecret(vaultToken, mapping.getSecretPath())
+                Map<String, Object> response = [:]
+                if (mapping.secretType != SecretType.HCP_CLIENT || mapping.secretType != SecretType.VAULT_TOKEN) {
+                    response = secretsService.getLocalSecret(vaultToken, mapping.getSecretPath())
+                }
                 switch (mapping.secretType) {
                     case SecretType.USERNAME_PASSWORD:
                         configMappings.add("TF_VAR_${key}_username=" + response.username)
