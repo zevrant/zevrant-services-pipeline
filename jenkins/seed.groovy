@@ -3,6 +3,8 @@ import com.zevrant.services.enumerations.PipelineTriggerType
 import com.zevrant.services.pojo.*
 import com.zevrant.services.pojo.codeunit.*
 import com.zevrant.services.services.JobDslService
+import com.zevrant.services.pojo.codeunit.TerraformCodeUnit
+import com.zevrant.services.pojo.codeunit.TerraformCodeUnitCollection
 
 JobDslService jobDslService = new JobDslService(this)
 
