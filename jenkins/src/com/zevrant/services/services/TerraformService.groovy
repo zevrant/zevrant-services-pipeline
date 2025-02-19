@@ -60,7 +60,16 @@ class TerraformService extends Service {
                         break
                     case SecretType.SECRET_TEXT:
                         configMappings.add("TF_VAR_${key}=" + response.password)
-                        break;
+                        break
+                    case SecretType.VAULT_TOKEN:
+                        configMappings.add("TF_VAR_${key}=" + vaultToken)
+                        break
+                    case SecretType.HCP_CLIENT:
+                        pipelineContext.withCredentials([pipelineContext.usernamePassword(credentialsId: 'local-vault', passwordVariable: 'password', usernameVariable: 'username')]) {
+                            configMappings.add("TF_VAR_${key}_username=" + pipelineContext.username)
+                            configMappings.add("TF_VAR_${key}_password=" + pipelineContext.password)
+                        }
+                        break
                     default:
                         throw new RuntimeException("Secret type for vault has not been implemented!")
                 }

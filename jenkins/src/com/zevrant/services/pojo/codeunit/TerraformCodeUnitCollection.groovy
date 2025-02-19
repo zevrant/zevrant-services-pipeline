@@ -17,7 +17,10 @@ class TerraformCodeUnitCollection {
                     testsEnabled: false,
                     envs        : [
                             "shared": [
-                                    proxmox: new SecretMapping(SecretType.USERNAME_PASSWORD, '/proxmox/jenkins')
+                                    proxmox    : new SecretMapping(SecretType.USERNAME_PASSWORD, '/proxmox/jenkins'),
+                                    VAULT_ADDR : 'https://vault.zevrant-services.com',
+                                    VAULT_TOKEN: new SecretMapping(SecretType.VAULT_TOKEN, ''),
+                                    hcp_client : new SecretMapping(SecretType.HCP_CLIENT, '')
                             ]
                     ]
             ])
