@@ -24,7 +24,10 @@ pipeline {
             kubernetes {
                 inheritFrom 'terraform'
             }
+        } else {
+            label 'container-builder'
         }
+
     }
     stages {
         stage('SCM Checkout') {
