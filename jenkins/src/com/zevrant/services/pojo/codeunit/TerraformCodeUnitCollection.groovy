@@ -17,7 +17,7 @@ class TerraformCodeUnitCollection {
                     testsEnabled: false,
                     envs        : [
                             "shared": [
-                                    new SecretMapping(SecretType.USERNAME_PASSWORD, '/proxmox/jenkins')
+                                    proxmox: new SecretMapping(SecretType.USERNAME_PASSWORD, '/proxmox/jenkins')
                             ]
                     ]
             ])
