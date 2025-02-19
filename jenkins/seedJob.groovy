@@ -1,4 +1,4 @@
-@Library('CommonUtils@master') _
+@Library('CommonUtils') _
 
 pipeline {
     agent {
