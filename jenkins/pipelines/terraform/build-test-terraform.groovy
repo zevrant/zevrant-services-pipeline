@@ -36,7 +36,7 @@ pipeline {
         stage('Build Terraform') {
             steps {
                 script {
-                    terraformService.envs.keySet().each { env ->
+                    terraformCodeUnit.envs.each { env ->
                         terraformService.populateTfEnvVars(terraformCodeUnit, env) {
                             terraformService.initTerraform(env)
                             terraformService.planTerraform(env)
