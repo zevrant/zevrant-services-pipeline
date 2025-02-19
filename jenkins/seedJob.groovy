@@ -1,7 +1,5 @@
 @Library('CommonUtils@master') _
 
-import com.zevrant.services.pojo.TerraformCodeUnitCollection
-import com.zevrant.services.pojo.CodeUnit
 pipeline {
     agent {
         label 'master-node'
