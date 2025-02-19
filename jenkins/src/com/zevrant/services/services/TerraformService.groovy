@@ -42,7 +42,7 @@ class TerraformService extends Service {
         Map<String, Object> environmentConfig = terraformCodeUnit.getConfigForEnv(environmentName)
         String vaultToken = ""
 
-        pipelineContext.withCredentials([usernamePassword(credentialsId: 'local-vault', passwordVariable: 'password', usernameVariable: 'username')]) {
+        pipelineContext.withCredentials([pipelineContext.usernamePassword(credentialsId: 'local-vault', passwordVariable: 'password', usernameVariable: 'username')]) {
             vaultToken = secretsService.getLocalApiToken(username, password)
         }
 
