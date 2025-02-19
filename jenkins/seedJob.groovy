@@ -2,7 +2,7 @@
 
 pipeline {
     agent {
-        label 'container-builder'
+        label 'master-node'
     }
     stages {
 
@@ -24,9 +24,9 @@ pipeline {
         }
 
         stage ('Update Version Database Schema') {
-//            agent {
-//                label 'container-builder'
-//            }
+            agent {
+                label 'container-builder'
+            }
             environment {
                 POSTGRES_USERNAME = 'jenkins'
                 POSTGRES_PASSWORD = credentials('jenkins-app-version-password')
