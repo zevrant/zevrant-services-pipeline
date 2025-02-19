@@ -172,8 +172,7 @@ TerraformCodeUnitCollection.codeUnits.each { codeUnit ->
                 credentialId: 'jenkins-git',
                 gitRepo: 'git@github.com:zevrant/zevrant-services-pipeline.git',
                 jenkinsfileLocation: 'jenkins/pipelines/terraform/build-test-terraform.groovy',
-                envs: new HashMap<>([
-                ]),
+                envs: [:],
 
         )
         if ('dev' == env) {
