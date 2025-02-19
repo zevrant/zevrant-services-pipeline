@@ -10,9 +10,6 @@ pipeline {
             steps {
                 script {
                     sh 'ls -l'
-                    List<CodeUnit> codeUnits = TerraformCodeUnitCollection.getCodeUnits()
-                    print(codeUnits.size())
-
                     jobDsl(
                             targets: 'jenkins/seed.groovy',
                             removedJobAction: 'DELETE',
