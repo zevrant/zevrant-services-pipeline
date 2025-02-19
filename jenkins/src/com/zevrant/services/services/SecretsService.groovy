@@ -86,6 +86,7 @@ class SecretsService extends Service {
                 ],
                 requestBody: '{"password":"' + clientSecret + '"}',
                 validResponseCodes: '200',
+                ignoreSslErrors: true
         )
 
         return pipelineContext.readJSON(text: response.content).auth.client_token
@@ -106,6 +107,7 @@ class SecretsService extends Service {
                                 mask : true
                         ]
                 ],
+                ignoreSslErrors: true,
                 validResponseCodes: '200',
         )
 
