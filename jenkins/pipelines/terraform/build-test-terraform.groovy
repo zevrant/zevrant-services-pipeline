@@ -20,14 +20,7 @@ boolean bareMetal = terraformCodeUnit.bareMetal
 String version = ""
 pipeline {
     agent {
-        if (!bareMetal) {
-            kubernetes {
-                inheritFrom 'terraform'
-            }
-        } else {
-            label 'container-builder'
-        }
-
+        label 'container-builder'
     }
     stages {
         stage('SCM Checkout') {
