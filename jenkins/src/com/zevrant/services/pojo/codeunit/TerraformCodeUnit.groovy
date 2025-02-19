@@ -21,4 +21,8 @@ class TerraformCodeUnit extends CodeUnit {
     Map<String, Object> getConfigForEnv(String environmentName) {
         return envs.get(environmentName)
     }
+
+    Set<String> getEnvs() {
+        return envs.keySet()
+    }
 }

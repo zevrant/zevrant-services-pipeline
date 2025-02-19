@@ -163,7 +163,7 @@ TerraformCodeUnitCollection.codeUnits.each { codeUnit ->
     TerraformCodeUnit terraformCodeUnit = codeUnit as CodeUnit
 
 
-    terraformCodeUnit.envs.keySet().each { env ->
+    terraformCodeUnit.getEnvs().each { env ->
         Pipeline providerRelease = new Pipeline(
                 name: "${terraformCodeUnit.name.toLowerCase()}-deploy-to-${env}",
                 parameters: new ArrayList<>([]),
