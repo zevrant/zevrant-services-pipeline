@@ -1,6 +1,6 @@
 @Library('CommonUtils') _
 
-import com.zevrant.services.pojo.*
+import com.zevrant.services.pojo.codeunit.TerraformCodeUnit
 
 pipeline {
     agent {
