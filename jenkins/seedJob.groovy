@@ -37,6 +37,7 @@ pipeline {
             }
             steps {
                 script {
+                    List<TerraformCodeUnit> codeUnits = TerraformCodeUnitCollection.getCodeUnits()
                     sh './gradlew liquibase update'
                 }
             }
