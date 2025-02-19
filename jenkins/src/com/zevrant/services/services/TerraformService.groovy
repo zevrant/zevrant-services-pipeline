@@ -53,6 +53,7 @@ class TerraformService extends Service {
             if (value instanceof SecretMapping) {
                 SecretMapping mapping = value as SecretMapping
                 Map<String, Object> response = [:]
+                pipelineContext.println("Secret type is ${mapping.secretType.name()}")
                 if (mapping.secretType != SecretType.HCP_CLIENT || mapping.secretType != SecretType.VAULT_TOKEN) {
                     response = secretsService.getLocalSecret(vaultToken, mapping.getSecretPath())
                 }
