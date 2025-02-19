@@ -31,49 +31,49 @@ pipeline {
                 }
             }
         }
-    }
 
-    stage('Build Terraform') {
-        steps {
-            script {
-                terraformService.envs.keySet().each { env ->
-                    terraformService.populateTfEnvVars(terraformCodeUnit, env) {
-                        terraformService.initTerraform(env)
-                        terraformService.planTerraform(env)
+
+        stage('Build Terraform') {
+            steps {
+                script {
+                    terraformService.envs.keySet().each { env ->
+                        terraformService.populateTfEnvVars(terraformCodeUnit, env) {
+                            terraformService.initTerraform(env)
+                            terraformService.planTerraform(env)
+                        }
+
                     }
-
                 }
             }
         }
-    }
 
-    stage('Get New Version') {
-        environment {
-            PGUSER = 'jenkins'
-            PGPASSWORD = credentials('jenkins-app-version-password')
-            PGHOST = '10.1.0.18'
-        }
-        steps {
-            script {
-                version = versionService.getVersion(codeUnit.name, true)
-                version = versionService.minorVersionUpdate(codeUnit.name, version, true)
-                currentBuild.displayName = "Building Version ${version.toThreeStageVersionString()}" as String
+        stage('Get New Version') {
+            environment {
+                PGUSER = 'jenkins'
+                PGPASSWORD = credentials('jenkins-app-version-password')
+                PGHOST = '10.1.0.18'
             }
-        }
-    }
-
-
-    stage('Unit Test') { //TODO switch to terraform validator
-        when { expression { false } }
-        //some serious optimization needs to be done here, not that many tests and they take minutes to run
-        steps {
-            script {
-                container('openjdk11') {
-                    sh "./gradlew clean test -Penvironment=dev --no-watch-fs --info ${gradle.setProxyConfigs().join(' ')}"
+            steps {
+                script {
+                    version = versionService.getVersion(codeUnit.name, true)
+                    version = versionService.minorVersionUpdate(codeUnit.name, version, true)
+                    currentBuild.displayName = "Building Version ${version.toThreeStageVersionString()}" as String
                 }
             }
         }
-    }
+
+
+        stage('Unit Test') { //TODO switch to terraform validator
+            when { expression { false } }
+            //some serious optimization needs to be done here, not that many tests and they take minutes to run
+            steps {
+                script {
+                    container('openjdk11') {
+                        sh "./gradlew clean test -Penvironment=dev --no-watch-fs --info ${gradle.setProxyConfigs().join(' ')}"
+                    }
+                }
+            }
+        }
 
 //        stage('Generate Change Set Visuals') {
 //            steps {
@@ -92,21 +92,21 @@ pipeline {
 //            }
 //        }
 
-    stage('Create Deployment Artifact') {
-        steps {
-            script {
-                container('jnlp') {
-                    sshagent(credentials: [terraformCodeUnit.repo.sshCredentialsId]) {
-                        sh "git tag ${version}"
-                        sh 'git push origin --tags'
-                        writeFile(file: 'artifactVersion.txt', text: version)
-                        archiveArtifacts(artifacts: 'artifactVersion.txt', allowEmptyArchive: false)
+        stage('Create Deployment Artifact') {
+            steps {
+                script {
+                    container('jnlp') {
+                        sshagent(credentials: [terraformCodeUnit.repo.sshCredentialsId]) {
+                            sh "git tag ${version}"
+                            sh 'git push origin --tags'
+                            writeFile(file: 'artifactVersion.txt', text: version)
+                            archiveArtifacts(artifacts: 'artifactVersion.txt', allowEmptyArchive: false)
+                        }
                     }
                 }
             }
         }
     }
-
 }
 
 
