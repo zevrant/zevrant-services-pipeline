@@ -12,7 +12,8 @@ pipeline {
             steps {
                 script {
                     sh 'ls -l'
-                    print(TerraformCodeUnitCollection.codeUnits.size())
+                    List<CodeUnit> codeUnits = TerraformCodeUnitCollection.getCodeUnits()
+                    print(codeUnits.size())
 
                     jobDsl(
                             targets: 'jenkins/seed.groovy',

@@ -11,4 +11,8 @@ abstract class CodeUnitCollection<T extends CodeUnit> {
     static T findServiceByServiceName(String serviceName) {
         return codeUnits.find({ codeUnit -> codeUnit.name == serviceName })
     }
+
+    static List<T> getCodeUnits() {
+        return codeUnits
+    }
 }
