@@ -1,5 +1,7 @@
 @Library('CommonUtils') _
 
+import com.zevrant.services.pojo.*
+
 pipeline {
     agent {
         label 'master-node'
