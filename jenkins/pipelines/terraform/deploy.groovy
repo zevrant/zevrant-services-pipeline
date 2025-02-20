@@ -21,12 +21,10 @@ pipeline {
         stage('Pull Artifact') {
             steps {
                 script {
-                    container('jnlp') {
                         copyArtifacts(filter: versionFileName, projectName: './Shared-multibranch/master')
                         version = readFile(file: versionFileName)
                         gitService.checkout('git@github.com', 'zevrant', terraformCodeUnit.repo.repoName, version, terraformCodeUnit.getRepo().getSshCredentialsId())
                         currentBuild.description = "Deploying $artifactVersion"
-                    }
                 }
             }
 
