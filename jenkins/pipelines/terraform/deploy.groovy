@@ -14,9 +14,7 @@ String versionFileName = 'artifactVersion.txt'
 TerraformCodeUnit terraformCodeUnit = TerraformCodeUnitCollection.findByRepoName(REPOSITORY)
 pipeline {
     agent {
-        kubernetes {
-            inheritFrom 'terraform'
-        }
+        label 'container-builder'
     }
 
     stages {
