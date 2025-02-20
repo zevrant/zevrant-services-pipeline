@@ -104,14 +104,12 @@ pipeline {
         stage('Create Deployment Artifact') {
             steps {
                 script {
-                    container('jnlp') {
                         sshagent(credentials: [terraformCodeUnit.repo.sshCredentialsId]) {
                             sh "git tag ${version}"
                             sh 'git push origin --tags'
                             writeFile(file: 'artifactVersion.txt', text: version)
                             archiveArtifacts(artifacts: 'artifactVersion.txt', allowEmptyArchive: false)
                         }
-                    }
                 }
             }
         }
