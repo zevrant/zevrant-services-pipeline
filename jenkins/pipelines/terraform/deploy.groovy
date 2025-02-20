@@ -30,7 +30,7 @@ pipeline {
                             archiveArtifacts(artifacts: 'artifactVersion.txt', allowEmptyArchive: false)
                         }
                     }
-                    currentBuild.description = "Deploying $artifactVersion"
+                    currentBuild.description = "Deploying $version"
                 }
             }
 
