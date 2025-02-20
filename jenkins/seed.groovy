@@ -171,7 +171,7 @@ TerraformCodeUnitCollection.codeUnits.each { codeUnit ->
                 parameters: new ArrayList<>([]),
                 credentialId: 'jenkins-git',
                 gitRepo: 'git@github.com:zevrant/zevrant-services-pipeline.git',
-                jenkinsfileLocation: 'jenkins/pipelines/terraform/build-test-terraform.groovy',
+                jenkinsfileLocation: 'jenkins/pipelines/terraform/deploy.groovy',
                 envs: [:],
 
         )
