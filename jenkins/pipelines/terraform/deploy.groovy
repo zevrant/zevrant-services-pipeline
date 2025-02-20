@@ -21,10 +21,15 @@ pipeline {
         stage('Pull Artifact') {
             steps {
                 script {
-                        copyArtifacts(filter: versionFileName, projectName: './Shared-multibranch/master')
-                        version = readFile(file: versionFileName)
-                        gitService.checkout('git@github.com', 'zevrant', terraformCodeUnit.repo.repoName, version, terraformCodeUnit.getRepo().getSshCredentialsId())
-                        currentBuild.description = "Deploying $artifactVersion"
+                    copyArtifacts(filter: versionFileName, projectName: './Shared-multibranch/master')
+                    version = readFile(file: versionFileName)
+                    sshagent(credentials: [terraformCodeUnit.repo.sshCredentialsId]) {
+                        sh "git clone ${terraformCodeUnit.repo.sshUri}"
+                        sh "git checkout ${version}"
+                        writeFile(file: 'artifactVersion.txt', text: version)
+                        archiveArtifacts(artifacts: 'artifactVersion.txt', allowEmptyArchive: false)
+                    }
+                    currentBuild.description = "Deploying $artifactVersion"
                 }
             }
 
