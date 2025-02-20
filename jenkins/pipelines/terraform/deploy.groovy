@@ -7,8 +7,6 @@ import com.zevrant.services.services.TerraformService
 
 @Library('CommonUtils')
 
-final String envName = deployEnvName.replace('-internal', '')
-final String bucketName = 'bkt-tfstate-ft'
 GitService gitService = new GitService(this)
 TerraformService terraformService = new TerraformService(this)
 String version = ''
