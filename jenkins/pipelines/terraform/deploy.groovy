@@ -23,7 +23,8 @@ pipeline {
                     version = readFile(file: versionFileName)
                     sshagent(credentials: [terraformCodeUnit.repo.sshCredentialsId]) {
                         sh "git clone ${terraformCodeUnit.repo.sshUri}"
-                        sh "git checkout ${version}"
+                        sh 'git fetch --all --tags'
+                        sh "git checkout tags/${version}"
                         writeFile(file: 'artifactVersion.txt', text: version)
                         archiveArtifacts(artifacts: 'artifactVersion.txt', allowEmptyArchive: false)
                     }
