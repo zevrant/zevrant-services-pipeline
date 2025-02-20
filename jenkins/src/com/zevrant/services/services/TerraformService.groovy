@@ -29,6 +29,14 @@ class TerraformService extends Service {
         }
     }
 
+    void applyTerraform(String environmentName) {
+        pipelineContext.dir("terraform-${environmentName}") {
+            pipelineContext.sh("terraform plan -out ${environmentName}.plan")
+            pipelineContext.sh("terraform show -json ${environmentName}.plan | jq . > ${environmentName}.json")
+            pipelineContext.sh("terraform apply -auto-approve ${environmentName}.plan")
+        }
+    }
+
     /**
      *
      * This method uses the SecretsService to pull the credentials listed for a given code unit and environment

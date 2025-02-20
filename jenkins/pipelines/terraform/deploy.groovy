@@ -1,29 +1,19 @@
 package terraform
 
+import com.zevrant.services.pojo.codeunit.TerraformCodeUnit
+import com.zevrant.services.pojo.codeunit.TerraformCodeUnitCollection
+import com.zevrant.services.services.GitService
+import com.zevrant.services.services.TerraformService
+
 @Library('CommonUtils')
 
-String repository = JOB_NAME.split('/')[JOB_NAME.split('/').length - 2]
 final String envName = deployEnvName.replace('-internal', '')
 final String bucketName = 'bkt-tfstate-ft'
-
-//Determine source job to copy version from
-if (envName != 'stage' && envName != 'prod') {
-    if (versionSourceJob == null || versionSourceJob == '') {
-        throw new RuntimeException('No Source Job Provided')
-    }
-    println "Is PR? ${((String) versionSourceJob).matches('PR-\\d+')}"
-    println "Is main? ${versionSourceJob == 'multibranch/main'}"
-    println "Is main? ${versionSourceJob == 'multibranch/main'}"
-    if (!((String) versionSourceJob).matches('PR-\\d+')
-        && !(versionSourceJob == 'multibranch/main' || versionSourceJob == 'multibranch/main')) {
-        throw new RuntimeException("Invalid Source Job Provided ${versionSourceJob}")
-    }
-}
-
+GitService gitService = new GitService(this)
+TerraformService terraformService = new TerraformService(this)
+String version = ''
 String versionFileName = 'artifactVersion.txt'
-String artifactVersion = (params.ARTIFACT_VERSION != null && params.ARTIFACT_VERSION != '')
-    ? params.ARTIFACT_VERSION
-    : ''
+TerraformCodeUnit terraformCodeUnit = TerraformCodeUnitCollection.findByRepoName(REPOSITORY)
 pipeline {
     agent {
         kubernetes {
@@ -36,22 +26,9 @@ pipeline {
             steps {
                 script {
                     container('jnlp') {
-
-                        if (artifactVersion == '') {
-                            String sourceJob = "./${versionSourceJob}"
-                            if (envName != 'sandbox' && envName != 'dev' && envName != 'qa') {
-                                sourceJob = versionSourceJob
-                            }
-                            if (sourceJob == 'multibranch/release') {
-                                sourceJob = 'deploy-to-dev'
-                            }
-                            sourceJob = sourceJob.replace('-internal', '')
-                            copyArtifacts(filter: versionFileName, projectName: sourceJob)
-                            artifactVersion = readFile(versionFileName)
-                        } else {
-                            println("Not copying artifact from job, direct version was supplied artifact version :${artifactVersion}.")
-                        }
-                        gitTasks.cloneRepository("git@github.zevrant.com:fcs/${repository}.git", artifactVersion, true)
+                        copyArtifacts(filter: versionFileName, projectName: './Shared-multibranch/master')
+                        version = readFile(file: versionFileName)
+                        gitService.checkout('git@github.com', 'zevrant', terraformCodeUnit.repo.repoName, version, terraformCodeUnit.getRepo().getSshCredentialsId())
                         currentBuild.description = "Deploying $artifactVersion"
                     }
                 }
@@ -59,48 +36,42 @@ pipeline {
 
         }
 
-        stage("Decrypt TF Vars") {
-            steps {
-                script {
-                    container('gcloud') {
-                        gcloud.withContext(gcpProject, {
-                            terraform.pullAndDecryptTfVars(envName, gcpProject, "envs/${envName}")
-                        })
-                    }
-                }
-            }
-        }
-
         stage("Deploy") {
-            steps {
-                script {
-                    container('gcloud') {
-                        gcloud.withContext(gcpProject, {
-                            container('terraform') {
-                                terraform.applyTerraform(envName)
-                            }
-                        })
-                    }
-
-                }
+            environment {
+                PGHOST = '10.1.0.18'
+                PGUSER = 'jenkins'
+                PGPASSWORD = credentials('jenkins-app-version-password')
+                PGSSLMODE = 'disable'
+                PGDATABASE = 'cicd_tf_backend'
             }
-        }
-
-        stage('Generate Change Set Visuals') {
             steps {
                 script {
-                    container('openjdk11') {
-                        sh "./gradlew npmInstall ${gradle.setProxyConfigs().join(' ')}"
-                        terraform.generateAndArchiveChangeset(envName)
+                    terraformCodeUnit.envs.each { env ->
+                        terraformService.populateTfEnvVars(terraformCodeUnit, env) {
+                            terraformService.initTerraform(env)
+                            terraformService.applyTerraform(env)
+                        }
+
                     }
                 }
             }
         }
+
+//        stage('Generate Change Set Visuals') {
+//            steps {
+//                script {
+//                    container('openjdk11') {
+//                        sh "./gradlew npmInstall ${gradle.setProxyConfigs().join(' ')}"
+//                        terraform.generateAndArchiveChangeset(envName)
+//                    }
+//                }
+//            }
+//        }
     }
     post {
         success {
             script {
-                writeFile(file: versionFileName, text: artifactVersion)
+                writeFile(file: versionFileName, text: version)
                 archiveArtifacts(artifacts: 'artifactVersion.txt', allowEmptyArchive: false)
             }
         }
