@@ -1,6 +1,6 @@
 package terraform
 
-
+import com.zevrant.services.pojo.Version
 import com.zevrant.services.pojo.codeunit.TerraformCodeUnit
 import com.zevrant.services.pojo.codeunit.TerraformCodeUnitCollection
 import com.zevrant.services.services.GitService
@@ -62,9 +62,11 @@ pipeline {
             }
             steps {
                 script {
-                    version = versionService.getVersion(terraformCodeUnit.name, true)
-                    version = versionService.minorVersionUpdate(terraformCodeUnit.name, version, true)
-                    currentBuild.displayName = "Building Version ${version.toThreeStageVersionString()}" as String
+                    Version currentVersion = versionService.getVersion(terraformCodeUnit.name, true)
+                    currentVersion = versionService.minorVersionUpdate(terraformCodeUnit.name, version, true)
+                    version = currentVersion.toThreeStageVersionString()
+                    currentBuild.displayName = "Building Version ${version}" as String
+
                 }
             }
         }
