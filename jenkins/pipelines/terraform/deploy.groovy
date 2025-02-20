@@ -23,10 +23,12 @@ pipeline {
                     version = readFile(file: versionFileName)
                     sshagent(credentials: [terraformCodeUnit.repo.sshCredentialsId]) {
                         sh "git clone ${terraformCodeUnit.repo.sshUri}"
-                        sh 'git fetch --all --tags'
-                        sh "git checkout tags/${version}"
-                        writeFile(file: 'artifactVersion.txt', text: version)
-                        archiveArtifacts(artifacts: 'artifactVersion.txt', allowEmptyArchive: false)
+                        dir(terraformCodeUnit.repo.repoName) {
+                            sh 'git fetch --all --tags'
+                            sh "git checkout tags/${version}"
+                            writeFile(file: 'artifactVersion.txt', text: version)
+                            archiveArtifacts(artifacts: 'artifactVersion.txt', allowEmptyArchive: false)
+                        }
                     }
                     currentBuild.description = "Deploying $artifactVersion"
                 }
@@ -44,12 +46,14 @@ pipeline {
             }
             steps {
                 script {
-                    terraformCodeUnit.envs.each { env ->
-                        terraformService.populateTfEnvVars(terraformCodeUnit, env) {
-                            terraformService.initTerraform(env)
-                            terraformService.applyTerraform(env)
-                        }
+                    dir(terraformCodeUnit.repo.repoName) {
+                        terraformCodeUnit.envs.each { env ->
+                            terraformService.populateTfEnvVars(terraformCodeUnit, env) {
+                                terraformService.initTerraform(env)
+                                terraformService.applyTerraform(env)
+                            }
 
+                        }
                     }
                 }
             }
