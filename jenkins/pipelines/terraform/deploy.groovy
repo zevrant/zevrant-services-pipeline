@@ -2,12 +2,10 @@ package terraform
 
 import com.zevrant.services.pojo.codeunit.TerraformCodeUnit
 import com.zevrant.services.pojo.codeunit.TerraformCodeUnitCollection
-import com.zevrant.services.services.GitService
 import com.zevrant.services.services.TerraformService
 
 @Library('CommonUtils')
 
-GitService gitService = new GitService(this)
 TerraformService terraformService = new TerraformService(this)
 String version = ''
 String versionFileName = 'artifactVersion.txt'
