@@ -48,8 +48,8 @@ pipeline {
                 script {
                     dir(terraformCodeUnit.repo.repoName) {
                         terraformService.populateTfEnvVars(terraformCodeUnit, ENVIRONMENT) {
-                            terraformService.initTerraform(env)
-                            terraformService.applyTerraform(env)
+                            terraformService.initTerraform(ENVIRONMENT)
+                            terraformService.applyTerraform(ENVIRONMENT)
                         }
 
                     }
