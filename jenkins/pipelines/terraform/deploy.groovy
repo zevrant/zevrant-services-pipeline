@@ -47,13 +47,12 @@ pipeline {
             steps {
                 script {
                     dir(terraformCodeUnit.repo.repoName) {
-                        terraformCodeUnit.envs.each { env ->
-                            terraformService.populateTfEnvVars(terraformCodeUnit, env) {
-                                terraformService.initTerraform(env)
-                                terraformService.applyTerraform(env)
-                            }
-
+                        Map<String, Object> env = terraformCodeUnit.getConfigForEnv(ENVIRONMENT)
+                        terraformService.populateTfEnvVars(terraformCodeUnit, env) {
+                            terraformService.initTerraform(env)
+                            terraformService.applyTerraform(env)
                         }
+
                     }
                 }
             }

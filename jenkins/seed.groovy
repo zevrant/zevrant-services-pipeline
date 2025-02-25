@@ -173,7 +173,8 @@ TerraformCodeUnitCollection.codeUnits.each { codeUnit ->
                 gitRepo: 'git@github.com:zevrant/zevrant-services-pipeline.git',
                 jenkinsfileLocation: 'jenkins/pipelines/terraform/deploy.groovy',
                 envs: [
-                        REPOSITORY: terraformCodeUnit.repo.repoName
+                        REPOSITORY: terraformCodeUnit.repo.repoName,
+                        ENVIRONMENT: env
                 ],
 
         )
