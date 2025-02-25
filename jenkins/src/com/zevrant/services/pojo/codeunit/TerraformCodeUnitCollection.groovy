@@ -33,16 +33,16 @@ class TerraformCodeUnitCollection {
                     ),
                     testsEnabled: false,
                     envs        : [
+                            secrets    : [
+                                    proxmox    : new SecretMapping(SecretType.USERNAME_PASSWORD, '/proxmox/jenkins-token'),
+                                    VAULT_ADDR : 'https://vault.zevrant-services.com',
+                                    VAULT_TOKEN: new SecretMapping(SecretType.VAULT_TOKEN, ''),
+                            ],
                             application: [
                                     proxmox    : new SecretMapping(SecretType.USERNAME_PASSWORD, '/proxmox/jenkins-token'),
                                     VAULT_ADDR : 'https://vault.zevrant-services.com',
                                     VAULT_TOKEN: new SecretMapping(SecretType.VAULT_TOKEN, '')
                             ],
-                            secrets    : [
-                                    proxmox    : new SecretMapping(SecretType.USERNAME_PASSWORD, '/proxmox/jenkins-token'),
-                                    VAULT_ADDR : 'https://vault.zevrant-services.com',
-                                    VAULT_TOKEN: new SecretMapping(SecretType.VAULT_TOKEN, ''),
-                            ]
                     ]
             ])
     ]
