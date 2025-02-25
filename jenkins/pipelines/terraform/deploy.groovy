@@ -47,8 +47,7 @@ pipeline {
             steps {
                 script {
                     dir(terraformCodeUnit.repo.repoName) {
-                        Map<String, Object> env = terraformCodeUnit.getConfigForEnv(ENVIRONMENT)
-                        terraformService.populateTfEnvVars(terraformCodeUnit, env) {
+                        terraformService.populateTfEnvVars(terraformCodeUnit, ENVIRONMENT) {
                             terraformService.initTerraform(env)
                             terraformService.applyTerraform(env)
                         }
