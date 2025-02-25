@@ -24,6 +24,26 @@ class TerraformCodeUnitCollection {
                                     CF_DNS_API_TOKEN: new SecretMapping(SecretType.SECRET_TEXT, 'shared/cloudflare-dns-api-token', true)
                             ]
                     ]
+            ]),
+            new TerraformCodeUnit([
+                    name        : 's3-garage',
+                    repo        : new GitRepo(
+                            'github.com', 'git@github.com',
+                            'zevrant', 's3-garage', 'jenkins-git'
+                    ),
+                    testsEnabled: false,
+                    envs        : [
+                            application: [
+                                    proxmox    : new SecretMapping(SecretType.USERNAME_PASSWORD, '/proxmox/jenkins-token'),
+                                    VAULT_ADDR : 'https://vault.zevrant-services.com',
+                                    VAULT_TOKEN: new SecretMapping(SecretType.VAULT_TOKEN, '')
+                            ],
+                            secrets    : [
+                                    proxmox    : new SecretMapping(SecretType.USERNAME_PASSWORD, '/proxmox/jenkins-token'),
+                                    VAULT_ADDR : 'https://vault.zevrant-services.com',
+                                    VAULT_TOKEN: new SecretMapping(SecretType.VAULT_TOKEN, ''),
+                            ]
+                    ]
             ])
     ]
 
