@@ -19,7 +19,7 @@ pipeline {
         stage('Pull Artifact') {
             steps {
                 script {
-                    copyArtifacts(filter: versionFileName, projectName: './Shared-multibranch/master')
+                    copyArtifacts(filter: versionFileName, projectName: "./${terraformCodeUnit.name.split('-').collect({ name -> name.capitalize() }).join(' ')}-multibranch/master")
                     version = readFile(file: versionFileName)
                     sshagent(credentials: [terraformCodeUnit.repo.sshCredentialsId]) {
                         sh "git clone ${terraformCodeUnit.repo.sshUri}"
