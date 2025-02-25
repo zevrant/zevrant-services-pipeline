@@ -77,7 +77,7 @@ class TerraformService extends Service {
                         configMappings.add("TF_VAR_${key}=" + vaultToken)
                         break
                     case SecretType.HCP_CLIENT:
-                        pipelineContext.withCredentials([pipelineContext.usernamePassword(credentialsId: 'hcp-vault', passwordVariable: 'password', usernameVariable: 'username')]) {
+                        pipelineContext.withCredentials([pipelineContext.usernamePassword(credentialsId: 'vault-cloud-credentials', passwordVariable: 'password', usernameVariable: 'username')]) {
                             configMappings.add("TF_VAR_${key}_username=" + pipelineContext.username)
                             configMappings.add("TF_VAR_${key}_password=" + pipelineContext.password)
                         }
