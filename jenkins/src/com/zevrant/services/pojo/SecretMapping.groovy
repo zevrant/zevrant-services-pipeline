@@ -6,10 +6,12 @@ class SecretMapping {
 
     private final SecretType secretType;
     private final String secretPath;
+    private final boolean stripPrefix;
 
-    SecretMapping(SecretType secretType, String secretPath) {
+    SecretMapping(SecretType secretType, String secretPath, boolean stripPrefix = false) {
         this.secretType = secretType
         this.secretPath = secretPath
+        this.stripPrefix = stripPrefix
     }
 
     SecretType getSecretType() {
@@ -18,5 +20,9 @@ class SecretMapping {
 
     String getSecretPath() {
         return secretPath
+    }
+
+    boolean getStripPrefix() {
+        return stripPrefix
     }
 }

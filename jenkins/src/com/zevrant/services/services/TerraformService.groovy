@@ -65,21 +65,22 @@ class TerraformService extends Service {
                 if (mapping.secretType != SecretType.HCP_CLIENT && mapping.secretType != SecretType.VAULT_TOKEN) {
                     response = secretsService.getLocalSecret(vaultToken, mapping.getSecretPath())
                 }
+                String prefix = (mapping.stripPrefix) ? '' : 'TF_VAR_'
                 switch (mapping.secretType) {
                     case SecretType.USERNAME_PASSWORD:
-                        configMappings.add("TF_VAR_${key}_username=" + response.username)
-                        configMappings.add("TF_VAR_${key}_password=" + response.password)
+                        configMappings.add("${prefix}${key}_username=" + response.username)
+                        configMappings.add("${prefix}${key}_password=" + response.password)
                         break
                     case SecretType.SECRET_TEXT:
-                        configMappings.add("TF_VAR_${key}=" + response.password)
+                        configMappings.add("${prefix}${key}=" + response.password)
                         break
                     case SecretType.VAULT_TOKEN:
-                        configMappings.add("TF_VAR_${key}=" + vaultToken)
+                        configMappings.add("${prefix}${key}=" + vaultToken)
                         break
                     case SecretType.HCP_CLIENT:
                         pipelineContext.withCredentials([pipelineContext.usernamePassword(credentialsId: 'vault-cloud-credentials', passwordVariable: 'password', usernameVariable: 'username')]) {
-                            configMappings.add("TF_VAR_${key}_username=" + pipelineContext.username)
-                            configMappings.add("TF_VAR_${key}_password=" + pipelineContext.password)
+                            configMappings.add("${prefix}${key}_username=" + pipelineContext.username)
+                            configMappings.add("${prefix}${key}_password=" + pipelineContext.password)
                         }
                         break
                     default:
