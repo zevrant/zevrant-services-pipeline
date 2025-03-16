@@ -85,7 +85,7 @@ class PackerCodeUnitCollection {
                             'zevrant', 'zevrant-services-pipeline', 'jenkins-git'),
             ),
             new PackerCodeUnit(
-                    name: 'shared-hashicorp-vault',
+                    name: 'haproxy-keepalived',
                     baseImageName: 'hashicorp-vault-base',
                     folderPath: 'shared/shared-hashicorp-vault',
                     repo: new GitRepo('github.com', 'git@github.com',
