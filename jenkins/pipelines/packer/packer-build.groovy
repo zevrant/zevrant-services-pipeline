@@ -65,9 +65,11 @@ pipeline {
 
         stage('Get New Version') {
             environment {
+                PGHOST = '10.1.0.18'
                 PGUSER = 'jenkins'
                 PGPASSWORD = credentials('jenkins-app-version-password')
-                PGHOST = '10.1.0.18'
+                PGSSLMODE = 'disable'
+                PGDATABASE = 'jenkins'
             }
             steps {
                 script {
