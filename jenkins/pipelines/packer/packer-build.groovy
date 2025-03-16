@@ -86,6 +86,7 @@ pipeline {
             }
             steps {
                 script {
+                    sh 'ls -l'
                     dir(codeUnit.folderPath) {
                         dir("tmp") {
                             writeFile file: 'dummy', text: ''

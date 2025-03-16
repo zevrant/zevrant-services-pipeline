@@ -48,7 +48,7 @@ class PackerCodeUnitCollection {
             new PackerCodeUnit(
                     name: 'shared-haproxy-ingress',
                     baseImageName: 'haproxy-base',
-                    folderPath: 'loadbalancer-haproxy/packer',
+                    folderPath: 'loadbalanced-ha-proxy/packer',
                     repo: new GitRepo('github.com', 'git@github.com',
                             'zevrant', 'zevrant-services-pipeline', 'jenkins-git'),
                     specRepo: new GitRepo('github.com', 'git@github.com',
