@@ -14,6 +14,15 @@ class GoCodeUnitCollection {
                         'github.com',  'git@github.com',
                         'zevrant', 'terraform-provider-proxmox',  'jenkins-git'
                 )
+        ]),
+        new GoCodeUnit([
+                name           : 'zs-vm-agent',
+                applicationType: ApplicationType.GO,
+                repo           : new GitRepo(
+                        'github.com', 'git@github.com',
+                        'zevrant', 'zs-vm-agent', 'jenkins-git'
+                ),
+
         ])
     ])
 
