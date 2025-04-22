@@ -9,7 +9,7 @@ class PackerCodeUnitCollection {
                     name: 'alma-base-image',
                     extraArguments: [
                             'nodeExporterVersion': '1.8.2',
-                            'vmAgentVersion': '0.0.7'
+                            'vmAgentVersion': '0.0.8'
                     ],
                     folderPath: 'base-vm',
                     repo: new GitRepo(
