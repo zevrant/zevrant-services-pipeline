@@ -24,6 +24,7 @@ class TerraformCodeUnitCollection {
                                     CF_DNS_API_TOKEN: new SecretMapping(SecretType.SECRET_TEXT, 'shared/cloudflare-dns-api-token', true)
                             ],
                             "shared-common": [
+                                    hcp_client: new SecretMapping(SecretType.HCP_CLIENT, ''),
                                     proxmox             : new SecretMapping(SecretType.USERNAME_PASSWORD, '/proxmox/jenkins-token'),
                                     VAULT_ADDR          : 'https://vault.zevrant-services.com',
                                     VAULT_TOKEN         : new SecretMapping(SecretType.VAULT_TOKEN, ''),
