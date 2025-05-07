@@ -14,6 +14,7 @@ class TerraformService extends Service {
     }
 
     void initTerraform(String environmentName) {
+        pipelineContext.sh("ls -l")
         pipelineContext.dir("terraform-${environmentName}") {
             pipelineContext.sh('mkdir -p ~/.ssh')
             pipelineContext.sshagent(credentials: ['jenkins-git']) {
