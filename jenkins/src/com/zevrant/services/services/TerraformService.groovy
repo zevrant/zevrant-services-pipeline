@@ -90,12 +90,10 @@ class TerraformService extends Service {
                         throw new RuntimeException("Secret type for vault has not been implemented!")
                 }
 
-            } else if (value instanceof Collection) {
+            } else if (value instanceof Map) {
                 configMappings.add(
                         "TF_VAR_${key}="
-                                + pipelineContext.writeJson(json: value, returnText: true)
-                                .replace(": ", "= ")
-                )
+                                + pipelineContext.writeJson(json: value, returnText: true))
             } else {
                 configMappings.add("TF_VAR_${key}=" + value.toString())
             }
