@@ -93,7 +93,8 @@ class TerraformService extends Service {
             } else if (value instanceof Map) {
                 configMappings.add(
                         "TF_VAR_${key}="
-                                + pipelineContext.writeJSON(json: value, returnText: true))
+                                + pipelineContext.writeJSON(json: value, returnText: true)
+                                .replace(": ", "= "))
             } else {
                 configMappings.add("TF_VAR_${key}=" + value.toString())
             }
