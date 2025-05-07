@@ -18,6 +18,7 @@ class TerraformService extends Service {
             pipelineContext.sh('mkdir -p ~/.ssh')
             pipelineContext.sshagent(credentials: ['jenkins-git']) {
                 pipelineContext.sh('terraform init')
+                pipelineContext.sh("terraform workspace select ${environmentName}")
             }
         }
     }
