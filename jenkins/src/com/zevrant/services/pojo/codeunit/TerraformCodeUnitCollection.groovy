@@ -33,8 +33,8 @@ class TerraformCodeUnitCollection {
                                                             "backend"   : "pki_shared",
                                                             "issuer_ref": "7149394f-5f66-0579-fced-27db21503f89",
                                                             "name"      : "zevrant-services-shared"
-                                    ]
-
+                                    ],
+                                    MINIO               : new SecretMapping(SecretType.USERNAME_PASSWORD, '/jenkins/minio', true)
                             ],
                             "shared-blue": [
                                     proxmox       : new SecretMapping(SecretType.USERNAME_PASSWORD, '/proxmox/jenkins-token'),
@@ -60,7 +60,8 @@ class TerraformCodeUnitCollection {
                                                     ssd_storage_name : "local-zfs",
                                                     vm_id            : 1020
                                             ]
-                                    ]
+                                    ],
+                                    MINIO         : new SecretMapping(SecretType.USERNAME_PASSWORD, '/jenkins/minio', true)
                             ]
                     ]
             ]),
