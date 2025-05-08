@@ -45,7 +45,7 @@ class TerraformCodeUnitCollection {
                                             "01": [
                                                     cpu              : 2,
                                                     default_user     : "zevrant",
-                                                    description      : "Keepalived haproxy test",
+                                                    description: "Keepalived haproxy",
                                                     gateway          : "10.1.0.1",
                                                     hostname         : "haproxy-shared-blue",
                                                     ip_address       : "10.1.0.5/24",
@@ -60,6 +60,34 @@ class TerraformCodeUnitCollection {
                                                     replica_priority : 255,
                                                     ssd_storage_name : "local-zfs",
                                                     vm_id            : 1020
+                                            ]
+                                    ],
+                                    MINIO_USER    : new SecretMapping(SecretType.SECRET_TEXT, '/jenkins/minio-username', true),
+                                    MINIO_PASSWORD: new SecretMapping(SecretType.SECRET_TEXT, '/jenkins/minio-password', true)
+                            ],
+                            "shared-green" : [
+                                    proxmox       : new SecretMapping(SecretType.USERNAME_PASSWORD, '/proxmox/jenkins-token'),
+                                    VAULT_ADDR    : 'https://vault.zevrant-services.com',
+                                    VAULT_TOKEN   : new SecretMapping(SecretType.VAULT_TOKEN, ''),
+                                    load_balancers: [
+                                            "01": [
+                                                    cpu              : 2,
+                                                    default_user     : "zevrant",
+                                                    description      : "Keepalived haproxy",
+                                                    gateway          : "10.1.0.1",
+                                                    hostname         : "haproxy-shared-green",
+                                                    ip_address       : "10.1.0.12/24",
+                                                    is_primary       : true,
+                                                    mass_storage_name: "exosDisks",
+                                                    memory_mbs       : 4096,
+                                                    nameserver       : "10.0.0.8",
+                                                    peer_ip_addresses: [
+                                                            "10.1.0.5"
+                                                    ],
+                                                    proxmox_host     : "proxmox-01",
+                                                    replica_priority : 255,
+                                                    ssd_storage_name : "local-zfs",
+                                                    vm_id            : 1090
                                             ]
                                     ],
                                     MINIO_USER    : new SecretMapping(SecretType.SECRET_TEXT, '/jenkins/minio-username', true),
