@@ -179,8 +179,8 @@ TerraformCodeUnitCollection.codeUnits.each { codeUnit ->
 
 
         )
-        if (terraformCodeUnit.getEnvs().get(env).hasKey("trigger")) {
-            def envObj = terraformCodeUnit.getEnvs().get(env)
+        if (terraformCodeUnit.getEnvs().getAt(env).hasKey("trigger")) {
+            def envObj = terraformCodeUnit.getEnvs().getAt(env)
             terraformPipeline.triggers = [
                     new PipelineTrigger(
                             type: envObj.trigger.type,
