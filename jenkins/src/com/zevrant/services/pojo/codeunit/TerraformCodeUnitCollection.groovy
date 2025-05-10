@@ -21,7 +21,7 @@ class TerraformCodeUnitCollection {
                                     VAULT_ADDR : 'https://vault.zevrant-services.com',
                                     VAULT_TOKEN: new SecretMapping(SecretType.VAULT_TOKEN, ''),
                                     hcp_client      : new SecretMapping(SecretType.HCP_CLIENT, ''),
-                                    CF_DNS_API_TOKEN: new SecretMapping(SecretType.SECRET_TEXT, 'shared/cloudflare-dns-api-token', true)
+                                    CF_DNS_API_TOKEN: new SecretMapping(SecretType.SECRET_TEXT, 'shared/cloudflare-dns-api-token', true),
                                     trigger: [
                                             type : PipelineTriggerType.CRON,
                                             value: "0 0 * * *"
@@ -39,7 +39,7 @@ class TerraformCodeUnitCollection {
                                                             "name"      : "zevrant-services-shared"
                                     ],
                                     MINIO_USER    : new SecretMapping(SecretType.SECRET_TEXT, '/jenkins/minio-username', true),
-                                    MINIO_PASSWORD: new SecretMapping(SecretType.SECRET_TEXT, '/jenkins/minio-password', true)
+                                    MINIO_PASSWORD: new SecretMapping(SecretType.SECRET_TEXT, '/jenkins/minio-password', true),
                                     trigger: [
                                             type : PipelineTriggerType.CRON,
                                             value: "0 0 * * *"
