@@ -166,7 +166,7 @@ TerraformCodeUnitCollection.codeUnits.each { codeUnit ->
 
 
     terraformCodeUnit.getEnvs().each { env ->
-        Pipeline providerRelease = new Pipeline(
+        Pipeline terraformPipeline = new Pipeline(
                 name: "${terraformCodeUnit.name.toLowerCase()}-deploy-to-${env}",
                 parameters: new ArrayList<>([]),
                 credentialId: 'jenkins-git',
@@ -177,15 +177,16 @@ TerraformCodeUnitCollection.codeUnits.each { codeUnit ->
                         ENVIRONMENT: env
                 ],
 
+
         )
-        if ('dev' == env) {
-            providerRelease.triggers = [
-                    new PipelineTrigger([
-                            type : PipelineTriggerType.UPSTREAM,
-                            value: "./${terraformCodeUnit.name.toLowerCase()}-deploy-to-${env}-multibranch/master"
-                    ])
+        if (env.trigger != null) {
+            terraformPipeline.triggers = [
+                    new PipelineTrigger(
+                            type: env.trigger.type,
+                            value: env.trigger.value
+                    )
             ]
         }
-        jobDslService.createPipeline(folder, providerRelease)
+        jobDslService.createPipeline(folder, terraformPipeline)
     }
 }

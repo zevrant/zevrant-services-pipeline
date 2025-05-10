@@ -1,6 +1,6 @@
 package com.zevrant.services.pojo.codeunit
 
-
+import com.zevrant.services.enumerations.PipelineTriggerType
 import com.zevrant.services.enumerations.SecretType
 import com.zevrant.services.pojo.GitRepo
 import com.zevrant.services.pojo.SecretMapping
@@ -22,6 +22,10 @@ class TerraformCodeUnitCollection {
                                     VAULT_TOKEN: new SecretMapping(SecretType.VAULT_TOKEN, ''),
                                     hcp_client      : new SecretMapping(SecretType.HCP_CLIENT, ''),
                                     CF_DNS_API_TOKEN: new SecretMapping(SecretType.SECRET_TEXT, 'shared/cloudflare-dns-api-token', true)
+                                    trigger: [
+                                            type : PipelineTriggerType.CRON,
+                                            value: "0 0 * * *"
+                                    ]
                             ],
                             "shared-common": [
                                     hcp_client    : new SecretMapping(SecretType.HCP_CLIENT, ''),
@@ -36,8 +40,16 @@ class TerraformCodeUnitCollection {
                                     ],
                                     MINIO_USER    : new SecretMapping(SecretType.SECRET_TEXT, '/jenkins/minio-username', true),
                                     MINIO_PASSWORD: new SecretMapping(SecretType.SECRET_TEXT, '/jenkins/minio-password', true)
+                                    trigger: [
+                                            type : PipelineTriggerType.CRON,
+                                            value: "0 0 * * *"
+                                    ]
                             ],
                             "shared-blue"  : [
+                                    trigger: [
+                                            type : PipelineTriggerType.UPSTREAM,
+                                            value: 'shared-deploy-to-shared-green'
+                                    ],
                                     proxmox       : new SecretMapping(SecretType.USERNAME_PASSWORD, '/proxmox/jenkins-token'),
                                     VAULT_ADDR    : 'https://vault.zevrant-services.com',
                                     VAULT_TOKEN   : new SecretMapping(SecretType.VAULT_TOKEN, ''),
@@ -66,6 +78,10 @@ class TerraformCodeUnitCollection {
                                     MINIO_PASSWORD: new SecretMapping(SecretType.SECRET_TEXT, '/jenkins/minio-password', true)
                             ],
                             "shared-green" : [
+                                    trigger: [
+                                            type : PipelineTriggerType.UPSTREAM,
+                                            value: 'shared-deploy-to-shared-common'
+                                    ],
                                     proxmox       : new SecretMapping(SecretType.USERNAME_PASSWORD, '/proxmox/jenkins-token'),
                                     VAULT_ADDR    : 'https://vault.zevrant-services.com',
                                     VAULT_TOKEN   : new SecretMapping(SecretType.VAULT_TOKEN, ''),
