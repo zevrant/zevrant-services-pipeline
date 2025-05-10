@@ -181,12 +181,12 @@ TerraformCodeUnitCollection.codeUnits.each { codeUnit ->
         )
         if (terraformCodeUnit.getConfigForEnv(env).get("trigger", null) != null) {
             def trigger = terraformCodeUnit.getConfigForEnv(env).get("trigger")
-            terraformPipeline.triggers = [
+            terraformPipeline.triggers.add(
                     new PipelineTrigger(
                             type: trigger.get("type"),
                             value: trigger.get("value")
                     )
-            ]
+            )
         }
         jobDslService.createPipeline(folder, terraformPipeline)
     }
