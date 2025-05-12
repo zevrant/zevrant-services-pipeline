@@ -1,8 +1,10 @@
+import com.zevrant.services.pojo.GitHubArtifactMapping
 import com.zevrant.services.pojo.Version
 @Library("CommonUtils")
 
 import com.zevrant.services.pojo.codeunit.PackerCodeUnit
 import com.zevrant.services.pojo.codeunit.PackerCodeUnitCollection
+import com.zevrant.services.services.GitHubService
 import com.zevrant.services.services.GitService
 import com.zevrant.services.services.HashingService
 import com.zevrant.services.services.VersionService
@@ -11,7 +13,7 @@ import org.apache.commons.lang.StringUtils
 HashingService hashingService = new HashingService(this)
 GitService gitService = new GitService(this)
 VersionService versionService = new VersionService(this)
-
+GitHubService gitHubService = new GitHubService(this)
 
 
 PackerCodeUnit codeUnit = PackerCodeUnitCollection.findCodeUnitByName(NAME as String)
@@ -92,6 +94,14 @@ pipeline {
                             writeFile file: 'dummy', text: ''
                         }
                         if (codeUnit.extraArguments != null && !codeUnit.extraArguments.isEmpty()) {
+                            for (int i = 0; i < codeUnit.extraArguments.size(); i++) {
+                                Object argument = codeUnit.extraArguments[i]
+                                if (argument instanceof GitHubArtifactMapping) {
+                                    String response = gitHubService.getLatestRelease(argument.getGitHubRepoOwner(), argument.getGitHubRepo())
+                                    codeUnit.extraArguments[i] = gitHubService.getDownloadUrlFromAssetsResponse(response)
+                                }
+                            }
+
                             writeYaml(file: 'vars.yaml', data: codeUnit.extraArguments)
                         }
                         sh 'packer init .'

@@ -1,5 +1,6 @@
 package com.zevrant.services.pojo.codeunit
 
+import com.zevrant.services.pojo.GitHubArtifactMapping
 import com.zevrant.services.pojo.GitRepo
 
 class PackerCodeUnitCollection {
@@ -8,8 +9,8 @@ class PackerCodeUnitCollection {
             new PackerCodeUnit(
                     name: 'alma-base-image',
                     extraArguments: [
-                            'nodeExporterVersion': '1.8.2',
-                            'vmAgentVersion': '0.0.10'
+                            'nodeExporterVersion': new GitHubArtifactMapping('node_exporter', 'prometheus'),
+                            'vmAgentVersion'     : new GitHubArtifactMapping('zs-vm-agent', 'zevrant')
                     ],
                     folderPath: 'base-vm',
                     repo: new GitRepo(
