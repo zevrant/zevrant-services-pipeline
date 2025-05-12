@@ -94,11 +94,11 @@ pipeline {
                             writeFile file: 'dummy', text: ''
                         }
                         if (codeUnit.extraArguments != null && !codeUnit.extraArguments.isEmpty()) {
-                            for (int i = 0; i < codeUnit.extraArguments.size(); i++) {
-                                Object argument = codeUnit.extraArguments[i]
+                            codeUnit.extraArguments.keySet().each { key ->
+                                Object argument = codeUnit.extraArguments.get(key)
                                 if (argument instanceof GitHubArtifactMapping) {
                                     String response = gitHubService.getLatestRelease(argument.getGitHubRepoOwner(), argument.getGitHubRepo())
-                                    codeUnit.extraArguments[i] = gitHubService.getDownloadUrlFromAssetsResponse(response)
+                                    codeUnit.extraArguments[key] = gitHubService.getDownloadUrlFromAssetsResponse(response)
                                 }
                             }
 
