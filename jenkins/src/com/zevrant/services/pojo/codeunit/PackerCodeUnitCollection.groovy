@@ -104,6 +104,16 @@ class PackerCodeUnitCollection {
                     specRepo: new GitRepo('github.com', 'git@github.com',
                             'zevrant', 'zevrant-services-terraform', 'jenkins-git'),
             ),
+            new PackerCodeUnit(
+                    name: 'zevrant-services-ui',
+                    baseImageName: 'alma-base-image',
+                    folderPath: 'packer',
+                    repo: new GitRepo('github.com', 'git@github.com',
+                            'zevrant', 'zevrant-services-pipeline', 'jenkins-git'),
+                    specRepo: new GitRepo('github.com', 'git@github.com',
+                            'zevrant', 'zevrant-services-ui')
+
+            )
     ])
 
     static PackerCodeUnit findCodeUnitByName(String name) {
