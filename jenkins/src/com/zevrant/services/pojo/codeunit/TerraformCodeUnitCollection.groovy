@@ -43,7 +43,58 @@ class TerraformCodeUnitCollection {
                                     trigger: [
                                             type : PipelineTriggerType.CRON,
                                             value: "0 0 * * *"
+                                    ],
+                                    dns_allowed_query_cidr: "10.0.0.0/8",
+                                    dns_zone_configs: [
+                                            [
+                                                    domain_name  : "zevrant-services.internal",
+                                                    name         : "zevrant-services-shared",
+                                                    nameserver_ip: "10.0.0.150",
+                                                    records      : [
+                                                            [
+                                                                    domain    : "jenkins",
+                                                                    ip_address: "10.0.0.150"
+                                                            ],
+                                                            [
+                                                                    domain    : "plex",
+                                                                    ip_address: "10.0.0.150"
+                                                            ],
+                                                            [
+                                                                    domain    : "vault",
+                                                                    ip_address: "10.0.0.150"
+                                                            ],
+                                                            [
+                                                                    domain    : "vault",
+                                                                    ip_address: "10.1.0.254"
+                                                            ],
+                                                            [
+                                                                    domain    : "s3",
+                                                                    ip_address: "10.1.0.254"
+                                                            ],
+                                                            [
+                                                                    domain    : "s3",
+                                                                    ip_address: "10.0.0.150"
+                                                            ],
+                                                            [
+                                                                    domain    : "s3-console",
+                                                                    ip_address: "10.1.0.7"
+                                                            ],
+                                                            [
+                                                                    domain    : "garage1",
+                                                                    ip_address: "10.1.0.7"
+                                                            ],
+                                                            [
+                                                                    domain    : "garage2",
+                                                                    ip_address: "10.1.0.8"
+                                                            ],
+                                                            [
+                                                                    domain    : "garage3",
+                                                                    ip_address: "10.1.0.9"
+                                                            ]
+                                                    ]
+                                            ]
                                     ]
+
                             ],
                             "shared-blue"  : [
                                     trigger: [
