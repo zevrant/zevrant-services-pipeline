@@ -68,35 +68,33 @@ pipeline {
             when { expression { codeUnit.unitTestsEnabled } }
             steps {
                 script {
-                    container('golang') {
-                        sshagent([codeUnit.getRepo().getSshCredentialsId()]) {
-                            if (codeUnit.applicationType == ApplicationType.GO_HELM && codeUnit.swaggerEnabled) {
-                                sh 'swag init'
-                            }
-                            //runs go tests for all packages and generates report in junit xml format that jenkins can read
-                            try {
-                                writeFile(file: 'known_hosts', text: gitService.getApprovedKnownHosts())
-                                sh 'mkdir -p ~/.ssh/'
-                                sh 'mv known_hosts ~/.ssh/known_hosts'
-                                sh(
-                                        label: 'Set Jenkins user name / email',
-                                        script: '''#!/bin/bash -xe
+                    sshagent([codeUnit.getRepo().getSshCredentialsId()]) {
+                        if (codeUnit.applicationType == ApplicationType.GO_HELM && codeUnit.swaggerEnabled) {
+                            sh 'swag init'
+                        }
+                        //runs go tests for all packages and generates report in junit xml format that jenkins can read
+                        try {
+                            writeFile(file: 'known_hosts', text: gitService.getApprovedKnownHosts())
+                            sh 'mkdir -p ~/.ssh/'
+                            sh 'mv known_hosts ~/.ssh/known_hosts'
+                            sh(
+                                    label: 'Set Jenkins user name / email',
+                                    script: '''#!/bin/bash -xe
                                         git config --global user.email "jenkins@zevrant-services.com"
                                         git config --global user.name "Zevrant Services Jenkins"
                                     '''.stripIndent()
-                                )
+                            )
 
-                                sh 'git config --global --add safe.directory "$(pwd)"'
-                                if (fileExists(file: "./generateMocks.sh")) {
-                                    sh './generateMocks.sh'
-                                }
-                                sh 'gotestsum --format pkgname --junitfile report.xml -- -failfast -race -coverprofile=coverage.out ./...'
-                            } finally {
-                                sh 'ls -l'
-                                junit allowEmptyResults: true, keepLongStdio: true, skipPublishingChecks: true, testResults: 'report.xml'
+                            sh 'git config --global --add safe.directory "$(pwd)"'
+                            if (fileExists(file: "./generateMocks.sh")) {
+                                sh './generateMocks.sh'
                             }
-                            sh 'rm -f coverage.out report.xml *_mock.go *_mock_test.go'
+                            sh 'gotestsum --format pkgname --junitfile report.xml -- -failfast -race -coverprofile=coverage.out ./...'
+                        } finally {
+                            sh 'ls -l'
+                            junit allowEmptyResults: true, keepLongStdio: true, skipPublishingChecks: true, testResults: 'report.xml'
                         }
+                        sh 'rm -f coverage.out report.xml *_mock.go *_mock_test.go'
                     }
                 }
             }
