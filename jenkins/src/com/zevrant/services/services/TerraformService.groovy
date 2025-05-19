@@ -104,15 +104,14 @@ class TerraformService extends Service {
                 List<Object> values = []
 
                 value.each { item ->
-                    LinkedHashMap test = item
-                    values.add(pipelineContext.writeJSON(text: test, returnText: true)
+                    values.add(pipelineContext.writeJSON(text: item, returnText: true)
                             .replace(": ", "= "))
                 }
 
                 pipelineContext.println("TEST1: ${pipelineContext.writeJSON(json: value as List, returnText: true).replace(": ", "= ")}")
                 pipelineContext.println("TEST2: ${pipelineContext.writeJSON(json: values, returnText: true).replace(": ", "= ")}")
 
-                configMappings.add("TF_VAR_${key}", pipelineContext.writeJSON(text: values, returnText: true).replace(": ", "= "))
+                configMappings.add("TF_VAR_${key}", pipelineContext.writeJSON(json: values, returnText: true).replace(": ", "= "))
             } else {
                 configMappings.add("TF_VAR_${key}=" + value.toString())
             }
