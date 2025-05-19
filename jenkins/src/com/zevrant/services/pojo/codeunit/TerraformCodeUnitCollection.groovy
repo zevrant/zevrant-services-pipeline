@@ -126,7 +126,27 @@ class TerraformCodeUnitCollection {
                                             ]
                                     ],
                                     MINIO_USER    : new SecretMapping(SecretType.SECRET_TEXT, '/jenkins/minio-username', true),
-                                    MINIO_PASSWORD: new SecretMapping(SecretType.SECRET_TEXT, '/jenkins/minio-password', true)
+                                    MINIO_PASSWORD: new SecretMapping(SecretType.SECRET_TEXT, '/jenkins/minio-password', true),
+                                    dns_servers   : [
+                                            'dns_servers': [
+                                                    "01": [
+                                                            cpu              : 2,
+                                                            default_user     : "zevrant",
+                                                            description      : "top level dns domain",
+                                                            gateway          : "10.0.0.1",
+                                                            hostname         : "internal-bind9",
+                                                            ip_address       : "10.0.0.12",
+                                                            mass_storage_name: "exosDisks",
+                                                            memory_mbs       : 4096,
+                                                            nameserver       : "1.1.1.1",
+                                                            protection       : false,
+                                                            proxmox_host     : "proxmox-01",
+                                                            ssd_storage_name : "local-zfs",
+                                                            start_on_boot    : true,
+                                                            vm_id            : 2040,
+                                                    ]
+                                            ]
+                                    ]
                             ],
                             "shared-green" : [
                                     trigger: [
@@ -158,7 +178,27 @@ class TerraformCodeUnitCollection {
                                             ]
                                     ],
                                     MINIO_USER    : new SecretMapping(SecretType.SECRET_TEXT, '/jenkins/minio-username', true),
-                                    MINIO_PASSWORD: new SecretMapping(SecretType.SECRET_TEXT, '/jenkins/minio-password', true)
+                                    MINIO_PASSWORD: new SecretMapping(SecretType.SECRET_TEXT, '/jenkins/minio-password', true),
+                                    dns_servers   : [
+                                            'dns_servers': [
+                                                    "01": [
+                                                            cpu              : 2,
+                                                            default_user     : "zevrant",
+                                                            description      : "top level dns domain",
+                                                            gateway          : "10.0.0.1",
+                                                            hostname         : "internal-bind9",
+                                                            ip_address       : "10.0.0.12",
+                                                            mass_storage_name: "exosDisks",
+                                                            memory_mbs       : 4096,
+                                                            nameserver       : "1.1.1.1",
+                                                            protection       : false,
+                                                            proxmox_host     : "proxmox-01",
+                                                            ssd_storage_name : "local-zfs",
+                                                            start_on_boot    : true,
+                                                            vm_id            : 2040,
+                                                    ]
+                                            ]
+                                    ]
                             ]
                     ]
             ]),
