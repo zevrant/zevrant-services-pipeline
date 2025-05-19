@@ -83,7 +83,7 @@ class TerraformService extends Service {
                         break
                     case SecretType.VAULT_TOKEN:
                         configMappings.add("${prefix}${key}=" + vaultToken)
-                        break
+                        breakK
                     case SecretType.HCP_CLIENT:
                         pipelineContext.withCredentials([pipelineContext.usernamePassword(credentialsId: 'vault-cloud-credentials', passwordVariable: 'password', usernameVariable: 'username')]) {
                             configMappings.add("${prefix}${key}_username=" + pipelineContext.username)
@@ -100,7 +100,7 @@ class TerraformService extends Service {
                 pipelineContext.println("VALUE_JSON ${key} == ${valueJson}")
                 configMappings.add(
                         "TF_VAR_${key}=" + valueJson)
-            } else if (value instanceof ArrayList && value.get(0) instanceof Map) {
+            } else if (value instanceof ArrayList && value.get(0) instanceof LinkedHashMap) {
                 List<Object> values = []
 
                 value.each { item ->
