@@ -69,9 +69,9 @@ pipeline {
             steps {
                 script {
                     sshagent([codeUnit.getRepo().getSshCredentialsId()]) {
-                        if (codeUnit.applicationType == ApplicationType.GO_HELM && codeUnit.swaggerEnabled) {
-                            sh 'swag init'
-                        }
+//                        if (codeUnit.applicationType == ApplicationType.GO_HELM && codeUnit.swaggerEnabled) {
+//                            sh 'swag init'
+//                        }
                         //runs go tests for all packages and generates report in junit xml format that jenkins can read
                         try {
                             writeFile(file: 'known_hosts', text: gitService.getApprovedKnownHosts())
