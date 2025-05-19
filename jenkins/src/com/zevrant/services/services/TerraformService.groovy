@@ -62,6 +62,9 @@ class TerraformService extends Service {
         environmentConfig.keySet().each { key ->
             Object value = environmentConfig.get(key)
             pipelineContext.println("Populating variable ${key} with value of class ${value.getClass()}")
+            if (value.getClass() == ArrayList.class) {
+                pipelineContext.println("and with a arraylist item class of ${((ArrayList) value).get(0).getClass()}")
+            }
             if (value instanceof SecretMapping) {
                 SecretMapping mapping = value as SecretMapping
                 Map<String, Object> response = [:]
