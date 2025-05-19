@@ -74,7 +74,7 @@ pipeline {
 //                        }
                         //runs go tests for all packages and generates report in junit xml format that jenkins can read
                         try {
-                            writeFile(file: 'known_hosts', text: gitService.getApprovedKnownHosts())
+//                            writeFile(file: 'known_hosts', text: gitService.getApprovedKnownHosts())
                             sh 'mkdir -p ~/.ssh/'
                             sh 'mv known_hosts ~/.ssh/known_hosts'
                             sh(
