@@ -5,6 +5,7 @@ import com.zevrant.services.enumerations.ApplicationType
 class GoCodeUnit extends CodeUnit{
 
     public final String providerOrgName
+    public final boolean unitTestsEnabled
 
     GoCodeUnit(Map<String, Object> params) {
         super(params)
@@ -13,6 +14,7 @@ class GoCodeUnit extends CodeUnit{
         }
 
         providerOrgName = params.providerOrgName
+        unitTestsEnabled = params.unitTestsEnabled ?: true
     }
 
 }

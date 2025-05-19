@@ -65,7 +65,7 @@ pipeline {
             }
         }
         stage('Unit Test') {
-            when { expression { false } }
+            when { expression { codeUnit.testsEnabled } }
             steps {
                 script {
                     container('golang') {
@@ -87,12 +87,15 @@ pipeline {
                                 )
 
                                 sh 'git config --global --add safe.directory "$(pwd)"'
+                                if (fileExists(file: "./generateMocks.sh")) {
+                                    sh './generateMocks.sh'
+                                }
                                 sh 'gotestsum --format pkgname --junitfile report.xml -- -failfast -race -coverprofile=coverage.out ./...'
                             } finally {
                                 sh 'ls -l'
                                 junit allowEmptyResults: true, keepLongStdio: true, skipPublishingChecks: true, testResults: 'report.xml'
                             }
-                            sh 'rm -f coverage.out report.xml'
+                            sh 'rm -f coverage.out report.xml *_mock.go *_mock_test.go'
                         }
                     }
                 }

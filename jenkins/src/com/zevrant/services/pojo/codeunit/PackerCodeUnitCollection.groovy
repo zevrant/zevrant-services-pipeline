@@ -111,7 +111,10 @@ class PackerCodeUnitCollection {
                     repo: new GitRepo('github.com', 'git@github.com',
                             'zevrant', 'zevrant-services-pipeline', 'jenkins-git'),
                     specRepo: new GitRepo('github.com', 'git@github.com',
-                            'zevrant', 'zevrant-services-ui')
+                            'zevrant', 'zevrant-services-ui'),
+                    extraArguments: [
+                            'ui-artifact-version': new GitHubArtifactMapping('zevrant-services-ui', 'zevrant')
+                    ],
 
             )
     ])
