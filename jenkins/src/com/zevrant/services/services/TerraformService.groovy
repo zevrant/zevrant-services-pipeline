@@ -83,7 +83,7 @@ class TerraformService extends Service {
                         break
                     case SecretType.VAULT_TOKEN:
                         configMappings.add("${prefix}${key}=" + vaultToken)
-                        breakK
+                        break
                     case SecretType.HCP_CLIENT:
                         pipelineContext.withCredentials([pipelineContext.usernamePassword(credentialsId: 'vault-cloud-credentials', passwordVariable: 'password', usernameVariable: 'username')]) {
                             configMappings.add("${prefix}${key}_username=" + pipelineContext.username)
