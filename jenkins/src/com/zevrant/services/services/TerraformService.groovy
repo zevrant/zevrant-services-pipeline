@@ -96,10 +96,22 @@ class TerraformService extends Service {
 
             } else if (value instanceof Map && key != 'trigger') {
                 String valueJson = pipelineContext.writeJSON(json: value, returnText: true)
-                valueJson = valueJson.replace(":", "=")
+                valueJson = valueJson.replace(": ", "= ")
                 pipelineContext.println("VALUE_JSON ${key} == ${valueJson}")
                 configMappings.add(
                         "TF_VAR_${key}=" + valueJson)
+            } else if (value instanceof ArrayList && value.get(0) instanceof Map) {
+                List<Object> values = []
+
+                value.each { item ->
+                    values.add(pipelineContext.writeJSON(text: item, returnText: true)
+                            .replace(": ", "= "))
+                }
+
+                pipelineContext.println("TEST1: ${pipelineContext.writeJSON(text: value, returnText: true).replace(": ", "= ")}")
+                pipelineContext.println("TEST2: ${pipelineContext.writeJSON(text: values, returnText: true).replace(": ", "= ")}")
+
+                configMappings.add("TF_VAR_${key}", pipelineContext.writeJSON(text: values, returnText: true).replace(": ", "= "))
             } else {
                 configMappings.add("TF_VAR_${key}=" + value.toString())
             }
