@@ -101,13 +101,6 @@ class TerraformService extends Service {
                 configMappings.add(
                         "TF_VAR_${key}=" + valueJson)
             } else if (value instanceof ArrayList && value.get(0) instanceof LinkedHashMap) {
-                List<Object> values = []
-
-                value.each { item ->
-                    values.add(pipelineContext.writeJSON(json: item, returnText: true)
-                            .replace(": ", "= "))
-                }
-
                 pipelineContext.println("TEST1: ${pipelineContext.writeJSON(json: value as List, returnText: true).replace('":"', '"="')}")
 
                 configMappings.add("TF_VAR_${key}=" + pipelineContext.writeJSON(json: value as List, returnText: true).replace('":"', '"="'))
