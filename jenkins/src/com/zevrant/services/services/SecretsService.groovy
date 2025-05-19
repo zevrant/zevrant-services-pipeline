@@ -47,7 +47,7 @@ class SecretsService extends Service {
                         [
                                 name : 'Authorization',
                                 value: 'Bearer ' + hcpToken,
-                                mask : true
+                                maskValue: true
                         ]
                 ],
                 validResponseCodes: '200'
@@ -62,7 +62,7 @@ class SecretsService extends Service {
                         [
                                 name : 'Authorization',
                                 value: 'Bearer ' + hcpToken,
-                                mask : true
+                                maskValue: true
                         ]
                 ],
                 validResponseCodes: '200'
@@ -104,7 +104,7 @@ class SecretsService extends Service {
                         [
                                 name : 'X-Vault-Token',
                                 value: authToken,
-                                mask : true
+                                maskValue: true
                         ]
                 ],
                 ignoreSslErrors: true,

@@ -96,7 +96,7 @@ class TerraformService extends Service {
                         "TF_VAR_${key}="
                                 + pipelineContext.writeJSON(json: value, returnText: true)
                                 .replace(": ", "= "))
-                if (key == 'dns_zone_configs') {
+                if (key.contains('dns_zone_configs')) {
                     pipelineContext.println("TF_VAR_${key}="
                             + pipelineContext.writeJSON(json: value, returnText: true)
                             .replace(": ", "= "))
