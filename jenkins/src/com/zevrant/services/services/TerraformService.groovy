@@ -92,15 +92,11 @@ class TerraformService extends Service {
                 }
 
             } else if (value instanceof Map && key != 'trigger') {
+                String valueJson = pipelineContext.writeJSON(json: value, returnText: true)
+                        .replace(":", "=")
+                pipelineContext.println("VALUE_JSON ${key} == ${valueJson}")
                 configMappings.add(
-                        "TF_VAR_${key}="
-                                + pipelineContext.writeJSON(json: value, returnText: true)
-                                .replace(":", "="))
-                if (key.contains('dns_zone_configs')) {
-                    pipelineContext.println("TF_VAR_${key}="
-                            + pipelineContext.writeJSON(json: value, returnText: true)
-                            .replace(": ", "= "))
-                }
+                        "TF_VAR_${key}=" + valueJson)
             } else {
                 configMappings.add("TF_VAR_${key}=" + value.toString())
             }
