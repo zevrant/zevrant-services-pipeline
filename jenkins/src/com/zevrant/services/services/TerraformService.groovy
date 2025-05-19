@@ -108,10 +108,9 @@ class TerraformService extends Service {
                             .replace(": ", "= "))
                 }
 
-                pipelineContext.println("TEST1: ${pipelineContext.writeJSON(json: value as List, returnText: true).replace(": ", "= ")}")
-                pipelineContext.println("TEST2: ${pipelineContext.writeJSON(json: values, returnText: true).replace(": ", "= ")}")
+                pipelineContext.println("TEST1: ${pipelineContext.writeJSON(json: value as List, returnText: true).replace('":"', '"="')}")
 
-                configMappings.add("TF_VAR_${key}", pipelineContext.writeJSON(json: values, returnText: true).replace(": ", "= "))
+                configMappings.add("TF_VAR_${key}=" + pipelineContext.writeJSON(json: value as List, returnText: true).replace('":"', '"="'))
             } else {
                 configMappings.add("TF_VAR_${key}=" + value.toString())
             }
