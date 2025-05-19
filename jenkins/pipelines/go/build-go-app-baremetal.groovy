@@ -65,7 +65,7 @@ pipeline {
             }
         }
         stage('Unit Test') {
-            when { expression { codeUnit.testsEnabled } }
+            when { expression { codeUnit.unitTestsEnabled } }
             steps {
                 script {
                     container('golang') {
