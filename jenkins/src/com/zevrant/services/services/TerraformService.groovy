@@ -104,7 +104,8 @@ class TerraformService extends Service {
                 List<Object> values = []
 
                 value.each { item ->
-                    values.add(pipelineContext.writeJSON(text: item as Map, returnText: true)
+                    LinkedHashMap test = item
+                    values.add(pipelineContext.writeJSON(text: test, returnText: true)
                             .replace(": ", "= "))
                 }
 
