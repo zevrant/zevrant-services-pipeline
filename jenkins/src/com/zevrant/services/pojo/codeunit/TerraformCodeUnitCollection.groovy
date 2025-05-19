@@ -16,36 +16,34 @@ class TerraformCodeUnitCollection {
                     ),
                     testsEnabled: false,
                     envs        : [
-                            "shared"       : [
-                                    proxmox    : new SecretMapping(SecretType.USERNAME_PASSWORD, '/proxmox/jenkins-token'),
-                                    VAULT_ADDR : 'https://vault.zevrant-services.com',
-                                    VAULT_TOKEN: new SecretMapping(SecretType.VAULT_TOKEN, ''),
+                            "shared"       : [proxmox    : new SecretMapping(SecretType.USERNAME_PASSWORD, '/proxmox/jenkins-token'),
+                                              VAULT_ADDR : 'https://vault.zevrant-services.com',
+                                              VAULT_TOKEN: new SecretMapping(SecretType.VAULT_TOKEN, ''),
                                     hcp_client      : new SecretMapping(SecretType.HCP_CLIENT, ''),
                                     CF_DNS_API_TOKEN: new SecretMapping(SecretType.SECRET_TEXT, 'shared/cloudflare-dns-api-token', true),
-                                    trigger: [
+                                              trigger    : [
                                             type : PipelineTriggerType.CRON,
                                             value: "0 0 * * *"
                                     ]
                             ],
-                            "shared-common": [
-                                    hcp_client    : new SecretMapping(SecretType.HCP_CLIENT, ''),
-                                    proxmox             : new SecretMapping(SecretType.USERNAME_PASSWORD, '/proxmox/jenkins-token'),
-                                    VAULT_ADDR          : 'https://vault.zevrant-services.com',
-                                    VAULT_TOKEN         : new SecretMapping(SecretType.VAULT_TOKEN, ''),
-                                    "ingress_virtual_ip": "10.1.0.254/24",
-                                    "pki_role"          : [ //TODO use terraform remote state instead of hardcoding
-                                                            "backend"   : "pki_shared",
-                                                            "issuer_ref": "7149394f-5f66-0579-fced-27db21503f89",
-                                                            "name"      : "zevrant-services-shared"
+                            "shared-common": [hcp_client          : new SecretMapping(SecretType.HCP_CLIENT, ''),
+                                              proxmox             : new SecretMapping(SecretType.USERNAME_PASSWORD, '/proxmox/jenkins-token'),
+                                              VAULT_ADDR          : 'https://vault.zevrant-services.com',
+                                              VAULT_TOKEN         : new SecretMapping(SecretType.VAULT_TOKEN, ''),
+                                              "ingress_virtual_ip": "10.1.0.254/24",
+                                              "pki_role"          : [ //TODO use terraform remote state instead of hardcoding
+                                                                      "backend"   : "pki_shared",
+                                                                      "issuer_ref": "7149394f-5f66-0579-fced-27db21503f89",
+                                                                      "name"      : "zevrant-services-shared"
                                     ],
-                                    MINIO_USER    : new SecretMapping(SecretType.SECRET_TEXT, '/jenkins/minio-username', true),
-                                    MINIO_PASSWORD: new SecretMapping(SecretType.SECRET_TEXT, '/jenkins/minio-password', true),
-                                    trigger: [
+                                              MINIO_USER          : new SecretMapping(SecretType.SECRET_TEXT, '/jenkins/minio-username', true),
+                                              MINIO_PASSWORD      : new SecretMapping(SecretType.SECRET_TEXT, '/jenkins/minio-password', true),
+                                              trigger             : [
                                             type : PipelineTriggerType.CRON,
                                             value: "0 0 * * *"
                                     ],
                                     dns_allowed_query_cidr: "10.0.0.0/8",
-                                    dns_zone_configs: [
+                                              dns_zone_configs    : [
                                             [
                                                     domain_name  : "zevrant-services.internal",
                                                     name         : "zevrant-services-shared",
@@ -96,8 +94,7 @@ class TerraformCodeUnitCollection {
                                     ]
 
                             ],
-                            "shared-blue"  : [
-                                    trigger: [
+                            "shared-blue"  : [trigger: [
                                             type : PipelineTriggerType.UPSTREAM,
                                             value: 'shared-deploy-to-shared-green'
                                     ],
@@ -148,8 +145,7 @@ class TerraformCodeUnitCollection {
                                             ]
                                     ]
                             ],
-                            "shared-green" : [
-                                    trigger: [
+                            "shared-green" : [trigger: [
                                             type : PipelineTriggerType.UPSTREAM,
                                             value: 'shared-deploy-to-shared-common'
                                     ],
@@ -179,10 +175,7 @@ class TerraformCodeUnitCollection {
                                     ],
                                     MINIO_USER    : new SecretMapping(SecretType.SECRET_TEXT, '/jenkins/minio-username', true),
                                     MINIO_PASSWORD: new SecretMapping(SecretType.SECRET_TEXT, '/jenkins/minio-password', true),
-                                    dns_servers   : [
-                                            'dns_servers': [
-                                                    "01": [
-                                                            cpu              : 2,
+                                    dns_servers   : ["01": [cpu              : 2,
                                                             default_user     : "zevrant",
                                                             description      : "top level dns domain",
                                                             gateway          : "10.0.0.1",
@@ -196,7 +189,6 @@ class TerraformCodeUnitCollection {
                                                             ssd_storage_name : "local-zfs",
                                                             start_on_boot    : true,
                                                             vm_id            : 2040,
-                                                    ]
                                             ]
                                     ]
                             ]
