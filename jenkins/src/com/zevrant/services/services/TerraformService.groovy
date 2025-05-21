@@ -94,16 +94,13 @@ class TerraformService extends Service {
                         throw new RuntimeException("Secret type for vault has not been implemented!")
                 }
 
-            } else if (value instanceof Map && key != 'trigger') {
+            } else if (value instanceof Map && key != 'trigger' || (value instanceof ArrayList && value.get(0) instanceof LinkedHashMap)) {
                 String valueJson = pipelineContext.writeJSON(json: value, returnText: true)
                 valueJson = valueJson.replace(": ", "= ")
+                        .replace('":"', '"="')
                 pipelineContext.println("VALUE_JSON ${key} == ${valueJson}")
                 configMappings.add(
                         "TF_VAR_${key}=" + valueJson)
-            } else if (value instanceof ArrayList && value.get(0) instanceof LinkedHashMap) {
-                pipelineContext.println("TEST1: ${pipelineContext.writeJSON(json: value as List, returnText: true).replace('":"', '"="')}")
-
-                configMappings.add("TF_VAR_${key}=" + pipelineContext.writeJSON(json: value as List, returnText: true).replace('":"', '"="'))
             } else {
                 configMappings.add("TF_VAR_${key}=" + value.toString())
             }

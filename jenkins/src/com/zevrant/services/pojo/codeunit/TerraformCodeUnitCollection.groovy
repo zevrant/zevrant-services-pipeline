@@ -132,7 +132,7 @@ class TerraformCodeUnitCollection {
                                                             description      : "top level dns domain",
                                                             gateway          : "10.0.0.1",
                                                             hostname         : "internal-bind9",
-                                                            ip_address       : "10.0.0.12",
+                                                            ip_address: "10.0.0.8/24",
                                                             mass_storage_name: "exosDisks",
                                                             memory_mbs       : 4096,
                                                             nameserver       : "1.1.1.1",
@@ -140,7 +140,7 @@ class TerraformCodeUnitCollection {
                                                             proxmox_host     : "proxmox-01",
                                                             ssd_storage_name : "local-zfs",
                                                             start_on_boot    : true,
-                                                            vm_id            : 2040,
+                                                            vm_id     : 1030,
                                                     ]
                                             ]
                                     ]
@@ -180,7 +180,7 @@ class TerraformCodeUnitCollection {
                                                             description      : "top level dns domain",
                                                             gateway          : "10.0.0.1",
                                                             hostname         : "internal-bind9",
-                                                            ip_address       : "10.0.0.12",
+                                                            ip_address: "10.0.0.12/24",
                                                             mass_storage_name: "exosDisks",
                                                             memory_mbs       : 4096,
                                                             nameserver       : "1.1.1.1",
