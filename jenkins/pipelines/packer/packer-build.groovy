@@ -76,8 +76,8 @@ pipeline {
             steps {
                 script {
                     version = versionService.getVersion(codeUnit.name, true)
-                    version = versionService.minorVersionUpdate(codeUnit.name, version, true)
-                    currentBuild.displayName = "Building Version ${version.toThreeStageVersionString()}" as String
+                    version = versionService.patchVersionUpdate(codeUnit.name, version, true)
+                    currentBuild.displayName = "Building Version ${version.toSemanticVersionString()}" as String
                 }
             }
         }
@@ -113,7 +113,7 @@ pipeline {
                         }
 
                         sh "packer build -var base_image_hash=${imageHash.split('\\h')[0]} ${additionalArgs} ."
-                        sh "mv build-output/packer-${codeUnit.name} build-output/${codeUnit.name}-${version.toThreeStageVersionString()}.qcow2"
+                        sh "mv build-output/packer-${codeUnit.name} build-output/${codeUnit.name}-${version.toSemanticVersionString()}.qcow2"
                     }
                 }
             }
@@ -123,13 +123,13 @@ pipeline {
             steps {
                 script {
                     dir(codeUnit.folderPath + "/build-output") {
-                        String filehash = hashingService.getSha512SumFor("${codeUnit.name}-${version.toThreeStageVersionString()}.qcow2")
-                        String shaFile = "${codeUnit.name}-${version.toThreeStageVersionString()}.sha512"
+                        String filehash = hashingService.getSha512SumFor("${codeUnit.name}-${version.toSemanticVersionString()}.qcow2")
+                        String shaFile = "${codeUnit.name}-${version.toSemanticVersionString()}.sha512"
                         writeFile(file: shaFile, text: filehash)
                         sh "mv ${shaFile} /opt/vm-images/${shaFile}"
                         println("Original filehash ${filehash}")
-                        sh "mv ${codeUnit.name}-${version.toThreeStageVersionString()}.qcow2 /opt/vm-images/${codeUnit.name}-${version.toThreeStageVersionString()}.qcow2"
-                        String newFilehash = hashingService.getSha512SumFor("/opt/vm-images/${codeUnit.name}-${version.toThreeStageVersionString()}.qcow2").replace("/opt/vm-images/", "")
+                        sh "mv ${codeUnit.name}-${version.toSemanticVersionString()}.qcow2 /opt/vm-images/${codeUnit.name}-${version.toSemanticVersionString()}.qcow2"
+                        String newFilehash = hashingService.getSha512SumFor("/opt/vm-images/${codeUnit.name}-${version.toSemanticVersionString()}.qcow2").replace("/opt/vm-images/", "")
                         println("New filehash ${newFilehash}")
                         if (newFilehash != filehash) {
                             throw new RuntimeException("Failed to match file hash to the built image, SOMETHING IS VERY WRONG HERE")
@@ -142,7 +142,7 @@ pipeline {
     post {
         success {
             script {
-                writeFile(file: "artifactVersion.txt", text: version.toThreeStageVersionString())
+                writeFile(file: "artifactVersion.txt", text: version.toSemanticVersionString())
                 archiveArtifacts(artifacts: 'artifactVersion.txt', allowEmptyArchive: false)
             }
         }

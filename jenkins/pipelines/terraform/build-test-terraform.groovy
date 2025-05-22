@@ -64,8 +64,8 @@ pipeline {
             steps {
                 script {
                     Version currentVersion = versionService.getVersion(terraformCodeUnit.name, true)
-                    currentVersion = versionService.minorVersionUpdate(terraformCodeUnit.name, currentVersion, true)
-                    version = currentVersion.toThreeStageVersionString()
+                    currentVersion = versionService.patchVersionUpdate(terraformCodeUnit.name, currentVersion, true)
+                    version = currentVersion.toSemanticVersionString()
                     currentBuild.displayName = "Building Version ${version}" as String
 
                 }

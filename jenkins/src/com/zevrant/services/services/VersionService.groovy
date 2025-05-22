@@ -2,6 +2,8 @@ package com.zevrant.services.services
 
 import com.zevrant.services.pojo.Version
 
+import java.time.LocalDateTime
+
 class VersionService extends Service {
 
 //    private final KeydbService keydbService
@@ -41,33 +43,42 @@ class VersionService extends Service {
     }
 
     Version majorVersionUpdate(String applicationName, Version currentVersion, boolean bareMetal = false) {
-        Version version = new Version(currentVersion.toThreeStageVersionString());
+        Version version = new Version(currentVersion.toSemanticVersionString());
         version.setMajor(currentVersion.getMajor() + 1)
-        version.setMedian(0);
-        version.setMinor(0)
-        updateVersion(version, applicationName, bareMetal)
-        return version
-    }
-
-    Version medianVersionUpdate(String applicationName, Version currentVersion, boolean bareMetal = false) {
-        Version version = new Version(currentVersion.toThreeStageVersionString());
-        version.setMedian(currentVersion.getMedian() + 1);
-        version.setMinor(0)
-
+        version.setMinor(0);
+        version.setPatch(0)
         updateVersion(version, applicationName, bareMetal)
         return version
     }
 
     Version minorVersionUpdate(String applicationName, Version currentVersion, boolean bareMetal = false) {
-        Version version = new Version(currentVersion.toThreeStageVersionString());
-        version.setMinor(currentVersion.getMinor() + 1)
+        Version version = new Version(currentVersion.toSemanticVersionString());
+        version.setMinor(currentVersion.getMinor() + 1);
+        version.setPatch(0)
+        version.setPrerelease(null)
+        version.setBuild(null)
+
+        updateVersion(version, applicationName, bareMetal)
+        return version
+    }
+
+    Version getBuildVersion(String applicationName, Version currentVersion, boolean bareMetal = false) {
+        Version version = new Version(currentVersion.toSemanticVersionString());
+        version.setBuild(Base64.encoder.encode(currentVersion.toSemanticVersionString() + LocalDateTime.now().toString()));
+        updateVersion(version, applicationName, bareMetal)
+        return version
+    }
+
+    Version patchVersionUpdate(String applicationName, Version currentVersion, boolean bareMetal = false) {
+        Version version = new Version(currentVersion.toSemanticVersionString());
+        version.setPatch(currentVersion.getPatch() + 1)
         updateVersion(version, applicationName, bareMetal)
         return version
     }
 
     private void updateVersion(Version version, String applicationName, boolean bareMetal = false) {
         if (bareMetal) {
-            pipelineContext.sh """psql -c "update app_version set version = '${version.toThreeStageVersionString()}' where name = '${applicationName}'" """
+            pipelineContext.sh """psql -c "update app_version set version = '${version.toSemanticVersionString()}' where name = '${applicationName}'" """
         }
     }
 
@@ -84,7 +95,7 @@ class VersionService extends Service {
     }
 
     Version getPreviousVersion(Version currentVersion, isRc = false) {
-        if (currentVersion.toThreeStageVersionString() == '0.0.0') {
+        if (currentVersion.toSemanticVersionString() == '0.0.0') {
             return currentVersion
         }
         List<String> sortedVersions = gitService.listTags()
@@ -93,7 +104,7 @@ class VersionService extends Service {
                 .sort { tag1, tag2 ->
                     Version version1 = new Version(tag1)
                     Version version2 = new Version(tag2)
-                    return Integer.parseInt("${version1.getMajor()}${version1.getMedian()}${version1.getMinor()}") <=> Integer.parseInt("${version2.getMajor()}${version2.getMedian()}${version2.getMinor()}")
+                    return Integer.parseInt("${version1.getMajor()}${version1.getMinor()}${version1.getPatch()}") <=> Integer.parseInt("${version2.getMajor()}${version2.getMinor()}${version2.getPatch()}")
 
                 }
         return sortedVersions.size() == 1 ? new Version(sortedVersions.get(sortedVersions.size() - 1)) : new Version(sortedVersions.get(sortedVersions.size() - 2))

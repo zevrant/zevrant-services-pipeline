@@ -15,7 +15,8 @@ VersionService versionService = new VersionService(this)
 //NotificationsService notificationsService = new NotificationsService(this)
 
 String REPOSITORY = scm.getUserRemoteConfigs()[0].getUrl().tokenize('/').last().split("\\.")[0]
-String branchName = (BRANCH_NAME.startsWith('PR-')) ? CHANGE_BRANCH : BRANCH_NAME
+isPullRequest = BRANCH_NAME.startsWith('PR-')
+String branchName = (isPullRequest) ? CHANGE_BRANCH : BRANCH_NAME
 Version version = null
 GoCodeUnit codeUnit = new GoCodeUnitCollection().findCodeUnitByRepositoryName(REPOSITORY)
 String artifactVersion = ''
@@ -39,9 +40,13 @@ pipeline {
             steps {
                 script {
                     version = versionService.getVersion(codeUnit.name, true)
-                    version = versionService.minorVersionUpdate(codeUnit.name, version, true)
-                    currentBuild.displayName = "Building Version ${version.toThreeStageVersionString()}" as String
-                    artifactVersion = version.toThreeStageVersionString()
+                    if (isPullRequest) {
+                        version = versionService.getBuildVersion(codeUnit.name, version, true)
+                    } else {
+                        version = versionService.patchVersionUpdate(codeUnit.name, version, true)
+                    }
+                    currentBuild.displayName = "Building Version ${version.toSemanticVersionString()}" as String
+                    artifactVersion = version.toSemanticVersionString()
                     writeFile(file: 'artifactVersion.txt', text: "v${artifactVersion}" as String)
                     archiveArtifacts(artifacts: 'artifactVersion.txt', allowEmptyArchive: false)
                 }

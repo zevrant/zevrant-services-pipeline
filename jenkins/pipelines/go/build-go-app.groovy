@@ -92,9 +92,9 @@ pipeline {
                     container('mongosh') {
                         Version currentVersion = versionService.getVersion(codeUnit.name)
                         if (branchName == codeUnit.getDefaultBranch()) {
-                            currentVersion = versionService.minorVersionUpdate(codeUnit.name, currentVersion)
+                            currentVersion = versionService.patchVersionUpdate(codeUnit.name, currentVersion)
                         }
-                        artifactVersion = currentVersion.toThreeStageVersionString()
+                        artifactVersion = currentVersion.toSemanticVersionString()
                     }
                 }
             }

@@ -41,8 +41,8 @@ pipeline {
             steps {
                 script {
                     version = versionService.getVersion(codeUnit.name, true)
-                    version = versionService.minorVersionUpdate(codeUnit.name, version, true)
-                    currentBuild.displayName = "Building Version ${version.toThreeStageVersionString()}" as String
+                    version = versionService.patchVersionUpdate(codeUnit.name, version, true)
+                    currentBuild.displayName = "Building Version ${version.toSemanticVersionString()}" as String
                 }
             }
         }
@@ -50,9 +50,9 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    gitService.tagVersion(version.toThreeStageVersionString(), 'jenkins-git')
+                    gitService.tagVersion(version.toSemanticVersionString(), 'jenkins-git')
                     gradleService.assemble(version)
-//                    tar file: "${codeUnit.name}-${version.toThreeStageVersionString()}.tar.gz", archive: false, compress: true, dir: "dist/${codeUnit.name}/browser/", glob: "${codeUnit.name}-${version.toThreeStageVersionString()}.jar"
+//                    tar file: "${codeUnit.name}-${version.toSemanticVersionString()}.tar.gz", archive: false, compress: true, dir: "dist/${codeUnit.name}/browser/", glob: "${codeUnit.name}-${version.toSemanticVersionString()}.jar"
                 }
             }
         }
@@ -69,7 +69,7 @@ pipeline {
                         additionalParams += ' --prerelease'
                     }
 
-                    sh "gh release create --repo ${codeUnit.repo.sshUri} --notes-start-tag ${previousVersion.toThreeStageVersionString()} ${version.toThreeStageVersionString()} 'build/libs/${codeUnit.name}-${version.toThreeStageVersionString()}.jar'"
+                    sh "gh release create --repo ${codeUnit.repo.sshUri} --notes-start-tag ${previousVersion.toSemanticVersionString()} ${version.toSemanticVersionString()} 'build/libs/${codeUnit.name}-${version.toSemanticVersionString()}.jar'"
                 }
             }
         }
@@ -77,7 +77,7 @@ pipeline {
         stage('Archive Artifacts') {
             steps {
                 script {
-                    writeFile file: 'artifactVersion.txt', text: version.toThreeStageVersionString()
+                    writeFile file: 'artifactVersion.txt', text: version.toSemanticVersionString()
                     archiveArtifacts(artifacts: 'artifactVersion.txt', allowEmptyArchive: false)
                 }
             }

@@ -18,28 +18,28 @@
 //}
 //
 //Version majorVersionUpdate(String applicationName, Version currentVersion) {
-//    Version version = new Version(currentVersion.toThreeStageVersionString());
+//    Version version = new Version(currentVersion.toSemanticVersionString());
 //    version.setMajor(currentVersion.getMajor() + 1)
 //    version.setMedian(0);
 //    version.setMinor(0)
-//    sh "aws ssm put-parameter --name ${applicationName}-VERSION --value ${version.toThreeStageVersionString()} --type String --overwrite"
-//    return version
-//}
-//
-//Version medianVersionUpdate(String applicationName, Version currentVersion) {
-//    Version version = new Version(currentVersion.toThreeStageVersionString());
-//    version.setMedian(currentVersion.getMedian() + 1);
-//    version.setMinor(0)
-//
-//    sh "aws ssm put-parameter --name ${applicationName}-VERSION --value ${version.toThreeStageVersionString()} --type String --overwrite"
+//    sh "aws ssm put-parameter --name ${applicationName}-VERSION --value ${version.toSemanticVersionString()} --type String --overwrite"
 //    return version
 //}
 //
 //Version minorVersionUpdate(String applicationName, Version currentVersion) {
-//    Version version = new Version(currentVersion.toThreeStageVersionString());
+//    Version version = new Version(currentVersion.toSemanticVersionString());
+//    version.setMedian(currentVersion.getMedian() + 1);
+//    version.setMinor(0)
+//
+//    sh "aws ssm put-parameter --name ${applicationName}-VERSION --value ${version.toSemanticVersionString()} --type String --overwrite"
+//    return version
+//}
+//
+//Version patchVersionUpdate(String applicationName, Version currentVersion) {
+//    Version version = new Version(currentVersion.toSemanticVersionString());
 //    version.setMinor(currentVersion.getMinor() + 1)
 //
-//    sh "aws ssm put-parameter --name ${applicationName}-VERSION --value ${version.toThreeStageVersionString()} --type String --overwrite"
+//    sh "aws ssm put-parameter --name ${applicationName}-VERSION --value ${version.toSemanticVersionString()} --type String --overwrite"
 //    return version
 //}
 //

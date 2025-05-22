@@ -68,8 +68,8 @@ pipeline {
                     retry(3, {
                         container('kubectl') {
 //                            Version version = version = versionService.getVersion(REPOSITORY as String) as Version
-//                            println("Redeploying version ${version.toThreeStageVersionString()}")
-//                            currentBuild.displayName = "Rotating Certificates for Version ${version.toThreeStageVersionString()}"
+//                            println("Redeploying version ${version.toSemanticVersionString()}")
+//                            currentBuild.displayName = "Rotating Certificates for Version ${version.toSemanticVersionString()}"
                             try {
                                 sh "kubectl get ${codeUnit.getServiceType().toString().toLowerCase()} ${codeUnit.getDeploymentName()} -n $ENVIRONMENT"
                             } catch (Exception ex) {

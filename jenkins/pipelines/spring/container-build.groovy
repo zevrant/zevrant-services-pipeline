@@ -5,7 +5,6 @@ import com.zevrant.services.pojo.Version
 import com.zevrant.services.pojo.codeunit.SpringCodeUnit
 import com.zevrant.services.pojo.codeunit.SpringCodeUnitCollection
 import com.zevrant.services.pojo.containers.Image
-import com.zevrant.services.services.GitService
 import com.zevrant.services.services.ImageBuildService
 import com.zevrant.services.services.VersionService
 
@@ -102,13 +101,13 @@ pipeline {
                         def chartYaml = readYaml(file: 'Chart.yaml')
                         chartVersion = versionService.getVersion("${springCodeUnit.name}-chart")
                         chartYaml.appVersion = version.toVersionCodeString()
-                        chartVersion = versionService.minorVersionUpdate("${springCodeUnit.name}-chart", chartVersion)
-                        chartYaml.version = chartVersion.toThreeStageVersionString()
+                        chartVersion = versionService.patchVersionUpdate("${springCodeUnit.name}-chart", chartVersion)
+                        chartYaml.version = chartVersion.toSemanticVersionString()
                         writeYaml(file: 'Chart.yaml', data: chartYaml, overwrite: true)
                     }
                     sh "helm package ${springCodeUnit.name}"
                     sh 'echo $DOCKER_CREDENTIALS_PSW | helm registry login harbor.zevrant-services.internal --username $DOCKER_CREDENTIALS_USR --password-stdin'
-                    sh "helm push ${springCodeUnit.name}-${chartVersion.toThreeStageVersionString()}.tgz oci://harbor.zevrant-services.internal/zevrant-services"
+                    sh "helm push ${springCodeUnit.name}-${chartVersion.toSemanticVersionString()}.tgz oci://harbor.zevrant-services.internal/zevrant-services"
                 }
             }
         }
@@ -117,7 +116,7 @@ pipeline {
         success {
             script {
                 build job: "./${springCodeUnit.name}-deploy-to-develop", wait: false, parameters: [
-                        [$class: 'StringParameterValue', name: 'VERSION', value: chartVersion.toThreeStageVersionString()]
+                        [$class: 'StringParameterValue', name: 'VERSION', value: chartVersion.toSemanticVersionString()]
                 ]
             }
         }
