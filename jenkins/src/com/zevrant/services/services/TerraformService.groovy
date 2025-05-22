@@ -98,7 +98,6 @@ class TerraformService extends Service {
                 String valueJson = pipelineContext.writeJSON(json: value, returnText: true)
                 valueJson = valueJson.replace(": ", "= ")
                         .replace('":"', '"="')
-                pipelineContext.println("VALUE_JSON ${key} == ${valueJson}")
                 configMappings.add(
                         "TF_VAR_${key}=" + valueJson)
             } else {
