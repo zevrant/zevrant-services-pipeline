@@ -49,6 +49,7 @@ class Version {
 
                 if (patchValue.contains("+") && !patchValue.contains("-")) {
                     this.build = patchValue.split("\\+")[1]
+                    this.patch = patchValue.split("\\+")[0]
                 }
 
                 semanticVersion = true
