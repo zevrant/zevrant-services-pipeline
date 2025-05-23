@@ -28,12 +28,13 @@ class VersionService extends Service {
         if (bareMetal) {
             pipelineContext.sh """psql --csv -t -c "select version from app_version where name = '${applicationName}'" > version"""
         }
-        version = pipelineContext.readFile(file: 'version')
 
 //            version = keydbService.getKey(applicationName).trim()
-        pipelineContext.println("Version not found for ${applicationName}, setting to 0.0.0")
+
+        pipelineContext.println("Version File: ${pipelineContext.readFile(file: 'version')}")
         version = pipelineContext.readFile(file: 'version').replace('"', '').trim()
         if (version == "" || version == null || version == '(nil)') {
+            pipelineContext.println("Version not found for ${applicationName}, setting to 0.0.0")
             version = '0.0.0'
             pipelineContext.sh("""psql -c "insert into app_version(name, version) values('${applicationName}', '0.0.0')" """)
         }
