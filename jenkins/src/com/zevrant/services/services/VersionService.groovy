@@ -65,6 +65,7 @@ class VersionService extends Service {
 
     Version getBuildVersion(String applicationName, Version currentVersion, boolean bareMetal = false) {
         Version version = new Version(currentVersion.toSemanticVersionString());
+        pipelineContext.println("Pre update version is ${version.toSemanticVersionString()}")
         String build = Base64.getEncoder().encodeToString((currentVersion.toSemanticVersionString() + Double.valueOf(Math.random() * 9999).toString()).getBytes(StandardCharsets.UTF_8))
         build = build
                 .replace("=", "")
