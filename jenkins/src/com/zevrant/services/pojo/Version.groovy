@@ -5,7 +5,7 @@ import java.util.regex.Pattern
 class Version {
 
     private static final List<Pattern> acceptedPatterns = [
-            Pattern.compile("\\d*\\.\\d*\\.\\d*(-\\w+)?(\\+\\w+)]"),
+            Pattern.compile("\\d*\\.\\d*\\.\\d*(-\\w+)?(\\+\\w+)?"),
             Pattern.compile("^\\d*\$")
     ]
 
