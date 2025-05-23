@@ -127,9 +127,6 @@ github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okW
                                         git config --global user.name "Zevrant Services Jenkins"
                                     '''.stripIndent()
                         )
-                        if (branchName != codeUnit.getDefaultBranch()) {
-                            artifactVersion = gitService.getNextBetaTagForVersion(artifactVersion)
-                        }
                         sh 'git config --global --add safe.directory "$(pwd)"'
                         sh "git tag -f v${artifactVersion} && git push -f origin v${artifactVersion}"
                         sh 'git status'
