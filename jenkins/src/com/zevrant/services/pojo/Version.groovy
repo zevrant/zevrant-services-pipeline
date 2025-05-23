@@ -34,7 +34,8 @@ class Version {
                 break;
             case 3:
                 String patchValue = versionPieces[2]
-
+                minor = Integer.valueOf(versionPieces[1])
+                major = Integer.valueOf(versionPieces[0])
 
                 if (patchValue.contains("-")) {
                     String preReleaseValue = patchValue.split("-")[1]
@@ -49,9 +50,6 @@ class Version {
                 if (patchValue.contains("+") && !patchValue.contains("-")) {
                     this.build = patchValue.split("\\+")[1]
                 }
-
-                minor = Integer.valueOf(versionPieces[1])
-                major = Integer.valueOf(versionPieces[0])
 
                 semanticVersion = true
                 break;
