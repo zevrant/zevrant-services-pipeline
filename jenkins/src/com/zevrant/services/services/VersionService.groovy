@@ -64,7 +64,7 @@ class VersionService extends Service {
 
     Version getBuildVersion(String applicationName, Version currentVersion, boolean bareMetal = false) {
         Version version = new Version(currentVersion.toSemanticVersionString());
-        version.setBuild(Base64.encoder.encode(currentVersion.toSemanticVersionString() + LocalDateTime.now().toString()));
+        version.setBuild(Base64.getEncoder().encodeToString(currentVersion.toSemanticVersionString() + LocalDateTime.now().toString()));
         updateVersion(version, applicationName, bareMetal)
         return version
     }
