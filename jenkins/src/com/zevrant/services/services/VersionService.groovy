@@ -2,6 +2,7 @@ package com.zevrant.services.services
 
 import com.zevrant.services.pojo.Version
 
+import java.nio.charset.StandardCharsets
 import java.time.LocalDateTime
 
 class VersionService extends Service {
@@ -64,7 +65,7 @@ class VersionService extends Service {
 
     Version getBuildVersion(String applicationName, Version currentVersion, boolean bareMetal = false) {
         Version version = new Version(currentVersion.toSemanticVersionString());
-        version.setBuild(Base64.getEncoder().encodeToString(currentVersion.toSemanticVersionString() + LocalDateTime.now().toString()));
+        version.setBuild(Base64.getEncoder().encodeToString((currentVersion.toSemanticVersionString() + LocalDateTime.now().toString()).getBytes(StandardCharsets.UTF_8)));
         updateVersion(version, applicationName, bareMetal)
         return version
     }
