@@ -45,6 +45,7 @@ class Version {
                     } else {
                         this.prerelease = preReleaseValue
                     }
+                    this.patch = Integer.parseInt(patchValue.split('-')[0])
                 }
 
                 if (patchValue.contains("+") && !patchValue.contains("-")) {
