@@ -81,11 +81,6 @@ class VersionService extends Service {
                 .replace("+", "")
                 .replace("-", "")
         version.setBuild(build);
-        if (version.prerelease != "") {
-            version.prerelease == "rc.0"
-        } else {
-            version.prerelease = "rc.${version.prerelease.split(".")[1]++}"
-        }
         updateVersion(version, applicationName, bareMetal)
         return version
     }
