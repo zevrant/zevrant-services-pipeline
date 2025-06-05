@@ -63,15 +63,26 @@ class VersionService extends Service {
         return version
     }
 
+    private static int generateRandomBuildForVersionForLength(int length) {
+        String buildVersion = ""
+        for (int i = 0; i < length; i++) {
+            buildVersion += Integer.valueOf(Math.round(Double.valueOf(Math.random() * 10))).toString()
+        }
+        return buildVersion
+    }
+
     Version getBuildVersion(String applicationName, Version currentVersion, boolean bareMetal = false) {
         Version version = new Version(currentVersion.toSemanticVersionString());
         pipelineContext.println("Pre update version is ${version.toSemanticVersionString()}")
-        String build = Base64.getEncoder().encodeToString((currentVersion.toSemanticVersionString() + Double.valueOf(Math.random() * 9999).toString()).getBytes(StandardCharsets.UTF_8))
+
+
+        String build = Base64.getEncoder().encodeToString(generateRandomBuildForVersionForLength(8).toString()).getBytes(StandardCharsets.UTF_8)
+        )
         build = build
                 .replace("=", "")
                 .replace("+", "")
                 .replace("-", "")
-        version.setBuild(build.substring(build.length() - 9));
+        version.setBuild(build);
         updateVersion(version, applicationName, bareMetal)
         return version
     }
