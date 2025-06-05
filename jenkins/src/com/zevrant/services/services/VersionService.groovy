@@ -28,6 +28,7 @@ class VersionService extends Service {
         if (bareMetal) {
             pipelineContext.println("Getting version for application ${applicationName}")
             pipelineContext.writeFile(file: "script-${pipelineContext.env.JOB_NAME}-${pipelineContext.env.BUILD_ID}", text: """psql --csv -t -c "select version from app_version where name = '${applicationName}'" > version""".replace("\\'", "'").replace("''", "'"))
+            pipelineContext.println(pipelineContext.readFile(file: "script-${pipelineContext.env.JOB_NAME}-${pipelineContext.env.BUILD_ID}"))
             try {
                 pipelineContext.sh("bash < script-${pipelineContext.env.JOB_NAME}-${pipelineContext.env.BUILD_ID}")  \
 
