@@ -71,8 +71,7 @@ class VersionService extends Service {
                 .replace("=", "")
                 .replace("+", "")
                 .replace("-", "")
-                .substring(0, 8)
-        version.setBuild(build);
+        version.setBuild(build.substring(build.length() - 9));
         updateVersion(version, applicationName, bareMetal)
         return version
     }
