@@ -46,11 +46,11 @@ class Version {
                         this.prerelease = preReleaseValue
                     }
                     this.patch = Integer.parseInt(patchValue.split('-')[0])
-                }
-
-                if (patchValue.contains("+") && !patchValue.contains("-")) {
+                } else if (patchValue.contains("+") && !patchValue.contains("-")) {
                     this.build = patchValue.split("\\+")[1]
                     this.patch = Integer.parseInt(patchValue.split("\\+")[0])
+                } else {
+                    this.patch = Integer.parseInt(patchValue)
                 }
 
                 semanticVersion = true
