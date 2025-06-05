@@ -77,7 +77,6 @@ class VersionService extends Service {
 
 
         String build = Base64.getEncoder().encodeToString(generateRandomBuildForVersionForLength(8).toString()).getBytes(StandardCharsets.UTF_8)
-        )
         build = build
                 .replace("=", "")
                 .replace("+", "")
