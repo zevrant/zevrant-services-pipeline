@@ -22,6 +22,7 @@ class GoCodeUnitCollection {
                         'github.com', 'git@github.com',
                         'zevrant', 'zs-vm-agent', 'jenkins-git'
                 ),
+                unitTestsEnabled: true
 
         ])
     ])

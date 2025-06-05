@@ -140,8 +140,8 @@ github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okW
                 GPG_FINGERPRINT = "65B4607F0CB9810D48F2012B0CFB08076C3770BF"
                 GPG_PASSWORD = credentials('terraform-gpg-password')
                 GPG_KEY = credentials('gpg-key')
-                GORELEASER_CURRENT_TAG = "$artifactVersion"
-                GORELEASER_PREVIOUS_TAG = "${artifactVersion.split("\\+")[0]}"
+                GORELEASER_CURRENT_TAG = "v$artifactVersion"
+                GORELEASER_PREVIOUS_TAG = "v${artifactVersion.split("\\+")[0]}"
             }
             steps {
                 script {
@@ -156,7 +156,6 @@ github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okW
                         if (codeUnit.repo.sshCredentialsId.contains('gitea')) {
                             withCredentials([usernamePassword(credentialsId: codeUnit.getRepo().sshCredentialsId, passwordVariable: 'password', usernameVariable: 'username')]) {
                                 withEnv(['GITEA_TOKEN=' + password]) {
-                                    sh 'git fetch'
                                     sh "goreleaser release --clean"
                                 }
                             }
