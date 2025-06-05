@@ -27,7 +27,7 @@ class VersionService extends Service {
 //            }
         if (bareMetal) {
             pipelineContext.println("Getting version for application ${applicationName}")
-            pipelineContext.sh """psql --csv -t -c "select version from app_version where name = '${applicationName}'" > version""".replace("\\'", "'")
+            pipelineContext.sh """psql --csv -t -c "select version from app_version where name = '${applicationName}'" > version""".replace("\\'", "'").replace("''", "'")
         }
 
 //            version = keydbService.getKey(applicationName).trim()
