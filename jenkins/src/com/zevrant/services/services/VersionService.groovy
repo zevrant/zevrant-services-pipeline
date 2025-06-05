@@ -66,7 +66,7 @@ class VersionService extends Service {
     private static int generateRandomBuildForVersionForLength(int length) {
         String buildVersion = ""
         for (int i = 0; i < length; i++) {
-            buildVersion += Integer.valueOf(Math.round(Double.valueOf(Math.random() * 10))).toString()
+            buildVersion += Integer.valueOf((int) Math.round(Double.valueOf(Math.random() * 10))).toString()
         }
         return buildVersion
     }
