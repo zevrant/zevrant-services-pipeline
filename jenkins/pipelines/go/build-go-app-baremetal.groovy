@@ -156,6 +156,7 @@ github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okW
                         if (codeUnit.repo.sshCredentialsId.contains('gitea')) {
                             withCredentials([usernamePassword(credentialsId: codeUnit.getRepo().sshCredentialsId, passwordVariable: 'password', usernameVariable: 'username')]) {
                                 withEnv(['GITEA_TOKEN=' + password]) {
+                                    sh 'git fetch'
                                     sh "goreleaser release --clean"
                                 }
                             }
