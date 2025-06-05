@@ -76,6 +76,7 @@ pipeline {
             steps {
                 script {
                     version = versionService.getVersion(codeUnit.name, true)
+                    println("Version received is ${version.toSemanticVersionString()}")
                     version = versionService.patchVersionUpdate(codeUnit.name, version, true)
                     currentBuild.displayName = "Building Version ${version.toSemanticVersionString()}" as String
                 }

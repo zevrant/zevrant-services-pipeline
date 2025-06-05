@@ -95,6 +95,7 @@ class VersionService extends Service {
 
     Version patchVersionUpdate(String applicationName, Version currentVersion, boolean bareMetal = false) {
         Version version = new Version(currentVersion.toSemanticVersionString());
+        pipelineContext.println("Patch version increment for version ${currentVersion.toSemanticVersionString()}")
         version.setPatch(currentVersion.getPatch() + 1)
         version.setPrerelease(null)
         version.setBuild(null)
