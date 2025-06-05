@@ -140,7 +140,7 @@ github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okW
                 GPG_FINGERPRINT = "65B4607F0CB9810D48F2012B0CFB08076C3770BF"
                 GPG_PASSWORD = credentials('terraform-gpg-password')
                 GPG_KEY = credentials('gpg-key')
-                GORELEASER_CURRENT_TAG = artifactVersion
+                GORELEASER_CURRENT_TAG = "$artifactVersion"
             }
             steps {
                 script {
