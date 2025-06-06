@@ -33,7 +33,7 @@ class VersionService extends Service {
                 pipelineContext.sh("bash < script-${pipelineContext.env.JOB_NAME}-${pipelineContext.env.BUILD_ID}")  \
 
             } finally {
-                pipelineContext.sh("rm script-${pipelineContext.env.JOB_NAME}-${pipelineContext.env.BUILD_ID}")
+                pipelineContext.sh("rm -f script-${pipelineContext.env.JOB_NAME}-${pipelineContext.env.BUILD_ID}")
             }
         }
 
