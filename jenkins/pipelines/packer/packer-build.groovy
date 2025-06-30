@@ -145,13 +145,12 @@ pipeline {
                 script {
                     String output = sh(returnStdout: true, script: "ls -lt /opt/vm-images/${codeUnit.name}*")
                     List<String> imageNames = []
-                    String[] lines = output.split('\n')
+                    String[] lines = output
+                            .split('\n')
+                            .findAll({ part -> part.contains("qcow2") || part.contains("sha512") })
                     if (lines.length < 8) {
                         for (int i = 0; i < lines.length - 8; i++) {
                             String line = lines[i]
-                            if (line.startsWith("total")) {
-                                continue
-                            }
                             String imagePath = line.split(' ')
                                     .find({ part -> part.contains("qcow2") || part.contains("sha512") })
                             imageNames.add(
