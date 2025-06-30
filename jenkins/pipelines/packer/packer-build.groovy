@@ -139,6 +139,27 @@ pipeline {
                 }
             }
         }
+
+        stage("Cleanup Old Images") {
+            steps {
+                script {
+                    String[] output = sh(returnStdout: true, script: "ls -lt /opt/vm/images/")
+                    List<String> imageNames = []
+                    String[] lines = output.split('\n')
+                    for (int i = 0; i < Math.min(lines.length - 8, lines.length); i++) {
+                        String line = lines[i]
+                        String[] lineParts = line.split(' ')
+                        String imagePath = lineParts[8]
+                        String[] imagePathParts = imagePath.split('/')
+                        imageName = imagePathParts[imagePathParts.length - 1]
+                    }
+                    imageNames.each { toBeRemoved ->
+                        print("Removing /opt/vm-images/${toBeRemoved}")
+                        sh "rm /opt/vm-images/${toBeRemoved}"
+                    }
+                }
+            }
+        }
     }
     post {
         success {
