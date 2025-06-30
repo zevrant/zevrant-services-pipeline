@@ -15,7 +15,7 @@ class NotificationService extends Service {
 
 
     void sendDiscordNotification(String message, String link = '', String result = "SUCCESS", String title, NotificationChannel channel) {
-        if(pipelineContext.env.sandboxMode != '' && pipelineContext.env.sandboxMode != null) {
+        if (pipelineContext.env.sandboxMode != '' && pipelineContext.env.sandboxMode != null) {
             pipelineContext.println('Not sending notification because sandbox mode is enabled')
             return
         }
@@ -24,4 +24,16 @@ class NotificationService extends Service {
         }
     }
 
+    void sendSlackNotification(String message, String title, NotificationChannel channel) {
+        slack_message = [
+                ["type": "header", "text": title],
+                [
+                        "type"    : "context",
+                        "elements": [
+                                [type: "image", image_url: "https://www.jenkins.io/images/logos/jenkins/jenkins.svg"],
+                                ["type": "markdown", text: message]
+                        ]
+                ]
+        ]
+    }
 }

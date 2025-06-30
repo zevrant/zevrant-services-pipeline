@@ -1,7 +1,8 @@
 package com.zevrant.services.pojo
 
 enum NotificationChannel {
-    DISCORD_CICD('discord-webhook')
+    DISCORD_CICD('discord-webhook'),
+    SLACK_TERRAFORM_DEPLOY('slack-tf-deploy')
 
     private String secretId
 
