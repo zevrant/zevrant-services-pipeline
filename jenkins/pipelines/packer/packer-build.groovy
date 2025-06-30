@@ -146,21 +146,23 @@ pipeline {
                     String output = sh(returnStdout: true, script: "ls -lt /opt/vm-images/${codeUnit.name}*")
                     List<String> imageNames = []
                     String[] lines = output.split('\n')
-                    for (int i = 0; i < Math.min(lines.length - 8, lines.length - 1); i++) {
-                        String line = lines[i]
-                        if (line.startsWith("total")) {
-                            continue
+                    if (lines.length < 8) {
+                        for (int i = 0; i < lines.length - 8; i++) {
+                            String line = lines[i]
+                            if (line.startsWith("total")) {
+                                continue
+                            }
+                            String imagePath = line.split(' ')
+                                    .find({ part -> part.contains("qcow2") || part.contains("sha512") })
+                            imageNames.add(
+                                    imagePath.split('/').find({ part -> part.contains("qcow2") || part.contains("sha512") })
+                            )
                         }
-                        String imagePath = line.split(' ')
-                                .find({ part -> part.contains("qcow2") || part.contains("sha512") })
-                        imageNames.add(
-                                imagePath.split('/').find({ part -> part.contains("qcow2") || part.contains("sha512") })
-                        )
-                    }
-                    imageNames.each { toBeRemoved ->
-                        if (StringUtils.isNotBlank(toBeRemoved.trim())) {
-                            print("Removing /opt/vm-images/${toBeRemoved}")
-                            sh "rm /opt/vm-images/${toBeRemoved}"
+                        imageNames.each { toBeRemoved ->
+                            if (StringUtils.isNotBlank(toBeRemoved.trim())) {
+                                print("Removing /opt/vm-images/${toBeRemoved}")
+                                sh "rm /opt/vm-images/${toBeRemoved}"
+                            }
                         }
                     }
                 }
