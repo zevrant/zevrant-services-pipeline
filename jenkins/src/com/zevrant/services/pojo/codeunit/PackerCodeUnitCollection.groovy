@@ -18,28 +18,28 @@ class PackerCodeUnitCollection {
                             'zevrant', 'zevrant-services-pipeline', 'jenkins-git'
                     )
             ),
-            new PackerCodeUnit(
-                    name: 'jenkins-agent',
-                    baseImageName: 'alma-base-image',
-                    extraArguments: [
-                            'jenkinsSshKey'          : 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO9n652oHq/eI9F2EUI0xq2ZZw9pgkeQU8+h3HXDU1H/ zevrant@zevrant',
-                            'jenkinsAgentServiceFile': ''
-                    ],
-                    folderPath: 'jenkins-agent',
-                    repo: new GitRepo(
-                            'github.com', 'git@github.com',
-                            'zevrant', 'zevrant-services-pipeline', 'jenkins-git'
-                    )
-            ),
-            new PackerCodeUnit(
-                    name: 'jenkins',
-                    baseImageName: 'alma-base-image',
-                    folderPath: 'jenkins',
-                    repo: new GitRepo(
-                            'github.com', 'git@github.com',
-                            'zevrant', 'zevrant-services-pipeline', 'jenkins-git'
-                    )
-            ),
+//            new PackerCodeUnit(
+//                    name: 'jenkins-agent',
+//                    baseImageName: 'alma-base-image',
+//                    extraArguments: [
+//                            'jenkinsSshKey'          : 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO9n652oHq/eI9F2EUI0xq2ZZw9pgkeQU8+h3HXDU1H/ zevrant@zevrant',
+//                            'jenkinsAgentServiceFile': ''
+//                    ],
+//                    folderPath: 'jenkins-agent',
+//                    repo: new GitRepo(
+//                            'github.com', 'git@github.com',
+//                            'zevrant', 'zevrant-services-pipeline', 'jenkins-git'
+//                    )
+//            ),
+//            new PackerCodeUnit(
+//                    name: 'jenkins',
+//                    baseImageName: 'alma-base-image',
+//                    folderPath: 'jenkins',
+//                    repo: new GitRepo(
+//                            'github.com', 'git@github.com',
+//                            'zevrant', 'zevrant-services-pipeline', 'jenkins-git'
+//                    )
+//            ),
             new PackerCodeUnit(
                     name: 'haproxy-base',
                     baseImageName: 'alma-base-image',
@@ -47,15 +47,15 @@ class PackerCodeUnitCollection {
                     repo: new GitRepo('github.com', 'git@github.com',
                             'zevrant', 'zevrant-services-pipeline', 'jenkins-git'),
             ),
-            new PackerCodeUnit(
-                    name: 'haproxy-keepalived',
-                    baseImageName: 'haproxy-base',
-                    folderPath: 'loadbalanced-ha-proxy/packer',
-                    repo: new GitRepo('github.com', 'git@github.com',
-                            'zevrant', 'zevrant-services-pipeline', 'jenkins-git'),
-                    specRepo: new GitRepo('github.com', 'git@github.com',
-                            'zevrant', 'zevrant-services-terraform', 'jenkins-git'),
-            ),
+//            new PackerCodeUnit(
+//                    name: 'haproxy-keepalived',
+//                    baseImageName: 'haproxy-base',
+//                    folderPath: 'loadbalanced-ha-proxy/packer',
+//                    repo: new GitRepo('github.com', 'git@github.com',
+//                            'zevrant', 'zevrant-services-pipeline', 'jenkins-git'),
+//                    specRepo: new GitRepo('github.com', 'git@github.com',
+//                            'zevrant', 'zevrant-services-terraform', 'jenkins-git'),
+//            ),
             new PackerCodeUnit(
                     name: 'bind9-base',
                     baseImageName: 'alma-base-image',
@@ -63,47 +63,47 @@ class PackerCodeUnitCollection {
                     repo: new GitRepo('github.com', 'git@github.com',
                             'zevrant', 'zevrant-services-pipeline', 'jenkins-git')
             ),
-            new PackerCodeUnit(
-                    name: 'minio-base',
-                    baseImageName: 'alma-base-image',
-                    folderPath: 'minio-base',
-                    repo: new GitRepo('github.com', 'git@github.com',
-                            'zevrant', 'zevrant-services-pipeline', 'jenkins-git')
-            ),
-            new PackerCodeUnit(
-                    name: 'internal-bind9',
-                    baseImageName: 'bind9-base',
-                    folderPath: 'internal-bind9',
-                    repo: new GitRepo('github.com', 'git@github.com',
-                            'zevrant', 'zevrant-services-pipeline', 'jenkins-git'),
-                    specRepo: new GitRepo('github.com', 'git@github.com',
-                            'zevrant', 'zevrant-services-terraform', 'jenkins-git'),
-            ),
-            new PackerCodeUnit(
-                    name: 'hashicorp-vault-base',
-                    baseImageName: 'alma-base-image',
-                    folderPath: 'hashicorp-vault-base',
-                    repo: new GitRepo('github.com', 'git@github.com',
-                            'zevrant', 'zevrant-services-pipeline', 'jenkins-git'),
-            ),
-            new PackerCodeUnit(
-                    name: 'shared-hashicorp-vault',
-                    baseImageName: 'hashicorp-vault-base',
-                    folderPath: 'shared/shared-hashicorp-vault',
-                    repo: new GitRepo('github.com', 'git@github.com',
-                            'zevrant', 'zevrant-services-pipeline', 'jenkins-git'),
-                    specRepo: new GitRepo('github.com', 'git@github.com',
-                            'zevrant', 'zevrant-services-terraform', 'jenkins-git'),
-            ),
-            new PackerCodeUnit(
-                    name: 'shared-s3-minio',
-                    baseImageName: 'minio-base',
-                    folderPath: 'shared/shared-s3-minio',
-                    repo: new GitRepo('github.com', 'git@github.com',
-                            'zevrant', 'zevrant-services-pipeline', 'jenkins-git'),
-                    specRepo: new GitRepo('github.com', 'git@github.com',
-                            'zevrant', 'zevrant-services-terraform', 'jenkins-git'),
-            ),
+//            new PackerCodeUnit(
+//                    name: 'minio-base',
+//                    baseImageName: 'alma-base-image',
+//                    folderPath: 'minio-base',
+//                    repo: new GitRepo('github.com', 'git@github.com',
+//                            'zevrant', 'zevrant-services-pipeline', 'jenkins-git')
+//            ),
+//            new PackerCodeUnit(
+//                    name: 'internal-bind9',
+//                    baseImageName: 'bind9-base',
+//                    folderPath: 'internal-bind9',
+//                    repo: new GitRepo('github.com', 'git@github.com',
+//                            'zevrant', 'zevrant-services-pipeline', 'jenkins-git'),
+//                    specRepo: new GitRepo('github.com', 'git@github.com',
+//                            'zevrant', 'zevrant-services-terraform', 'jenkins-git'),
+//            ),
+//            new PackerCodeUnit(
+//                    name: 'hashicorp-vault-base',
+//                    baseImageName: 'alma-base-image',
+//                    folderPath: 'hashicorp-vault-base',
+//                    repo: new GitRepo('github.com', 'git@github.com',
+//                            'zevrant', 'zevrant-services-pipeline', 'jenkins-git'),
+//            ),
+//            new PackerCodeUnit(
+//                    name: 'shared-hashicorp-vault',
+//                    baseImageName: 'hashicorp-vault-base',
+//                    folderPath: 'shared/shared-hashicorp-vault',
+//                    repo: new GitRepo('github.com', 'git@github.com',
+//                            'zevrant', 'zevrant-services-pipeline', 'jenkins-git'),
+//                    specRepo: new GitRepo('github.com', 'git@github.com',
+//                            'zevrant', 'zevrant-services-terraform', 'jenkins-git'),
+//            ),
+//            new PackerCodeUnit(
+//                    name: 'shared-s3-minio',
+//                    baseImageName: 'minio-base',
+//                    folderPath: 'shared/shared-s3-minio',
+//                    repo: new GitRepo('github.com', 'git@github.com',
+//                            'zevrant', 'zevrant-services-pipeline', 'jenkins-git'),
+//                    specRepo: new GitRepo('github.com', 'git@github.com',
+//                            'zevrant', 'zevrant-services-terraform', 'jenkins-git'),
+//            ),
             new PackerCodeUnit(
                     name: 'zevrant-services-ui',
                     baseImageName: 'alma-base-image',

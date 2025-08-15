@@ -35,5 +35,19 @@ class NotificationService extends Service {
                         ]
                 ]
         ]
+
+
+        pipelineContext.httpRequest(
+                method: 'GET',
+                url: "https://slack.com/api/chat.postMessage",
+                consoleLogResponseBody: true,
+                customHeaders: [
+                        [
+                                'name'     : "Authorization",
+                                'value'    : "bearer " + token.replace('"', ''),
+                                'maskValue': true
+                        ]
+                ]
+        )
     }
 }
