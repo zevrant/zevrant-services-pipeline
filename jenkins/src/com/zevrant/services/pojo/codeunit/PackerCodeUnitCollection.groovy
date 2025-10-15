@@ -79,13 +79,13 @@ class PackerCodeUnitCollection {
 //                    specRepo: new GitRepo('github.com', 'git@github.com',
 //                            'zevrant', 'zevrant-services-terraform', 'jenkins-git'),
 //            ),
-//            new PackerCodeUnit(
-//                    name: 'hashicorp-vault-base',
-//                    baseImageName: 'alma-base-image',
-//                    folderPath: 'hashicorp-vault-base',
-//                    repo: new GitRepo('github.com', 'git@github.com',
-//                            'zevrant', 'zevrant-services-pipeline', 'jenkins-git'),
-//            ),
+            new PackerCodeUnit(
+                    name: 'hashicorp-vault-base',
+                    baseImageName: 'alma-base-image',
+                    folderPath: 'hashicorp-vault-base',
+                    repo: new GitRepo('github.com', 'git@github.com',
+                            'zevrant', 'zevrant-services-pipeline', 'jenkins-git'),
+            ),
 //            new PackerCodeUnit(
 //                    name: 'shared-hashicorp-vault',
 //                    baseImageName: 'hashicorp-vault-base',
