@@ -86,6 +86,13 @@ class PackerCodeUnitCollection {
                     repo: new GitRepo('github.com', 'git@github.com',
                             'zevrant', 'zevrant-services-pipeline', 'jenkins-git'),
             ),
+            new PackerCodeUnit(
+                    name: 'k8s-base',
+                    baseImageName: 'alma-base-image',
+                    folderPath: 'k8s-base',
+                    repo: new GitRepo('github.com', 'git@github.com',
+                            'zevrant', 'zevrant-services-pipeline', 'jenkins-git'),
+            ),
 //            new PackerCodeUnit(
 //                    name: 'shared-hashicorp-vault',
 //                    baseImageName: 'hashicorp-vault-base',
