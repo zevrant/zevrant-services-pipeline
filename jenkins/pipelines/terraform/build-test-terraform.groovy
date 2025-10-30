@@ -45,7 +45,6 @@ pipeline {
                 script {
                     terraformCodeUnit.envs.each { env ->
                         terraformService.populateTfEnvVars(terraformCodeUnit, env) {
-                            sh 'printenv'
                             terraformService.initTerraform(env)
                             terraformService.planTerraform(env)
                         }
