@@ -25,7 +25,8 @@ class TerraformCodeUnitCollection {
                                     trigger    : [
                                             type : PipelineTriggerType.CRON,
                                             value: "0 0 * * *"
-                                    ]
+                                    ],
+                                    bitwarden_access_token: new SecretMapping(SecretType.SECRET_TEXT, '/jenkins/bitwarden')
                             ],
                             "shared-common": [
                                     hcp_client    : new SecretMapping(SecretType.HCP_CLIENT, ''),
@@ -89,7 +90,8 @@ class TerraformCodeUnitCollection {
                                                                       vm_id            : 1030,
                                                               ]
                                                       ]
-                                              ]
+                                              ],
+                                              bitwarden_access_token: new SecretMapping(SecretType.SECRET_TEXT, '/jenkins/bitwarden')
                             ],
                             "shared-green" : [trigger       : [
                                     type : PipelineTriggerType.UPSTREAM,
