@@ -1,20 +1,18 @@
 import com.zevrant.services.pojo.GitHubArtifactMapping
+import com.zevrant.services.pojo.ProxmoxVolume
 import com.zevrant.services.pojo.Version
 @Library("CommonUtils")
 
 import com.zevrant.services.pojo.codeunit.PackerCodeUnit
 import com.zevrant.services.pojo.codeunit.PackerCodeUnitCollection
-import com.zevrant.services.services.GitHubService
-import com.zevrant.services.services.GitService
-import com.zevrant.services.services.HashingService
-import com.zevrant.services.services.VersionService
+import com.zevrant.services.services.*
 import org.apache.commons.lang.StringUtils
 
 HashingService hashingService = new HashingService(this)
 GitService gitService = new GitService(this)
 VersionService versionService = new VersionService(this)
 GitHubService gitHubService = new GitHubService(this)
-
+ProxmoxQueryService proxmoxQueryService = new ProxmoxQueryService(this)
 
 PackerCodeUnit codeUnit = PackerCodeUnitCollection.findCodeUnitByName(NAME as String)
 String imageHash = ''
@@ -121,47 +119,45 @@ pipeline {
         }
 
         stage('Upload Image & Hash') {
+            environment {
+                VAULT_TOKEN = credentials('local-vault')
+            }
             steps {
                 script {
+                    proxmoxQueryService.setProxmoxCredentials(response.username, response.password)
                     dir(codeUnit.folderPath + "/build-output") {
                         String filehash = hashingService.getSha512SumFor("${codeUnit.name}-${version.toSemanticVersionString()}.qcow2")
-                        String shaFile = "${codeUnit.name}-${version.toSemanticVersionString()}.sha512"
-                        writeFile(file: shaFile, text: filehash)
-                        sh "mv ${shaFile} /opt/vm-images/${shaFile}"
-                        println("Original filehash ${filehash}")
-                        sh "mv ${codeUnit.name}-${version.toSemanticVersionString()}.qcow2 /opt/vm-images/${codeUnit.name}-${version.toSemanticVersionString()}.qcow2"
-                        String newFilehash = hashingService.getSha512SumFor("/opt/vm-images/${codeUnit.name}-${version.toSemanticVersionString()}.qcow2").replace("/opt/vm-images/", "")
-                        println("New filehash ${newFilehash}")
-                        if (newFilehash != filehash) {
-                            throw new RuntimeException("Failed to match file hash to the built image, SOMETHING IS VERY WRONG HERE")
-                        }
+//                        String shaFile = "${codeUnit.name}-${version.toSemanticVersionString()}.sha512"
+//                        writeFile(file: shaFile, text: filehash)
+//                        sh "mv ${shaFile} /opt/vm-images/${shaFile}"
+//                        println("Original filehash ${filehash}")
+//                        sh "mv ${codeUnit.name}-${version.toSemanticVersionString()}.qcow2 /opt/vm-images/${codeUnit.name}-${version.toSemanticVersionString()}.qcow2"
+//                        String newFilehash = hashingService.getSha512SumFor("/opt/vm-images/${codeUnit.name}-${version.toSemanticVersionString()}.qcow2").replace("/opt/vm-images/", "")
+//                        println("New filehash ${newFilehash}")
+//                        if (newFilehash != filehash) {
+//                            throw new RuntimeException("Failed to match file hash to the built image, SOMETHING IS VERY WRONG HERE")
+//                        }
+                        proxmoxQueryService.uploadImage("vm-images", "proxmox-01", "${pwd()}/${codeUnit.name}-${version.toSemanticVersionString()}.qcow2", filehash)
                     }
                 }
             }
         }
 
         stage("Cleanup Old Images") {
+
             steps {
                 script {
-                    String output = sh(returnStdout: true, script: "ls -lt /opt/vm-images/${codeUnit.name}*")
-                    List<String> imageNames = []
-                    String[] lines = output
-                            .split('\n')
-                            .findAll({ part -> part.contains("qcow2") || part.contains("sha512") })
-                    if (lines.length < 8) {
-                        for (int i = 0; i < lines.length - 8; i++) {
-                            String line = lines[i]
-                            String imagePath = line.split(' ')
-                                    .find({ part -> part.contains("qcow2") || part.contains("sha512") })
-                            imageNames.add(
-                                    imagePath.split('/').find({ part -> part.contains("qcow2") || part.contains("sha512") })
-                            )
-                        }
-                        imageNames.each { toBeRemoved ->
-                            if (StringUtils.isNotBlank(toBeRemoved.trim())) {
-                                print("Removing /opt/vm-images/${toBeRemoved}")
-                                sh "rm /opt/vm-images/${toBeRemoved}"
-                            }
+                    String vaultToken = secretsService.getLocalApiToken(VAULT_TOKEN_USR, VAULT_TOKEN_PSW)
+                    Map<String, String> response = secretsService.getLocalSecret(vaultToken, '/proxmox/jenkins-token')
+
+
+                    List<ProxmoxVolume> volumes = proxmoxQueryService.listStoredVolumes("vm-images", "proxmox-01")
+                            .findAll({ volume -> volume.volumeName.replaceAll("-\\d+\\.\\d+\\.\\d+\\.qcow2", "") == codeUnit.name })
+                            .sort { it.volumeName }
+
+                    if (volumes.size() > 8) {
+                        volumes.subList(8).each { volume ->
+                            proxmoxQueryService.deleteImage("vm-images", "proxmox-01", volume.volid)
                         }
                     }
                 }
