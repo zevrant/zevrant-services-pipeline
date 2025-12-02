@@ -181,6 +181,7 @@ pipeline {
                                 sh "rm /opt/vm-images/${toBeRemoved}"
                             }
                         }
+                    }
                 }
             }
         }
