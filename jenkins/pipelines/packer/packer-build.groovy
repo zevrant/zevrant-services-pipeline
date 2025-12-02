@@ -138,7 +138,7 @@ pipeline {
                         if (newFilehash != filehash) {
                             throw new RuntimeException("Failed to match file hash to the built image, SOMETHING IS VERY WRONG HERE")
                         }
-                        proxmoxQueryService.uploadImage("vm-images", "proxmox-01", "${pwd()}/${codeUnit.name}-${version.toSemanticVersionString()}.qcow2", filehash)
+//                        proxmoxQueryService.uploadImage("vm-images", "proxmox-01", "${pwd()}/${codeUnit.name}-${version.toSemanticVersionString()}.qcow2", filehash)
                     }
                 }
             }
