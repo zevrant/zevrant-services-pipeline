@@ -36,13 +36,13 @@ pipeline {
                         withCredentials([string(credentialsId: 'jenkins-git-access-token-as-text', variable: 'token')]) {
                             providerOs.each { os ->
                                 providerArch.each { arch ->
-                                    sh "curl -s --request GET -L --url https://github.com/zevrant/${codeUnit.name}/releases/download/${taggedVersion}/${codeUnit.name}_${taggedVersion.replace('v', '')}_${os}_${arch}.zip   --header 'Authorization: bearer " + token.replace('"', '') + "' -o ${codeUnit.name}_${taggedVersion.replace('v', '')}_${os}_${arch}.zip"
+                                    sh 'curl -s --request GET -L --url https://github.com/zevrant/' + codeUnit.name + '/releases/download/' + taggedVersion + '/' + codeUnit.name + '_' + taggedVersion.replace('v', '') + '_' + os + '_' + arch + '.zip   --header \'Authorization: bearer ' + token.replace('"', '') + '\' -o ' + codeUnit.name + '_' + taggedVersion.replace('v', '') + '_' + os + '_' + arch + '.zip'
                                 }
                             }
                             //Http request plugin doesn't support following redirects
 
-                            sh "curl -s --request GET -L --url https://github.com/zevrant/${codeUnit.name}/releases/download/${taggedVersion}/${codeUnit.name}_${taggedVersion.replace('v', '')}_SHA256SUMS   --header 'Authorization: bearer " + token.replace('"', '') + "' -o ${codeUnit.name}_${taggedVersion.replace('v', '')}_SHA256SUMS"
-                            sh "curl -s --request GET -L --url https://github.com/zevrant/${codeUnit.name}/releases/download/${taggedVersion}/${codeUnit.name}_${taggedVersion.replace('v', '')}_SHA256SUMS.sig   --header 'Authorization: bearer " + token.replace('"', '') + "' -o ${codeUnit.name}_${taggedVersion.replace('v', '')}_SHA256SUMS.sig"
+                            sh 'curl -s --request GET -L --url https://github.com/zevrant/' + codeUnit.name + '/releases/download/' + taggedVersion + '/' + codeUnit.name + '_' + taggedVersion.replace('v', '') + '_SHA256SUMS   --header \'Authorization: bearer ' + token.replace('"', '') + '\' -o ' + codeUnit.name + '_' + taggedVersion.replace('v', '') + '_SHA256SUMS'
+                            sh 'curl -s --request GET -L --url https://github.com/zevrant/' + codeUnit.name + '/releases/download/' + taggedVersion + '/' + codeUnit.name + '_' + taggedVersion.replace('v', '') '_SHA256SUMS.sig   --header \'Authorization: bearer ' +token.replace('"', '') + ' -o ' + codeUnit.name + '_' + taggedVersion.replace('v', '') + '_SHA256SUMS.sig'
 
                         }
                     }

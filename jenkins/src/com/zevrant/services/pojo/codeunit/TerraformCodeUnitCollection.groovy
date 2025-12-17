@@ -16,18 +16,18 @@ class TerraformCodeUnitCollection {
                     ),
                     testsEnabled: false,
                     envs        : [
-                            "shared"       : [
-                                    proxmox    : new SecretMapping(SecretType.USERNAME_PASSWORD, '/proxmox/jenkins-token'),
-                                    VAULT_ADDR : 'https://vault.zevrant-services.com',
-                                    VAULT_TOKEN: new SecretMapping(SecretType.VAULT_TOKEN, ''),
-                                    hcp_client      : new SecretMapping(SecretType.HCP_CLIENT, ''),
-                                    CF_DNS_API_TOKEN: new SecretMapping(SecretType.SECRET_TEXT, 'shared/cloudflare-dns-api-token', true),
-                                    trigger    : [
-                                            type : PipelineTriggerType.CRON,
-                                            value: "0 0 * * *"
-                                    ],
-                                    bitwarden_access_token: new SecretMapping(SecretType.SECRET_TEXT, '/jenkins/bitwarden')
-                            ],
+//                            "shared"       : [
+//                                    proxmox    : new SecretMapping(SecretType.USERNAME_PASSWORD, '/proxmox/jenkins-token'),
+//                                    VAULT_ADDR : 'https://vault.zevrant-services.com',
+//                                    VAULT_TOKEN: new SecretMapping(SecretType.VAULT_TOKEN, ''),
+//                                    hcp_client      : new SecretMapping(SecretType.HCP_CLIENT, ''),
+//                                    CF_DNS_API_TOKEN: new SecretMapping(SecretType.SECRET_TEXT, 'shared/cloudflare-dns-api-token', true),
+//                                    trigger    : [
+//                                            type : PipelineTriggerType.CRON,
+//                                            value: "0 0 * * *"
+//                                    ],
+//                                    bitwarden_access_token: new SecretMapping(SecretType.SECRET_TEXT, '/jenkins/bitwarden')
+//                            ],
                             "shared-common": [
                                     hcp_client    : new SecretMapping(SecretType.HCP_CLIENT, ''),
                                     proxmox       : new SecretMapping(SecretType.USERNAME_PASSWORD, '/proxmox/jenkins-token'),
