@@ -49,28 +49,10 @@ pipeline {
                                     )
                                 }
                             }
-                            httpRequest(
-                                    url: "https://github.com/zevrant/${codeUnit.name}/releases/download/${taggedVersion}/${codeUnit.name}_${taggedVersion.replace('v', '')}_SHA256SUMS",
-                                    outputFile: "${codeUnit.name}_${taggedVersion.replace('v', '')}_SHA256SUMS",
-                                    customHeaders: [
-                                            [
-                                                    'name'     : "Authorization",
-                                                    'value'    : "bearer " + token.replace('"', ''),
-                                                    'maskValue': true
-                                            ]
-                                    ]
-                            )
-                            httpRequest(
-                                    url: "https://github.com/zevrant/${codeUnit.name}/releases/download/${taggedVersion}/${codeUnit.name}_${taggedVersion.replace('v', '')}_SHA256SUMS.sig",
-                                    outputFile: "${codeUnit.name}_${taggedVersion.replace('v', '')}_SHA256SUMS.sig",
-                                    customHeaders: [
-                                            [
-                                                    'name'     : "Authorization",
-                                                    'value'    : "bearer " + token.replace('"', ''),
-                                                    'maskValue': true
-                                            ]
-                                    ]
-                            )
+                            //Http request plugin doesn't support following redirects
+                            sh "curl -s --request GET -L --url https://github.com/zevrant/${codeUnit.name}/releases/download/${taggedVersion}/${codeUnit.name}_${taggedVersion.replace('v', '')}_SHA256SUMS   --header 'Authorization: bearer " + token.replace('"', '') + "' -o ${codeUnit.name}_${taggedVersion.replace('v', '')}_SHA256SUMS"
+                            sh "curl -s --request GET -L --url https://github.com/zevrant/${codeUnit.name}/releases/download/${taggedVersion}/${codeUnit.name}_${taggedVersion.replace('v', '')}_SHA256SUMS.sig   --header 'Authorization: bearer " + token.replace('"', '') + "' -o ${codeUnit.name}_${taggedVersion.replace('v', '')}_SHA256SUMS.sig"
+
                         }
                     }
                 }
