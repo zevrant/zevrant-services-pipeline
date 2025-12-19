@@ -73,6 +73,7 @@ public class ProxmoxQueryService extends Service {
         String taskId = pipelineContext.httpRequest(
                 url: "${proxmoxUrl}/nodes/${proxmoxNode}/storage/${storageName}/upload",
                 httpMode: "POST",
+                contentType: 'APPLICATION_FORM',
                 wrapAsMultipart: true,
                 uploadFile: imagePath,
                 requestBody: params,
