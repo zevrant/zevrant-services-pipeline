@@ -54,8 +54,8 @@ public class ProxmoxQueryService extends Service {
     public void uploadImage(String storageName, String proxmoxNode, String imagePath, String imageChecksum) {
 
         def parameters = [
-                content             : "import",
-                checksum            : imageChecksum,
+                "content" : "import",
+                "checksum": imageChecksum,
                 "checksum-algorithm": "sha512"
         ]
         String params = ""
@@ -69,7 +69,7 @@ public class ProxmoxQueryService extends Service {
         }
 
 
-        def response = pipelineContext.httpRequest(
+        String taskId = pipelineContext.httpRequest(
                 url: "${proxmoxUrl}/nodes/${proxmoxNode}/storage/${storageName}/upload${params}",
                 httpMode: "POST",
                 wrapAsMultipart: true,
@@ -83,9 +83,7 @@ public class ProxmoxQueryService extends Service {
                 ],
                 validResponseCodes: '200',
                 consoleLogResponseBody: true
-        )
-        pipelineContext.println(response)
-        String taskId = response
+        ).content.data
 
         if (!waitForTaskCompletion(proxmoxNode, taskId)) {
             throw new RuntimeException("Failed to upload image $imagePath to node $proxmoxNode")
