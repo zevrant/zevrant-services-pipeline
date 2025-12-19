@@ -84,7 +84,8 @@ public class ProxmoxQueryService extends Service {
                 validResponseCodes: '200',
                 consoleLogResponseBody: true
         )
-        String taskId = response.content.data
+        pipelineContext.println(response)
+        String taskId = response
 
         if (!waitForTaskCompletion(proxmoxNode, taskId)) {
             throw new RuntimeException("Failed to upload image $imagePath to node $proxmoxNode")
