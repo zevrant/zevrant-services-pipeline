@@ -16,7 +16,7 @@ public class ProxmoxQueryService extends Service {
 
     public void setProxmoxCredentials(String username, String token) {
         this.username = username;
-        this.password = password;
+        this.password = token;
     }
 
     public List<ProxmoxVolume> listStoredVolumes(String storageName, String proxmoxNode) {
