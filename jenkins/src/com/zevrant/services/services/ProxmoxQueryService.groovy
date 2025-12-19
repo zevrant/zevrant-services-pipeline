@@ -69,7 +69,7 @@ public class ProxmoxQueryService extends Service {
         }
 
 
-        String taskId = pipelineContext.httpRequest(
+        def response = pipelineContext.httpRequest(
                 url: "${proxmoxUrl}/nodes/${proxmoxNode}/storage/${storageName}/upload${params}",
                 httpMode: "POST",
                 wrapAsMultipart: true,
@@ -83,7 +83,8 @@ public class ProxmoxQueryService extends Service {
                 ],
                 validResponseCodes: '200',
                 consoleLogResponseBody: true
-        ).content.data
+        )
+        String taskId = response.content.data
 
         if (!waitForTaskCompletion(proxmoxNode, taskId)) {
             throw new RuntimeException("Failed to upload image $imagePath to node $proxmoxNode")
