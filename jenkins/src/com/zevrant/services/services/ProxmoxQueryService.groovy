@@ -53,7 +53,7 @@ public class ProxmoxQueryService extends Service {
 
     public void uploadImage(String storageName, String proxmoxNode, String imagePath, String imageChecksum) {
 
-        parameters = [
+        def parameters = [
                 content             : "import",
                 checksum            : imageChecksum,
                 "checksum-algorithm": "sha512"
