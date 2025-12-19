@@ -61,9 +61,9 @@ public class ProxmoxQueryService extends Service {
         String params = ""
         for (key in parameters.keySet()) {
             if (params == "") {
-                params = "?${key}=${params[key]}"
+                params = "?${key}=${parameters[key]}"
             } else {
-                params = "&${key}=${params[key]}"
+                params = "&${key}=${parameters[key]}"
             }
 
         }
