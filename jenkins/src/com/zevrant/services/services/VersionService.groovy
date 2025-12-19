@@ -137,4 +137,26 @@ class VersionService extends Service {
         return sortedVersions.size() == 1 ? new Version(sortedVersions.get(sortedVersions.size() - 1)) : new Version(sortedVersions.get(sortedVersions.size() - 2))
     }
 
+
+    public void addImageHashMapping(Version version, String codeUnitName, String imageHash) {
+        pipelineContext.sh("""psql -c "insert into app_version(name, version, file_hash) values('${codeUnitName}', '${version.toSemanticVersionString()}', '${imageHash}')" """)
+    }
+
+    public String getImageHashForVersion(Version version, String codeUnitName) {
+        pipelineContext.sh("""psql -c  """)
+        pipelineContext.println("Getting filehash for application ${codeUnitName} version ${version.toSemanticVersionString()}")
+        pipelineContext.writeFile(file: "script-${pipelineContext.env.JOB_NAME}-${pipelineContext.env.BUILD_ID}", text: """psql --csv -t -c "select file_hash from packer_image_metadata where version = '${version.toSemanticVersionString()}' and name = '${codeUnitName}'" > fileHash""".replace("\\'", "'").replace("''", "'"))
+        pipelineContext.println(pipelineContext.readFile(file: "script-${pipelineContext.env.JOB_NAME}-${pipelineContext.env.BUILD_ID}"))
+        try {
+            pipelineContext.sh("bash < 'script-${pipelineContext.env.JOB_NAME}-${pipelineContext.env.BUILD_ID}'")
+
+        } finally {
+            pipelineContext.sh("rm -f 'script-${pipelineContext.env.JOB_NAME}-${pipelineContext.env.BUILD_ID}'")
+        }
+        return pipelineContext.readFile(file: 'fileHash').replace('"', '').trim()
+    }
+
+    public void deleteImageHashMapping(String hash) {
+        pipelineContext.sh(""" psql -c "delete from app_version where file_hash = '${hash}' """)
+    }
 }

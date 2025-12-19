@@ -61,7 +61,7 @@ public class ProxmoxQueryService extends Service {
         String params = ""
         for (key in parameters.keySet()) {
             if (params == "") {
-                params = "${key}=${params[key]}"
+                params = "?${key}=${params[key]}"
             } else {
                 params = "&${key}=${params[key]}"
             }
@@ -88,8 +88,16 @@ public class ProxmoxQueryService extends Service {
         if (!waitForTaskCompletion(proxmoxNode, taskId)) {
             throw new RuntimeException("Failed to upload image $imagePath to node $proxmoxNode")
         }
+        ProxmoxVolume volume = this.listStoredVolumes(storageName, proxmoxNode)
+                .find({ volume -> volume.volid.contains(getFilenameFromPath(imagePath)) })
+
+
     }
 
+    private static String getFilenameFromPath(String path) {
+        String pathParts = path.split("/")
+        return pathParts[pathParts.length() - 1]
+    }
 
     private boolean waitForTaskCompletion(String proxmoxNode, String upid) {
         def response = this.pipelineContext.httpRequest(
@@ -105,7 +113,22 @@ public class ProxmoxQueryService extends Service {
                 ]
         )
 
-        return ("stopped" == response.data.status && "OK" == response.data.exitstatus)
+        while ("stopped" != response.data.status) {
+            this.pipelineContext.println(response.data.status)
+            response = this.pipelineContext.httpRequest(
+                    method: 'GET',
+                    url: "${proxmoxUrl}/nodes/${proxmoxNode}/tasks/${URLEncoder.encode(upid, StandardCharsets.UTF_8)}/status",
+                    consoleLogResponseBody: true,
+                    customHeaders: [
+                            [
+                                    'name'     : "Authorization",
+                                    'value'    : "PVEAPIToken=" + username + "=" + password,
+                                    'maskValue': true
+                            ]
+                    ]
+            )
+        }
+        return "ok" == response.data.exitstatus.toLowerCase()
     }
 
     public void deleteImage(String storageName, String proxmoxNode, String volumeId) {

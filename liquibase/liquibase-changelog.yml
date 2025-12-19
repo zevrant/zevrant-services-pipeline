@@ -16,3 +16,25 @@ databaseChangeLog:
                   type: varchar(255)
                   constraints:
                     nullable: false
+  - changeSet:
+      id: 2
+      author: gdittrick
+      changes:
+        - createTable:
+            tableName: packer_image_metadata
+            columns:
+              - column:
+                  name: version
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: file_hash
+                  type: varchar(256)
+                  constraints:
+                    primaryKey: true
