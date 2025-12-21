@@ -91,11 +91,11 @@ public class ProxmoxQueryService extends Service {
 //                consoleLogResponseBody: true
 //        ).content.data
 
-        String taskId = pipelineContext.sh(returnStdout: true, script: 'curl -s --request POST ' +
-                '--url \'https://' + proxmoxNode + '.zevrant-services.com:8006/api2/json/nodes/' + proxmoxNode + '/storage/vm-images/upload' + params + '\' '
-                + '--header \'Authorization: PVEAPIToken=' + username + '=' + password + '\''
-                + '--header \'Content-Type: multipart/form-data\''
-                + '--header \'User-Agent: insomnia/11.6.1\'')
+        String taskId = pipelineContext.sh(returnStdout: true, script: 'curl -s --request POST' +
+                ' --url \'https://' + proxmoxNode + '.zevrant-services.com:8006/api2/json/nodes/' + proxmoxNode + '/storage/vm-images/upload' + params + '\' '
+                + ' --header \'Authorization: PVEAPIToken=' + username + '=' + password + '\''
+                + ' --header \'Content-Type: multipart/form-data\''
+                + ' --header \'User-Agent: insomnia/11.6.1\'')
 
         pipelineContext.readJson(text: taskId)
         if (!waitForTaskCompletion(proxmoxNode, taskId.data)) {
