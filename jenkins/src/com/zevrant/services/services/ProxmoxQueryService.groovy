@@ -93,7 +93,7 @@ public class ProxmoxQueryService extends Service {
 //        ).content.data
         String taskIdJsonString = ""
         pipelineContext.maskPasswords(varPasswordPairs: [[var: 'username'], [var: 'password']], varMaskRegexes: []) {
-            taskIdJsonString = pipelineContext.sh(returnStdout: true, script: 'curl --request POST' +
+            taskIdJsonString = pipelineContext.sh(returnStdout: true, script: 'curl -s --request POST' +
                     ' --url \'https://' + proxmoxNode + '.zevrant-services.com:8006/api2/json/nodes/' + proxmoxNode + '/storage/vm-images/upload' + params + '\' '
                     + ' --header \'Authorization: PVEAPIToken=' + username + '=' + password + '\''
                     + ' --header \'Content-Type: multipart/form-data\''

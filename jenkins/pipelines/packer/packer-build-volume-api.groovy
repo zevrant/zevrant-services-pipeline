@@ -143,7 +143,7 @@ pipeline {
                         String filehash = hashingService.getSha512SumFor("${codeUnit.name}-${version.toSemanticVersionString()}.qcow2")
                         String shaFile = "${codeUnit.name}-${version.toSemanticVersionString()}.sha512"
                         writeFile(file: shaFile, text: filehash)
-                        proxmoxQueryService.uploadImage("vm-images", "proxmox-01", "${pwd()}/${codeUnit.name}-${version.toSemanticVersionString()}.qcow2", filehash)
+                        proxmoxQueryService.uploadImage("vm-images", "proxmox-01", "${codeUnit.name}-${version.toSemanticVersionString()}.qcow2", filehash)
                         versionService.addImageHashMapping(version, codeUnit.name, filehash)
 
                     }
