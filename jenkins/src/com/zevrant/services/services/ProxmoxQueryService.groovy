@@ -91,7 +91,7 @@ public class ProxmoxQueryService extends Service {
 //                consoleLogResponseBody: true
 //        ).content.data
 
-        String taskId = sh(returnStdout: true, script: 'curl --request POST ' +
+        String taskId = pipelineContext.sh(returnStdout: true, script: 'curl --request POST ' +
                 '--url \'https://' + proxmoxNode + '.zevrant-services.com:8006/api2/json/nodes/' + proxmoxNode + '/storage/vm-images/upload' + params + '\' '
                 + '--header \'Authorization: PVEAPIToken=' + username + '=' + password + '\''
                 + '--header \'Content-Type: multipart/form-data\''
