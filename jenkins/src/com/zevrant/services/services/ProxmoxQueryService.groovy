@@ -72,7 +72,6 @@ public class ProxmoxQueryService extends Service {
         String taskId = pipelineContext.httpRequest(
                 url: "${proxmoxUrl}/nodes/${proxmoxNode}/storage/${storageName}/upload${params}",
                 httpMode: "POST",
-                contentType: 'APPLICATION_FORM',
                 wrapAsMultipart: true,
                 uploadFile: imagePath,
                 multipartName: getFilenameFromPath(imagePath),
@@ -83,6 +82,10 @@ public class ProxmoxQueryService extends Service {
                                 'value'    : "PVEAPIToken=" + username + "=" + password,
                                 'maskValue': true
                         ],
+                        [
+                                'name' : 'CONTENT-TYPE',
+                                'value': 'multipart/form-data'
+                        ]
                 ],
                 validResponseCodes: '200',
                 consoleLogResponseBody: true
