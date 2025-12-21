@@ -63,7 +63,7 @@ public class ProxmoxQueryService extends Service {
             if (params == "") {
                 params = "?${key}=${parameters[key]}"
             } else {
-                params = "&${key}=${parameters[key]}"
+                params += "&${key}=${parameters[key]}"
             }
 
         }
