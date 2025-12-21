@@ -54,16 +54,14 @@ public class ProxmoxQueryService extends Service {
     public void uploadImage(String storageName, String proxmoxNode, String imagePath, String imageChecksum) {
 
         def parameters = [
-                "content" : "import",
+                "content": "import",
                 "checksum": imageChecksum,
                 "checksum-algorithm": "sha512",
-                "fileName": getFilenameFromPath(imagePath),
-                "name"    : getFilenameFromPath(imagePath)
         ]
         String params = ""
         for (key in parameters.keySet()) {
             if (params == "") {
-                params = "${key}=${parameters[key]}"
+                params = "?${key}=${parameters[key]}"
             } else {
                 params = "&${key}=${parameters[key]}"
             }
@@ -72,11 +70,12 @@ public class ProxmoxQueryService extends Service {
 
 
         String taskId = pipelineContext.httpRequest(
-                url: "${proxmoxUrl}/nodes/${proxmoxNode}/storage/${storageName}/upload",
+                url: "${proxmoxUrl}/nodes/${proxmoxNode}/storage/${storageName}/upload${params}",
                 httpMode: "POST",
                 contentType: 'APPLICATION_FORM',
                 wrapAsMultipart: true,
                 uploadFile: imagePath,
+                multipartName: getFilenameFromPath(imagePath),
                 requestBody: params,
                 customHeaders: [
                         [
