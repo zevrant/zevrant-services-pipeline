@@ -61,9 +61,9 @@ public class ProxmoxQueryService extends Service {
         String params = ""
         for (key in parameters.keySet()) {
             if (params == "") {
-                params = "?${key}=${parameters[key]}"
+                params = "?${URLEncoder.encode(key, StandardCharsets.UTF_8)}=${URLEncoder.encode(parameters[key], StandardCharsets.UTF_8)}"
             } else {
-                params += "&${key}=${parameters[key]}"
+                params += "&${URLEncoder.encode(key, StandardCharsets.UTF_8)}=${URLEncoder.encode(parameters[key], StandardCharsets.UTF_8)}"
             }
 
         }
@@ -91,7 +91,7 @@ public class ProxmoxQueryService extends Service {
 //                consoleLogResponseBody: true
 //        ).content.data
 
-        String taskId = pipelineContext.sh(returnStdout: true, script: 'curl --request POST ' +
+        String taskId = pipelineContext.sh(returnStdout: true, script: 'curl -s --request POST ' +
                 '--url \'https://' + proxmoxNode + '.zevrant-services.com:8006/api2/json/nodes/' + proxmoxNode + '/storage/vm-images/upload' + params + '\' '
                 + '--header \'Authorization: PVEAPIToken=' + username + '=' + password + '\''
                 + '--header \'Content-Type: multipart/form-data\''
