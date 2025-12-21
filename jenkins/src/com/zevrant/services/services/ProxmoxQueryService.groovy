@@ -100,6 +100,7 @@ public class ProxmoxQueryService extends Service {
                     + ' --header \'User-Agent: insomnia/11.6.1\''
                     + ' --form filename=' + imagePath)
         }
+        pipelineContext.println('output: ' + taskIdJsonString)
         def taskId = pipelineContext.readJSON(text: taskIdJsonString)
         if (!waitForTaskCompletion(proxmoxNode, taskId.data)) {
             throw new RuntimeException("Failed to upload image $imagePath to node $proxmoxNode")
