@@ -1,6 +1,6 @@
 package packer
 
-
+import com.zevrant.services.pojo.GitHubArtifactMapping
 import com.zevrant.services.pojo.ProxmoxVolume
 import com.zevrant.services.pojo.Version
 @Library("CommonUtils")
@@ -95,30 +95,30 @@ pipeline {
                 script {
                     sh 'ls -l'
                     dir(codeUnit.folderPath) {
-//                        dir("tmp") {
-//                            writeFile file: 'dummy', text: ''
-//                        }
-//                        if (codeUnit.extraArguments != null && !codeUnit.extraArguments.isEmpty()) {
-//                            codeUnit.extraArguments.keySet().each { key ->
-//                                Object argument = codeUnit.extraArguments.get(key)
-//                                if (argument instanceof GitHubArtifactMapping) {
-//                                    String response = gitHubService.getLatestRelease(argument.getGitHubRepoOwner(), argument.getGitHubRepo())
-//                                    codeUnit.extraArguments[key] = gitHubService.getDownloadUrlFromAssetsResponse(response)
-//                                }
-//                            }
-//
-//                            writeYaml(file: 'vars.yaml', data: codeUnit.extraArguments)
-//                        }
-//                        sh 'packer init .'
-//                        String additionalArgs = ""
-//
-//                        println(codeUnit.baseImageName)
-//                        if (StringUtils.isNotBlank(codeUnit.baseImageName)) {
-//                            additionalArgs = "-var 'base_image_path=/opt/vm-images/${codeUnit.baseImageName}-${baseImageVersion}.qcow2'"
-//                        }
-//
-//                        sh "packer build -var base_image_hash=${imageHash.split('\\h')[0]} ${additionalArgs} ."
-//                        sh "mv build-output/packer-${codeUnit.name} build-output/${codeUnit.name}-${version.toSemanticVersionString()}.qcow2"
+                        dir("tmp") {
+                            writeFile file: 'dummy', text: ''
+                        }
+                        if (codeUnit.extraArguments != null && !codeUnit.extraArguments.isEmpty()) {
+                            codeUnit.extraArguments.keySet().each { key ->
+                                Object argument = codeUnit.extraArguments.get(key)
+                                if (argument instanceof GitHubArtifactMapping) {
+                                    String response = gitHubService.getLatestRelease(argument.getGitHubRepoOwner(), argument.getGitHubRepo())
+                                    codeUnit.extraArguments[key] = gitHubService.getDownloadUrlFromAssetsResponse(response)
+                                }
+                            }
+
+                            writeYaml(file: 'vars.yaml', data: codeUnit.extraArguments)
+                        }
+                        sh 'packer init .'
+                        String additionalArgs = ""
+
+                        println(codeUnit.baseImageName)
+                        if (StringUtils.isNotBlank(codeUnit.baseImageName)) {
+                            additionalArgs = "-var 'base_image_path=/opt/vm-images/${codeUnit.baseImageName}-${baseImageVersion}.qcow2'"
+                        }
+
+                        sh "packer build -var base_image_hash=${imageHash.split('\\h')[0]} ${additionalArgs} ."
+                        sh "mv build-output/packer-${codeUnit.name} build-output/${codeUnit.name}-${version.toSemanticVersionString()}.qcow2"
                     }
                 }
             }
