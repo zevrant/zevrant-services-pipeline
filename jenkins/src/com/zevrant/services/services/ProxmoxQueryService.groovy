@@ -132,7 +132,7 @@ public class ProxmoxQueryService extends Service {
         pipelineContext.println(response.content)
         String status = pipelineContext.readJSON(text: response.content).data
         pipelineContext.println(pipelineContext.writeJSON(returnText: true, json: status))
-        pipelineContext.println(status.status)
+        pipelineContext.println(status)
         pipelineContext.println("Post print")
         while ("stopped" != status.status.toLowerCase()) {
             pipelineContext.println(status.status.toLowerCase())
