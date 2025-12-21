@@ -97,7 +97,7 @@ public class ProxmoxQueryService extends Service {
                 + ' --header \'Content-Type: multipart/form-data\''
                 + ' --header \'User-Agent: insomnia/11.6.1\'')
 
-        pipelineContext.readJson(text: taskId)
+        pipelineContext.readJSON(text: taskId)
         if (!waitForTaskCompletion(proxmoxNode, taskId.data)) {
             throw new RuntimeException("Failed to upload image $imagePath to node $proxmoxNode")
         }
