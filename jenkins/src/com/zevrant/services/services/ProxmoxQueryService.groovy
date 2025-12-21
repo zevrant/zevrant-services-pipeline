@@ -128,8 +128,8 @@ public class ProxmoxQueryService extends Service {
                         ]
                 ]
         )
-
-        while ("stopped" != response.data.status) {
+        pipelineContext.println("Received task status, parsing results and waiting if needed")
+        while ("stopped" != pipelineContext.readJson(text: response.content).data.status) {
             this.pipelineContext.println(response.data.status)
             response = this.pipelineContext.httpRequest(
                     method: 'GET',
