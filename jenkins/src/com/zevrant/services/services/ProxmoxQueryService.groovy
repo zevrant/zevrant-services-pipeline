@@ -97,7 +97,7 @@ public class ProxmoxQueryService extends Service {
                     + ' --header \'Authorization: PVEAPIToken=' + username + '=' + password + '\''
                     + ' --header \'Content-Type: multipart/form-data\''
                     + ' --header \'User-Agent: insomnia/11.6.1\''
-                    + ' --form filename=' + imagePath)
+                    + ' --form filename=@' + imagePath)
         }
         pipelineContext.println('output: ' + taskIdJsonString)
         def taskId = pipelineContext.readJSON(text: taskIdJsonString)
