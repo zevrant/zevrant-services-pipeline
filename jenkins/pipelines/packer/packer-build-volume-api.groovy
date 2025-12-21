@@ -139,7 +139,7 @@ pipeline {
                     Map<String, String> response = secretsService.getLocalSecret(vaultToken, '/proxmox/jenkins-token')
                     proxmoxQueryService.setProxmoxCredentials(response.username, response.password)
                     dir(codeUnit.folderPath + "/build-output") {
-                        sh "mv /opt/vm-images/${codeUnit.name}-${version.toSemanticVersionString()}.qcow2 ./${codeUnit.name}-${version.toSemanticVersionString()}.qcow2"
+                        sh "cp /opt/vm-images/${codeUnit.name}-${version.toSemanticVersionString()}.qcow2 ./${codeUnit.name}-${version.toSemanticVersionString()}.qcow2"
                         String filehash = hashingService.getSha512SumFor("${codeUnit.name}-${version.toSemanticVersionString()}.qcow2")
                         String shaFile = "${codeUnit.name}-${version.toSemanticVersionString()}.sha512"
                         writeFile(file: shaFile, text: filehash)
