@@ -13,6 +13,6 @@ class HashingService extends Service {
         pipelineContext.sh("sha512sum ${filePath.trim()} > sha512sum")
         String sha512Sum = pipelineContext.readFile(file: 'sha512sum')
         pipelineContext.sh('rm sha512sum')
-        return sha512Sum
+        return sha512Sum.split(' ')[0]
     }
 }

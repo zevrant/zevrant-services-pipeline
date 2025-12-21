@@ -51,7 +51,7 @@ public class ProxmoxQueryService extends Service {
         return volumes
     }
 
-    public void uploadImage(String storageName, String proxmoxNode, String imagePath, String imageChecksum) {
+    public ProxmoxVolume uploadImage(String storageName, String proxmoxNode, String imagePath, String imageChecksum) {
 
         def parameters = [
                 "content": "import",
@@ -69,35 +69,42 @@ public class ProxmoxQueryService extends Service {
         }
 
 
-        String taskId = pipelineContext.httpRequest(
-                url: "${proxmoxUrl}/nodes/${proxmoxNode}/storage/${storageName}/upload${params}",
-                httpMode: "POST",
-                wrapAsMultipart: true,
-                uploadFile: imagePath,
-                multipartName: getFilenameFromPath(imagePath),
-                requestBody: params,
-                customHeaders: [
-                        [
-                                'name'     : "Authorization",
-                                'value'    : "PVEAPIToken=" + username + "=" + password,
-                                'maskValue': true
-                        ],
-                        [
-                                'name' : 'CONTENT-TYPE',
-                                'value': 'multipart/form-data'
-                        ]
-                ],
-                validResponseCodes: '200',
-                consoleLogResponseBody: true
-        ).content.data
+//        String taskId = pipelineContext.httpRequest(
+//                url: "${proxmoxUrl}/nodes/${proxmoxNode}/storage/${storageName}/upload${params}",
+//                httpMode: "POST",
+//                wrapAsMultipart: true,
+//                uploadFile: imagePath,
+//                multipartName: getFilenameFromPath(imagePath),
+//                requestBody: params,
+//                customHeaders: [
+//                        [
+//                                'name'     : "Authorization",
+//                                'value'    : "PVEAPIToken=" + username + "=" + password,
+//                                'maskValue': true
+//                        ],
+//                        [
+//                                'name' : 'CONTENT-TYPE',
+//                                'value': 'multipart/form-data'
+//                        ]
+//                ],
+//                validResponseCodes: '200',
+//                consoleLogResponseBody: true
+//        ).content.data
 
-        if (!waitForTaskCompletion(proxmoxNode, taskId)) {
+        String taskId = sh(returnStdout: true, script: 'curl --request POST ' +
+                '--url \'https://' + proxmoxNode + '.zevrant-services.com:8006/api2/json/nodes/' + proxmoxNode + '/storage/vm-images/upload' + params + '\' '
+                + '--header \'Authorization: PVEAPIToken=' + username + '=' + password + '\''
+                + '--header \'Content-Type: multipart/form-data\''
+                + '--header \'User-Agent: insomnia/11.6.1\'')
+
+        pipelineContext.readJson(text: taskId)
+        if (!waitForTaskCompletion(proxmoxNode, taskId.data)) {
             throw new RuntimeException("Failed to upload image $imagePath to node $proxmoxNode")
         }
         ProxmoxVolume volume = this.listStoredVolumes(storageName, proxmoxNode)
                 .find({ volume -> volume.volid.contains(getFilenameFromPath(imagePath)) })
 
-
+        return volume
     }
 
     private static String getFilenameFromPath(String path) {
