@@ -38,3 +38,8 @@ databaseChangeLog:
                   type: varchar(256)
                   constraints:
                     primaryKey: true
+  - changeSet:
+      id: 3
+      author: gdittrick
+      changes:
+        - sql: 'grant ALL on table packer_image_metadata to jenkins;'

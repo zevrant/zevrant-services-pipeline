@@ -153,6 +153,7 @@ pipeline {
 
         stage("Cleanup Old Images") {
             environment {
+                VAULT_TOKEN = credentials('local-vault')
                 PGHOST = '10.1.0.18'
                 PGUSER = 'jenkins'
                 PGPASSWORD = credentials('jenkins-app-version-password')
