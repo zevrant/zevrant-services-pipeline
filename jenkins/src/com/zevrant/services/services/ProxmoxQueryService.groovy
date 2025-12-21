@@ -91,14 +91,15 @@ public class ProxmoxQueryService extends Service {
 //                validResponseCodes: '200',
 //                consoleLogResponseBody: true
 //        ).content.data
-
-        String taskIdJsonString = pipelineContext.sh(returnStdout: true, script: 'curl -s --request POST' +
-                ' --url \'https://' + proxmoxNode + '.zevrant-services.com:8006/api2/json/nodes/' + proxmoxNode + '/storage/vm-images/upload' + params + '\' '
-                + ' --header \'Authorization: PVEAPIToken=' + username + '=' + password + '\''
-                + ' --header \'Content-Type: multipart/form-data\''
-                + ' --header \'User-Agent: insomnia/11.6.1\'')
-
-        def taskId = pipelineContext.readJSON(text: taskId)
+        String taskIdJsonString = ""
+        maskPasswords(varPasswordPairs: [[var: 'username'], [var: 'password']], varMaskRegexes: []) {
+            taskIdJsonString = pipelineContext.sh(returnStdout: true, script: 'curl --request POST' +
+                    ' --url \'https://' + proxmoxNode + '.zevrant-services.com:8006/api2/json/nodes/' + proxmoxNode + '/storage/vm-images/upload' + params + '\' '
+                    + ' --header \'Authorization: PVEAPIToken=' + username + '=' + password + '\''
+                    + ' --header \'Content-Type: multipart/form-data\''
+                    + ' --header \'User-Agent: insomnia/11.6.1\'')
+        }
+        def taskId = pipelineContext.readJSON(text: taskIdJsonString)
         if (!waitForTaskCompletion(proxmoxNode, taskId.data)) {
             throw new RuntimeException("Failed to upload image $imagePath to node $proxmoxNode")
         }
