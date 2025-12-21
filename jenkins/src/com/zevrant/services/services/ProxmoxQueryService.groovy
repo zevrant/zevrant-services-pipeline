@@ -130,7 +130,7 @@ public class ProxmoxQueryService extends Service {
         )
         pipelineContext.println("Received task status, parsing results and waiting if needed")
         pipelineContext.println(response.content)
-        String status = pipelineContext.readJSON(text: response.content).data
+        def status = pipelineContext.readJSON(text: response.content).data
         pipelineContext.println(pipelineContext.writeJSON(returnText: true, json: status))
         pipelineContext.println(status)
         pipelineContext.println("Post print")
