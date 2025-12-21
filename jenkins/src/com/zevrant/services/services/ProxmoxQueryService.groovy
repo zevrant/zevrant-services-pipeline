@@ -134,7 +134,7 @@ public class ProxmoxQueryService extends Service {
         pipelineContext.println(pipelineContext.writeJSON(returnText: true, json: status))
         pipelineContext.println("Starting")
         while ("stopped" != status.status.toLowerCase()) {
-            this.pipelineContext.println(status)
+            pipelineContext.println(status.status.toLowerCase())
             response = this.pipelineContext.httpRequest(
                     method: 'GET',
                     url: "${proxmoxUrl}/nodes/${proxmoxNode}/tasks/${URLEncoder.encode(upid, StandardCharsets.UTF_8)}/status",
