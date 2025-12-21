@@ -140,7 +140,7 @@ pipeline {
                     proxmoxQueryService.setProxmoxCredentials(response.username, response.password)
                     dir(codeUnit.folderPath + "/build-output") {
                         sh "cp /opt/vm-images/${codeUnit.name}-${version.toSemanticVersionString()}.qcow2 ./${codeUnit.name}-${version.toSemanticVersionString()}.qcow2"
-                        String filehash = hashingService.getSha512SumFor("${codeUnit.name}-${version.toSemanticVersionString()}.qcow2")
+                        String filehash = hashingService.getSha512SumFor("${codeUnit.name}-${version.toSemanticVersionString()}.qcow2").split(' ')[0]
                         String shaFile = "${codeUnit.name}-${version.toSemanticVersionString()}.sha512"
                         writeFile(file: shaFile, text: filehash)
                         proxmoxQueryService.uploadImage("vm-images", "proxmox-01", "${pwd()}/${codeUnit.name}-${version.toSemanticVersionString()}.qcow2", filehash)
