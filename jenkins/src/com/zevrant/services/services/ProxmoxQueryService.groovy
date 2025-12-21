@@ -117,7 +117,7 @@ public class ProxmoxQueryService extends Service {
 
     private boolean waitForTaskCompletion(String proxmoxNode, String upid) {
         def response = this.pipelineContext.httpRequest(
-                method: 'GET',
+                httpMode: 'GET',
                 url: "${proxmoxUrl}/nodes/${proxmoxNode}/tasks/${URLEncoder.encode(upid, StandardCharsets.UTF_8)}/status",
                 consoleLogResponseBody: true,
                 customHeaders: [
