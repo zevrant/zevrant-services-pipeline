@@ -57,6 +57,7 @@ public class ProxmoxQueryService extends Service {
                 "content": "import",
                 "checksum": imageChecksum,
                 "checksum-algorithm": "sha512",
+                "fileName": getFilenameFromPath(imagePath)
         ]
         String params = ""
         for (key in parameters.keySet()) {
@@ -91,13 +92,13 @@ public class ProxmoxQueryService extends Service {
 //                consoleLogResponseBody: true
 //        ).content.data
 
-        String taskId = pipelineContext.sh(returnStdout: true, script: 'curl -s --request POST' +
+        String taskIdJsonString = pipelineContext.sh(returnStdout: true, script: 'curl -s --request POST' +
                 ' --url \'https://' + proxmoxNode + '.zevrant-services.com:8006/api2/json/nodes/' + proxmoxNode + '/storage/vm-images/upload' + params + '\' '
                 + ' --header \'Authorization: PVEAPIToken=' + username + '=' + password + '\''
                 + ' --header \'Content-Type: multipart/form-data\''
                 + ' --header \'User-Agent: insomnia/11.6.1\'')
 
-        pipelineContext.readJSON(text: taskId)
+        def taskId = pipelineContext.readJSON(text: taskId)
         if (!waitForTaskCompletion(proxmoxNode, taskId.data)) {
             throw new RuntimeException("Failed to upload image $imagePath to node $proxmoxNode")
         }
