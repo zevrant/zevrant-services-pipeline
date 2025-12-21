@@ -57,7 +57,8 @@ public class ProxmoxQueryService extends Service {
                 "content" : "import",
                 "checksum": imageChecksum,
                 "checksum-algorithm": "sha512",
-                fileName            : getFilenameFromPath(imagePath)
+                "fileName": getFilenameFromPath(imagePath),
+                "name"    : getFilenameFromPath(imagePath)
         ]
         String params = ""
         for (key in parameters.keySet()) {
