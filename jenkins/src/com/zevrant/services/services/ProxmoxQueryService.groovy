@@ -129,8 +129,9 @@ public class ProxmoxQueryService extends Service {
                 ]
         )
         pipelineContext.println("Received task status, parsing results and waiting if needed")
-        while ("stopped" != pipelineContext.readJson(text: response.content).data.status) {
-            this.pipelineContext.println(response.data.status)
+        String status = pipelineContext.readJSON(text: response.content).data.status
+        while ("stopped" != status) {
+            this.pipelineContext.println(status)
             response = this.pipelineContext.httpRequest(
                     method: 'GET',
                     url: "${proxmoxUrl}/nodes/${proxmoxNode}/tasks/${URLEncoder.encode(upid, StandardCharsets.UTF_8)}/status",
@@ -143,8 +144,9 @@ public class ProxmoxQueryService extends Service {
                             ]
                     ]
             )
+            status = pipelineContext.readJSON(text: response.content)
         }
-        return "ok" == response.data.exitstatus.toLowerCase()
+        return "ok" == status.data.exitstatus.toLowerCase()
     }
 
     public void deleteImage(String storageName, String proxmoxNode, String volumeId) {
