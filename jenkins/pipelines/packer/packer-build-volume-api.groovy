@@ -168,7 +168,7 @@ pipeline {
                     List<ProxmoxVolume> volumes = proxmoxQueryService.listStoredVolumes("vm-images", "proxmox-01")
                             .findAll({ volume -> volume.volumeName.replaceAll("-\\d+\\.\\d+\\.\\d+\\.qcow2", "") == codeUnit.name })
                             .sort { it.volumeName }
-
+                    println("Volumes found " + volumes.size())
                     if (volumes.size() > 8) {
                         volumes.subList(8).each { volume ->
                             proxmoxQueryService.deleteImage("vm-images", "proxmox-01", volume.volid)
