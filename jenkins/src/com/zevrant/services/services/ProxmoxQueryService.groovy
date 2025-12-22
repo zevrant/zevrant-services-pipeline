@@ -32,8 +32,8 @@ public class ProxmoxQueryService extends Service {
                         ]
                 ]
         )
-        pipelineContext.println("Content: ${response.content}")
-        LinkedHashMap<String, Object> responseContent = pipelineContext.readJSON(text: response.content)
+        def responseContent = pipelineContext.readJSON(text: response.content)
+        pipelineContext.println("Content: ${pipelineContext.writeJSON(responseContent.data)}")
         List<ProxmoxVolume> volumes = new ArrayList<>()
         for (volume in responseContent.data) {
             ProxmoxVolume proxmoxVolume = new ProxmoxVolume()
