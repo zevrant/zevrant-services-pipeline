@@ -33,7 +33,7 @@ public class ProxmoxQueryService extends Service {
                 ]
         )
         def responseContent = pipelineContext.readJSON(text: response.content)
-        pipelineContext.println("Content: ${pipelineContext.writeJSON(responseContent.data)}")
+        pipelineContext.println("Content: ${pipelineContext.writeJSON(returnText: true, json: responseContent.data)}")
         List<ProxmoxVolume> volumes = new ArrayList<>()
         for (volume in responseContent.data) {
             ProxmoxVolume proxmoxVolume = new ProxmoxVolume()
