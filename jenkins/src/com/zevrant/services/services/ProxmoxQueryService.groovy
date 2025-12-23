@@ -172,7 +172,7 @@ public class ProxmoxQueryService extends Service {
 
     @NonCPS
     public List<ProxmoxVolume> sortByVersion(List<ProxmoxVolume> volumes) {
-        volumes.sort {
+        volumes.sort { volume1, volume2 ->
             String versionString1 = volume1.volumeName.replace(".qcow2", "").replace(codeUnit.name, "").substring(1)
             String versionString2 = volume2.volumeName.replace(".qcow2", "").replace(codeUnit.name, "").substring(1)
             Version volumeVersion1 = new Version(versionString1)
