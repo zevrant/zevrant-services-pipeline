@@ -68,28 +68,6 @@ public class ProxmoxQueryService extends Service {
 
         }
 
-
-//        String taskId = pipelineContext.httpRequest(
-//                url: "${proxmoxUrl}/nodes/${proxmoxNode}/storage/${storageName}/upload${params}",
-//                httpMode: "POST",
-//                wrapAsMultipart: true,
-//                uploadFile: imagePath,
-//                multipartName: getFilenameFromPath(imagePath),
-//                requestBody: params,
-//                customHeaders: [
-//                        [
-//                                'name'     : "Authorization",
-//                                'value'    : "PVEAPIToken=" + username + "=" + password,
-//                                'maskValue': true
-//                        ],
-//                        [
-//                                'name' : 'CONTENT-TYPE',
-//                                'value': 'multipart/form-data'
-//                        ]
-//                ],
-//                validResponseCodes: '200',
-//                consoleLogResponseBody: true
-//        ).content.data
         String taskIdJsonString = ""
         pipelineContext.maskPasswords(varPasswordPairs: [[var: 'username'], [var: 'password']], varMaskRegexes: []) {
             taskIdJsonString = pipelineContext.sh(returnStdout: true, script: 'curl -s --request POST' +
