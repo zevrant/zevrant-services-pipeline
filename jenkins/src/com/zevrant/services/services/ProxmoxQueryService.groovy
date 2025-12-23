@@ -175,6 +175,7 @@ public class ProxmoxQueryService extends Service {
         Map<Integer, Integer> versionMapping = new HashMap<>()
 
         for (int i = 0; i < volumes.size(); i++) {
+            def volume = volumes.get(i)
 //            String versionString = volumes.get(i).volumeName.replace(".qcow2", "")
 //            String[] nameParts = versionString.split("-")
 //            versionString = nameParts[nameParts.length - 1]
