@@ -171,17 +171,17 @@ public class ProxmoxQueryService extends Service {
     }
 
     @NonCPS
-    public List<ProxmoxVolume> sortByVersion(List<ProxmoxVolume> volumes) {
+    public List<ProxmoxVolume> sortByVersion(List<ProxmoxVolume> volumes, String codeUnitName) {
         volumes.sort(true, new Comparator<ProxmoxVolume>() {
             @Override
             int compare(ProxmoxVolume volume1, ProxmoxVolume volume2) {
-                String versionString1 = volume1.volumeName.replace(".qcow2", "").replace(codeUnit.name, "").substring(1)
-                String versionString2 = volume2.volumeName.replace(".qcow2", "").replace(codeUnit.name, "").substring(1)
+                String versionString1 = volume1.volumeName.replace(".qcow2", "").replace(codeUnitName, "").substring(1)
+                String versionString2 = volume2.volumeName.replace(".qcow2", "").replace(codeUnitName, "").substring(1)
                 Version volumeVersion1 = new Version(versionString1)
                 Version volumeVersion2 = new Version(versionString2)
-                int major = volumeVersion2.major <=> volumeVersion1.major
-                int minor = volumeVersion2.minor <=> volumeVersion1.minor
-                int patch = volumeVersion2.patch <=> volumeVersion1.patch
+                int major = volumeVersion1.major <=> volumeVersion2.major
+                int minor = volumeVersion1.minor <=> volumeVersion2.minor
+                int patch = volumeVersion1.patch <=> volumeVersion2.patch
 
                 return major ?: minor ?: patch
             }
