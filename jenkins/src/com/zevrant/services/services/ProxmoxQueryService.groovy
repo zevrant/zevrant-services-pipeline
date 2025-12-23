@@ -175,7 +175,9 @@ public class ProxmoxQueryService extends Service {
         volumes.sort(true, new Comparator<ProxmoxVolume>() {
             @Override
             int compare(ProxmoxVolume volume1, ProxmoxVolume volume2) {
-                String versionString1 = volume1.volumeName.replace(".qcow2", "").replace(codeUnitName, "").substring(1)
+                String versionString1 = volume1.volumeName.replace(".qcow2", "")
+                versionString1 = versionString1.replace(codeUnitName, "")
+                versionString1 = versionString1.substring(1)
                 String versionString2 = volume2.volumeName.replace(".qcow2", "").replace(codeUnitName, "").substring(1)
                 Version volumeVersion1 = new Version(versionString1)
                 Version volumeVersion2 = new Version(versionString2)
