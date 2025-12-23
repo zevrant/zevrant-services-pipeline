@@ -21,7 +21,7 @@ public class ProxmoxQueryService extends Service {
 
     public List<ProxmoxVolume> listStoredVolumes(String storageName, String proxmoxNode) {
         def response = this.pipelineContext.httpRequest(
-                method: 'GET',
+                httpMode: 'GET',
                 url: "${proxmoxUrl}/nodes/${proxmoxNode}/storage/${storageName}/content",
                 consoleLogResponseBody: true,
                 customHeaders: [
@@ -137,7 +137,7 @@ public class ProxmoxQueryService extends Service {
         while ("stopped" != status.status.toLowerCase()) {
             pipelineContext.println(status.status.toLowerCase())
             response = this.pipelineContext.httpRequest(
-                    method: 'GET',
+                    httpMode: 'GET',
                     url: "${proxmoxUrl}/nodes/${proxmoxNode}/tasks/${URLEncoder.encode(upid, StandardCharsets.UTF_8)}/status",
                     consoleLogResponseBody: true,
                     customHeaders: [
@@ -155,7 +155,7 @@ public class ProxmoxQueryService extends Service {
 
     public void deleteImage(String storageName, String proxmoxNode, String volumeId) {
         def response = this.pipelineContext.httpRequest(
-                method: 'DELETE',
+                httpMode: 'DELETE',
                 url: "${proxmoxUrl}/nodes/${proxmoxNode}/storage/${storageName}/content/${URLEncoder.encode(volumeId, StandardCharsets.UTF_8)}",
                 consoleLogResponseBody: true,
                 customHeaders: [

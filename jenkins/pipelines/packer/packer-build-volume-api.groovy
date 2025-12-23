@@ -186,12 +186,12 @@ pipeline {
                     println(volumes.collect({ it.volumeName }))
                     println("Volumes found " + volumes.size())
                     if (volumes.size() > 8) {
-                        volumes.subList(0, 8).each { volume ->
+                        volumes.subList(8, volumes.size()).each { volume ->
                             proxmoxQueryService.deleteImage("vm-images", "proxmox-01", volume.volid)
                             String fileName = volume.volid.split("/")[1]
                             String[] fileNameParts = fileName.split("-")
                             String fileHash = versionService.getImageHashForVersion(new Version(fileNameParts[fileNameParts.length - 1].replace(".qcow2", "")), codeUnit.name)
-                            versionService.deleteImageHashMapping(fileHash)
+//                            versionService.deleteImageHashMapping(fileHash)
                         }
                     }
                 }
