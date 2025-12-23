@@ -143,7 +143,6 @@ class VersionService extends Service {
     }
 
     public String getImageHashForVersion(Version version, String codeUnitName) {
-        pipelineContext.sh("""psql -c  """)
         pipelineContext.println("Getting filehash for application ${codeUnitName} version ${version.toSemanticVersionString()}")
         pipelineContext.writeFile(file: "script-${pipelineContext.env.JOB_NAME}-${pipelineContext.env.BUILD_ID}", text: """psql --csv -t -c "select file_hash from packer_image_metadata where version = '${version.toSemanticVersionString()}' and name = '${codeUnitName}'" > fileHash""".replace("\\'", "'").replace("''", "'"))
         pipelineContext.println(pipelineContext.readFile(file: "script-${pipelineContext.env.JOB_NAME}-${pipelineContext.env.BUILD_ID}"))
