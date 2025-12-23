@@ -190,7 +190,7 @@ pipeline {
                             proxmoxQueryService.deleteImage("vm-images", "proxmox-01", volume.volid)
                             String fileName = volume.volid.split("/")[1]
                             String[] fileNameParts = fileName.split("-")
-                            String fileHash = versionService.getImageHashForVersion(new Version(fileNameParts[fileNameParts.length - 1].replace(".qcow2", "")), codeUnit.name)
+//                            String fileHash = versionService.getImageHashForVersion(new Version(fileNameParts[fileNameParts.length - 1].replace(".qcow2", "")), codeUnit.name)
 //                            versionService.deleteImageHashMapping(fileHash)
                         }
                     }
