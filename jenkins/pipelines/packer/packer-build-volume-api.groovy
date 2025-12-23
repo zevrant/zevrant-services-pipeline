@@ -1,6 +1,6 @@
 package packer
 
-
+import com.zevrant.services.pojo.GitHubArtifactMapping
 import com.zevrant.services.pojo.ProxmoxVolume
 import com.zevrant.services.pojo.Version
 @Library("CommonUtils")
@@ -81,7 +81,7 @@ pipeline {
                 script {
                     version = versionService.getVersion(codeUnit.name, true)
                     println("Version received is ${version.toSemanticVersionString()}")
-//                    version = versionService.patchVersionUpdate(codeUnit.name, version, true)
+                    version = versionService.patchVersionUpdate(codeUnit.name, version, true)
                     currentBuild.displayName = "Building Version ${version.toSemanticVersionString()}" as String
                 }
             }
