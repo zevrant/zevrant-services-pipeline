@@ -1,6 +1,6 @@
 package com.zevrant.services.services
 
-import com.cloudbees.groovy.cps.NonCPS
+
 import com.zevrant.services.pojo.ProxmoxVolume
 
 import java.nio.charset.StandardCharsets
@@ -168,15 +168,14 @@ public class ProxmoxQueryService extends Service {
         )
     }
 
-    @NonCPS
-    public List<ProxmoxVolume> sortVolumesByVersion(List<ProxmoxVolume> volumes) {
+    public static List<ProxmoxVolume> sortVolumesByVersion(List<ProxmoxVolume> volumes) {
         List<ProxmoxVolume> newList = []
         //Value:Index
         Map<Integer, Integer> versionMapping = new HashMap<>()
 
         for (int i = 0; i < volumes.size(); i++) {
             def volume = volumes.get(i)
-            String versionString = volume.volumeName//.replace(".qcow2", "")
+            String versionString = volume.getVolumeName()//.replace(".qcow2", "")
 //            String[] nameParts = versionString.split("-")
 //            versionString = nameParts[nameParts.length - 1]
 //            int versionInt = Integer.parseInt(versionString.replace(".", ""))
