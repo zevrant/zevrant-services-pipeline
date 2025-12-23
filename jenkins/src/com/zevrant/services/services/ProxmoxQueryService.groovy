@@ -170,10 +170,10 @@ public class ProxmoxQueryService extends Service {
         )
     }
 
-    @NonCPS
-    public List<ProxmoxVolume> sortByVersion(List<ProxmoxVolume> volumes, String codeUnitName) {
+    public static List<ProxmoxVolume> sortVolumesByVersion(List<ProxmoxVolume> volumes, String codeUnitName) {
         volumes.sort(true, new Comparator<ProxmoxVolume>() {
             @Override
+            @NonCPS
             int compare(ProxmoxVolume volume1, ProxmoxVolume volume2) {
                 String versionString1 = volume1.volumeName.replace(".qcow2", "").replace(codeUnitName, "").substring(1)
                 String versionString2 = volume2.volumeName.replace(".qcow2", "").replace(codeUnitName, "").substring(1)
