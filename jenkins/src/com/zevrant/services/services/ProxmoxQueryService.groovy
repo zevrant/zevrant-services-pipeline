@@ -1,6 +1,8 @@
 package com.zevrant.services.services
 
+import com.cloudbees.groovy.cps.NonCPS
 import com.zevrant.services.pojo.ProxmoxVolume
+import com.zevrant.services.pojo.Version
 
 import java.nio.charset.StandardCharsets
 
@@ -166,5 +168,20 @@ public class ProxmoxQueryService extends Service {
                         ]
                 ]
         )
+    }
+
+    @NonCPS
+    public List<ProxmoxVolume> sortByVersion(List<ProxmoxVolume> volumes) {
+        volumes.sort {
+            String versionString1 = volume1.volumeName.replace(".qcow2", "").replace(codeUnit.name, "").substring(1)
+            String versionString2 = volume2.volumeName.replace(".qcow2", "").replace(codeUnit.name, "").substring(1)
+            Version volumeVersion1 = new Version(versionString1)
+            Version volumeVersion2 = new Version(versionString2)
+            int major = volumeVersion2.major <=> volumeVersion1.major
+            int minor = volumeVersion2.minor <=> volumeVersion1.minor
+            int patch = volumeVersion2.patch <=> volumeVersion1.patch
+
+            return major ?: minor ?: patch
+        }
     }
 }

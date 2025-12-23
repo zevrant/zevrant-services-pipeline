@@ -170,20 +170,11 @@ pipeline {
                     println("list stored volumes")
                     List<ProxmoxVolume> volumes = proxmoxQueryService.listStoredVolumes("vm-images", "proxmox-01")
                             .findAll({ volume -> volume.volumeName.replaceAll("-\\d+\\.\\d+\\.\\d+\\.qcow2", "") == codeUnit.name })
-                    volumes.sort({ volume1, volume2 ->
+                    proxmoxQueryService.sortByVersion(volumes)
 
-                        String versionString1 = volume1.volumeName.replace(".qcow2", "").replace(codeUnit.name, "").substring(1)
-                        String versionString2 = volume2.volumeName.replace(".qcow2", "").replace(codeUnit.name, "").substring(1)
-                        Version volumeVersion1 = new Version(versionString1)
-                        Version volumeVersion2 = new Version(versionString2)
-                        int major = volumeVersion1.major <=> volumeVersion2.major
-                        int minor = volumeVersion1.minor <=> volumeVersion2.minor
-                        int patch = volumeVersion1.patch <=> volumeVersion2.patch
-
-                        return major ?: minor ?: patch
-                    })
-
-                    println(volumes.collect({ it.volumeName }))
+                    for (i = 0; i < volumes.size(); i++) {
+                        println(volumes.get(i).volumeName)
+                    }
                     println("Volumes found " + volumes.size())
                     if (volumes.size() > 8) {
                         volumes.subList(8, volumes.size()).each { volume ->
