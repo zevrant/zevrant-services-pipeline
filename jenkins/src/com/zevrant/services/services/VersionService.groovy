@@ -141,9 +141,10 @@ class VersionService extends Service {
     public void addImageHashMapping(Version version, String codeUnitName, String imageHash) {
         pipelineContext.retry(3) {
             try {
-                pipelineContext.sh("""psql -c "insert into packer_image_metadata(name, version, file_hash) values('${codeUnitName}', '${version.toSemanticVersionString()}', '${imageHash}')" """)
+                pipelineContext.sh("""psql -c "insert into packer_image_metadata(name, version, file_hash) values('${codeUnitName}', '${version.toSemanticVersionString()}', '${imageHash}')" """.replace("''", "'").replace("\\'", "'"))
             } catch (Exception ex) {
                 sleep(3)
+                throw ex
             }
         }
     }
