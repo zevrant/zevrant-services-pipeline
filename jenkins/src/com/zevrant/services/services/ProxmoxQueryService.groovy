@@ -176,7 +176,7 @@ public class ProxmoxQueryService extends Service {
 
         for (int i = 0; i < volumes.size(); i++) {
             def volume = volumes.get(i)
-//            String versionString = volumes.get(i).volumeName.replace(".qcow2", "")
+            String versionString = volume.volumeName//.replace(".qcow2", "")
 //            String[] nameParts = versionString.split("-")
 //            versionString = nameParts[nameParts.length - 1]
 //            int versionInt = Integer.parseInt(versionString.replace(".", ""))
