@@ -114,7 +114,7 @@ pipeline {
 
                         println(codeUnit.baseImageName)
                         if (StringUtils.isNotBlank(codeUnit.baseImageName)) {
-                            additionalArgs = "-var 'base_image_path=/opt/vm-images/${codeUnit.baseImageName}-${baseImageVersion}.qcow2'"
+                            additionalArgs = "-var 'base_image_path=/opt/vm-images/import/${codeUnit.baseImageName}-${baseImageVersion}.qcow2'"
                         }
 
                         sh "packer build -var base_image_hash=${imageHash.split('\\h')[0]} ${additionalArgs} ."
