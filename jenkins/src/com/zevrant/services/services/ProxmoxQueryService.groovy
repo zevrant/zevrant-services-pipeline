@@ -170,7 +170,7 @@ public class ProxmoxQueryService extends Service {
         )
     }
 
-    public static List<ProxmoxVolume> sortVolumesByVersion(List<ProxmoxVolume> volumes, String codeUnitName) {
+    public List<ProxmoxVolume> sortVolumesByVersion(List<ProxmoxVolume> volumes, String codeUnitName) {
         volumes.sort(true, new Comparator<ProxmoxVolume>() {
             @Override
             @NonCPS
