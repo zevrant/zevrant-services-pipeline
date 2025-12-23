@@ -94,32 +94,32 @@ pipeline {
             steps {
                 script {
                     sh 'ls -l'
-//                    dir(codeUnit.folderPath) {
-//                        dir("tmp") {
-//                            writeFile file: 'dummy', text: ''
-//                        }
-//                        if (codeUnit.extraArguments != null && !codeUnit.extraArguments.isEmpty()) {
-//                            codeUnit.extraArguments.keySet().each { key ->
-//                                Object argument = codeUnit.extraArguments.get(key)
-//                                if (argument instanceof GitHubArtifactMapping) {
-//                                    String response = gitHubService.getLatestRelease(argument.getGitHubRepoOwner(), argument.getGitHubRepo())
-//                                    codeUnit.extraArguments[key] = gitHubService.getDownloadUrlFromAssetsResponse(response)
-//                                }
-//                            }
-//
-//                            writeYaml(file: 'vars.yaml', data: codeUnit.extraArguments)
-//                        }
-//                        sh 'packer init .'
-//                        String additionalArgs = ""
-//
-//                        println(codeUnit.baseImageName)
-//                        if (StringUtils.isNotBlank(codeUnit.baseImageName)) {
-//                            additionalArgs = "-var 'base_image_path=/opt/vm-images/${codeUnit.baseImageName}-${baseImageVersion}.qcow2'"
-//                        }
-//
-//                        sh "packer build -var base_image_hash=${imageHash.split('\\h')[0]} ${additionalArgs} ."
-//                        sh "mv build-output/packer-${codeUnit.name} build-output/${codeUnit.name}-${version.toSemanticVersionString()}.qcow2"
-//                    }
+                    dir(codeUnit.folderPath) {
+                        dir("tmp") {
+                            writeFile file: 'dummy', text: ''
+                        }
+                        if (codeUnit.extraArguments != null && !codeUnit.extraArguments.isEmpty()) {
+                            codeUnit.extraArguments.keySet().each { key ->
+                                Object argument = codeUnit.extraArguments.get(key)
+                                if (argument instanceof GitHubArtifactMapping) {
+                                    String response = gitHubService.getLatestRelease(argument.getGitHubRepoOwner(), argument.getGitHubRepo())
+                                    codeUnit.extraArguments[key] = gitHubService.getDownloadUrlFromAssetsResponse(response)
+                                }
+                            }
+
+                            writeYaml(file: 'vars.yaml', data: codeUnit.extraArguments)
+                        }
+                        sh 'packer init .'
+                        String additionalArgs = ""
+
+                        println(codeUnit.baseImageName)
+                        if (StringUtils.isNotBlank(codeUnit.baseImageName)) {
+                            additionalArgs = "-var 'base_image_path=/opt/vm-images/${codeUnit.baseImageName}-${baseImageVersion}.qcow2'"
+                        }
+
+                        sh "packer build -var base_image_hash=${imageHash.split('\\h')[0]} ${additionalArgs} ."
+                        sh "mv build-output/packer-${codeUnit.name} build-output/${codeUnit.name}-${version.toSemanticVersionString()}.qcow2"
+                    }
                 }
             }
         }
@@ -136,17 +136,17 @@ pipeline {
             steps {
                 script {
                     println("upload")
-//                    String vaultToken = secretsService.getLocalApiToken(VAULT_TOKEN_USR, VAULT_TOKEN_PSW)
-//                    Map<String, String> response = secretsService.getLocalSecret(vaultToken, '/proxmox/jenkins-token')
-//                    proxmoxQueryService.setProxmoxCredentials(response.username, response.password)
-//                    dir(codeUnit.folderPath + "/build-output") {
-//                        String filehash = hashingService.getSha512SumFor("${codeUnit.name}-${version.toSemanticVersionString()}.qcow2")
-//                        String shaFile = "${codeUnit.name}-${version.toSemanticVersionString()}.sha512"
-//                        writeFile(file: shaFile, text: filehash)
-//                        proxmoxQueryService.uploadImage("vm-images", "proxmox-01", "${codeUnit.name}-${version.toSemanticVersionString()}.qcow2", filehash)
-//                        versionService.addImageHashMapping(version, codeUnit.name, filehash)
-//
-//                    }
+                    String vaultToken = secretsService.getLocalApiToken(VAULT_TOKEN_USR, VAULT_TOKEN_PSW)
+                    Map<String, String> response = secretsService.getLocalSecret(vaultToken, '/proxmox/jenkins-token')
+                    proxmoxQueryService.setProxmoxCredentials(response.username, response.password)
+                    dir(codeUnit.folderPath + "/build-output") {
+                        String filehash = hashingService.getSha512SumFor("${codeUnit.name}-${version.toSemanticVersionString()}.qcow2")
+                        String shaFile = "${codeUnit.name}-${version.toSemanticVersionString()}.sha512"
+                        writeFile(file: shaFile, text: filehash)
+                        proxmoxQueryService.uploadImage("vm-images", "proxmox-01", "${codeUnit.name}-${version.toSemanticVersionString()}.qcow2", filehash)
+                        versionService.addImageHashMapping(version, codeUnit.name, filehash)
+
+                    }
                 }
             }
         }
@@ -179,12 +179,12 @@ pipeline {
                     }
                     println("Volumes found " + volumes.size())
                     if (volumes.size() > 8) {
-                        volumes.subList(8, volumes.size()).each { volume ->
+                        volumes.subList(volumes.size() - 8, volumes.size()).each { volume ->
                             proxmoxQueryService.deleteImage("vm-images", "proxmox-01", volume.volid)
                             String fileName = volume.volid.split("/")[1]
                             String[] fileNameParts = fileName.split("-")
-//                            String fileHash = versionService.getImageHashForVersion(new Version(fileNameParts[fileNameParts.length - 1].replace(".qcow2", "")), codeUnit.name)
-//                            versionService.deleteImageHashMapping(fileHash)
+                            String fileHash = versionService.getImageHashForVersion(new Version(fileNameParts[fileNameParts.length - 1].replace(".qcow2", "")), codeUnit.name)
+                            versionService.deleteImageHashMapping(fileHash)
                         }
                     }
                 }
