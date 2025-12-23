@@ -2,7 +2,6 @@ package com.zevrant.services.services
 
 import com.cloudbees.groovy.cps.NonCPS
 import com.zevrant.services.pojo.ProxmoxVolume
-import com.zevrant.services.pojo.Version
 
 import java.nio.charset.StandardCharsets
 
@@ -56,7 +55,7 @@ public class ProxmoxQueryService extends Service {
     public ProxmoxVolume uploadImage(String storageName, String proxmoxNode, String imagePath, String imageChecksum) {
 
         def parameters = [
-                "content": "import",
+                "content" : "import",
                 "checksum": imageChecksum,
                 "checksum-algorithm": "sha512",
         ]
@@ -172,26 +171,18 @@ public class ProxmoxQueryService extends Service {
 
     @NonCPS
     public List<ProxmoxVolume> sortVolumesByVersion(List<ProxmoxVolume> volumes) {
+        List<ProxmoxVolume> newList = []
+        //Value:Index
+        Map<Integer, Integer> versionMapping = new HashMap<>()
 
-        return volumes.sort(true, new Comparator<ProxmoxVolume>() {
-            @Override
-            int compare(ProxmoxVolume volume1, ProxmoxVolume volume2) {
-                pipelineContext.println("Volume 1 " + volume1.volumeName)
-                pipelineContext.println("Volume 2 " + volume2.volumeName)
-                String versionString1 = volume1.volumeName.replace(".qcow2", "")
-                String[] nameParts = versionString1.split("-")
-                versionString1 = nameParts[nameParts.length - 1]
-                String versionString2 = volume2.volumeName.replace(".qcow2", "")
-                nameParts = versionString2.split("-")
-                versionString2 = nameParts[nameParts.length - 1]
-                Version volumeVersion1 = new Version(versionString1)
-                Version volumeVersion2 = new Version(versionString2)
-                int major = volumeVersion1.major <=> volumeVersion2.major
-                int minor = volumeVersion1.minor <=> volumeVersion2.minor
-                int patch = volumeVersion1.patch <=> volumeVersion2.patch
-
-                return major ?: minor ?: patch
-            }
-        })
+        for (int i = 0; i < volumes.size(); i++) {
+            String versionString = volumes.get(i).volumeName.replace(".qcow2", "")
+            String[] nameParts = versionString.split("-")
+            versionString = nameParts[nameParts.length - 1]
+            int versionInt = Integer.parseInt(versionString.replace(".", ""))
+            versionMapping.put(versionInt, i)
+        }
+        versionMapping.keySet().sort().each { newList.add(volumes.get(versionMapping.get(it))) }
+        return newList
     }
 }
