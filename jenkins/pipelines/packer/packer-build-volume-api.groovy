@@ -174,7 +174,7 @@ pipeline {
                     println(volumes)
                     volumes = proxmoxQueryService.sortVolumesByVersion(volumes)
 
-                    for (i = 0; i < volumes.size(); i++) {
+                    for (int i = 0; i < volumes.size(); i++) {
                         println(volumes.get(i).volumeName)
                     }
                     println("Volumes found " + volumes.size())

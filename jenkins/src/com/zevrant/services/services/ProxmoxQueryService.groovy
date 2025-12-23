@@ -174,13 +174,13 @@ public class ProxmoxQueryService extends Service {
         //Value:Index
         Map<Integer, Integer> versionMapping = new HashMap<>()
 
-//        for (int i = 0; i < volumes.size(); i++) {
-//            String versionString = volumes.get(i).volumeName.replace(".qcow2", "")
+        for (int i = 0; i < volumes.size(); i++) {
+            String versionString = volumes.get(i).volumeName.replace(".qcow2", "")
 //            String[] nameParts = versionString.split("-")
 //            versionString = nameParts[nameParts.length - 1]
 //            int versionInt = Integer.parseInt(versionString.replace(".", ""))
 //            versionMapping.put(versionInt, i)
-//        }
+        }
 //        versionMapping.keySet().sort().each { newList.add(volumes.get(versionMapping.get(it))) }
         return newList
     }
