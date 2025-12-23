@@ -171,18 +171,19 @@ public class ProxmoxQueryService extends Service {
     }
 
     @NonCPS
-    public List<ProxmoxVolume> sortVolumesByVersion(List<ProxmoxVolume> volumes, String codeUnitName) {
-        pipelineContext.println("Code unit is ${codeUnitName}")
+    public List<ProxmoxVolume> sortVolumesByVersion(List<ProxmoxVolume> volumes) {
+
         volumes.sort(true, new Comparator<ProxmoxVolume>() {
             @Override
             int compare(ProxmoxVolume volume1, ProxmoxVolume volume2) {
-
                 pipelineContext.println("Volume 1 " + volume1.volumeName)
                 pipelineContext.println("Volume 2 " + volume2.volumeName)
                 String versionString1 = volume1.volumeName.replace(".qcow2", "")
-                versionString1 = versionString1.replace(codeUnitName, "")
-                versionString1 = versionString1.substring(1)
-                String versionString2 = volume2.volumeName.replace(".qcow2", "").replace(codeUnitName, "").substring(1)
+                String[] nameParts = versionString1.split("-")
+                versionString1 = nameParts[nameParts.length - 1]
+                String versionString2 = volume2.volumeName.replace(".qcow2", "")
+                nameParts = versionString2.split("-")
+                versionString2 = nameParts[nameParts.length - 1]
                 Version volumeVersion1 = new Version(versionString1)
                 Version volumeVersion2 = new Version(versionString2)
                 int major = volumeVersion1.major <=> volumeVersion2.major
