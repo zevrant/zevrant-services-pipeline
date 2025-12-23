@@ -173,7 +173,7 @@ public class ProxmoxQueryService extends Service {
     @NonCPS
     public List<ProxmoxVolume> sortVolumesByVersion(List<ProxmoxVolume> volumes) {
 
-        volumes.sort(true, new Comparator<ProxmoxVolume>() {
+        return volumes.sort(true, new Comparator<ProxmoxVolume>() {
             @Override
             int compare(ProxmoxVolume volume1, ProxmoxVolume volume2) {
                 pipelineContext.println("Volume 1 " + volume1.volumeName)
