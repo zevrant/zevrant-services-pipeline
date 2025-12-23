@@ -156,6 +156,6 @@ class VersionService extends Service {
     }
 
     public void deleteImageHashMapping(String hash) {
-        pipelineContext.sh(""" psql -c "delete from app_version where file_hash = '${hash}' """)
+        pipelineContext.sh(""" psql -c "delete from app_version where file_hash = '${hash}'" """)
     }
 }
