@@ -11,7 +11,7 @@ class TerraformCodeUnitCollection {
             new TerraformCodeUnit([
                     name        : 'shared',
                     repo        : new GitRepo(
-                            'github.com', 'git@github.com',
+                            'gitea.zevrant-services.internal', 'git@gitea.zevrant-services.internal',
                             'zevrant', 'zevrant-services-terraform', 'jenkins-git'
                     ),
                     testsEnabled: false,
@@ -108,7 +108,7 @@ class TerraformCodeUnitCollection {
             new TerraformCodeUnit([
                     name        : 's3-garage',
                     repo        : new GitRepo(
-                            'github.com', 'git@github.com',
+                            'gitea.zevrant-services.internal', 'git@gitea.zevrant-services.internal',
                             'zevrant', 's3-garage', 'jenkins-git'
                     ),
                     testsEnabled: false,
